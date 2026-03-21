@@ -1,0 +1,57 @@
+{
+  "examen": {
+    "text": "Ах дүү нар аа, ухаалаг байж, сэрэмжтэй байгтун, учир нь дайсан чинь Диавол архирч буй арслан мэт хэн нэгнийг залгихыг эрэлхийлэн тойрон алхаж байна."
+  },
+  "days": {
+    "SUN": {
+      "psalms": [
+        { "type": "psalm", "ref": "Psalm 91:1-16", "antiphon_key": "compline-sun", "default_antiphon": "", "gloria_patri": true }
+      ]
+    },
+    "MON": {
+      "psalms": [
+        { "type": "psalm", "ref": "Psalm 86:1-17", "antiphon_key": "compline-mon", "default_antiphon": "", "gloria_patri": true }
+      ]
+    },
+    "TUE": {
+      "psalms": [
+        { "type": "psalm", "ref": "Psalm 143:1-11", "antiphon_key": "compline-tue", "default_antiphon": "", "gloria_patri": true }
+      ]
+    },
+    "WED": {
+      "psalms": [
+        { "type": "psalm", "ref": "Psalm 31:2-6", "antiphon_key": "compline-wed-ps1", "default_antiphon": "", "gloria_patri": true },
+        { "type": "psalm", "ref": "Psalm 130:1-8", "antiphon_key": "compline-wed-ps2", "default_antiphon": "", "gloria_patri": true }
+      ]
+    },
+    "THU": {
+      "psalms": [
+        { "type": "psalm", "ref": "Psalm 16:1-11", "antiphon_key": "compline-thu", "default_antiphon": "", "gloria_patri": true }
+      ]
+    },
+    "FRI": {
+      "psalms": [
+        { "type": "psalm", "ref": "Psalm 88:2-19", "antiphon_key": "compline-fri", "default_antiphon": "", "gloria_patri": true }
+      ]
+    },
+    "SAT": {
+      "psalms": [
+        { "type": "psalm", "ref": "Psalm 91:1-16", "antiphon_key": "compline-sat", "default_antiphon": "", "gloria_patri": true }
+      ]
+    }
+  },
+  "shortReading": {
+    "ref": "Revelation 22:4-5",
+    "text": ""
+  },
+  "responsory": {
+    "versicle": "Эзэн минь, Таны гарт би сүнсээ даатгаж байна.",
+    "response": "Эзэн минь, үнэний Бурхан, Та намайг аварсан билээ."
+  },
+  "anteMarian": {
+    "salveRegina": {
+      "title": "Хатан хааны магтаал",
+      "text": ""
+    }
+  }
+}

@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-liturgical-green: #2d6a4f;
+  --color-liturgical-violet: #7b2d8b;
+  --color-liturgical-white: #f5f0eb;
+  --color-liturgical-red: #c1121f;
+  --color-liturgical-rose: #e8a0bf;
+}
+
+body {
+  font-family: "Noto Sans", sans-serif;
+}
