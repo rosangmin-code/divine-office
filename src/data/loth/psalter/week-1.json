@@ -11,9 +11,9 @@
       },
       "lauds": {
         "psalms": [
-          { "type": "psalm", "ref": "Psalm 63:2-9", "antiphon_key": "w1-sun-lauds-ps1", "default_antiphon": "", "title": "", "gloria_patri": true },
-          { "type": "canticle", "ref": "Daniel 3:57-88, 56", "antiphon_key": "w1-sun-lauds-cant", "default_antiphon": "", "title": "", "gloria_patri": false },
-          { "type": "psalm", "ref": "Psalm 149:1-9", "antiphon_key": "w1-sun-lauds-ps3", "default_antiphon": "", "title": "", "gloria_patri": true }
+          { "type": "psalm", "ref": "Psalm 63:2-9", "antiphon_key": "w1-sun-lauds-ps1", "default_antiphon": "Аяа Тэнгэрбурхан минь, би өнөөдөр Таныг Өөрийнхөө хүч болгохын тулд эртлэн хайх болно. Аллэлуяа!", "title": "Тэнгэрбурханаар цангаж буй сэтгэл", "gloria_patri": true },
+          { "type": "canticle", "ref": "Daniel 3:57-88, 56", "antiphon_key": "w1-sun-lauds-cant", "default_antiphon": "Галын дөлийн дундаас гурван залуу эр нэгэн дуугаар ийн хашхирав: \"Тэнгэрбурхан магтагдах болтугай\". Аллэлуяа!", "title": "Эзэний хамаг бүтээлүүд ээ, Эзэнийг магтагтун", "gloria_patri": false },
+          { "type": "psalm", "ref": "Psalm 149:1-9", "antiphon_key": "w1-sun-lauds-ps3", "default_antiphon": "Сионы ард түмэн өөрсдийн Хаандаа баярлацгаа. Аллэлуяа!", "title": "Тэнгэрбурханы ариун ард түмний баяр хөөр", "gloria_patri": true }
         ]
       },
       "terce": {
@@ -39,9 +39,9 @@
       },
       "vespers": {
         "psalms": [
-          { "type": "psalm", "ref": "Psalm 110:1-5, 7", "antiphon_key": "w1-sun-vesp-ps1", "default_antiphon": "", "title": "", "gloria_patri": true },
-          { "type": "psalm", "ref": "Psalm 114:1-8", "antiphon_key": "w1-sun-vesp-ps2", "default_antiphon": "", "title": "", "gloria_patri": true },
-          { "type": "canticle", "ref": "Revelation 19:1-7", "antiphon_key": "w1-sun-vesp-cant", "default_antiphon": "", "title": "", "gloria_patri": false }
+          { "type": "psalm", "ref": "Psalm 110:1-5, 7", "antiphon_key": "w1-sun-vesp-ps1", "default_antiphon": "Эзэн Сионоос Таны хүчтэй очирт Таягийг сунгах бөгөөд мөнхөд хаанчлах болно. Аллэлуяа!", "title": "Аврагч бол хаан ба тахилч юм", "gloria_patri": true },
+          { "type": "psalm", "ref": "Psalm 114:1-8", "antiphon_key": "w1-sun-vesp-ps2", "default_antiphon": "Таны нүүрний өмнө газар гүндээ чичирч байна.", "title": "Израильчууд Египетийн боолчлолоос чөлөөлөгдсөн байна", "gloria_patri": true },
+          { "type": "canticle", "ref": "Revelation 19:1-7", "antiphon_key": "w1-sun-vesp-cant", "default_antiphon": "Эзэн Тэнгэрбурхан, төгс хүчит Хаан минь, бүх хүч чадал Таных. Аллэлуяа!", "title": "Хурганы хурим", "gloria_patri": false }
         ]
       }
     },
@@ -55,9 +55,9 @@
       },
       "lauds": {
         "psalms": [
-          { "type": "psalm", "ref": "Psalm 5:2-10, 12-13", "antiphon_key": "w1-mon-lauds-ps1", "default_antiphon": "", "title": "", "gloria_patri": true },
-          { "type": "canticle", "ref": "1 Chronicles 29:10-13", "antiphon_key": "w1-mon-lauds-cant", "default_antiphon": "", "title": "", "gloria_patri": false },
-          { "type": "psalm", "ref": "Psalm 29:1-10", "antiphon_key": "w1-mon-lauds-ps3", "default_antiphon": "", "title": "", "gloria_patri": true }
+          { "type": "psalm", "ref": "Psalm 5:2-10, 12-13", "antiphon_key": "w1-mon-lauds-ps1", "default_antiphon": "Аяа Эзэн, би Тан руу зүрхээ өргөж байгаа бөгөөд Та миний өглөөний залбирлыг сонсоно.", "title": "Тусламж гуйдаг өглөөний залбирал", "gloria_patri": true },
+          { "type": "canticle", "ref": "1 Chronicles 29:10-13", "antiphon_key": "w1-mon-lauds-cant", "default_antiphon": "Аяа Эзэн, Тэнгэрбурхан минь бид Таны гайхамшигт нэрийг магтъя.", "title": "Суу алдар ба нэр хүнд зөвхөн Тэнгэрбурханд л байх зохистой", "gloria_patri": false },
+          { "type": "psalm", "ref": "Psalm 29:1-10", "antiphon_key": "w1-mon-lauds-ps3", "default_antiphon": "Ариун хувцсыг өмсөн ЭЗЭНд мөргөгтүн!", "title": "Тэнгэрбурханы Үгэнд зориулсан хүндэтгэлийн магтаал", "gloria_patri": true }
         ]
       },
       "terce": {
@@ -83,9 +83,9 @@
       },
       "vespers": {
         "psalms": [
-          { "type": "psalm", "ref": "Psalm 11:1-7", "antiphon_key": "w1-mon-vesp-ps1", "default_antiphon": "", "title": "", "gloria_patri": true },
-          { "type": "psalm", "ref": "Psalm 15:1-5", "antiphon_key": "w1-mon-vesp-ps2", "default_antiphon": "", "title": "", "gloria_patri": true },
-          { "type": "canticle", "ref": "Ephesians 1:3-10", "antiphon_key": "w1-mon-vesp-cant", "default_antiphon": "", "title": "", "gloria_patri": false }
+          { "type": "psalm", "ref": "Psalm 11:1-7", "antiphon_key": "w1-mon-vesp-ps1", "default_antiphon": "Эзэн ядуу хүмүүсийг таалан үздэг.", "title": "Тэнгэрбурхан бол зөв шударга хүний хөрвөшгүй бат түшиг мөн", "gloria_patri": true },
+          { "type": "psalm", "ref": "Psalm 15:1-5", "antiphon_key": "w1-mon-vesp-ps2", "default_antiphon": "Зүрхэн дотроо цэвэр ариун байгч хүмүүс ерөөлтэй еэ! Учир нь тэд Тэнгэрбурханыг харах болно.", "title": "Тэнгэрбурханы оршихуйд хэн зогсох зохистой юм бэ?", "gloria_patri": true },
+          { "type": "canticle", "ref": "Ephesians 1:3-10", "antiphon_key": "w1-mon-vesp-cant", "default_antiphon": "Тэнгэрбурхан биднийг Хүүгийнхээ дотор үрчлэгдсэн хөвгүүдийг болгохоор сонгожээ.", "title": "Биднийг аврагч Тэнгэрбурхан", "gloria_patri": false }
         ]
       }
     },
@@ -99,9 +99,9 @@
       },
       "lauds": {
         "psalms": [
-          { "type": "psalm", "ref": "Psalm 24:1-10", "antiphon_key": "w1-tue-lauds-ps1", "default_antiphon": "", "title": "", "gloria_patri": true },
-          { "type": "canticle", "ref": "Tobit 13:1-8", "antiphon_key": "w1-tue-lauds-cant", "default_antiphon": "", "title": "", "gloria_patri": false },
-          { "type": "psalm", "ref": "Psalm 33:1-9", "antiphon_key": "w1-tue-lauds-ps3", "default_antiphon": "", "title": "", "gloria_patri": true }
+          { "type": "psalm", "ref": "Psalm 24:1-10", "antiphon_key": "w1-tue-lauds-ps1", "default_antiphon": "Гэм зэмгүй үйлстэй, цэвэр ариун зүрхтэй хүн Эзэний уул өөд авирна.", "title": "Эзэний Өөрийн сүм хийдэд орж ирэхүй", "gloria_patri": true },
+          { "type": "canticle", "ref": "Tobit 13:1-8", "antiphon_key": "w1-tue-lauds-cant", "default_antiphon": "Мөнхийн Хааныг бүх үйлсээрээ магтагтун.", "title": "Тэнгэрбурхан шийтгэл буулгадаг боловч амьдруулахын тулд ажгуу", "gloria_patri": false },
+          { "type": "psalm", "ref": "Psalm 33:1-9", "antiphon_key": "w1-tue-lauds-ps3", "default_antiphon": "Үнэнч зүрх сэтгэл Эзэнийг магтах ёстой.", "title": "Тэнгэрбурханы тасралтгүй хайр халамжийн төлөөх магтаалын дуу", "gloria_patri": true }
         ]
       },
       "terce": {
@@ -127,9 +127,9 @@
       },
       "vespers": {
         "psalms": [
-          { "type": "psalm", "ref": "Psalm 20:2-8", "antiphon_key": "w1-tue-vesp-ps1", "default_antiphon": "", "title": "", "gloria_patri": true },
-          { "type": "psalm", "ref": "Psalm 21:2-8, 14", "antiphon_key": "w1-tue-vesp-ps2", "default_antiphon": "", "title": "", "gloria_patri": true },
-          { "type": "canticle", "ref": "Revelation 4:11; 5:9-10, 12", "antiphon_key": "w1-tue-vesp-cant", "default_antiphon": "", "title": "", "gloria_patri": false }
+          { "type": "psalm", "ref": "Psalm 20:2-8", "antiphon_key": "w1-tue-vesp-ps1", "default_antiphon": "Тэнгэрбурхан Өөрийн Христийг ялалтаар өргөмжилсөн.", "title": "Хааны ялалтын төлөөх даатгал залбирал", "gloria_patri": true },
+          { "type": "psalm", "ref": "Psalm 21:2-8, 14", "antiphon_key": "w1-tue-vesp-ps2", "default_antiphon": "Аяа Эзэн минь, Таны агуу үйлсийг магтаалын дуугаар бид тэмдэглэнэ.", "title": "Хааны ялалтын талархал", "gloria_patri": true },
+          { "type": "canticle", "ref": "Revelation 4:11; 5:9-10, 12", "antiphon_key": "w1-tue-vesp-cant", "default_antiphon": "Эзэн, Та биднийг Эцэг Тэнгэрбурханы маань төлөөх хаанчлал ба тахилч нар болгосон.", "title": "Цагаатгалын магтаал", "gloria_patri": false }
         ]
       }
     },
@@ -143,9 +143,9 @@
       },
       "lauds": {
         "psalms": [
-          { "type": "psalm", "ref": "Psalm 36:6-13", "antiphon_key": "w1-wed-lauds-ps1", "default_antiphon": "", "title": "", "gloria_patri": true },
-          { "type": "canticle", "ref": "Judith 16:13-17", "antiphon_key": "w1-wed-lauds-cant", "default_antiphon": "", "title": "", "gloria_patri": false },
-          { "type": "psalm", "ref": "Psalm 47:2-10", "antiphon_key": "w1-wed-lauds-ps3", "default_antiphon": "", "title": "", "gloria_patri": true }
+          { "type": "psalm", "ref": "Psalm 36:6-13", "antiphon_key": "w1-wed-lauds-ps1", "default_antiphon": "Аяа Эзэн минь, Таны гэрэл гэгээнд л бид гэрэл гэгээг хардаг.", "title": "Гэм нүгэлтнүүдийн заль мэх ба Тэнгэрбурханы сайхан сэтгэл", "gloria_patri": true },
+          { "type": "canticle", "ref": "Judith 16:13-17", "antiphon_key": "w1-wed-lauds-cant", "default_antiphon": "Аяа Эзэн минь, Эзэн Та бол агуу бас цог жавхлант, хүч чадлын гайхам Нэгэн билээ.", "title": "Дэлхий ертөнцийг бүтээгч Тэнгэрбурхан Өөрийн ард түмнийг халамжилж байна", "gloria_patri": false },
+          { "type": "psalm", "ref": "Psalm 47:2-10", "antiphon_key": "w1-wed-lauds-ps3", "default_antiphon": "Тэнгэрбурханы оршихуйд магтаалын дуугаар баясан цэнгэгтүн.", "title": "Эзэн Есүс бол бүгдийн Хаан юм", "gloria_patri": true }
         ]
       },
       "terce": {
@@ -171,9 +171,9 @@
       },
       "vespers": {
         "psalms": [
-          { "type": "psalm", "ref": "Psalm 27:1-6", "antiphon_key": "w1-wed-vesp-ps1", "default_antiphon": "", "title": "", "gloria_patri": true },
-          { "type": "psalm", "ref": "Psalm 27:7-14", "antiphon_key": "w1-wed-vesp-ps2", "default_antiphon": "", "title": "", "gloria_patri": true },
-          { "type": "canticle", "ref": "Colossians 1:12-20", "antiphon_key": "w1-wed-vesp-cant", "default_antiphon": "", "title": "", "gloria_patri": false }
+          { "type": "psalm", "ref": "Psalm 27:1-6", "antiphon_key": "w1-wed-vesp-ps1", "default_antiphon": "Эзэн миний гэрэл хийгээд аврал минь болой. Хэнээс би эмээх юм бэ?", "title": "Аюулын үед Тэнгэрбурхан бидний дэргэд зогсдог", "gloria_patri": true },
+          { "type": "psalm", "ref": "Psalm 27:7-14", "antiphon_key": "w1-wed-vesp-ps2", "default_antiphon": "Аяа Эзэн минь, би Таныг харахыг хүсэн тэмүүлнэ. Өөрийнхөө нүүрийг надаас бүү буруулаач.", "title": "Аюулын үед Тэнгэрбурхан бидний дэргэд зогсдог", "gloria_patri": true },
+          { "type": "canticle", "ref": "Colossians 1:12-20", "antiphon_key": "w1-wed-vesp-cant", "default_antiphon": "Тэр бол хамаг бүтээлээс урьд анхан Төрөгч, Тэрээр хамаг зүйлсийн дээр бүхэл анхдагч байдалтай.", "title": "Христ бол хамаг бүтээлээс болон хамаг үхэгсдээс урьд анхан Төрөгч мөн", "gloria_patri": false }
         ]
       }
     },
@@ -187,9 +187,9 @@
       },
       "lauds": {
         "psalms": [
-          { "type": "psalm", "ref": "Psalm 57:2-12", "antiphon_key": "w1-thu-lauds-ps1", "default_antiphon": "", "title": "", "gloria_patri": true },
-          { "type": "canticle", "ref": "Jeremiah 31:10-14", "antiphon_key": "w1-thu-lauds-cant", "default_antiphon": "", "title": "", "gloria_patri": false },
-          { "type": "psalm", "ref": "Psalm 48:2-12", "antiphon_key": "w1-thu-lauds-ps3", "default_antiphon": "", "title": "", "gloria_patri": true }
+          { "type": "psalm", "ref": "Psalm 57:2-12", "antiphon_key": "w1-thu-lauds-ps1", "default_antiphon": "Босоо ятга ба ятга аа, сэрээч! Үүрийн гэгээг магтаалын дуугаар сэрээцгээе.", "title": "Хавчлагын дундах өглөөний даатгал залбирал", "gloria_patri": true },
+          { "type": "canticle", "ref": "Jeremiah 31:10-14", "antiphon_key": "w1-thu-lauds-cant", "default_antiphon": "Ард түмэн минь Миний сайн сайхнаар хангалуун байх болно гэж ЭЗЭН тунхаглаж байна.", "title": "Золигдсон ард түмний баяр хөөр", "gloria_patri": false },
+          { "type": "psalm", "ref": "Psalm 48:2-12", "antiphon_key": "w1-thu-lauds-ps3", "default_antiphon": "Эзэн бол аугаа бөгөөд бидний Тэнгэрбурханы хотод магтагдах зохистой.", "title": "Ард түмний чөлөөлтийн төлөө талархал", "gloria_patri": true }
         ]
       },
       "terce": {
@@ -215,9 +215,9 @@
       },
       "vespers": {
         "psalms": [
-          { "type": "psalm", "ref": "Psalm 30:2-13", "antiphon_key": "w1-thu-vesp-ps1", "default_antiphon": "", "title": "", "gloria_patri": true },
-          { "type": "psalm", "ref": "Psalm 32:1-11", "antiphon_key": "w1-thu-vesp-ps2", "default_antiphon": "", "title": "", "gloria_patri": true },
-          { "type": "canticle", "ref": "Revelation 11:17-18; 12:10b-12a", "antiphon_key": "w1-thu-vesp-cant", "default_antiphon": "", "title": "", "gloria_patri": false }
+          { "type": "psalm", "ref": "Psalm 30:2-13", "antiphon_key": "w1-thu-vesp-ps1", "default_antiphon": "Эзэн минь, би Тан руу хашхирсан бөгөөд Та намайг эдгээсэн. Би Таныг үүрд магтах болно.", "title": "Үхлээс аварсны төлөө талархал", "gloria_patri": true },
+          { "type": "psalm", "ref": "Psalm 32:1-11", "antiphon_key": "w1-thu-vesp-ps2", "default_antiphon": "Тэнгэрбурханы мэлмийн өмнө гэм нүгэлгүй хүн үнэнээр ерөөлтэй еэ!", "title": "Нүглүүд нь уучлагдсан тэд жаргалтай яа!", "gloria_patri": true },
+          { "type": "canticle", "ref": "Revelation 11:17-18; 12:10b-12a", "antiphon_key": "w1-thu-vesp-cant", "default_antiphon": "Эцэг Христэд бүх эрх мэдэл, нэр алдар, хаанчлалыг өгсөн. Бүх хүмүүс түүнд дуулгавартай байх болно.", "title": "Тэнгэрбурханы шүүлт", "gloria_patri": false }
         ]
       }
     },
@@ -231,9 +231,9 @@
       },
       "lauds": {
         "psalms": [
-          { "type": "psalm", "ref": "Psalm 51:3-19", "antiphon_key": "w1-fri-lauds-ps1", "default_antiphon": "", "title": "", "gloria_patri": true },
-          { "type": "canticle", "ref": "Isaiah 45:15-26", "antiphon_key": "w1-fri-lauds-cant", "default_antiphon": "", "title": "", "gloria_patri": false },
-          { "type": "psalm", "ref": "Psalm 100:1-5", "antiphon_key": "w1-fri-lauds-ps3", "default_antiphon": "", "title": "", "gloria_patri": true }
+          { "type": "psalm", "ref": "Psalm 51:3-19", "antiphon_key": "w1-fri-lauds-ps1", "default_antiphon": "Эзэн, Та тахилын ширээн дээр өргөсөн жинхэнэ тахилыг хүлээн авна.", "title": "Аяа Тэнгэрбурхан минь, намайг нигүүлсээч", "gloria_patri": true },
+          { "type": "canticle", "ref": "Isaiah 45:15-26", "antiphon_key": "w1-fri-lauds-cant", "default_antiphon": "Эзэний ялалтын ивээлээр Израилийн бүх үр удам алдаршина.", "title": "Бүх үндэстнүүдийн хүмүүс Эзэний шавь нар болох болно", "gloria_patri": false },
+          { "type": "psalm", "ref": "Psalm 100:1-5", "antiphon_key": "w1-fri-lauds-ps3", "default_antiphon": "Эзэний өмнө баясалтайгаар дуулан ирэгтүн!", "title": "Тэнгэрбурханы сүм хийдэд очих үеийн баярын дуу", "gloria_patri": true }
         ]
       },
       "terce": {
@@ -259,9 +259,9 @@
       },
       "vespers": {
         "psalms": [
-          { "type": "psalm", "ref": "Psalm 41:2-14", "antiphon_key": "w1-fri-vesp-ps1", "default_antiphon": "", "title": "", "gloria_patri": true },
-          { "type": "psalm", "ref": "Psalm 46:2-12", "antiphon_key": "w1-fri-vesp-ps2", "default_antiphon": "", "title": "", "gloria_patri": true },
-          { "type": "canticle", "ref": "Revelation 15:3-4", "antiphon_key": "w1-fri-vesp-cant", "default_antiphon": "", "title": "", "gloria_patri": false }
+          { "type": "psalm", "ref": "Psalm 41:2-14", "antiphon_key": "w1-fri-vesp-ps1", "default_antiphon": "Эзэн, би нүгэл үйлдсэн тул илаарьшуулах мутраа над дээр сунгана уу.", "title": "Өвчтэй хүний даатгал залбирал", "gloria_patri": true },
+          { "type": "psalm", "ref": "Psalm 46:2-12", "antiphon_key": "w1-fri-vesp-ps2", "default_antiphon": "Түг түмдийн ЭЗЭН бидэнтэй хамт Иаковын Тэнгэрбурхан бидний хүчит цайз.", "title": "Тэнгэрбурхан бол бидний хоргодох газар ба хүч юм", "gloria_patri": true },
+          { "type": "canticle", "ref": "Revelation 15:3-4", "antiphon_key": "w1-fri-vesp-cant", "default_antiphon": "Аяа Эзэн минь, бүх үндэстнүүд ирж, Таны өмнө мөргөх болно.", "title": "Шүтэн бишрэхүйн магтаал", "gloria_patri": false }
         ]
       }
     },
@@ -275,9 +275,9 @@
       },
       "lauds": {
         "psalms": [
-          { "type": "psalm", "ref": "Psalm 119:145-152", "antiphon_key": "w1-sat-lauds-ps1", "default_antiphon": "", "title": "", "gloria_patri": true },
-          { "type": "canticle", "ref": "Exodus 15:1-4a, 8-13, 17-18", "antiphon_key": "w1-sat-lauds-cant", "default_antiphon": "", "title": "", "gloria_patri": false },
-          { "type": "psalm", "ref": "Psalm 117:1-2", "antiphon_key": "w1-sat-lauds-ps3", "default_antiphon": "", "title": "", "gloria_patri": true }
+          { "type": "psalm", "ref": "Psalm 119:145-152", "antiphon_key": "w1-sat-lauds-ps1", "default_antiphon": "Тэнгэрбурхан минь, үүрээр би Таныг хүлээн авахад бэлэн байна.", "title": "", "gloria_patri": true },
+          { "type": "canticle", "ref": "Exodus 15:1-4a, 8-13, 17-18", "antiphon_key": "w1-sat-lauds-cant", "default_antiphon": "Эзэн бол миний хүч бөгөөд тэр миний аврал болсон тул би Түүнийг магтах болно.", "title": "Улаан Тэнгисийг гаталсны дараах ялалтын дуу", "gloria_patri": false },
+          { "type": "psalm", "ref": "Psalm 117:1-2", "antiphon_key": "w1-sat-lauds-ps3", "default_antiphon": "Бүх үндэстэн, Эзэнийг магтагтун.", "title": "Тэнгэрбурханы өрөвдөх нинжин сэтгэлд зориулсан магтаал", "gloria_patri": true }
         ]
       },
       "terce": {

@@ -71,9 +71,13 @@ export function getCalendarForYear(year: number): LiturgicalDayInfo[] {
     const date = new Date(entry.moment)
     const isSunday = date.getUTCDay() === 0
 
-    if (seasonKey !== currentSeasonKey) {
-      weekOfSeason = seasonKey === 'Lent' ? 0 : 1
-      currentSeasonKey = seasonKey
+    // Holy Week is sometimes a separate season key in romcal but should continue Lent's week count
+    const isHolyWeek = seasonKey === 'HolyWeek' || entry.name.includes('Holy Week') || entry.name === 'Palm Sunday'
+    const effectiveSeasonKey = isHolyWeek ? 'Lent' : seasonKey
+
+    if (effectiveSeasonKey !== currentSeasonKey) {
+      weekOfSeason = effectiveSeasonKey === 'Lent' ? 0 : 1
+      currentSeasonKey = effectiveSeasonKey
       lastSundaySeen = false
     }
 
@@ -123,7 +127,8 @@ export function getLiturgicalDay(dateStr: string): LiturgicalDayInfo | null {
 
 export function getToday(): LiturgicalDayInfo {
   const now = new Date()
-  const dateStr = now.toISOString().slice(0, 10)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const dateStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
   const result = getLiturgicalDay(dateStr)
   if (!result) {
     throw new Error(`No liturgical data found for today: ${dateStr}`)

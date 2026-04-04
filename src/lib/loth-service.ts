@@ -17,14 +17,25 @@ import { getSeasonHourPropers, getSanctoralPropers } from './propers-loader'
 import { parseScriptureRef } from './scripture-ref-parser'
 import { lookupRef } from './bible-loader'
 
+import fs from 'fs'
+import path from 'path'
+
 // Load ordinarium data
-function loadOrdinarium() {
-  /* eslint-disable @typescript-eslint/no-require-imports */
-  const invitatory = require('@/data/loth/ordinarium/invitatory.json')
-  const canticles = require('@/data/loth/ordinarium/canticles.json')
-  const commonPrayers = require('@/data/loth/ordinarium/common-prayers.json')
-  const complineData = require('@/data/loth/ordinarium/compline.json')
+function loadJsonFile(relativePath: string) {
+  return JSON.parse(fs.readFileSync(path.join(process.cwd(), relativePath), 'utf-8'))
+}
+
+let _ordinarium: ReturnType<typeof _loadOrdinarium> | null = null
+function _loadOrdinarium() {
+  const invitatory = loadJsonFile('src/data/loth/ordinarium/invitatory.json')
+  const canticles = loadJsonFile('src/data/loth/ordinarium/canticles.json')
+  const commonPrayers = loadJsonFile('src/data/loth/ordinarium/common-prayers.json')
+  const complineData = loadJsonFile('src/data/loth/ordinarium/compline.json')
   return { invitatory, canticles, commonPrayers, complineData }
+}
+function loadOrdinarium() {
+  if (!_ordinarium) _ordinarium = _loadOrdinarium()
+  return _ordinarium
 }
 
 function dateToDayOfWeek(dateStr: string): DayOfWeek {
@@ -250,13 +261,15 @@ export async function assembleHour(
     day.weekOfSeason,
     dayOfWeek,
     hour,
+    dateStr,
   )
 
   // 4. Get sanctoral propers (if applicable)
-  // Convert romcal name to a key format
-  const celebrationKey = day.name.toUpperCase().replace(/\s+/g, '_').replace(/[^A-Z0-9_]/g, '')
+  // Use date-based key (MM-DD) to match sanctoral JSON data
+  const dateObj = new Date(dateStr + 'T00:00:00Z')
+  const dateKey = `${String(dateObj.getUTCMonth() + 1).padStart(2, '0')}-${String(dateObj.getUTCDate()).padStart(2, '0')}`
   const sanctoral = (day.rank === 'SOLEMNITY' || day.rank === 'FEAST' || day.rank === 'MEMORIAL')
-    ? getSanctoralPropers(celebrationKey)
+    ? getSanctoralPropers(dateKey)
     : null
 
   // 5. Determine antiphon overrides (sanctoral > season)
@@ -286,7 +299,9 @@ export async function assembleHour(
   }
 
   // 9. Determine if this is the first hour of the day
-  const isFirstHourOfDay = hour === 'lauds' || hour === 'officeOfReadings'
+  // Liturgically, invitatory belongs to whichever hour is prayed first.
+  // In practice, Lauds is the standard first hour for most users.
+  const isFirstHourOfDay = hour === 'lauds'
 
   // 10. Build sections
   const sections = buildSections(hour, assembledPsalms, mergedPropers, ordinarium, isFirstHourOfDay)

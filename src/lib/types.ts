@@ -124,6 +124,7 @@ export interface HourPropers {
   gospelCanticleAntiphon?: string
   intercessions?: string[]
   concludingPrayer?: string
+  alternativeConcludingPrayer?: string  // Сонголтот залбирал
   hymn?: string
 }
 

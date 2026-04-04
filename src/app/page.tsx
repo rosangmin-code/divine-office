@@ -37,7 +37,8 @@ export default async function HomePage({
 }) {
   const params = await searchParams
   const now = new Date()
-  const dateStr = params.date ?? now.toISOString().slice(0, 10)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const dateStr = params.date ?? `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
   const summary = getHoursSummary(dateStr)
 
   if (!summary) {
