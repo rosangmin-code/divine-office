@@ -13,7 +13,7 @@ import type {
 import { HOUR_NAMES_MN as hourNamesMn } from './types'
 import { getLiturgicalDay, getToday } from './calendar'
 import { getPsalterPsalmody, getComplinePsalmody } from './psalter-loader'
-import { getSeasonHourPropers, getSanctoralPropers } from './propers-loader'
+import { getSeasonHourPropers, getSanctoralPropers, getHymnForHour } from './propers-loader'
 import { parseScriptureRef } from './scripture-ref-parser'
 import { lookupRef } from './bible-loader'
 
@@ -296,6 +296,14 @@ export async function assembleHour(
   const mergedPropers: HourPropers = {
     ...(seasonPropers ?? {}),
     ...(hourPropers ?? {}),
+  }
+
+  // 8b. Fill hymn from seasonal assignments if not already set by propers
+  if (!mergedPropers.hymn) {
+    const hymnData = getHymnForHour(day.season, day.weekOfSeason, dayOfWeek, hour)
+    if (hymnData) {
+      mergedPropers.hymn = hymnData.text
+    }
   }
 
   // 9. Determine if this is the first hour of the day

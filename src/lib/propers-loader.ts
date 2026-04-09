@@ -88,3 +88,78 @@ export function getSanctoralPropers(celebrationKey: string): SanctoralEntry | nu
   }
   return null
 }
+
+// --- Hymn loader ---
+
+interface HymnEntry { title: string; text: string }
+interface HymnsIndex {
+  hymns: { number: number; title: string }[]
+  seasonalAssignments: Record<string, Record<string, number[]>>
+}
+
+let _hymns: Record<string, HymnEntry> | null = null
+let _hymnsIndex: HymnsIndex | null = null
+
+function loadHymns(): Record<string, HymnEntry> {
+  if (_hymns) return _hymns
+  try {
+    const filePath = path.join(process.cwd(), 'src/data/loth/ordinarium/hymns.json')
+    _hymns = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
+    return _hymns!
+  } catch {
+    _hymns = {}
+    return _hymns
+  }
+}
+
+function loadHymnsIndex(): HymnsIndex {
+  if (_hymnsIndex) return _hymnsIndex
+  const filePath = path.join(process.cwd(), 'src/data/loth/ordinarium/hymns-index.json')
+  _hymnsIndex = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
+  return _hymnsIndex!
+}
+
+export function getHymnForHour(
+  season: LiturgicalSeason,
+  weekOfSeason: number,
+  dayOfWeek: DayOfWeek,
+  hour: HourType,
+): HymnEntry | null {
+  const index = loadHymnsIndex()
+  const hymns = loadHymns()
+  const assignments = index.seasonalAssignments
+
+  let candidates: number[] = []
+
+  // Determine candidate hymn numbers based on season and hour
+  switch (season) {
+    case 'ADVENT':
+      candidates = assignments.ADVENT?.hymns ?? []
+      break
+    case 'CHRISTMAS':
+      candidates = assignments.CHRISTMAS?.holyFamily ?? []
+      break
+    case 'LENT':
+      candidates = assignments.LENT?.general ?? []
+      break
+    case 'EASTER':
+      candidates = assignments.EASTER?.general ?? []
+      break
+    case 'ORDINARY_TIME':
+      if (hour === 'lauds') candidates = assignments.ORDINARY_TIME?.lauds ?? []
+      else if (hour === 'vespers') candidates = assignments.ORDINARY_TIME?.vespers ?? []
+      else if (hour === 'compline') candidates = assignments.ORDINARY_TIME?.compline ?? []
+      else candidates = assignments.ORDINARY_TIME?.lauds ?? []
+      break
+  }
+
+  if (candidates.length === 0) return null
+
+  // Deterministic rotation based on week of season
+  const idx = (weekOfSeason - 1) % candidates.length
+  const hymnNum = candidates[idx]
+  const entry = hymns[String(hymnNum)]
+  if (!entry || !entry.text) return null
+
+  return entry
+}
