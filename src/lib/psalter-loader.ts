@@ -31,6 +31,43 @@ export function getPsalterPsalmody(
   return psalmody ?? null
 }
 
+/**
+ * Get common prayer elements from the psalter (short reading, responsory,
+ * gospel canticle antiphon, intercessions, concluding prayer).
+ * These are the 4-week cycle defaults used on ordinary weekdays per GILH §157/§183/§199.
+ */
+export interface PsalterCommons {
+  shortReading?: { ref: string; text: string }
+  responsory?: { versicle: string; response: string }
+  gospelCanticleAntiphon?: string
+  intercessions?: string[]
+  concludingPrayer?: string
+}
+
+export function getPsalterCommons(
+  week: 1 | 2 | 3 | 4,
+  day: DayOfWeek,
+  hour: HourType,
+): PsalterCommons | null {
+  if (hour === 'compline') return null
+
+  const weekData = loadWeek(week)
+  const dayData = weekData.days[day]
+  if (!dayData) return null
+
+  const hourEntry = dayData[hour as keyof typeof dayData] as unknown as Record<string, unknown> | undefined
+  if (!hourEntry) return null
+
+  const result: PsalterCommons = {}
+  if (hourEntry.shortReading) result.shortReading = hourEntry.shortReading as PsalterCommons['shortReading']
+  if (hourEntry.responsory) result.responsory = hourEntry.responsory as PsalterCommons['responsory']
+  if (hourEntry.gospelCanticleAntiphon) result.gospelCanticleAntiphon = hourEntry.gospelCanticleAntiphon as string
+  if (hourEntry.intercessions) result.intercessions = hourEntry.intercessions as string[]
+  if (hourEntry.concludingPrayer) result.concludingPrayer = hourEntry.concludingPrayer as string
+
+  return Object.keys(result).length > 0 ? result : null
+}
+
 let _complineData: Record<string, unknown> | null = null
 function loadComplineData(): Record<string, unknown> {
   if (!_complineData) {
