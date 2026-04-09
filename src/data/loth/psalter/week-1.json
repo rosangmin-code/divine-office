@@ -18,23 +18,23 @@
       },
       "terce": {
         "psalms": [
-          { "type": "psalm", "ref": "Psalm 118:1-8", "antiphon_key": "w1-sun-terce-ps1", "default_antiphon": "", "gloria_patri": true },
-          { "type": "psalm", "ref": "Psalm 118:9-16", "antiphon_key": "w1-sun-terce-ps2", "default_antiphon": "", "gloria_patri": true },
-          { "type": "psalm", "ref": "Psalm 118:17-24", "antiphon_key": "w1-sun-terce-ps3", "default_antiphon": "", "gloria_patri": true }
+          { "type": "psalm", "ref": "Psalm 119:1-8", "antiphon_key": "w1-sun-terce-ps1", "default_antiphon": "", "gloria_patri": true },
+          { "type": "psalm", "ref": "Psalm 119:9-16", "antiphon_key": "w1-sun-terce-ps2", "default_antiphon": "", "gloria_patri": true },
+          { "type": "psalm", "ref": "Psalm 119:17-24", "antiphon_key": "w1-sun-terce-ps3", "default_antiphon": "", "gloria_patri": true }
         ]
       },
       "sext": {
         "psalms": [
-          { "type": "psalm", "ref": "Psalm 118:25-32", "antiphon_key": "w1-sun-sext-ps1", "default_antiphon": "", "gloria_patri": true },
-          { "type": "psalm", "ref": "Psalm 118:33-40", "antiphon_key": "w1-sun-sext-ps2", "default_antiphon": "", "gloria_patri": true },
-          { "type": "psalm", "ref": "Psalm 118:41-48", "antiphon_key": "w1-sun-sext-ps3", "default_antiphon": "", "gloria_patri": true }
+          { "type": "psalm", "ref": "Psalm 119:25-32", "antiphon_key": "w1-sun-sext-ps1", "default_antiphon": "", "gloria_patri": true },
+          { "type": "psalm", "ref": "Psalm 119:33-40", "antiphon_key": "w1-sun-sext-ps2", "default_antiphon": "", "gloria_patri": true },
+          { "type": "psalm", "ref": "Psalm 119:41-48", "antiphon_key": "w1-sun-sext-ps3", "default_antiphon": "", "gloria_patri": true }
         ]
       },
       "none": {
         "psalms": [
-          { "type": "psalm", "ref": "Psalm 118:49-56", "antiphon_key": "w1-sun-none-ps1", "default_antiphon": "", "gloria_patri": true },
-          { "type": "psalm", "ref": "Psalm 118:57-64", "antiphon_key": "w1-sun-none-ps2", "default_antiphon": "", "gloria_patri": true },
-          { "type": "psalm", "ref": "Psalm 118:65-72", "antiphon_key": "w1-sun-none-ps3", "default_antiphon": "", "gloria_patri": true }
+          { "type": "psalm", "ref": "Psalm 119:49-56", "antiphon_key": "w1-sun-none-ps1", "default_antiphon": "", "gloria_patri": true },
+          { "type": "psalm", "ref": "Psalm 119:57-64", "antiphon_key": "w1-sun-none-ps2", "default_antiphon": "", "gloria_patri": true },
+          { "type": "psalm", "ref": "Psalm 119:65-72", "antiphon_key": "w1-sun-none-ps3", "default_antiphon": "", "gloria_patri": true }
         ]
       },
       "vespers": {

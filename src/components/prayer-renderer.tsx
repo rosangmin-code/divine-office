@@ -180,6 +180,36 @@ function DismissalSection() {
   )
 }
 
+function ExamenSection({ section }: { section: Extract<HourSection, { type: 'examen' }> }) {
+  return (
+    <div className="mb-4 rounded-lg bg-violet-50 p-4">
+      <p className="text-sm font-semibold text-stone-600">Ухамсрын цэгнүүр</p>
+      <p className="mt-2 text-base leading-relaxed text-stone-800">{section.text}</p>
+    </div>
+  )
+}
+
+function BlessingSection({ section }: { section: Extract<HourSection, { type: 'blessing' }> }) {
+  return (
+    <div className="mb-4 rounded-lg bg-stone-100 p-4">
+      <p className="text-sm font-semibold text-stone-600">Адислал</p>
+      <p className="mt-2 text-stone-800">{section.text}</p>
+      <p className="text-stone-800">
+        <span className="font-medium text-red-700">R. </span>{section.response}
+      </p>
+    </div>
+  )
+}
+
+function MarianAntiphonSection({ section }: { section: Extract<HourSection, { type: 'marianAntiphon' }> }) {
+  return (
+    <div className="mb-4 rounded-lg bg-blue-50 p-4">
+      <p className="text-sm font-semibold text-stone-600">{section.title}</p>
+      <p className="mt-2 text-base leading-relaxed text-stone-800">{section.text}</p>
+    </div>
+  )
+}
+
 function PatristicReadingSection({ section }: { section: Extract<HourSection, { type: 'patristicReading' }> }) {
   return (
     <div className="mb-4">
@@ -212,6 +242,9 @@ export function PrayerRenderer({ hour }: { hour: AssembledHour }) {
             {section.type === 'concludingPrayer' && <ConcludingPrayerSection section={section} />}
             {section.type === 'dismissal' && <DismissalSection />}
             {section.type === 'patristicReading' && <PatristicReadingSection section={section} />}
+            {section.type === 'examen' && <ExamenSection section={section} />}
+            {section.type === 'blessing' && <BlessingSection section={section} />}
+            {section.type === 'marianAntiphon' && <MarianAntiphonSection section={section} />}
           </div>
         )
       })}

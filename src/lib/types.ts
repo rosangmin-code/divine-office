@@ -176,7 +176,7 @@ export interface AssembledPsalm {
   title?: string
   antiphon: string
   verses: { verse: number; text: string }[]
-  gloriaPari: boolean
+  gloriaPatri: boolean
 }
 
 export type HourSection =
@@ -191,6 +191,9 @@ export type HourSection =
   | { type: 'concludingPrayer'; text: string }
   | { type: 'dismissal' }
   | { type: 'patristicReading'; author: string; source: string; text: string }
+  | { type: 'examen'; text: string }
+  | { type: 'blessing'; text: string; response: string }
+  | { type: 'marianAntiphon'; title: string; text: string }
 
 export interface AssembledHour {
   hourType: HourType

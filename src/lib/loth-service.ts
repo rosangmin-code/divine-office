@@ -12,7 +12,7 @@ import type {
 } from './types'
 import { HOUR_NAMES_MN as hourNamesMn } from './types'
 import { getLiturgicalDay, getToday } from './calendar'
-import { getPsalterPsalmody, getComplinePsalmody } from './psalter-loader'
+import { getPsalterPsalmody, getComplinePsalmody, getFullComplineData, type ComplineData } from './psalter-loader'
 import { getSeasonHourPropers, getSanctoralPropers, getHymnForHour } from './propers-loader'
 import { parseScriptureRef } from './scripture-ref-parser'
 import { lookupRef } from './bible-loader'
@@ -75,7 +75,7 @@ async function resolvePsalm(
     title: entry.title,
     antiphon,
     verses: allVerses,
-    gloriaPari: entry.gloria_patri,
+    gloriaPatri: entry.gloria_patri,
   }
 }
 
@@ -124,8 +124,10 @@ function buildSections(
   propers: HourPropers | null,
   ordinarium: ReturnType<typeof loadOrdinarium>,
   isFirstHourOfDay: boolean,
+  complineData?: ComplineData | null,
 ): HourSection[] {
   const sections: HourSection[] = []
+  const isCompline = hour === 'compline'
 
   // 1. Invitatory (only for the first hour of the day, typically Lauds or Office of Readings)
   if (isFirstHourOfDay) {
@@ -133,6 +135,14 @@ function buildSections(
       type: 'invitatory',
       versicle: ordinarium.invitatory.openingVersicle.versicle,
       response: ordinarium.invitatory.openingVersicle.response,
+    })
+  }
+
+  // 1b. Examen of Conscience (Compline only)
+  if (isCompline && complineData?.examen) {
+    sections.push({
+      type: 'examen',
+      text: complineData.examen,
     })
   }
 
@@ -194,7 +204,7 @@ function buildSections(
   }
 
   // 6. Gospel Canticle (Lauds, Vespers, Compline only)
-  if (hour === 'lauds' || hour === 'vespers' || hour === 'compline') {
+  if (hour === 'lauds' || hour === 'vespers' || isCompline) {
     const canticle = resolveGospelCanticle(
       hour,
       ordinarium.canticles,
@@ -225,8 +235,26 @@ function buildSections(
     })
   }
 
-  // 10. Dismissal
-  sections.push({ type: 'dismissal' })
+  // 10. Dismissal / Blessing
+  if (isCompline && complineData?.blessing) {
+    sections.push({
+      type: 'blessing',
+      text: complineData.blessing.text,
+      response: complineData.blessing.response,
+    })
+  } else {
+    sections.push({ type: 'dismissal' })
+  }
+
+  // 11. Marian Antiphon (Compline only)
+  if (isCompline && complineData?.marianAntiphon && complineData.marianAntiphon.length > 0) {
+    const marian = complineData.marianAntiphon[0]
+    sections.push({
+      type: 'marianAntiphon',
+      title: marian.title,
+      text: marian.text,
+    })
+  }
 
   return sections
 }
@@ -298,7 +326,25 @@ export async function assembleHour(
     ...(hourPropers ?? {}),
   }
 
-  // 8b. Fill hymn from seasonal assignments if not already set by propers
+  // 8b. For Compline, fill propers from compline.json when not overridden by season
+  let complineData: ComplineData | null = null
+  if (hour === 'compline') {
+    complineData = getFullComplineData(dayOfWeek)
+    if (!mergedPropers.shortReading && complineData.shortReading) {
+      mergedPropers.shortReading = complineData.shortReading
+    }
+    if (!mergedPropers.responsory && complineData.responsory) {
+      mergedPropers.responsory = complineData.responsory
+    }
+    if (!mergedPropers.gospelCanticleAntiphon && complineData.nuncDimittisAntiphon) {
+      mergedPropers.gospelCanticleAntiphon = complineData.nuncDimittisAntiphon
+    }
+    if (!mergedPropers.concludingPrayer && complineData.concludingPrayer) {
+      mergedPropers.concludingPrayer = complineData.concludingPrayer.primary
+    }
+  }
+
+  // 8c. Fill hymn from seasonal assignments if not already set by propers
   if (!mergedPropers.hymn) {
     const hymnData = getHymnForHour(day.season, day.weekOfSeason, dayOfWeek, hour)
     if (hymnData) {
@@ -312,7 +358,7 @@ export async function assembleHour(
   const isFirstHourOfDay = hour === 'lauds'
 
   // 10. Build sections
-  const sections = buildSections(hour, assembledPsalms, mergedPropers, ordinarium, isFirstHourOfDay)
+  const sections = buildSections(hour, assembledPsalms, mergedPropers, ordinarium, isFirstHourOfDay, complineData)
 
   return {
     hourType: hour,

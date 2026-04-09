@@ -41,7 +41,7 @@ export function PsalmBlock({ psalm }: { psalm: AssembledPsalm }) {
       </div>
 
       {/* Gloria Patri */}
-      {psalm.gloriaPari && (
+      {psalm.gloriaPatri && (
         <p className="mt-2 text-sm italic text-stone-500">
           Эцэг, Хүү, Ариун Сүнсэнд алдар байх болтугай.
         </p>
