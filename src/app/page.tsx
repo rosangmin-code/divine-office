@@ -1,16 +1,11 @@
 import Link from 'next/link'
 import { getHoursSummary } from '@/lib/loth-service'
-import type { HourType, LiturgicalColor } from '@/lib/types'
-
-const HOUR_ICONS: Record<HourType, string> = {
-  officeOfReadings: '📖',
-  lauds: '🌅',
-  terce: '🕘',
-  sext: '☀️',
-  none: '🕒',
-  vespers: '🌇',
-  compline: '🌙',
-}
+import type { HourType } from '@/lib/types'
+import { BORDER_COLOR_CLASSES } from '@/lib/liturgical-colors'
+import { DatePicker } from '@/components/date-picker'
+import { HourIcon } from '@/components/hour-icon'
+import { ThemeToggle } from '@/components/theme-toggle'
+import { Footer } from '@/components/footer'
 
 const HOUR_TIME_HINTS: Record<HourType, string> = {
   officeOfReadings: '',
@@ -20,14 +15,6 @@ const HOUR_TIME_HINTS: Record<HourType, string> = {
   none: '~15:00',
   vespers: '~18:00',
   compline: '~21:00',
-}
-
-const COLOR_CLASSES: Record<LiturgicalColor, string> = {
-  GREEN: 'bg-liturgical-green',
-  VIOLET: 'bg-liturgical-violet',
-  WHITE: 'bg-liturgical-white border border-stone-300',
-  RED: 'bg-liturgical-red',
-  ROSE: 'bg-liturgical-rose',
 }
 
 export default async function HomePage({
@@ -43,8 +30,8 @@ export default async function HomePage({
 
   if (!summary) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-stone-500">Өгөгдөл олдсонгүй: {dateStr}</p>
+      <div className="flex min-h-screen items-center justify-center bg-stone-50 dark:bg-neutral-950">
+        <p className="text-stone-500 dark:text-stone-400">Өгөгдөл олдсонгүй: {dateStr}</p>
       </div>
     )
   }
@@ -52,78 +39,75 @@ export default async function HomePage({
   const { liturgicalDay, hours } = summary
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8">
+    <div className="mx-auto max-w-2xl px-4 md:px-6 py-8">
       {/* Header */}
-      <header className="mb-8 text-center">
-        <h1 className="mb-2 text-3xl font-bold text-stone-900">
+      <header className="mb-8">
+        <div className="flex items-center justify-end mb-4">
+          <ThemeToggle />
+        </div>
+        <h1 className="text-center mb-2 text-3xl md:text-4xl font-bold text-stone-900 dark:text-stone-100">
           Цагийн Залбирал
         </h1>
-        <p className="text-sm text-stone-500">Liturgy of the Hours</p>
+        <p className="text-center text-sm text-stone-500 dark:text-stone-400">Liturgy of the Hours</p>
       </header>
 
       {/* Date navigation */}
-      <div className="mb-6 flex items-center justify-center gap-4">
+      <nav aria-label="Огноо навигаци" className="mb-6 flex items-center justify-center gap-4">
         <Link
           href={`/?date=${getPrevDate(dateStr)}`}
-          className="rounded-lg px-3 py-2 text-stone-600 hover:bg-stone-200"
+          aria-label="Өмнөх өдөр"
+          className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-stone-600 hover:bg-stone-200 dark:text-stone-400 dark:hover:bg-stone-700"
         >
           ←
         </Link>
-        <div className="text-center">
-          <input
-            type="date"
-            defaultValue={dateStr}
-            className="rounded-lg border border-stone-300 bg-white px-4 py-2 text-center text-stone-800"
-          />
-        </div>
+        <DatePicker value={dateStr} />
         <Link
           href={`/?date=${getNextDate(dateStr)}`}
-          className="rounded-lg px-3 py-2 text-stone-600 hover:bg-stone-200"
+          aria-label="Дараа өдөр"
+          className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-stone-600 hover:bg-stone-200 dark:text-stone-400 dark:hover:bg-stone-700"
         >
           →
         </Link>
-      </div>
+      </nav>
 
       {/* Liturgical day info */}
-      <div className="mb-8 rounded-xl bg-white p-6 shadow-sm">
-        <div className="flex items-center gap-3">
-          <div
-            className={`h-4 w-4 rounded-full ${COLOR_CLASSES[liturgicalDay.color]}`}
-          />
-          <div>
-            <h2 className="text-lg font-semibold text-stone-800">
-              {liturgicalDay.name}
-            </h2>
-            <p className="text-sm text-stone-500">
-              {liturgicalDay.seasonMn} · {liturgicalDay.colorMn} ·{' '}
-              {romanNumeral(liturgicalDay.psalterWeek)} долоо хоног
-            </p>
-          </div>
+      <div className={`mb-8 rounded-xl bg-white p-6 shadow-sm border-l-4 ${BORDER_COLOR_CLASSES[liturgicalDay.color]} dark:bg-neutral-900 dark:shadow-none dark:ring-1 dark:ring-stone-800`}>
+        <div>
+          <h2 className="text-lg font-semibold text-stone-800 dark:text-stone-200">
+            {liturgicalDay.name}
+          </h2>
+          <p className="text-sm text-stone-500 dark:text-stone-400">
+            {liturgicalDay.seasonMn} · {liturgicalDay.colorMn} ·{' '}
+            {romanNumeral(liturgicalDay.psalterWeek)} долоо хоног
+          </p>
         </div>
       </div>
 
       {/* Hour cards */}
-      <div className="space-y-3">
+      <section aria-label="Цагийн залбирлууд" className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
         {hours.map((hour) => (
           <Link
             key={hour.type}
             href={`/pray/${dateStr}/${hour.type}`}
-            className="flex items-center gap-4 rounded-xl bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+            className="flex items-center gap-4 rounded-xl bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] dark:bg-neutral-900 dark:shadow-none dark:ring-1 dark:ring-stone-800"
           >
-            <span className="text-2xl">{HOUR_ICONS[hour.type]}</span>
+            <HourIcon hour={hour.type} className="h-7 w-7 text-stone-500 dark:text-stone-400" />
             <div className="flex-1">
-              <h3 className="font-semibold text-stone-800">{hour.nameMn}</h3>
-              <p className="text-xs text-stone-400">{hour.type}</p>
+              <h3 className="font-semibold text-stone-800 dark:text-stone-200">{hour.nameMn}</h3>
+              <p className="text-xs text-stone-400 dark:text-stone-500">{hour.type}</p>
             </div>
             {HOUR_TIME_HINTS[hour.type] && (
-              <span className="text-sm text-stone-400">
+              <span className="text-sm text-stone-400 dark:text-stone-500">
                 {HOUR_TIME_HINTS[hour.type]}
               </span>
             )}
-            <span className="text-stone-300">→</span>
+            <span className="text-stone-300 dark:text-stone-600">→</span>
           </Link>
         ))}
-      </div>
+      </section>
+
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

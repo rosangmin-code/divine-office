@@ -3,7 +3,8 @@ import { assembleHour } from '@/lib/loth-service'
 import type { HourType } from '@/lib/types'
 
 const VALID_HOURS: HourType[] = [
-  'officeOfReadings', 'lauds', 'terce', 'sext', 'none', 'vespers', 'compline',
+  // officeOfReadings: 교부 독서 데이터 미완성으로 임시 비활성화
+  'lauds', 'terce', 'sext', 'none', 'vespers', 'compline',
 ]
 
 export async function GET(

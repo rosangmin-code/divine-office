@@ -2,10 +2,10 @@ import type { AssembledPsalm } from '@/lib/types'
 
 export function PsalmBlock({ psalm }: { psalm: AssembledPsalm }) {
   return (
-    <div className="mb-6">
+    <section aria-label={psalm.reference} className="mb-6">
       {/* Antiphon (before) */}
       {psalm.antiphon && (
-        <div className="mb-3 rounded-lg bg-amber-50 px-4 py-2 text-sm italic text-amber-900">
+        <div role="note" className="mb-3 rounded-lg bg-amber-50 px-4 py-2 font-serif text-sm italic text-amber-900 dark:bg-amber-950 dark:text-amber-200">
           <span className="font-semibold">Ant. </span>
           {psalm.antiphon}
         </div>
@@ -13,14 +13,14 @@ export function PsalmBlock({ psalm }: { psalm: AssembledPsalm }) {
 
       {/* Psalm title & reference */}
       <div className="mb-2">
-        <span className="text-xs font-medium uppercase tracking-wider text-stone-400">
-          {psalm.psalmType === 'canticle' ? 'Дуулал' : 'Дуулал'}
+        <span className="text-xs font-medium uppercase tracking-wider text-stone-500 dark:text-stone-500">
+          {psalm.psalmType === 'canticle' ? 'Магтаал дуу' : 'Дуулал'}
         </span>
-        <h4 className="text-sm font-semibold text-stone-600">
+        <h4 className="text-sm font-semibold text-stone-600 dark:text-stone-400">
           {psalm.reference}
         </h4>
         {psalm.title && (
-          <p className="text-xs italic text-stone-400">{psalm.title}</p>
+          <p className="text-xs italic text-stone-500 dark:text-stone-500">{psalm.title}</p>
         )}
       </div>
 
@@ -28,13 +28,13 @@ export function PsalmBlock({ psalm }: { psalm: AssembledPsalm }) {
       <div className="space-y-1 pl-2">
         {psalm.verses.length > 0 ? (
           psalm.verses.map((v, i) => (
-            <p key={i} className="text-base leading-relaxed text-stone-800">
-              <sup className="mr-1 text-xs text-stone-400">{v.verse}</sup>
+            <p key={i} className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
+              <sup className="mr-1 text-xs text-stone-500 dark:text-stone-500" aria-label={`Ишлэл ${v.verse}`}>{v.verse}</sup>
               {v.text}
             </p>
           ))
         ) : (
-          <p className="text-sm italic text-stone-400">
+          <p role="note" className="text-sm italic text-stone-500 dark:text-stone-500">
             [Орчуулга хийгдэж байна]
           </p>
         )}
@@ -42,18 +42,18 @@ export function PsalmBlock({ psalm }: { psalm: AssembledPsalm }) {
 
       {/* Gloria Patri */}
       {psalm.gloriaPatri && (
-        <p className="mt-2 text-sm italic text-stone-500">
+        <p className="mt-2 font-serif text-sm italic text-stone-500 dark:text-stone-400">
           Эцэг, Хүү, Ариун Сүнсэнд алдар байх болтугай.
         </p>
       )}
 
       {/* Antiphon (after) */}
       {psalm.antiphon && (
-        <div className="mt-3 rounded-lg bg-amber-50 px-4 py-2 text-sm italic text-amber-900">
+        <div role="note" className="mt-3 rounded-lg bg-amber-50 px-4 py-2 font-serif text-sm italic text-amber-900 dark:bg-amber-950 dark:text-amber-200">
           <span className="font-semibold">Ant. </span>
           {psalm.antiphon}
         </div>
       )}
-    </div>
+    </section>
   )
 }

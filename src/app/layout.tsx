@@ -1,12 +1,24 @@
-import type { Metadata } from "next";
-import { Noto_Sans } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Noto_Sans, Noto_Serif } from "next/font/google";
 import "./globals.css";
 
 const notoSans = Noto_Sans({
   subsets: ["cyrillic", "latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
+  variable: "--font-sans",
 });
+
+const notoSerif = Noto_Serif({
+  subsets: ["cyrillic", "latin"],
+  weight: ["400", "700"],
+  display: "swap",
+  variable: "--font-serif",
+});
+
+export const viewport: Viewport = {
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   title: "Цагийн Залбирал | Католик Шашны Өдөр Тутмын Залбирал",
@@ -27,9 +39,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="mn">
-      <body className={notoSans.className}>
-        <div className="flex min-h-screen flex-col bg-stone-50 text-stone-800">
+    <html lang="mn" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                var theme = localStorage.getItem('theme');
+                if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  document.documentElement.classList.add('dark');
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className={`${notoSans.variable} ${notoSerif.variable} font-sans`}>
+        <div className="flex min-h-screen flex-col bg-stone-50 text-stone-800 dark:bg-neutral-950 dark:text-stone-200 transition-colors">
           <main className="flex-1">{children}</main>
         </div>
       </body>

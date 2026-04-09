@@ -1,13 +1,64 @@
 @import "tailwindcss";
 
 @theme inline {
+  --font-family-sans: "Noto Sans", sans-serif;
+  --font-family-serif: "Noto Serif", serif;
+
   --color-liturgical-green: #2d6a4f;
   --color-liturgical-violet: #7b2d8b;
   --color-liturgical-white: #f5f0eb;
   --color-liturgical-red: #c1121f;
   --color-liturgical-rose: #e8a0bf;
+
+  --color-liturgical-green-dark: #52b788;
+  --color-liturgical-violet-dark: #a855f7;
+  --color-liturgical-white-dark: #d6cfc7;
+  --color-liturgical-red-dark: #ef4444;
+  --color-liturgical-rose-dark: #f9a8d4;
 }
 
-body {
-  font-family: "Noto Sans", sans-serif;
+:focus-visible {
+  outline: 2px solid #2d6a4f;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.dark :focus-visible {
+  outline-color: #52b788;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+.section-divider::before,
+.section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #d6d3d1;
+}
+.dark .section-divider::before,
+.dark .section-divider::after {
+  background: #44403c;
 }
