@@ -14,10 +14,10 @@ export function PsalmBlock({ psalm }: { psalm: AssembledPsalm }) {
 
       {/* Psalm title & reference */}
       <div className="mb-2">
-        <span className="text-xs font-medium uppercase tracking-wider text-stone-500 dark:text-stone-500">
+        <span className="text-xs font-medium uppercase tracking-wider text-red-700 dark:text-red-400">
           {psalm.psalmType === 'canticle' ? 'Магтаал дуу' : 'Дуулал'}
         </span>
-        <h4 className="text-sm font-semibold text-stone-600 dark:text-stone-400">
+        <h4 className="text-sm font-semibold text-red-700 dark:text-red-400">
           {psalm.reference} <PageRef page={psalm.page} />
         </h4>
         {psalm.title && (
