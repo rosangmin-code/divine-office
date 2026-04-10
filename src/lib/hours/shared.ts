@@ -141,7 +141,7 @@ export function resolveGospelCanticle(
   for (const ref of refs) {
     const result = lookupRef(ref)
     if (result) {
-      text += result.texts.map((v) => v.text).join(' ')
+      text += result.texts.map((v) => v.text).join('\n')
     }
   }
 

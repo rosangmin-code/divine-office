@@ -165,7 +165,9 @@ function GospelCanticleSection({ section }: { section: Extract<HourSection, { ty
       {/* Canticle text */}
       {section.text ? (
         <div className="space-y-1 pl-2">
-          <p className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">{section.text}</p>
+          {section.text.split('\n').map((line, li) => (
+            <p key={li} className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">{line}</p>
+          ))}
         </div>
       ) : (
         <p className="text-sm italic text-stone-500 dark:text-stone-400" role="note">[Орчуулга хийгдэж байна]</p>
