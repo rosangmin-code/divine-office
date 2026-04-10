@@ -12,7 +12,7 @@ function ensureLoaded(): Map<string, BibleChapter> {
   if (bibleIndex) return bibleIndex
 
   bibleIndex = new Map()
-  const dataDir = path.join(process.cwd(), '')
+  const dataDir = path.join(process.cwd(), 'src/data/bible')
 
   const files = [
     'bible_ot.jsonl',
