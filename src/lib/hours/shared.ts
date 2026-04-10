@@ -73,6 +73,7 @@ export async function resolvePsalm(
     antiphon,
     verses: allVerses,
     gloriaPatri: entry.gloria_patri,
+    page: entry.page,
   }
 }
 
@@ -85,6 +86,7 @@ export function resolveGospelCanticle(
   hour: HourType,
   canticlesData: Record<string, { ref: string; titleMn: string }>,
   antiphon: string,
+  page?: number,
 ): HourSection | null {
   let canticleKey: 'benedictus' | 'magnificat' | 'nuncDimittis'
 
@@ -110,6 +112,7 @@ export function resolveGospelCanticle(
     canticle: canticleKey,
     antiphon: antiphon || '',
     text,
+    page,
   }
 }
 
@@ -141,6 +144,7 @@ export function resolveShortReading(propers: HourPropers | null): HourSection | 
       ref: readingRef,
       bookMn,
       verses: [{ verse: 0, text: propers.shortReading.text }],
+      page: propers.shortReading.page,
     }
   }
 
@@ -150,6 +154,7 @@ export function resolveShortReading(propers: HourPropers | null): HourSection | 
       ref: readingRef,
       bookMn,
       verses: allVerses,
+      page: propers.shortReading.page,
     }
   }
 

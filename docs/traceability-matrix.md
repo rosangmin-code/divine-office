@@ -32,6 +32,10 @@
 | FR-015 | 기도 조립 API | FR-082~083 | [api](modules/api.md) | `src/app/api/loth/[date]/[hour]/route.ts` — `GET /api/loth/[date]/[hour]`: 유효 hour 검증, assembleHour() 호출, 400/404 에러 처리 | `e2e/api.spec.ts` — Lauds/Vespers/Compline/Terce API 상세 검증, invalid hour 400, invalid date 404<br>`e2e/prayer-sections.spec.ts` — API를 통한 shortReading/responsory 구조 확인 | 완료 |
 | FR-016 | 기도 페이지 렌더링 | FR-090~098 | [ui](modules/ui.md) | `src/app/pray/[date]/[hour]/page.tsx` — 기도 페이지: header, PrayerRenderer, 이전/다음 기도시간 nav, back link<br>`src/app/page.tsx` — 홈페이지: 전례일 정보 카드, 7개 시간대 카드, 날짜 nav<br>`src/components/prayer-renderer.tsx` — 14개 section type 렌더링<br>`src/components/psalm-block.tsx` — antiphon + title + verses + Gloria Patri<br>`src/components/date-picker.tsx`, `hour-icon.tsx`, `theme-toggle.tsx`, `footer.tsx` | `e2e/homepage.spec.ts` — 4개 테스트: 기본 렌더링, OT 날짜 렌더링, 몽골어 시간명/아이콘, invalid date 에러<br>`e2e/prayer-lauds.spec.ts` — header, back link, bottom back button<br>`e2e/date-navigation.spec.ts` — 이전/다음 날짜 nav, 연도 경계, 연속 nav<br>`e2e/error-handling.spec.ts` — invalid hour/date 에러 메시지 | 완료 |
 
+| FR-017 | PDF 페이지 참조 표시 | FR-017 | [PRD §7](../PRD.md#7-pdf-페이지-참조-기능) | `src/components/page-ref.tsx` — PageRef 조건부 렌더링 (`'use client'`, `useSettings()`로 `showPageRefs` 확인)<br>`src/components/prayer-renderer.tsx` — 11개 섹션 컴포넌트에 `<PageRef page={section.page} />` 삽입<br>`src/components/psalm-block.tsx` — 시편 참조 옆 `<PageRef page={psalm.page} />`<br>`src/lib/types.ts` — `PsalmEntry`, `ShortReading`, `Responsory`, `AssembledPsalm`, `HourSection` 11개 variant에 `page?: number`<br>`src/lib/hours/shared.ts` — `resolvePsalm()`, `resolveShortReading()`, `resolveGospelCanticle()`에 page 전파<br>`src/lib/hours/{lauds,vespers,compline,daytime-prayer}.ts` — section 생성 시 page 전달<br>`src/data/loth/psalter/week-1.json` — 일요일 lauds page 주석 (샘플) | `e2e/page-references.spec.ts` — 8개 테스트: 기본 숨김, 토글 ON/OFF, 영구 저장, 시편/복수 섹션, 접근성<br>`src/lib/__tests__/hours/page-propagation.test.ts` — 10개 테스트: 각 assembler page 전파 검증 | 완료 (데이터 일부) |
+| FR-018 | 페이지 참조 토글 설정 | FR-018 | [PRD §7](../PRD.md#7-pdf-페이지-참조-기능) | `src/lib/settings.tsx` — `SettingsProvider` React Context + `useSettings()` hook, localStorage `loth-settings` 키<br>`src/components/settings-toggle.tsx` — 책 아이콘 토글 버튼, `aria-pressed`, active 시 빨간색 배경<br>`src/components/page-ref.tsx` — `showPageRefs` false면 null 반환 | `e2e/page-references.spec.ts` — 테스트 #1,2,3,4,5,8 | 완료 |
+| FR-019 | 설정 시스템 기반 | FR-019 | [PRD §7](../PRD.md#7-pdf-페이지-참조-기능) | `src/lib/settings.tsx` — Context + localStorage, `hydrated` 상태로 SSR 불일치 방지<br>`src/app/layout.tsx` — `<SettingsProvider>` 래핑<br>`src/app/pray/[date]/[hour]/page.tsx` — `<SettingsToggle />` 배치 | `e2e/page-references.spec.ts` — 테스트 #2,5 | 완료 |
+
 ### 비기능 요구사항 (Non-Functional Requirements)
 
 | ID | 요구사항 | 구현 파일 | 테스트 | 상태 |
@@ -39,6 +43,9 @@
 | NFR-001 | 모바일 반응형 | `src/app/page.tsx` — `max-w-2xl px-4 md:px-6`, `lg:grid lg:grid-cols-2`<br>`src/app/pray/[date]/[hour]/page.tsx` — `max-w-2xl lg:max-w-3xl px-4 md:px-6`<br>`src/app/layout.tsx` — `Viewport` export (`viewportFit: "cover"`)<br>`src/components/psalm-block.tsx` — 반응형 텍스트 크기 | `e2e/mobile.spec.ts` — 4개 테스트: 홈페이지/기도 페이지 수평 스크롤 없음, touch target >= 44px, font-size >= 14px | 완료 |
 | NFR-002 | 몽골어 UI | `src/app/layout.tsx` — `<html lang="mn">`, Noto Sans/Serif (cyrillic subset)<br>`src/lib/types.ts` — `HOUR_NAMES_MN`, `DAY_NAMES_MN`<br>`src/lib/mappings.ts` — `SEASON_NAMES_MN`, `COLOR_NAMES_MN`, `RANK_NAMES_MN`<br>`src/components/prayer-renderer.tsx` — 모든 section 라벨 몽골어<br>`src/app/layout.tsx` — OG metadata 몽골어 (`locale: "mn_MN"`) | `e2e/homepage.spec.ts` — 몽골어 제목 "Цагийн Залбирал", 시간명 검증<br>`e2e/liturgical-calendar.spec.ts` — 몽골어 시기명 확인<br>`e2e/prayer-lauds.spec.ts` — 몽골어 section 이름 확인<br>`e2e/prayer-compline.spec.ts` — 몽골어 header 확인 | 완료 |
 | NFR-003 | Vercel 배포 | `next.config.ts` — Next.js 16.2.0 기본 설정<br>`package.json` — `next build` / `next start` 스크립트<br>**`vercel.json` 파일 없음** — Vercel 기본 감지에 의존 | 직접 테스트 없음 — 배포 검증 E2E 없음 | 부분 완료 |
+| NFR-007 | SSR 하이드레이션 호환 | `src/lib/settings.tsx` — `hydrated` 상태 관리, 하이드레이션 전 기본값 사용 | `e2e/page-references.spec.ts` — 테스트 #5 (새로고침 후 정상 동작) | 완료 |
+| NFR-008 | 접근성 | `src/components/settings-toggle.tsx` — `aria-label`, `aria-pressed`<br>`src/components/page-ref.tsx` — `aria-label` | `e2e/page-references.spec.ts` — 테스트 #2 (aria 속성 확인), 테스트 #8 (aria-pressed) | 완료 |
+| NFR-009 | 성능 무영향 | `src/components/page-ref.tsx` — page undefined/showPageRefs false면 null, 렌더링 없음 | `src/lib/__tests__/hours/page-propagation.test.ts` — undefined pages 테스트 | 완료 |
 
 ---
 
@@ -59,6 +66,8 @@
 | `e2e/mobile.spec.ts` | NFR-001 |
 | `e2e/error-handling.spec.ts` | FR-016 |
 | `e2e/date-navigation.spec.ts` | FR-016 |
+| `e2e/page-references.spec.ts` | FR-017, FR-018, FR-019, NFR-007, NFR-008 |
+| `src/lib/__tests__/hours/page-propagation.test.ts` | FR-017, NFR-009 |
 | `e2e/fixtures/dates.ts` | (테스트 데이터 — 모든 E2E 공통) |
 
 ---
@@ -69,16 +78,16 @@
 
 | 상태 | 기능 요구사항 | 비기능 요구사항 | 합계 |
 |------|:------------:|:---------------:|:----:|
-| 완료 | 14 | 2 | **16** |
-| 부분 완료 | 2 | 1 | **3** |
+| 완료 | 16 | 5 | **21** |
+| 부분 완료 | 3 | 1 | **4** |
 | 미구현 | 0 | 0 | **0** |
-| **합계** | **16** | **3** | **19** |
+| **합계** | **19** | **6** | **25** |
 
 ### 커버리지율
 
-- **전체 요구사항:** 19건
-- **완료:** 16건 (84.2%)
-- **부분 완료:** 3건 (15.8%)
+- **전체 요구사항:** 25건
+- **완료:** 21건 (84.0%)
+- **부분 완료:** 4건 (16.0%)
 - **미구현:** 0건 (0%)
 
 ### 부분 완료 항목 상세
@@ -87,10 +96,11 @@
 |----|----------|-------------|-----------------|
 | FR-006 | 독서기도 | 교부 독서 데이터 미완성, assembler 미등록, API에서 비활성화 | 1) 교부 독서 데이터 JSON 작성 2) officeOfReadings assembler 구현 3) API VALID_HOURS에 추가 |
 | FR-011 | 토요일 저녁 = 주일 1st Vespers | 로직 구현 완료, 전용 E2E 테스트 부재 | 토요일 vespers가 주일 propers를 사용하는지 검증하는 E2E 테스트 추가 |
+| FR-017 | PDF 페이지 참조 | 코드 구현 완료, 데이터 일부만 주석됨 (week-1 일요일 lauds만) | 나머지 JSON 파일에 page 번호 주석 추가 (week-2~4, propers, sanctoral, ordinarium) |
 | NFR-003 | Vercel 배포 | 코드 배포 가능 상태이나 `vercel.json` 미존재, 배포 검증 테스트 없음 | 1) Vercel 프로젝트 연결 확인 2) 프로덕션 배포 성공 확인 |
 
 ### E2E 테스트 통계
 
-- **테스트 파일:** 13개 (fixtures 포함 14개)
-- **테스트 케이스:** 약 55개 (terce/sext/none 반복 포함 약 67개)
+- **테스트 파일:** 15개 (E2E 14개 + fixtures, Vitest 10개)
+- **테스트 케이스:** E2E ~63개 + Vitest 74개 (terce/sext/none 반복 포함)
 - **테스트가 없는 요구사항:** 없음 (모든 요구사항에 최소 1개 이상의 테스트 존재, 단 FR-011은 간접 테스트만)

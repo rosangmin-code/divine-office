@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { assembleHour } from '@/lib/loth-service'
 import { PrayerRenderer } from '@/components/prayer-renderer'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { SettingsToggle } from '@/components/settings-toggle'
 import { Footer } from '@/components/footer'
 import { HourIcon } from '@/components/hour-icon'
 import type { HourType } from '@/lib/types'
@@ -76,7 +77,10 @@ export default async function PrayPage({
         >
           ← Бүх цагийн залбирал
         </Link>
-        <ThemeToggle />
+        <div className="flex items-center gap-1">
+          <SettingsToggle />
+          <ThemeToggle />
+        </div>
       </div>
 
       {/* Header */}

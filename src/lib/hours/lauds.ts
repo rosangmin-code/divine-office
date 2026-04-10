@@ -11,7 +11,7 @@ export const assembleLauds: HourAssembler = (ctx) => {
   }
 
   // 2. Hymn
-  sections.push({ type: 'hymn', text: ctx.mergedPropers.hymn ?? '' })
+  sections.push({ type: 'hymn', text: ctx.mergedPropers.hymn ?? '', page: ctx.mergedPropers.hymnPage })
 
   // 3. Psalmody
   if (ctx.assembledPsalms.length > 0) {
@@ -28,6 +28,7 @@ export const assembleLauds: HourAssembler = (ctx) => {
       type: 'responsory',
       versicle: ctx.mergedPropers.responsory.versicle,
       response: ctx.mergedPropers.responsory.response,
+      page: ctx.mergedPropers.responsory.page,
     })
   }
 
@@ -36,6 +37,7 @@ export const assembleLauds: HourAssembler = (ctx) => {
     'lauds',
     ctx.ordinarium.canticles,
     ctx.mergedPropers.gospelCanticleAntiphon ?? '',
+    ctx.mergedPropers.gospelCanticleAntiphonPage,
   )
   if (canticle) sections.push(canticle)
 
@@ -45,6 +47,7 @@ export const assembleLauds: HourAssembler = (ctx) => {
       type: 'intercessions',
       intro: '',
       items: ctx.mergedPropers.intercessions,
+      page: ctx.mergedPropers.intercessionsPage,
     })
   }
 
@@ -53,7 +56,7 @@ export const assembleLauds: HourAssembler = (ctx) => {
 
   // 9. Concluding Prayer
   if (ctx.mergedPropers.concludingPrayer) {
-    sections.push({ type: 'concludingPrayer', text: ctx.mergedPropers.concludingPrayer })
+    sections.push({ type: 'concludingPrayer', text: ctx.mergedPropers.concludingPrayer, page: ctx.mergedPropers.concludingPrayerPage })
   }
 
   // 10. Dismissal

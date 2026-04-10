@@ -1,4 +1,5 @@
 import type { AssembledPsalm } from '@/lib/types'
+import { PageRef } from './page-ref'
 
 export function PsalmBlock({ psalm }: { psalm: AssembledPsalm }) {
   return (
@@ -17,7 +18,7 @@ export function PsalmBlock({ psalm }: { psalm: AssembledPsalm }) {
           {psalm.psalmType === 'canticle' ? 'Магтаал дуу' : 'Дуулал'}
         </span>
         <h4 className="text-sm font-semibold text-stone-600 dark:text-stone-400">
-          {psalm.reference}
+          {psalm.reference} <PageRef page={psalm.page} />
         </h4>
         {psalm.title && (
           <p className="text-xs italic text-stone-500 dark:text-stone-500">{psalm.title}</p>

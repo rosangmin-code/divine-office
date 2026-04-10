@@ -91,13 +91,15 @@ export function getComplinePsalmody(day: DayOfWeek): PsalmEntry[] {
 
 export interface ComplineData {
   psalms: PsalmEntry[]
-  shortReading: { ref: string; text: string } | null
-  responsory: { versicle: string; response: string } | null
+  shortReading: { ref: string; text: string; page?: number } | null
+  responsory: { versicle: string; response: string; page?: number } | null
   nuncDimittisAntiphon: string
-  concludingPrayer: { primary: string; alternate?: string } | null
+  concludingPrayer: { primary: string; alternate?: string; page?: number } | null
   examen: string
-  blessing: { text: string; response: string } | null
-  marianAntiphon: { title: string; text: string }[]
+  examenPage?: number
+  blessing: { text: string; response: string; page?: number } | null
+  blessingPage?: number
+  marianAntiphon: { title: string; text: string; page?: number }[]
 }
 
 export function getFullComplineData(day: DayOfWeek): ComplineData {
@@ -120,12 +122,14 @@ export function getFullComplineData(day: DayOfWeek): ComplineData {
 
   return {
     psalms: (dayData.psalms as PsalmEntry[]) ?? [],
-    shortReading: (dayData.shortReading as { ref: string; text: string }) ?? null,
-    responsory: globalResponsory ?? null,
+    shortReading: (dayData.shortReading as { ref: string; text: string; page?: number }) ?? null,
+    responsory: globalResponsory as { versicle: string; response: string; page?: number } | null ?? null,
     nuncDimittisAntiphon: nuncDimittis?.antiphon ?? '',
-    concludingPrayer: (dayData.concludingPrayer as { primary: string; alternate?: string }) ?? null,
+    concludingPrayer: (dayData.concludingPrayer as { primary: string; alternate?: string; page?: number }) ?? null,
     examen: examen?.text ?? '',
-    blessing: blessing ?? null,
+    examenPage: (examen as { text: string; page?: number } | undefined)?.page,
+    blessing: blessing as { text: string; response: string; page?: number } | null ?? null,
+    blessingPage: (blessing as { text: string; response: string; page?: number } | undefined)?.page,
     marianAntiphon: marianOptions,
   }
 }

@@ -108,7 +108,7 @@ export function getSanctoralPropers(celebrationKey: string): SanctoralEntry | nu
 
 // --- Hymn loader ---
 
-interface HymnEntry { title: string; text: string }
+interface HymnEntry { title: string; text: string; page?: number }
 interface HymnsIndex {
   hymns: { number: number; title: string }[]
   seasonalAssignments: Record<string, Record<string, number[]>>

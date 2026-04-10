@@ -148,6 +148,7 @@ export async function assembleHour(
     const hymnData = getHymnForHour(day.season, day.weekOfSeason, dayOfWeek, hour)
     if (hymnData) {
       mergedPropers.hymn = hymnData.text
+      mergedPropers.hymnPage = hymnData.page
     }
   }
 

@@ -6,7 +6,7 @@ export const assembleVespers: HourAssembler = (ctx) => {
   const sections: HourSection[] = []
 
   // 1. Hymn
-  sections.push({ type: 'hymn', text: ctx.mergedPropers.hymn ?? '' })
+  sections.push({ type: 'hymn', text: ctx.mergedPropers.hymn ?? '', page: ctx.mergedPropers.hymnPage })
 
   // 2. Psalmody
   if (ctx.assembledPsalms.length > 0) {
@@ -23,6 +23,7 @@ export const assembleVespers: HourAssembler = (ctx) => {
       type: 'responsory',
       versicle: ctx.mergedPropers.responsory.versicle,
       response: ctx.mergedPropers.responsory.response,
+      page: ctx.mergedPropers.responsory.page,
     })
   }
 
@@ -31,6 +32,7 @@ export const assembleVespers: HourAssembler = (ctx) => {
     'vespers',
     ctx.ordinarium.canticles,
     ctx.mergedPropers.gospelCanticleAntiphon ?? '',
+    ctx.mergedPropers.gospelCanticleAntiphonPage,
   )
   if (canticle) sections.push(canticle)
 
@@ -40,6 +42,7 @@ export const assembleVespers: HourAssembler = (ctx) => {
       type: 'intercessions',
       intro: '',
       items: ctx.mergedPropers.intercessions,
+      page: ctx.mergedPropers.intercessionsPage,
     })
   }
 
@@ -48,7 +51,7 @@ export const assembleVespers: HourAssembler = (ctx) => {
 
   // 8. Concluding Prayer
   if (ctx.mergedPropers.concludingPrayer) {
-    sections.push({ type: 'concludingPrayer', text: ctx.mergedPropers.concludingPrayer })
+    sections.push({ type: 'concludingPrayer', text: ctx.mergedPropers.concludingPrayer, page: ctx.mergedPropers.concludingPrayerPage })
   }
 
   // 9. Dismissal

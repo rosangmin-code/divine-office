@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Noto_Sans, Noto_Serif } from 'next/font/google'
+import { SettingsProvider } from '@/lib/settings'
 import './globals.css'
 
 const notoSans = Noto_Sans({
@@ -56,7 +57,9 @@ export default function RootLayout({
       </head>
       <body className={`${notoSans.variable} ${notoSerif.variable} font-sans`}>
         <div className="flex min-h-screen flex-col bg-stone-50 text-stone-800 dark:bg-neutral-950 dark:text-stone-200 transition-colors">
-          <main className="flex-1">{children}</main>
+          <SettingsProvider>
+            <main className="flex-1">{children}</main>
+          </SettingsProvider>
         </div>
       </body>
     </html>

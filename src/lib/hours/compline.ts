@@ -34,11 +34,11 @@ export const assembleCompline: HourAssembler = (ctx) => {
 
   // 1. Examen of Conscience
   if (ctx.complineData?.examen) {
-    sections.push({ type: 'examen', text: ctx.complineData.examen })
+    sections.push({ type: 'examen', text: ctx.complineData.examen, page: ctx.complineData.examenPage })
   }
 
   // 2. Hymn
-  sections.push({ type: 'hymn', text: ctx.mergedPropers.hymn ?? '' })
+  sections.push({ type: 'hymn', text: ctx.mergedPropers.hymn ?? '', page: ctx.mergedPropers.hymnPage })
 
   // 3. Psalmody
   if (ctx.assembledPsalms.length > 0) {
@@ -55,6 +55,7 @@ export const assembleCompline: HourAssembler = (ctx) => {
       type: 'responsory',
       versicle: ctx.mergedPropers.responsory.versicle,
       response: ctx.mergedPropers.responsory.response,
+      page: ctx.mergedPropers.responsory.page,
     })
   }
 
@@ -63,12 +64,13 @@ export const assembleCompline: HourAssembler = (ctx) => {
     'compline',
     ctx.ordinarium.canticles,
     ctx.mergedPropers.gospelCanticleAntiphon ?? '',
+    ctx.mergedPropers.gospelCanticleAntiphonPage,
   )
   if (canticle) sections.push(canticle)
 
   // 7. Concluding Prayer
   if (ctx.mergedPropers.concludingPrayer) {
-    sections.push({ type: 'concludingPrayer', text: ctx.mergedPropers.concludingPrayer })
+    sections.push({ type: 'concludingPrayer', text: ctx.mergedPropers.concludingPrayer, page: ctx.mergedPropers.concludingPrayerPage })
   }
 
   // 8. Blessing
@@ -77,6 +79,7 @@ export const assembleCompline: HourAssembler = (ctx) => {
       type: 'blessing',
       text: ctx.complineData.blessing.text,
       response: ctx.complineData.blessing.response,
+      page: ctx.complineData.blessingPage,
     })
   }
 
@@ -87,6 +90,7 @@ export const assembleCompline: HourAssembler = (ctx) => {
       type: 'marianAntiphon',
       title: marian.title,
       text: marian.text,
+      page: (marian as { title: string; text: string; page?: number }).page,
     })
   }
 
