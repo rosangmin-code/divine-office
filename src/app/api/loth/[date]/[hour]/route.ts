@@ -4,7 +4,9 @@ import type { HourType } from '@/lib/types'
 
 const VALID_HOURS: HourType[] = [
   // officeOfReadings: 교부 독서 데이터 미완성으로 임시 비활성화
-  'lauds', 'terce', 'sext', 'none', 'vespers', 'compline',
+  'lauds',
+  // terce, sext, none: 낮기도 propers 데이터 미완성으로 임시 비활성화
+  'vespers', 'compline',
 ]
 
 export async function GET(

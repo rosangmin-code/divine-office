@@ -8,7 +8,8 @@ import type { HourType } from '@/lib/types'
 import { BORDER_COLOR_CLASSES } from '@/lib/liturgical-colors'
 
 const VALID_HOURS: HourType[] = [
-  'officeOfReadings', 'lauds', 'terce', 'sext', 'none', 'vespers', 'compline',
+  // officeOfReadings, terce, sext, none: 데이터 미완성으로 임시 비활성화
+  'lauds', 'vespers', 'compline',
 ]
 
 const HOUR_NAMES_MN: Record<HourType, string> = {
