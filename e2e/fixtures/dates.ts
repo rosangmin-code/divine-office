@@ -52,12 +52,12 @@ export const ACTIVE_HOURS = ['lauds', 'vespers', 'compline'] as const
 
 export const HOUR_NAMES_MN: Record<string, string> = {
   officeOfReadings: 'Уншлагын залбирал',
-  lauds: 'Өглөөний залбирал',
+  lauds: 'Өглөөний даатгал залбирал',
   terce: 'Гуравдугаар цагийн залбирал',
   sext: 'Зургадугаар цагийн залбирал',
   none: 'Есдүгээр цагийн залбирал',
-  vespers: 'Оройн залбирал',
-  compline: 'Шөнийн залбирал',
+  vespers: 'Оройн даатгал залбирал',
+  compline: 'Шөнийн даатгал залбирал',
 }
 
 export const SEASON_NAMES_MN: Record<string, string> = {

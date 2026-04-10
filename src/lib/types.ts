@@ -58,12 +58,12 @@ export type DayOfWeek = 'SUN' | 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT'
 
 export const HOUR_NAMES_MN: Record<HourType, string> = {
   officeOfReadings: 'Уншлагын залбирал',
-  lauds: 'Өглөөний залбирал',
+  lauds: 'Өглөөний даатгал залбирал',
   terce: 'Гуравдугаар цагийн залбирал',
   sext: 'Зургадугаар цагийн залбирал',
   none: 'Есдүгээр цагийн залбирал',
-  vespers: 'Оройн залбирал',
-  compline: 'Шөнийн залбирал',
+  vespers: 'Оройн даатгал залбирал',
+  compline: 'Шөнийн даатгал залбирал',
 }
 
 export const DAY_NAMES_MN: Record<DayOfWeek, string> = {
@@ -182,13 +182,15 @@ export interface AssembledPsalm {
   reference: string
   title?: string
   antiphon: string
-  verses: { verse: number; text: string }[]
+  verses: { verse: number; text: string }[]  // fallback when stanzas unavailable
+  stanzas?: string[][]                        // poetic lines grouped by stanza (from PDF source)
   gloriaPatri: boolean
   page?: number                  // Source PDF page number
 }
 
 export type HourSection =
-  | { type: 'invitatory'; versicle: string; response: string; page?: number }
+  | { type: 'invitatory'; versicle: string; response: string; antiphon: string; psalm: { ref: string; title: string; epigraph?: string; stanzas: string[][] }; gloryBe: string; page?: number }
+  | { type: 'openingVersicle'; versicle: string; response: string; gloryBe: string; alleluia?: string }
   | { type: 'hymn'; text: string; page?: number }
   | { type: 'psalmody'; psalms: AssembledPsalm[] }
   | { type: 'shortReading'; ref: string; bookMn: string; verses: { verse: number; text: string }[]; page?: number }
@@ -197,7 +199,7 @@ export type HourSection =
   | { type: 'intercessions'; intro: string; items: string[]; page?: number }
   | { type: 'ourFather' }
   | { type: 'concludingPrayer'; text: string; page?: number }
-  | { type: 'dismissal' }
+  | { type: 'dismissal'; priest: { greeting: { versicle: string; response: string }; blessing: { text: string; response: string }; dismissalVersicle: { versicle: string; response: string } }; individual: { versicle: string; response: string } }
   | { type: 'patristicReading'; author: string; source: string; text: string; page?: number }
   | { type: 'examen'; text: string; page?: number }
   | { type: 'blessing'; text: string; response: string; page?: number }

@@ -32,9 +32,21 @@ function makeContext(overrides: Partial<HourContext> = {}): HourContext {
       concludingPrayer: 'Primary prayer',
     } as HourPropers,
     ordinarium: {
-      invitatory: { openingVersicle: { versicle: 'V', response: 'R' }, psalms: [] },
+      invitatory: {
+        openingVersicle: { versicle: 'V', response: 'R' },
+        invitatoryPsalms: [{ ref: 'Psalm 95:1-11', title: 'Test', stanzas: [['l1']] }],
+        gloryBe: { text: 'Glory Be', shortText: 'Glory' },
+      },
+      invitatoryAntiphons: {
+        ordinaryTime: { odd: { SUN: 'A' }, even: { SUN: 'B' } },
+        advent: { default: 'A' }, christmas: { default: 'C' },
+        lent: { default: 'L' }, easter: { default: 'E' }, feasts: {},
+      },
       canticles: { nuncDimittis: { ref: 'Luke 2:29-32', titleMn: 'Nunc Dimittis' } },
-      commonPrayers: {},
+      commonPrayers: {
+        openingVersicle: { versicle: 'V: God', response: 'R: Help', gloryBe: 'Glory', alleluia: 'Alleluia' },
+        dismissal: { priest: { greeting: { versicle: 'V', response: 'R' }, blessing: { text: 'B', response: 'A' }, dismissalVersicle: { versicle: 'V', response: 'R' } }, individual: { versicle: 'V', response: 'R' } },
+      },
       complineData: {},
     },
     isFirstHourOfDay: false,
@@ -48,14 +60,14 @@ describe('assembleCompline', () => {
     const sections = assembleCompline(makeContext())
     const types = sections.map((s) => s.type)
     expect(types).toEqual([
-      'examen', 'hymn', 'psalmody', 'shortReading', 'responsory',
+      'openingVersicle', 'examen', 'hymn', 'psalmody', 'shortReading', 'responsory',
       'gospelCanticle', 'concludingPrayer', 'blessing', 'marianAntiphon',
     ])
   })
 
-  it('starts with examen', () => {
+  it('starts with openingVersicle', () => {
     const sections = assembleCompline(makeContext())
-    expect(sections[0].type).toBe('examen')
+    expect(sections[0].type).toBe('openingVersicle')
   })
 
   it('ends with marianAntiphon', () => {

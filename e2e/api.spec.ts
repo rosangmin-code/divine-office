@@ -50,7 +50,7 @@ test.describe('GET /api/loth/[date]/[hour]', () => {
 
     const body = await res.json()
     expect(body.hourType).toBe('lauds')
-    expect(body.hourNameMn).toBe('Өглөөний залбирал')
+    expect(body.hourNameMn).toBe('Өглөөний даатгал залбирал')
     expect(body.date).toBe(DATES.ordinaryWeekday)
     expect(body.liturgicalDay).toBeTruthy()
     expect(body.sections).toBeInstanceOf(Array)

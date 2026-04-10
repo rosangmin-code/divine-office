@@ -1,11 +1,14 @@
 import type { HourSection } from '../types'
 import type { HourAssembler } from './types'
-import { resolveShortReading, resolveGospelCanticle } from './shared'
+import { buildOpeningVersicle, buildDismissal, resolveShortReading, resolveGospelCanticle } from './shared'
 
 export const assembleVespers: HourAssembler = (ctx) => {
   const sections: HourSection[] = []
 
-  // 1. Hymn
+  // 1. Opening Versicle (Deus, in adiutorium)
+  sections.push(buildOpeningVersicle(ctx.ordinarium, ctx.liturgicalDay.season))
+
+  // 2. Hymn
   sections.push({ type: 'hymn', text: ctx.mergedPropers.hymn ?? '', page: ctx.mergedPropers.hymnPage })
 
   // 2. Psalmody
@@ -55,7 +58,7 @@ export const assembleVespers: HourAssembler = (ctx) => {
   }
 
   // 9. Dismissal
-  sections.push({ type: 'dismissal' })
+  sections.push(buildDismissal(ctx.ordinarium))
 
   return sections
 }

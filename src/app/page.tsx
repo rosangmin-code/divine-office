@@ -78,6 +78,17 @@ export default async function HomePage({
       {/* Hour cards — Client Component for time-based status */}
       <HourCardList hours={hours} dateStr={dateStr} isToday={isToday} />
 
+      {/* Guide link */}
+      <div className="mt-6 text-center">
+        <Link
+          href="/guide"
+          className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm text-stone-600 hover:bg-stone-200 dark:text-stone-400 dark:hover:bg-stone-700 transition-colors"
+        >
+          <span className="text-base">📖</span>
+          Залбиралт цагийн заавар
+        </Link>
+      </div>
+
       {/* Footer */}
       <Footer />
     </div>

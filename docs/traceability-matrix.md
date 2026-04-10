@@ -35,6 +35,7 @@
 | FR-017 | PDF 페이지 참조 표시 | FR-017 | [PRD §7](../PRD.md#7-pdf-페이지-참조-기능) | `src/components/page-ref.tsx` — PageRef 조건부 렌더링 (`'use client'`, `useSettings()`로 `showPageRefs` 확인)<br>`src/components/prayer-renderer.tsx` — 11개 섹션 컴포넌트에 `<PageRef page={section.page} />` 삽입<br>`src/components/psalm-block.tsx` — 시편 참조 옆 `<PageRef page={psalm.page} />`<br>`src/lib/types.ts` — `PsalmEntry`, `ShortReading`, `Responsory`, `AssembledPsalm`, `HourSection` 11개 variant에 `page?: number`<br>`src/lib/hours/shared.ts` — `resolvePsalm()`, `resolveShortReading()`, `resolveGospelCanticle()`에 page 전파<br>`src/lib/hours/{lauds,vespers,compline,daytime-prayer}.ts` — section 생성 시 page 전달<br>`src/data/loth/psalter/week-1.json` — 일요일 lauds page 주석 (샘플) | `e2e/page-references.spec.ts` — 8개 테스트: 기본 숨김, 토글 ON/OFF, 영구 저장, 시편/복수 섹션, 접근성<br>`src/lib/__tests__/hours/page-propagation.test.ts` — 10개 테스트: 각 assembler page 전파 검증 | 완료 (데이터 일부) |
 | FR-018 | 페이지 참조 토글 설정 | FR-018 | [PRD §7](../PRD.md#7-pdf-페이지-참조-기능) | `src/lib/settings.tsx` — `SettingsProvider` React Context + `useSettings()` hook, localStorage `loth-settings` 키<br>`src/components/settings-toggle.tsx` — 책 아이콘 토글 버튼, `aria-pressed`, active 시 빨간색 배경<br>`src/components/page-ref.tsx` — `showPageRefs` false면 null 반환 | `e2e/page-references.spec.ts` — 테스트 #1,2,3,4,5,8 | 완료 |
 | FR-019 | 설정 시스템 기반 | FR-019 | [PRD §7](../PRD.md#7-pdf-페이지-참조-기능) | `src/lib/settings.tsx` — Context + localStorage, `hydrated` 상태로 SSR 불일치 방지<br>`src/app/layout.tsx` — `<SettingsProvider>` 래핑<br>`src/app/pray/[date]/[hour]/page.tsx` — `<SettingsToggle />` 배치 | `e2e/page-references.spec.ts` — 테스트 #2,5 | 완료 |
+| FR-020 | 가이드 페이지 렌더링 (GILH) | FR-100~102 | [guide](modules/guide.md) | `src/data/loth/gilh.json` — 구조화된 GILH 데이터 (서문, 소개 §1-§11, 루브리카, 각주 28개)<br>`src/app/guide/page.tsx` — 가이드 읽기 페이지 (Server Component, 정적 생성): 목차(Гарчиг) + 3개 섹션 + 각주<br>`src/app/page.tsx` — 홈페이지에 가이드 링크 추가 | `e2e/guide.spec.ts` — 8개 테스트: 목차 렌더링, 앵커 이동, 서문 표시, §번호 소개, 루브리카 구조, 각주 역참조, 홈 링크, 다크모드 | 완료 |
 
 ### 비기능 요구사항 (Non-Functional Requirements)
 
@@ -68,6 +69,7 @@
 | `e2e/date-navigation.spec.ts` | FR-016 |
 | `e2e/page-references.spec.ts` | FR-017, FR-018, FR-019, NFR-007, NFR-008 |
 | `src/lib/__tests__/hours/page-propagation.test.ts` | FR-017, NFR-009 |
+| `e2e/guide.spec.ts` | FR-020 |
 | `e2e/fixtures/dates.ts` | (테스트 데이터 — 모든 E2E 공통) |
 
 ---
@@ -78,16 +80,16 @@
 
 | 상태 | 기능 요구사항 | 비기능 요구사항 | 합계 |
 |------|:------------:|:---------------:|:----:|
-| 완료 | 16 | 5 | **21** |
+| 완료 | 17 | 5 | **22** |
 | 부분 완료 | 3 | 1 | **4** |
 | 미구현 | 0 | 0 | **0** |
-| **합계** | **19** | **6** | **25** |
+| **합계** | **20** | **6** | **26** |
 
 ### 커버리지율
 
-- **전체 요구사항:** 25건
-- **완료:** 21건 (84.0%)
-- **부분 완료:** 4건 (16.0%)
+- **전체 요구사항:** 26건
+- **완료:** 22건 (84.6%)
+- **부분 완료:** 4건 (15.4%)
 - **미구현:** 0건 (0%)
 
 ### 부분 완료 항목 상세
@@ -101,6 +103,6 @@
 
 ### E2E 테스트 통계
 
-- **테스트 파일:** 15개 (E2E 14개 + fixtures, Vitest 10개)
-- **테스트 케이스:** E2E ~63개 + Vitest 74개 (terce/sext/none 반복 포함)
+- **테스트 파일:** 16개 (E2E 15개 + fixtures, Vitest 10개)
+- **테스트 케이스:** E2E ~71개 + Vitest 74개 (terce/sext/none 반복 포함)
 - **테스트가 없는 요구사항:** 없음 (모든 요구사항에 최소 1개 이상의 테스트 존재, 단 FR-011은 간접 테스트만)

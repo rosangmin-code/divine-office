@@ -10,13 +10,37 @@ import type { ComplineData } from '../psalter-loader'
 
 // --- Ordinarium data shape (loaded from JSON) ---
 
+export interface InvitatoryPsalmData {
+  ref: string
+  title: string
+  epigraph?: string
+  stanzas: string[][]
+}
+
+export interface InvitatoryAntiphons {
+  ordinaryTime: {
+    odd: Record<string, string>
+    even: Record<string, string>
+  }
+  advent: Record<string, string>
+  christmas: Record<string, string>
+  lent: Record<string, string>
+  easter: Record<string, string>
+  feasts: Record<string, string>
+}
+
 export interface Ordinarium {
   invitatory: {
     openingVersicle: { versicle: string; response: string }
-    psalms: unknown[]
+    invitatoryPsalms: InvitatoryPsalmData[]
+    gloryBe: { text: string; shortText: string }
   }
+  invitatoryAntiphons: InvitatoryAntiphons
   canticles: Record<string, { ref: string; titleMn: string }>
-  commonPrayers: Record<string, unknown>
+  commonPrayers: {
+    openingVersicle: { versicle: string; response: string; gloryBe: string; alleluia: string }
+    [key: string]: unknown
+  }
   complineData: Record<string, unknown>
 }
 

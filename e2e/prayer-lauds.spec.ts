@@ -7,7 +7,7 @@ test.describe('Lauds (Morning Prayer) page', () => {
   })
 
   test('has correct header with hour name and liturgical info', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: 'Өглөөний залбирал' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Өглөөний даатгал залбирал' })).toBeVisible()
     await expect(page.getByText(DATES.ordinaryWeekday)).toBeVisible()
   })
 
@@ -16,16 +16,16 @@ test.describe('Lauds (Morning Prayer) page', () => {
     await expect(page.getByText('Нээлтийн залбирал')).toBeVisible()
 
     // Hymn
-    await expect(page.getByText('Магтаал дуу', { exact: true })).toBeVisible()
+    await expect(page.getByText('Магтуу', { exact: true })).toBeVisible()
 
     // Psalmody (psalm blocks with "Ant." markers)
     await expect(page.locator('text=Ant.').first()).toBeVisible()
 
     // Gospel Canticle - Benedictus
-    await expect(page.getByText('Захариагийн магтаал дуу (Benedictus)')).toBeVisible()
+    await expect(page.getByText('Захариагийн магтаал')).toBeVisible()
 
     // Our Father (always present for lauds)
-    await expect(page.getByText('Эзэний залбирал', { exact: true })).toBeVisible()
+    await expect(page.getByText('Эзэний даатгал залбирал', { exact: true })).toBeVisible()
 
     // Dismissal
     await expect(page.getByText('Эзэн биднийг адислаж')).toBeVisible()
@@ -44,11 +44,11 @@ test.describe('Lauds (Morning Prayer) page', () => {
   })
 
   test('has intercessions section', async ({ page }) => {
-    await expect(page.getByText('Залбирлын дуудлага')).toBeVisible()
+    await expect(page.getByText('Гүйлтын залбирал')).toBeVisible()
   })
 
   test('has concluding prayer section', async ({ page }) => {
-    await expect(page.getByText('Төгсгөлийн залбирал')).toBeVisible()
+    await expect(page.getByText('Төгсгөлийн даатгал залбирал')).toBeVisible()
   })
 
   test('bottom back button navigates to homepage', async ({ page }) => {

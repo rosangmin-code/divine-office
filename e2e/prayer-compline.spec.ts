@@ -7,7 +7,7 @@ test.describe('Compline (Night Prayer) page', () => {
   })
 
   test('has correct header', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: 'Шөнийн залбирал' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Шөнийн даатгал залбирал' })).toBeVisible()
   })
 
   test('does NOT have invitatory', async ({ page }) => {
@@ -15,19 +15,19 @@ test.describe('Compline (Night Prayer) page', () => {
   })
 
   test('has Nunc Dimittis gospel canticle', async ({ page }) => {
-    await expect(page.getByText('Симеоны магтаал дуу (Nunc Dimittis)')).toBeVisible()
+    await expect(page.getByText('Сайнмэдээний айлдлын магтаал')).toBeVisible()
   })
 
   test('does NOT have intercessions', async ({ page }) => {
-    await expect(page.getByText('Залбирлын дуудлага')).not.toBeVisible()
+    await expect(page.getByText('Гүйлтын залбирал')).not.toBeVisible()
   })
 
   test('does NOT have Our Father', async ({ page }) => {
-    await expect(page.getByText('Эзэний залбирал')).not.toBeVisible()
+    await expect(page.getByText('Эзэний даатгал залбирал')).not.toBeVisible()
   })
 
   test('has hymn, psalmody, blessing', async ({ page }) => {
-    await expect(page.getByText('Магтаал дуу', { exact: true })).toBeVisible()
+    await expect(page.getByText('Магтуу', { exact: true })).toBeVisible()
     await expect(page.locator('text=Дуулал').first()).toBeVisible()
     // Compline uses "Адислал" (blessing) instead of standard dismissal
     await expect(page.getByText('Адислал')).toBeVisible()

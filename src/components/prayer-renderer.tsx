@@ -10,15 +10,73 @@ function SectionDivider() {
   )
 }
 
+function AntiphonBox({ text }: { text: string }) {
+  return (
+    <div className="my-2 rounded-lg bg-amber-50 dark:bg-amber-950 px-4 py-2 text-sm italic text-amber-900 dark:text-amber-200">
+      <span className="font-semibold not-italic">Ant. </span>{text}
+    </div>
+  )
+}
+
 function InvitatorySection({ section }: { section: Extract<HourSection, { type: 'invitatory' }> }) {
   return (
-    <section aria-label="Нээлтийн залбирал" className="mb-4 rounded-lg bg-stone-100 dark:bg-stone-800 p-4">
-      <p className="text-sm font-semibold text-red-700 dark:text-red-400">Нээлтийн залбирал <PageRef page={section.page} /></p>
+    <section aria-label="Урих дуудлага" className="mb-4">
+      {/* Opening versicle */}
+      <div className="rounded-lg bg-stone-100 dark:bg-stone-800 p-4">
+        <p className="text-sm font-semibold text-red-700 dark:text-red-400">Урих дуудлага <PageRef page={section.page} /></p>
+        <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">
+          <abbr title="Ишлэл" className="font-medium text-red-700 dark:text-red-400 no-underline">V. </abbr>{section.versicle}
+        </p>
+        <p className="font-serif text-stone-800 dark:text-stone-200">
+          <abbr title="Хариу" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>{section.response}
+        </p>
+      </div>
+
+      {/* Invitatory antiphon */}
+      <AntiphonBox text={section.antiphon} />
+
+      {/* Psalm header */}
+      <p className="mt-3 text-sm font-semibold text-red-700 dark:text-red-400">
+        {section.psalm.ref.replace('Psalm', 'Дуулал')}
+      </p>
+      <p className="text-xs italic text-stone-500 dark:text-stone-400">{section.psalm.title}</p>
+      {section.psalm.epigraph && (
+        <p className="mt-1 text-xs italic text-stone-500 dark:text-stone-400">{section.psalm.epigraph}</p>
+      )}
+
+      {/* Psalm stanzas with antiphon repeated between each */}
+      {section.psalm.stanzas.map((stanza, si) => (
+        <div key={si}>
+          <div className="mt-3 space-y-1 pl-2">
+            {stanza.map((line, li) => (
+              <p key={li} className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">{line}</p>
+            ))}
+          </div>
+          <AntiphonBox text={section.antiphon} />
+        </div>
+      ))}
+
+      {/* Glory Be */}
+      <div className="mt-3 space-y-1 pl-2">
+        <p className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">{section.gloryBe}</p>
+      </div>
+      <AntiphonBox text={section.antiphon} />
+    </section>
+  )
+}
+
+function OpeningVersicleSection({ section }: { section: Extract<HourSection, { type: 'openingVersicle' }> }) {
+  return (
+    <section aria-label="Удиртгал" className="mb-4 rounded-lg bg-stone-100 dark:bg-stone-800 p-4">
+      <p className="text-sm font-semibold text-red-700 dark:text-red-400">Удиртгал</p>
       <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">
         <abbr title="Ишлэл" className="font-medium text-red-700 dark:text-red-400 no-underline">V. </abbr>{section.versicle}
       </p>
       <p className="font-serif text-stone-800 dark:text-stone-200">
         <abbr title="Хариу" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>{section.response}
+      </p>
+      <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">
+        {section.gloryBe}{section.alleluia ? ` ${section.alleluia}` : ''}
       </p>
     </section>
   )
@@ -27,15 +85,15 @@ function InvitatorySection({ section }: { section: Extract<HourSection, { type: 
 function HymnSection({ section }: { section: Extract<HourSection, { type: 'hymn' }> }) {
   if (!section.text) {
     return (
-      <section aria-label="Магтаал дуу" className="mb-4">
-        <p className="text-sm font-semibold text-red-700 dark:text-red-400">Магтаал дуу</p>
+      <section aria-label="Магтуу" className="mb-4">
+        <p className="text-sm font-semibold text-red-700 dark:text-red-400">Магтуу</p>
         <p className="mt-1 text-sm italic text-stone-500 dark:text-stone-400" role="note">[Орчуулга хийгдэж байна]</p>
       </section>
     )
   }
   return (
-    <section aria-label="Магтаал дуу" className="mb-4">
-      <p className="text-sm font-semibold text-red-700 dark:text-red-400">Магтаал дуу <PageRef page={section.page} /></p>
+    <section aria-label="Магтуу" className="mb-4">
+      <p className="text-sm font-semibold text-red-700 dark:text-red-400">Магтуу <PageRef page={section.page} /></p>
       <div className="mt-2 whitespace-pre-line font-serif text-stone-800 dark:text-stone-200">{section.text}</div>
     </section>
   )
@@ -43,7 +101,7 @@ function HymnSection({ section }: { section: Extract<HourSection, { type: 'hymn'
 
 function PsalmodySection({ section }: { section: Extract<HourSection, { type: 'psalmody' }> }) {
   return (
-    <section aria-label="Дуулал">
+    <section aria-label="Дууллын залбирал">
       {section.psalms.map((psalm, i) => (
         <PsalmBlock key={i} psalm={psalm} />
       ))}
@@ -53,8 +111,8 @@ function PsalmodySection({ section }: { section: Extract<HourSection, { type: 'p
 
 function ShortReadingSection({ section }: { section: Extract<HourSection, { type: 'shortReading' }> }) {
   return (
-    <section aria-label="Богино уншлага" className="mb-4">
-      <p className="text-sm font-semibold text-red-700 dark:text-red-400">Богино уншлага <PageRef page={section.page} /></p>
+    <section aria-label="Уншлага" className="mb-4">
+      <p className="text-sm font-semibold text-red-700 dark:text-red-400">Уншлага <PageRef page={section.page} /></p>
       <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
         {section.bookMn && `${section.bookMn} — `}{section.ref}
       </p>
@@ -72,8 +130,8 @@ function ShortReadingSection({ section }: { section: Extract<HourSection, { type
 
 function ResponsorySection({ section }: { section: Extract<HourSection, { type: 'responsory' }> }) {
   return (
-    <section aria-label="Хариу дуулал" className="mb-4">
-      <p className="text-sm font-semibold text-red-700 dark:text-red-400">Хариу дуулал <PageRef page={section.page} /></p>
+    <section aria-label="Хариу залбирал" className="mb-4">
+      <p className="text-sm font-semibold text-red-700 dark:text-red-400">Хариу залбирал <PageRef page={section.page} /></p>
       <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">
         <abbr title="Ишлэл" className="font-medium text-red-700 dark:text-red-400 no-underline">V. </abbr>{section.versicle}
       </p>
@@ -86,9 +144,9 @@ function ResponsorySection({ section }: { section: Extract<HourSection, { type: 
 
 function GospelCanticleSection({ section }: { section: Extract<HourSection, { type: 'gospelCanticle' }> }) {
   const canticleNames: Record<string, string> = {
-    benedictus: 'Захариагийн магтаал дуу (Benedictus)',
-    magnificat: 'Мариагийн магтаал дуу (Magnificat)',
-    nuncDimittis: 'Симеоны магтаал дуу (Nunc Dimittis)',
+    benedictus: 'Захариагийн магтаал',
+    magnificat: 'Мариагийн магтаал',
+    nuncDimittis: 'Сайнмэдээний айлдлын магтаал',
   }
 
   return (
@@ -126,15 +184,15 @@ function GospelCanticleSection({ section }: { section: Extract<HourSection, { ty
 function IntercessionsSection({ section }: { section: Extract<HourSection, { type: 'intercessions' }> }) {
   if (section.items.length === 0) {
     return (
-      <section aria-label="Залбирлын дуудлага" className="mb-4">
-        <p className="text-sm font-semibold text-red-700 dark:text-red-400">Залбирлын дуудлага</p>
+      <section aria-label="Гүйлтын залбирал" className="mb-4">
+        <p className="text-sm font-semibold text-red-700 dark:text-red-400">Гүйлтын залбирал</p>
         <p className="mt-1 text-sm italic text-stone-500 dark:text-stone-400" role="note">[Орчуулга хийгдэж байна]</p>
       </section>
     )
   }
   return (
-    <section aria-label="Залбирлын дуудлага" className="mb-4">
-      <p className="text-sm font-semibold text-red-700 dark:text-red-400">Залбирлын дуудлага <PageRef page={section.page} /></p>
+    <section aria-label="Гүйлтын залбирал" className="mb-4">
+      <p className="text-sm font-semibold text-red-700 dark:text-red-400">Гүйлтын залбирал <PageRef page={section.page} /></p>
       {section.intro && (
         <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">{section.intro}</p>
       )}
@@ -149,8 +207,8 @@ function IntercessionsSection({ section }: { section: Extract<HourSection, { typ
 
 function OurFatherSection() {
   return (
-    <section aria-label="Эзэний залбирал" className="mb-4">
-      <p className="text-sm font-semibold text-red-700 dark:text-red-400">Эзэний залбирал</p>
+    <section aria-label="Эзэний даатгал залбирал" className="mb-4">
+      <p className="text-sm font-semibold text-red-700 dark:text-red-400">Эзэний даатгал залбирал</p>
       <p className="mt-2 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
         Тэнгэр дэх Эцэг маань, Таны нэр ариун байх болтугай. Таны хаанчлал ирэх болтугай.
         Таны хүсэл тэнгэрт шиг газар дээр биелэх болтугай. Өнөөдрийн өдөр тутмын талхаа
@@ -164,22 +222,46 @@ function OurFatherSection() {
 
 function ConcludingPrayerSection({ section }: { section: Extract<HourSection, { type: 'concludingPrayer' }> }) {
   return (
-    <section aria-label="Төгсгөлийн залбирал" className="mb-4">
-      <p className="text-sm font-semibold text-red-700 dark:text-red-400">Төгсгөлийн залбирал <PageRef page={section.page} /></p>
+    <section aria-label="Төгсгөлийн даатгал залбирал" className="mb-4">
+      <p className="text-sm font-semibold text-red-700 dark:text-red-400">Төгсгөлийн даатгал залбирал <PageRef page={section.page} /></p>
       <p className="mt-2 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">{section.text}</p>
     </section>
   )
 }
 
-function DismissalSection() {
+function DismissalSection({ section }: { section: Extract<HourSection, { type: 'dismissal' }> }) {
   return (
     <section aria-label="Илгээлт" className="mb-4 rounded-lg bg-stone-100 dark:bg-stone-800 p-4">
+      <p className="text-sm font-semibold text-red-700 dark:text-red-400 mb-2">Төгсгөл</p>
+
+      {/* Priest form */}
+      <div className="mb-3 border-b border-stone-200 dark:border-stone-700 pb-3">
+        <p className="text-xs text-stone-500 dark:text-stone-400 mb-1 italic">Санваартан эсвэл тахилч удирдаж байгаа бол:</p>
+        <p className="font-serif text-stone-800 dark:text-stone-200">
+          <abbr title="Ишлэл" className="font-medium text-red-700 dark:text-red-400 no-underline">V. </abbr>{section.priest.greeting.versicle}
+        </p>
+        <p className="font-serif text-stone-800 dark:text-stone-200">
+          <abbr title="Хариу" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>{section.priest.greeting.response}
+        </p>
+        <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">{section.priest.blessing.text}</p>
+        <p className="font-serif text-stone-800 dark:text-stone-200">
+          <abbr title="Хариу" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>{section.priest.blessing.response}
+        </p>
+        <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">
+          <abbr title="Ишлэл" className="font-medium text-red-700 dark:text-red-400 no-underline">V. </abbr>{section.priest.dismissalVersicle.versicle}
+        </p>
+        <p className="font-serif text-stone-800 dark:text-stone-200">
+          <abbr title="Хариу" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>{section.priest.dismissalVersicle.response}
+        </p>
+      </div>
+
+      {/* Individual form */}
+      <p className="text-xs text-stone-500 dark:text-stone-400 mb-1 italic">Хувийн уншлагын үед:</p>
       <p className="font-serif text-stone-800 dark:text-stone-200">
-        <abbr title="Ишлэл" className="font-medium text-red-700 dark:text-red-400 no-underline">V. </abbr>
-        Эзэн биднийг адислаж, бүх бузар муугаас хамгаалж, мөнх амьдрал руу хөтлөх болтугай.
+        <abbr title="Ишлэл" className="font-medium text-red-700 dark:text-red-400 no-underline">V. </abbr>{section.individual.versicle}
       </p>
       <p className="font-serif text-stone-800 dark:text-stone-200">
-        <abbr title="Хариу" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>Амэн.
+        <abbr title="Хариу" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>{section.individual.response}
       </p>
     </section>
   )
@@ -243,6 +325,7 @@ export function PrayerRenderer({ hour }: { hour: AssembledHour }) {
           <div key={i} className={spacing} style={{ animation: `fadeIn 0.3s ease-out ${i * 0.05}s both` }}>
             {showDivider && <SectionDivider />}
             {section.type === 'invitatory' && <InvitatorySection section={section} />}
+            {section.type === 'openingVersicle' && <OpeningVersicleSection section={section} />}
             {section.type === 'hymn' && <HymnSection section={section} />}
             {section.type === 'psalmody' && <PsalmodySection section={section} />}
             {section.type === 'shortReading' && <ShortReadingSection section={section} />}
@@ -251,7 +334,7 @@ export function PrayerRenderer({ hour }: { hour: AssembledHour }) {
             {section.type === 'intercessions' && <IntercessionsSection section={section} />}
             {section.type === 'ourFather' && <OurFatherSection />}
             {section.type === 'concludingPrayer' && <ConcludingPrayerSection section={section} />}
-            {section.type === 'dismissal' && <DismissalSection />}
+            {section.type === 'dismissal' && <DismissalSection section={section} />}
             {section.type === 'patristicReading' && <PatristicReadingSection section={section} />}
             {section.type === 'examen' && <ExamenSection section={section} />}
             {section.type === 'blessing' && <BlessingSection section={section} />}

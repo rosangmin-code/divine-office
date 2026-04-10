@@ -27,7 +27,7 @@ test.describe('Prayer section detail rendering', () => {
   test.describe('Hymn section', () => {
     test('hymn renders label', async ({ page }) => {
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
-      await expect(page.getByText('Магтаал дуу', { exact: true })).toBeVisible()
+      await expect(page.getByText('Магтуу', { exact: true })).toBeVisible()
     })
   })
 
@@ -35,7 +35,7 @@ test.describe('Prayer section detail rendering', () => {
     test('contains the full prayer text', async ({ page }) => {
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
 
-      await expect(page.getByText('Эзэний залбирал', { exact: true })).toBeVisible()
+      await expect(page.getByText('Эзэний даатгал залбирал', { exact: true })).toBeVisible()
       await expect(page.getByText('Тэнгэр дэх Эцэг маань')).toBeVisible()
     })
   })

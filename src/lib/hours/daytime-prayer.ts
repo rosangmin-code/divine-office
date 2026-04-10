@@ -1,6 +1,6 @@
 import type { HourSection } from '../types'
 import type { HourAssembler } from './types'
-import { resolveShortReading } from './shared'
+import { buildOpeningVersicle, buildDismissal, resolveShortReading } from './shared'
 
 /**
  * Assembler for Terce, Sext, and None (daytime prayers).
@@ -9,7 +9,10 @@ import { resolveShortReading } from './shared'
 export const assembleDaytimePrayer: HourAssembler = (ctx) => {
   const sections: HourSection[] = []
 
-  // 1. Hymn
+  // 1. Opening Versicle (Deus, in adiutorium)
+  sections.push(buildOpeningVersicle(ctx.ordinarium, ctx.liturgicalDay.season))
+
+  // 2. Hymn
   sections.push({ type: 'hymn', text: ctx.mergedPropers.hymn ?? '', page: ctx.mergedPropers.hymnPage })
 
   // 2. Psalmody
@@ -36,8 +39,8 @@ export const assembleDaytimePrayer: HourAssembler = (ctx) => {
     sections.push({ type: 'concludingPrayer', text: ctx.mergedPropers.concludingPrayer, page: ctx.mergedPropers.concludingPrayerPage })
   }
 
-  // 6. Dismissal
-  sections.push({ type: 'dismissal' })
+  // 7. Dismissal
+  sections.push(buildDismissal(ctx.ordinarium))
 
   return sections
 }

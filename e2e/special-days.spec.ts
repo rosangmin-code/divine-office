@@ -6,10 +6,10 @@ test.describe('Special liturgical days', () => {
     await page.goto(`/pray/${DATES.stJoseph}/lauds`)
 
     // Should render the prayer page
-    await expect(page.getByRole('heading', { name: 'Өглөөний залбирал' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Өглөөний даатгал залбирал' })).toBeVisible()
 
     // Check for St. Joseph-specific content in concluding prayer
-    const concludingPrayer = page.getByText('Төгсгөлийн залбирал')
+    const concludingPrayer = page.getByText('Төгсгөлийн даатгал залбирал')
     await expect(concludingPrayer).toBeVisible()
   })
 

@@ -1,13 +1,21 @@
 import type { HourSection } from '../types'
 import type { HourAssembler } from './types'
-import { buildInvitatory, resolveShortReading, resolveGospelCanticle } from './shared'
+import { buildInvitatory, resolveInvitatoryAntiphon, buildOpeningVersicle, buildDismissal, resolveShortReading, resolveGospelCanticle } from './shared'
 
 export const assembleLauds: HourAssembler = (ctx) => {
   const sections: HourSection[] = []
 
-  // 1. Invitatory (only for the first hour of the day)
+  // 1. Invitatory (only for the first hour of the day) or Opening Versicle
   if (ctx.isFirstHourOfDay) {
-    sections.push(buildInvitatory(ctx.ordinarium))
+    const antiphon = resolveInvitatoryAntiphon(
+      ctx.ordinarium.invitatoryAntiphons,
+      ctx.liturgicalDay,
+      ctx.dayOfWeek,
+      ctx.dateStr,
+    )
+    sections.push(buildInvitatory(ctx.ordinarium, antiphon))
+  } else {
+    sections.push(buildOpeningVersicle(ctx.ordinarium, ctx.liturgicalDay.season))
   }
 
   // 2. Hymn
@@ -60,7 +68,7 @@ export const assembleLauds: HourAssembler = (ctx) => {
   }
 
   // 10. Dismissal
-  sections.push({ type: 'dismissal' })
+  sections.push(buildDismissal(ctx.ordinarium))
 
   return sections
 }

@@ -51,6 +51,7 @@
 | 성경 본문 | [bible.md](modules/bible.md) | FR-070~072 | 전체 완료 |
 | REST API | [api.md](modules/api.md) | FR-080~083 | 전체 완료 |
 | UI 페이지/컴포넌트 | [ui.md](modules/ui.md) | FR-090~098 | 전체 완료 |
+| 가이드 (총지침) | [guide.md](modules/guide.md) | FR-100~102 | 전체 완료 |
 
 ---
 
@@ -107,6 +108,8 @@ src/app/
 ├── loading.tsx                        # 홈 로딩 스켈레톤
 ├── error.tsx                          # 에러 바운더리
 ├── not-found.tsx                      # 404 페이지
+├── guide/
+│   └── page.tsx                       # 성무일도 총지침 가이드
 ├── pray/[date]/[hour]/
 │   ├── page.tsx                       # 기도 렌더링 페이지
 │   └── loading.tsx                    # 기도 로딩 스켈레톤

@@ -20,9 +20,21 @@ function makeContext(overrides: Partial<HourContext> = {}): HourContext {
       concludingPrayer: 'Concluding text',
     } as HourPropers,
     ordinarium: {
-      invitatory: { openingVersicle: { versicle: 'V: Open', response: 'R: Response' }, psalms: [] },
+      invitatory: {
+        openingVersicle: { versicle: 'V: Open', response: 'R: Response' },
+        invitatoryPsalms: [{ ref: 'Psalm 95:1-11', title: 'Test psalm', stanzas: [['line1']] }],
+        gloryBe: { text: 'Glory Be', shortText: 'Glory' },
+      },
+      invitatoryAntiphons: {
+        ordinaryTime: { odd: { SUN: 'OT odd SUN' }, even: { SUN: 'OT even SUN' } },
+        advent: { default: 'Advent' }, christmas: { default: 'Christmas' },
+        lent: { default: 'Lent ant' }, easter: { default: 'Easter' }, feasts: {},
+      },
       canticles: { benedictus: { ref: 'Luke 1:68-79', titleMn: 'Benedictus' } },
-      commonPrayers: {},
+      commonPrayers: {
+        openingVersicle: { versicle: 'V: God', response: 'R: Help', gloryBe: 'Glory', alleluia: 'Alleluia' },
+        dismissal: { priest: { greeting: { versicle: 'V', response: 'R' }, blessing: { text: 'B', response: 'A' }, dismissalVersicle: { versicle: 'V', response: 'R' } }, individual: { versicle: 'V', response: 'R' } },
+      },
       complineData: {},
     },
     isFirstHourOfDay: true,
@@ -46,9 +58,9 @@ describe('assembleLauds', () => {
     expect(sections[0].type).toBe('invitatory')
   })
 
-  it('omits invitatory when not first hour', () => {
+  it('uses openingVersicle when not first hour', () => {
     const sections = assembleLauds(makeContext({ isFirstHourOfDay: false }))
-    expect(sections[0].type).toBe('hymn')
+    expect(sections[0].type).toBe('openingVersicle')
   })
 
   it('always includes ourFather', () => {

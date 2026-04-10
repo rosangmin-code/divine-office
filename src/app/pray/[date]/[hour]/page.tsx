@@ -25,12 +25,12 @@ const HOUR_ABBR_MN: Record<HourType, string> = {
 
 const HOUR_NAMES_MN: Record<HourType, string> = {
   officeOfReadings: 'Уншлагын цаг',
-  lauds: 'Өглөөний залбирал',
+  lauds: 'Өглөөний даатгал залбирал',
   terce: 'Гуравдугаар цаг',
   sext: 'Зургаадугаар цаг',
   none: 'Есдүгээр цаг',
-  vespers: 'Оройн залбирал',
-  compline: 'Нойрны өмнөх залбирал',
+  vespers: 'Оройн даатгал залбирал',
+  compline: 'Шөнийн даатгал залбирал',
 }
 
 export default async function PrayPage({

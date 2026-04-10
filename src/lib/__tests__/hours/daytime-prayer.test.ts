@@ -17,9 +17,21 @@ function makeContext(hour: 'terce' | 'sext' | 'none'): HourContext {
       concludingPrayer: 'Prayer',
     } as HourPropers,
     ordinarium: {
-      invitatory: { openingVersicle: { versicle: 'V', response: 'R' }, psalms: [] },
+      invitatory: {
+        openingVersicle: { versicle: 'V', response: 'R' },
+        invitatoryPsalms: [{ ref: 'Psalm 95:1-11', title: 'Test', stanzas: [['l1']] }],
+        gloryBe: { text: 'Glory Be', shortText: 'Glory' },
+      },
+      invitatoryAntiphons: {
+        ordinaryTime: { odd: { SUN: 'A' }, even: { SUN: 'B' } },
+        advent: { default: 'A' }, christmas: { default: 'C' },
+        lent: { default: 'L' }, easter: { default: 'E' }, feasts: {},
+      },
       canticles: {},
-      commonPrayers: {},
+      commonPrayers: {
+        openingVersicle: { versicle: 'V: God', response: 'R: Help', gloryBe: 'Glory', alleluia: 'Alleluia' },
+        dismissal: { priest: { greeting: { versicle: 'V', response: 'R' }, blessing: { text: 'B', response: 'A' }, dismissalVersicle: { versicle: 'V', response: 'R' } }, individual: { versicle: 'V', response: 'R' } },
+      },
       complineData: {},
     },
     isFirstHourOfDay: false,
@@ -31,7 +43,7 @@ describe('assembleDaytimePrayer', () => {
   it.each(['terce', 'sext', 'none'] as const)('%s produces correct section order', (hour) => {
     const sections = assembleDaytimePrayer(makeContext(hour))
     const types = sections.map((s) => s.type)
-    expect(types).toEqual(['hymn', 'psalmody', 'concludingPrayer', 'dismissal'])
+    expect(types).toEqual(['openingVersicle', 'hymn', 'psalmody', 'concludingPrayer', 'dismissal'])
   })
 
   it('never includes gospelCanticle, intercessions, ourFather', () => {
