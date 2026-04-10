@@ -39,103 +39,18 @@
 
 ## 2. 기능 요구사항 (Functional Requirements)
 
-### 2.1 전례력 계산
+모듈별 상세 요구사항은 아래 문서를 참조:
 
-| ID | 요구사항 | 상태 |
-|----|----------|------|
-| FR-001 | romcal 라이브러리를 사용하여 임의 날짜의 전례일 정보를 계산한다 (전례일명, 시기, 색상, 등급, 시편집 주간). | 완료 |
-| FR-002 | 5개 전례시기를 지원한다: ADVENT, CHRISTMAS, LENT, EASTER, ORDINARY_TIME. | 완료 |
-| FR-003 | 전례색 5가지를 지원한다: GREEN, VIOLET, WHITE, RED, ROSE. | 완료 |
-| FR-004 | 축일 등급 5단계를 지원한다: SOLEMNITY, FEAST, MEMORIAL, OPTIONAL_MEMORIAL, WEEKDAY. | 완료 |
-| FR-005 | 주일주기(A/B/C), 평일주기(1/2), 시편집 주간(I-IV)을 자동 계산한다. | 완료 |
-| FR-006 | 연중시기 주간 번호(otWeek)를 romcal 전례일명에서 파싱하여 할당한다. | 완료 |
-
-### 2.2 기도시간 조립
-
-| ID | 요구사항 | 상태 |
-|----|----------|------|
-| FR-010 | 아침기도(Lauds) 조립: 초대송, 찬미가, 시편 3개, 짧은 독서, 화답, 복음찬가(Benedictus)+교송, 중보기도, 주님의 기도, 마침기도, 파견. | 완료 |
-| FR-011 | 저녁기도(Vespers) 조립: 찬미가, 시편 3개, 짧은 독서, 화답, 복음찬가(Magnificat)+교송, 중보기도, 주님의 기도, 마침기도, 파견. | 완료 |
-| FR-012 | 끝기도(Compline) 조립: 양심성찰, 찬미가, 시편, 짧은 독서, 화답, Nunc Dimittis+교송, 마침기도, 강복, 성모교송(Salve Regina 등). | 완료 |
-| FR-013 | 낮기도(Terce/Sext/None) 조립: 찬미가, 시편 3개, 파견. | 부분 완료 |
-| FR-014 | 낮기도에 짧은 독서, 화답, 마침기도를 추가한다. | 미완료 (축약본 미포함) |
-| FR-015 | 독서기도(Office of Readings) 조립: 시편 3개, 성경 독서, 교부 독서, 화답. | 미구현 (타입만 정의) |
-| FR-016 | 초대송(Invitatory): 하루의 첫 번째 기도시간(lauds)에 "Ай Эзэн минь, уруулыг минь нээж өгөөч" 초대송을 포함한다. | 완료 |
-
-### 2.3 4주 시편집 및 공통문
-
-| ID | 요구사항 | 상태 |
-|----|----------|------|
-| FR-020 | 4주 주기 시편집에서 각 기도시간의 시편을 로드한다 (week-1.json ~ week-4.json). | 완료 |
-| FR-021 | GILH SS157/SS183/SS199에 따라, 연중 평일의 짧은 독서/화답/중보기도/복음찬가교송/마침기도를 4주 주기 공통문(psalter commons)에서 순환 배정한다. | 완료 |
-| FR-022 | 끝기도는 7일(요일별) 고정 주기를 사용한다 (compline.json). | 완료 |
-| FR-023 | 시편 본문을 성경 JSONL에서 참조(reference) 기반으로 로드하고, 절 범위(verse range)와 접미사(a/b/c 반절)를 지원한다. | 완료 |
-
-### 2.4 계절 고유문
-
-| ID | 요구사항 | 상태 |
-|----|----------|------|
-| FR-030 | 5개 전례시기별 고유문(propers)을 로드하여 공통문을 덮어쓴다: advent.json, christmas.json, lent.json, easter.json, ordinary-time.json. | 완료 |
-| FR-031 | 대림 12/17-24 특별 고유문을 날짜 키(dec17~dec24)로 우선 적용한다. | 완료 |
-| FR-032 | 토요일 저녁기도는 다음 날 주일의 제1저녁기도(1st Vespers)로 처리한다 — 마침기도/복음찬가교송을 주일 고유문에서 가져온다. | 완료 |
-
-### 2.5 성인축일 고유문
-
-| ID | 요구사항 | 상태 |
-|----|----------|------|
-| FR-040 | 성인축일 고유문을 MM-DD 키로 로드하여 계절 고유문보다 높은 우선순위로 적용한다. | 완료 |
-| FR-041 | 대축일 7개: 성 요셉(03-19), 주님 탄생 예고(03-25), 세례자 요한 탄생(06-24), 성 베드로와 성 바오로(06-29), 성모 승천(08-15), 모든 성인(11-01), 원죄 없이 잉태되신 복되신 동정 마리아(12-08). | 완료 |
-| FR-042 | 축일 4개: 주님 봉헌(02-02), 주님 변모(08-06), 성 십자가 현양(09-14), 라테란 대성전 봉헌(11-09). | 완료 |
-| FR-043 | 기념일 3개: 위령의 날(11-02), 위령 공통(deceased), 토요일 성모 기념(saturday-mary). | 완료 |
-| FR-044 | 대축일/축일에서 replacesPsalter 플래그로 시편집 전체를 고유 시편으로 교체할 수 있다. | 완료 |
-| FR-045 | 성인축일 고유문을 확장한다 (현재 14개 → 목표: 로마 보편 달력 전체). | 미완료 |
-
-### 2.6 3단계 Fallback 로직
-
-| ID | 요구사항 | 상태 |
-|----|----------|------|
-| FR-050 | 기도문 조립 시 3단계 우선순위를 적용한다: (1) psalter commons → (2) season propers → (3) sanctoral propers. 상위 레이어가 하위를 덮어쓴다. | 완료 |
-| FR-051 | 교송(antiphon) 역시 동일한 우선순위로 덮어쓴다: 시편집 기본 교송 → 계절 교송 → 성인축일 교송. | 완료 |
-
-### 2.7 찬미가 배정
-
-| ID | 요구사항 | 상태 |
-|----|----------|------|
-| FR-060 | hymns-index.json의 seasonalAssignments를 사용하여 전례시기/기도시간에 맞는 찬미가를 자동 배정한다. | 완료 |
-| FR-061 | 주간 번호(weekOfSeason) 기반 결정론적 순환(rotation)으로 찬미가를 선택한다. | 완료 |
-| FR-062 | 고유문(propers) 또는 성인축일에서 찬미가가 지정된 경우 자동 배정보다 우선한다. | 완료 |
-| FR-063 | ~100개 찬미가 텍스트를 hymns.json에서 로드한다. | 완료 |
-
-### 2.8 성경 본문 로드
-
-| ID | 요구사항 | 상태 |
-|----|----------|------|
-| FR-070 | JSONL 파일 3개(bible_ot.jsonl, bible_nt_rest.jsonl, bible_gospels.jsonl)에서 성경 본문을 로드한다. | 완료 |
-| FR-071 | 시편 참조(예: "Psalm 63:2-9")를 파싱하여 해당 절만 추출한다. | 완료 |
-| FR-072 | 짧은 독서(short reading)의 성경 참조를 해석하여 본문을 로드한다. | 완료 |
-
-### 2.9 API
-
-| ID | 요구사항 | 상태 |
-|----|----------|------|
-| FR-080 | `GET /api/calendar/today` — 오늘의 전례일 정보를 JSON으로 반환한다. | 완료 |
-| FR-081 | `GET /api/calendar/date/[date]` — 지정 날짜(YYYY-MM-DD)의 전례일 정보를 JSON으로 반환한다. | 완료 |
-| FR-082 | `GET /api/loth/[date]/[hour]` — 지정 날짜/기도시간의 조립된 기도문을 JSON으로 반환한다. 유효한 hour: lauds, terce, sext, none, vespers, compline. | 완료 |
-| FR-083 | 잘못된 hour 파라미터에 400, 데이터 없음에 404를 반환한다. | 완료 |
-
-### 2.10 UI 페이지
-
-| ID | 요구사항 | 상태 |
-|----|----------|------|
-| FR-090 | 홈페이지(`/`): 오늘의 전례일 정보 표시, 6개 기도시간 카드 목록, 날짜 전후 이동 네비게이션. | 완료 |
-| FR-091 | 날짜 선택기(DatePicker)로 임의 날짜 이동을 지원한다. | 완료 |
-| FR-092 | 기도 페이지(`/pray/[date]/[hour]`): 조립된 기도문을 섹션별로 렌더링한다. | 완료 |
-| FR-093 | 기도 페이지에서 이전/다음 기도시간으로 네비게이션할 수 있다. | 완료 |
-| FR-094 | 전례색에 따른 좌측 보더 색상을 표시한다 (GREEN, VIOLET, WHITE, RED, ROSE). | 완료 |
-| FR-095 | PrayerRenderer 컴포넌트가 16가지 섹션 타입을 렌더링한다: invitatory, hymn, psalmody, shortReading, responsory, gospelCanticle, intercessions, ourFather, concludingPrayer, dismissal, patristicReading, examen, blessing, marianAntiphon 등. | 완료 |
-| FR-096 | 다크 모드/라이트 모드 토글을 지원한다 (ThemeToggle). | 완료 |
-| FR-097 | loading.tsx로 Skeleton UI를 제공한다. | 완료 |
-| FR-098 | error.tsx, not-found.tsx로 에러/404 상태를 처리한다. | 완료 |
+| 모듈 | 문서 | FR 범위 | 상태 요약 |
+|------|------|---------|-----------|
+| 전례력 | [calendar.md](modules/calendar.md) | FR-001~006 | 전체 완료 |
+| 기도시간 조립 | [hour-assembly.md](modules/hour-assembly.md) | FR-010~016 | 대부분 완료 (낮기도 부분 완료, 독서기도 미구현) |
+| 4주 시편집 | [psalter.md](modules/psalter.md) | FR-020~023 | 전체 완료 |
+| 고유문 | [propers.md](modules/propers.md) | FR-030~032, FR-040~045, FR-050~051 | 대부분 완료 (성인축일 확장 미완료) |
+| 찬미가 | [hymns.md](modules/hymns.md) | FR-060~063 | 전체 완료 |
+| 성경 본문 | [bible.md](modules/bible.md) | FR-070~072 | 전체 완료 |
+| REST API | [api.md](modules/api.md) | FR-080~083 | 전체 완료 |
+| UI 페이지/컴포넌트 | [ui.md](modules/ui.md) | FR-090~098 | 전체 완료 |
 
 ---
 

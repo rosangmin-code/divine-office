@@ -18,6 +18,7 @@ export function getAssembler(hour: HourType): HourAssembler | null {
   return assemblers[hour] ?? null
 }
 
-// Re-export for convenience
-export type { HourAssembler, HourContext } from './types'
+// Re-export public API — external code should import from './hours' only
+export type { HourAssembler, HourContext, Ordinarium } from './types'
 export { loadOrdinarium, dateToDayOfWeek, resolvePsalm } from './shared'
+export { mergeComplineDefaults } from './compline'

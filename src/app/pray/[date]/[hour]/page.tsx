@@ -12,6 +12,16 @@ const VALID_HOURS: HourType[] = [
   'lauds', 'vespers', 'compline',
 ]
 
+const HOUR_ABBR_MN: Record<HourType, string> = {
+  officeOfReadings: 'Уншлага',
+  lauds: 'Өглөө',
+  terce: '3-р цаг',
+  sext: '6-р цаг',
+  none: '9-р цаг',
+  vespers: 'Орой',
+  compline: 'Нойрны',
+}
+
 const HOUR_NAMES_MN: Record<HourType, string> = {
   officeOfReadings: 'Уншлагын цаг',
   lauds: 'Өглөөний залбирал',
@@ -100,6 +110,7 @@ export default async function PrayPage({
             className="flex items-center gap-2 rounded-lg px-4 py-3 text-sm text-stone-600 hover:bg-stone-200 dark:text-stone-400 dark:hover:bg-stone-700"
           >
             <span>←</span>
+            <span className="sm:hidden">{HOUR_ABBR_MN[prevHour]}</span>
             <span className="hidden sm:inline">{HOUR_NAMES_MN[prevHour]}</span>
           </Link>
         ) : <div />}
@@ -116,6 +127,7 @@ export default async function PrayPage({
             href={`/pray/${date}/${nextHour}`}
             className="flex items-center gap-2 rounded-lg px-4 py-3 text-sm text-stone-600 hover:bg-stone-200 dark:text-stone-400 dark:hover:bg-stone-700"
           >
+            <span className="sm:hidden">{HOUR_ABBR_MN[nextHour]}</span>
             <span className="hidden sm:inline">{HOUR_NAMES_MN[nextHour]}</span>
             <span>→</span>
           </Link>

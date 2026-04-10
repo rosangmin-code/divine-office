@@ -25,17 +25,33 @@ export default function Loading() {
         </div>
       </div>
 
-      {/* Hour cards skeleton */}
-      <div className="space-y-3">
-        {Array.from({ length: 7 }).map((_, i) => (
-          <div key={i} className="flex animate-pulse items-center gap-4 rounded-xl bg-white p-5 shadow-sm dark:bg-neutral-900 dark:shadow-none dark:ring-1 dark:ring-stone-800">
-            <div className="h-7 w-7 rounded bg-stone-200 dark:bg-stone-700" />
-            <div className="flex-1">
-              <div className="mb-1 h-4 w-32 rounded bg-stone-200 dark:bg-stone-700" />
-              <div className="h-3 w-20 rounded bg-stone-100 dark:bg-stone-800" />
-            </div>
+      {/* Hour cards skeleton — single column, 3 cards */}
+      <div className="space-y-4">
+        {/* First card (normal) */}
+        <div className="flex animate-pulse items-center gap-4 rounded-xl bg-white p-5 shadow-sm dark:bg-neutral-900 dark:shadow-none dark:ring-1 dark:ring-stone-800">
+          <div className="h-7 w-7 rounded bg-stone-200 dark:bg-stone-700" />
+          <div className="flex-1">
+            <div className="mb-1 h-4 w-32 rounded bg-stone-200 dark:bg-stone-700" />
+            <div className="h-3 w-20 rounded bg-stone-100 dark:bg-stone-800" />
           </div>
-        ))}
+        </div>
+        {/* Second card (current — larger) */}
+        <div className="flex animate-pulse items-center gap-4 rounded-xl bg-white p-6 shadow-md ring-2 ring-stone-200 dark:bg-neutral-900 dark:shadow-none dark:ring-stone-700">
+          <div className="h-7 w-7 rounded bg-stone-200 dark:bg-stone-700" />
+          <div className="flex-1">
+            <div className="mb-1 h-5 w-40 rounded bg-stone-200 dark:bg-stone-700" />
+            <div className="h-3 w-20 rounded bg-stone-100 dark:bg-stone-800" />
+          </div>
+          <div className="h-6 w-28 rounded-full bg-stone-200 dark:bg-stone-700" />
+        </div>
+        {/* Third card (normal) */}
+        <div className="flex animate-pulse items-center gap-4 rounded-xl bg-white p-5 shadow-sm dark:bg-neutral-900 dark:shadow-none dark:ring-1 dark:ring-stone-800">
+          <div className="h-7 w-7 rounded bg-stone-200 dark:bg-stone-700" />
+          <div className="flex-1">
+            <div className="mb-1 h-4 w-32 rounded bg-stone-200 dark:bg-stone-700" />
+            <div className="h-3 w-20 rounded bg-stone-100 dark:bg-stone-800" />
+          </div>
+        </div>
       </div>
     </div>
   )

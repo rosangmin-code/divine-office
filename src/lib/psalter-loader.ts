@@ -5,12 +5,19 @@ import path from 'path'
 // Cache loaded psalter weeks
 const psalterCache = new Map<number, PsalterWeekData>()
 
-function loadWeek(week: 1 | 2 | 3 | 4): PsalterWeekData {
-  if (psalterCache.has(week)) return psalterCache.get(week)!
+function safeWeek(week: number): 1 | 2 | 3 | 4 {
+  if (week >= 1 && week <= 4) return week as 1 | 2 | 3 | 4
+  const clamped = week > 0 ? week : 1
+  return (((clamped - 1) % 4) + 1) as 1 | 2 | 3 | 4
+}
 
-  const filePath = path.join(process.cwd(), `src/data/loth/psalter/week-${week}.json`)
+function loadWeek(week: 1 | 2 | 3 | 4): PsalterWeekData {
+  const w = safeWeek(week)
+  if (psalterCache.has(w)) return psalterCache.get(w)!
+
+  const filePath = path.join(process.cwd(), `src/data/loth/psalter/week-${w}.json`)
   const data = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as PsalterWeekData
-  psalterCache.set(week, data)
+  psalterCache.set(w, data)
   return data
 }
 

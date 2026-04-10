@@ -20,6 +20,12 @@ export const DATES = {
   // Easter Sunday (WHITE)
   easterSunday: '2026-04-05',
 
+  // Easter Octave weekday (psalterWeek=5 from romcal, clamped to 1)
+  easterFriday: '2026-04-10',
+
+  // Easter 3rd Sunday (normal psalterWeek=3)
+  easter3rdSunday: '2026-04-19',
+
   // Solemnity: St. Joseph
   stJoseph: '2026-03-19',
 
@@ -41,6 +47,8 @@ export const ALL_HOURS = [
   'vespers',
   'compline',
 ] as const
+
+export const ACTIVE_HOURS = ['lauds', 'vespers', 'compline'] as const
 
 export const HOUR_NAMES_MN: Record<string, string> = {
   officeOfReadings: 'Уншлагын залбирал',

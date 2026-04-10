@@ -14,10 +14,10 @@ function InvitatorySection({ section }: { section: Extract<HourSection, { type: 
     <section aria-label="Нээлтийн залбирал" className="mb-4 rounded-lg bg-stone-100 dark:bg-stone-800 p-4">
       <p className="text-sm font-semibold text-stone-600 dark:text-stone-400">Нээлтийн залбирал</p>
       <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">
-        <abbr title="Versicle" className="font-medium text-red-700 dark:text-red-400 no-underline">V. </abbr>{section.versicle}
+        <abbr title="Ишлэл" className="font-medium text-red-700 dark:text-red-400 no-underline">V. </abbr>{section.versicle}
       </p>
       <p className="font-serif text-stone-800 dark:text-stone-200">
-        <abbr title="Response" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>{section.response}
+        <abbr title="Хариу" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>{section.response}
       </p>
     </section>
   )
@@ -74,10 +74,10 @@ function ResponsorySection({ section }: { section: Extract<HourSection, { type: 
     <section aria-label="Хариу дуулал" className="mb-4">
       <p className="text-sm font-semibold text-stone-600 dark:text-stone-400">Хариу дуулал</p>
       <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">
-        <abbr title="Versicle" className="font-medium text-red-700 dark:text-red-400 no-underline">V. </abbr>{section.versicle}
+        <abbr title="Ишлэл" className="font-medium text-red-700 dark:text-red-400 no-underline">V. </abbr>{section.versicle}
       </p>
       <p className="font-serif text-stone-800 dark:text-stone-200">
-        <abbr title="Response" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>{section.response}
+        <abbr title="Хариу" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>{section.response}
       </p>
     </section>
   )
@@ -174,11 +174,11 @@ function DismissalSection() {
   return (
     <section aria-label="Илгээлт" className="mb-4 rounded-lg bg-stone-100 dark:bg-stone-800 p-4">
       <p className="font-serif text-stone-800 dark:text-stone-200">
-        <abbr title="Versicle" className="font-medium text-red-700 dark:text-red-400 no-underline">V. </abbr>
+        <abbr title="Ишлэл" className="font-medium text-red-700 dark:text-red-400 no-underline">V. </abbr>
         Эзэн биднийг адислаж, бүх бузар муугаас хамгаалж, мөнх амьдрал руу хөтлөх болтугай.
       </p>
       <p className="font-serif text-stone-800 dark:text-stone-200">
-        <abbr title="Response" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>Амэн.
+        <abbr title="Хариу" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>Амэн.
       </p>
     </section>
   )
@@ -199,7 +199,7 @@ function BlessingSection({ section }: { section: Extract<HourSection, { type: 'b
       <p className="text-sm font-semibold text-stone-600 dark:text-stone-400">Адислал</p>
       <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">{section.text}</p>
       <p className="font-serif text-stone-800 dark:text-stone-200">
-        <abbr title="Response" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>{section.response}
+        <abbr title="Хариу" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>{section.response}
       </p>
     </section>
   )
@@ -226,14 +226,20 @@ function PatristicReadingSection({ section }: { section: Extract<HourSection, { 
   )
 }
 
+const MAJOR_SECTIONS = new Set([
+  'psalmody', 'shortReading', 'gospelCanticle',
+  'intercessions', 'ourFather', 'concludingPrayer', 'patristicReading',
+])
+
 export function PrayerRenderer({ hour }: { hour: AssembledHour }) {
   return (
-    <div className="space-y-2">
+    <div>
       {hour.sections.map((section, i) => {
         const showDivider = i > 0
+        const spacing = i === 0 ? '' : MAJOR_SECTIONS.has(section.type) ? 'mt-6' : 'mt-2'
 
         return (
-          <div key={i} style={{ animation: `fadeIn 0.3s ease-out ${i * 0.05}s both` }}>
+          <div key={i} className={spacing} style={{ animation: `fadeIn 0.3s ease-out ${i * 0.05}s both` }}>
             {showDivider && <SectionDivider />}
             {section.type === 'invitatory' && <InvitatorySection section={section} />}
             {section.type === 'hymn' && <HymnSection section={section} />}

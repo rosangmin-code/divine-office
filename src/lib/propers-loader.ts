@@ -37,6 +37,7 @@ export function getSeasonHourPropers(
   day: DayOfWeek,
   hour: HourType,
   dateStr?: string,
+  celebrationName?: string,
 ): HourPropers | null {
   const weeks = loadSeasonPropers(season)
 
@@ -50,6 +51,22 @@ export function getSeasonHourPropers(
       const dateDayPropers = weeks[dateKey]?.[day] ?? weeks[dateKey]?.['SUN']
       if (dateDayPropers) {
         return (dateDayPropers[hour as keyof DayPropers] as HourPropers) ?? null
+      }
+    }
+  }
+
+  // Check Easter special keys (easterSunday, ascension, pentecost)
+  if (season === 'EASTER' && celebrationName) {
+    const lower = celebrationName.toLowerCase()
+    let specialKey: string | null = null
+    if (lower.includes('easter sunday') || lower === 'easter sunday') specialKey = 'easterSunday'
+    else if (lower.includes('ascension')) specialKey = 'ascension'
+    else if (lower.includes('pentecost')) specialKey = 'pentecost'
+
+    if (specialKey) {
+      const specialDayPropers = weeks[specialKey]?.[day] ?? weeks[specialKey]?.['SUN']
+      if (specialDayPropers) {
+        return (specialDayPropers[hour as keyof DayPropers] as HourPropers) ?? null
       }
     }
   }

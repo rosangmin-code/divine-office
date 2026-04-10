@@ -1,42 +1,42 @@
-import type { Metadata, Viewport } from "next";
-import { Noto_Sans, Noto_Serif } from "next/font/google";
-import "./globals.css";
+import type { Metadata, Viewport } from 'next'
+import { Noto_Sans, Noto_Serif } from 'next/font/google'
+import './globals.css'
 
 const notoSans = Noto_Sans({
-  subsets: ["cyrillic", "latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  variable: "--font-sans",
-});
+  subsets: ['cyrillic', 'latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+  variable: '--font-sans',
+})
 
 const notoSerif = Noto_Serif({
-  subsets: ["cyrillic", "latin"],
-  weight: ["400", "700"],
-  display: "swap",
-  variable: "--font-serif",
-});
+  subsets: ['cyrillic', 'latin'],
+  weight: ['400', '700'],
+  display: 'swap',
+  variable: '--font-serif',
+})
 
 export const viewport: Viewport = {
-  viewportFit: "cover",
-};
+  viewportFit: 'cover',
+}
 
 export const metadata: Metadata = {
-  title: "Цагийн Залбирал | Католик Шашны Өдөр Тутмын Залбирал",
+  title: 'Цагийн Залбирал | Католик Шашны Өдөр Тутмын Залбирал',
   description:
-    "Монгол дахь Католик итгэгчдэд зориулсан цагийн залбирлын апп",
+    'Монгол дахь Католик итгэгчдэд зориулсан цагийн залбирлын апп',
   openGraph: {
-    title: "Цагийн Залбирал",
+    title: 'Цагийн Залбирал',
     description:
-      "Монгол дахь Католик итгэгчдэд зориулсан цагийн залбирлын апп",
-    locale: "mn_MN",
-    type: "website",
+      'Монгол дахь Католик итгэгчдэд зориулсан цагийн залбирлын апп',
+    locale: 'mn_MN',
+    type: 'website',
   },
-};
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang="mn" suppressHydrationWarning>
@@ -60,5 +60,5 @@ export default function RootLayout({
         </div>
       </body>
     </html>
-  );
+  )
 }

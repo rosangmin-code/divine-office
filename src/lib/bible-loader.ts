@@ -3,40 +3,77 @@ import fs from 'fs'
 import path from 'path'
 
 let bibleIndex: Map<string, BibleChapter> | null = null
+let warmPromise: Promise<void> | null = null
+
+const BIBLE_FILES = [
+  'bible_ot.jsonl',
+  'bible_nt_rest.jsonl',
+  'bible_gospels.jsonl',
+]
 
 function makeKey(book: string, chapter: number): string {
   return `${book}:${chapter}`
 }
 
+function parseLines(content: string, index: Map<string, BibleChapter>): void {
+  const lines = content.split('\n').filter(Boolean)
+  for (const line of lines) {
+    const raw = JSON.parse(line)
+    const entry: BibleChapter = {
+      book: raw.book,
+      bookMn: raw.book_mn,
+      chapter: raw.chapter,
+      headings: raw.headings ?? [],
+      verses: raw.verses ?? [],
+    }
+    index.set(makeKey(entry.book, entry.chapter), entry)
+  }
+}
+
+/**
+ * Async pre-warming: loads all Bible JSONL files in parallel without blocking the event loop.
+ * Call this at the start of assembleHour() so the cache is ready before sync lookups.
+ */
+export async function warmBibleCache(): Promise<void> {
+  if (bibleIndex) return
+  if (warmPromise) return warmPromise
+
+  warmPromise = (async () => {
+    const index = new Map<string, BibleChapter>()
+    const dataDir = path.join(process.cwd(), 'src/data/bible')
+
+    const contents = await Promise.all(
+      BIBLE_FILES.map(async (file) => {
+        const filePath = path.join(dataDir, file)
+        try {
+          return await fs.promises.readFile(filePath, 'utf-8')
+        } catch {
+          return null
+        }
+      }),
+    )
+
+    for (const content of contents) {
+      if (content) parseLines(content, index)
+    }
+
+    bibleIndex = index
+  })()
+
+  return warmPromise
+}
+
 function ensureLoaded(): Map<string, BibleChapter> {
   if (bibleIndex) return bibleIndex
 
+  // Sync fallback — only reached if warmBibleCache() was not awaited
   bibleIndex = new Map()
   const dataDir = path.join(process.cwd(), 'src/data/bible')
 
-  const files = [
-    'bible_ot.jsonl',
-    'bible_nt_rest.jsonl',
-    'bible_gospels.jsonl',
-  ]
-
-  for (const file of files) {
+  for (const file of BIBLE_FILES) {
     const filePath = path.join(dataDir, file)
     if (!fs.existsSync(filePath)) continue
-
-    const lines = fs.readFileSync(filePath, 'utf-8').split('\n').filter(Boolean)
-    for (const line of lines) {
-      const raw = JSON.parse(line)
-      const entry: BibleChapter = {
-        book: raw.book,
-        bookMn: raw.book_mn,
-        chapter: raw.chapter,
-        headings: raw.headings ?? [],
-        verses: raw.verses ?? [],
-      }
-      const key = makeKey(entry.book, entry.chapter)
-      bibleIndex.set(key, entry)
-    }
+    parseLines(fs.readFileSync(filePath, 'utf-8'), bibleIndex)
   }
 
   return bibleIndex

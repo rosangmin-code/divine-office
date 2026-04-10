@@ -12,10 +12,15 @@ import { getLiturgicalDay, getToday } from './calendar'
 import { getPsalterPsalmody, getComplinePsalmody, getFullComplineData, getPsalterCommons } from './psalter-loader'
 import { getSeasonHourPropers, getSanctoralPropers, getHymnForHour } from './propers-loader'
 
-import { loadOrdinarium, dateToDayOfWeek, resolvePsalm } from './hours/shared'
-import { getAssembler } from './hours'
-import { mergeComplineDefaults } from './hours/compline'
-import type { HourContext } from './hours/types'
+import {
+  getAssembler,
+  loadOrdinarium,
+  dateToDayOfWeek,
+  resolvePsalm,
+  mergeComplineDefaults,
+} from './hours'
+import { warmBibleCache } from './bible-loader'
+import type { HourContext } from './hours'
 
 /**
  * Main assembly function: given a date and hour, produce the complete prayer.
@@ -24,6 +29,9 @@ export async function assembleHour(
   dateStr: string,
   hour: HourType,
 ): Promise<AssembledHour | null> {
+  // 0. Pre-warm Bible cache (async I/O, no-op if already loaded)
+  await warmBibleCache()
+
   // 1. Get liturgical day info
   const day = getLiturgicalDay(dateStr)
   if (!day) return null
@@ -37,8 +45,12 @@ export async function assembleHour(
   if (hour === 'compline') {
     psalmEntries = getComplinePsalmody(dayOfWeek)
   } else {
-    const basePsalmody = getPsalterPsalmody(day.psalterWeek, dayOfWeek, hour)
-    psalmEntries = basePsalmody?.psalms ?? []
+    try {
+      const basePsalmody = getPsalterPsalmody(day.psalterWeek, dayOfWeek, hour)
+      psalmEntries = basePsalmody?.psalms ?? []
+    } catch {
+      psalmEntries = []
+    }
   }
 
   // 3. Get season propers
@@ -50,13 +62,14 @@ export async function assembleHour(
     dayOfWeek,
     hour,
     dateStr,
+    day.name,
   )
 
   if (!seasonPropers && dayOfWeek === 'SAT' && hour === 'vespers') {
     // Next day is Sunday — use Sunday's vespers (1st Vespers) propers
     const nextWeek = day.weekOfSeason + 1
-    seasonPropers = getSeasonHourPropers(day.season, nextWeek, 'SUN', 'vespers', dateStr)
-      ?? getSeasonHourPropers(day.season, day.weekOfSeason, 'SUN', 'vespers', dateStr)
+    seasonPropers = getSeasonHourPropers(day.season, nextWeek, 'SUN', 'vespers', dateStr, day.name)
+      ?? getSeasonHourPropers(day.season, day.weekOfSeason, 'SUN', 'vespers', dateStr, day.name)
   }
 
   // 4. Get sanctoral propers (if applicable)
@@ -67,7 +80,13 @@ export async function assembleHour(
     : null
 
   // 5. Determine antiphon overrides (sanctoral > season)
-  const hourPropers = sanctoral?.[hour as keyof typeof sanctoral] as HourPropers | undefined
+  //    For solemnities on the day itself, use vespers2 (Second Vespers) data
+  let hourPropers: HourPropers | undefined
+  if (hour === 'vespers' && day.rank === 'SOLEMNITY' && sanctoral?.vespers2) {
+    hourPropers = sanctoral.vespers2 as HourPropers
+  } else {
+    hourPropers = sanctoral?.[hour as keyof typeof sanctoral] as HourPropers | undefined
+  }
   const antiphonOverrides: Record<string, string> = {
     ...(seasonPropers?.antiphons ?? {}),
     ...(hourPropers?.antiphons ?? {}),
@@ -89,7 +108,12 @@ export async function assembleHour(
   // 8. Merge propers: sanctoral > season > psalter commons > defaults
   //    Per GILH §157/§183/§199, weekday readings/responsories/intercessions/prayers
   //    come from the 4-week psalter cycle when no seasonal proper exists.
-  const psalterCommons = getPsalterCommons(day.psalterWeek, dayOfWeek, hour)
+  let psalterCommons: ReturnType<typeof getPsalterCommons> = null
+  try {
+    psalterCommons = getPsalterCommons(day.psalterWeek, dayOfWeek, hour)
+  } catch {
+    // psalter loading failed (e.g. unexpected week value); continue with season propers only
+  }
 
   let mergedPropers: HourPropers = {}
 

@@ -36,6 +36,49 @@ test.describe('Special liturgical days', () => {
     expect(vespersCanticle.canticle).toBe('magnificat')
   })
 
+  test('Easter Octave Friday (psalterWeek=5): Lauds returns full hour', async ({ request }) => {
+    const res = await request.get(`/api/loth/${DATES.easterFriday}/lauds`)
+    expect(res.status()).toBe(200)
+
+    const body = await res.json()
+    expect(body.liturgicalDay.season).toBe('EASTER')
+    expect(body.psalterWeek).toBeGreaterThanOrEqual(1)
+    expect(body.psalterWeek).toBeLessThanOrEqual(4)
+
+    const types = body.sections.map((s: { type: string }) => s.type)
+    expect(types).toContain('shortReading')
+    expect(types).toContain('responsory')
+    expect(types).toContain('intercessions')
+    expect(types).toContain('concludingPrayer')
+  })
+
+  test('Easter Sunday: uses easterSunday special propers', async ({ request }) => {
+    const res = await request.get(`/api/loth/${DATES.easterSunday}/lauds`)
+    expect(res.status()).toBe(200)
+
+    const body = await res.json()
+    expect(body.liturgicalDay.season).toBe('EASTER')
+
+    const types = body.sections.map((s: { type: string }) => s.type)
+    expect(types).toContain('shortReading')
+    expect(types).toContain('responsory')
+    expect(types).toContain('intercessions')
+    expect(types).toContain('concludingPrayer')
+
+    // Easter Sunday concluding prayer should reference 부활/амилалт
+    const cp = body.sections.find((s: { type: string }) => s.type === 'concludingPrayer')
+    expect(cp.text).toContain('амилуулсн')
+  })
+
+  test('Easter 3rd Sunday Vespers: normal psalterWeek works', async ({ request }) => {
+    const res = await request.get(`/api/loth/${DATES.easter3rdSunday}/vespers`)
+    expect(res.status()).toBe(200)
+
+    const body = await res.json()
+    expect(body.liturgicalDay.season).toBe('EASTER')
+    expect(body.sections.length).toBeGreaterThan(0)
+  })
+
   test('Advent Dec 20: date-keyed propers differ from regular Advent weekday', async ({ request }) => {
     // Regular Advent weekday
     const regularRes = await request.get(`/api/loth/${DATES.adventWeekday}/vespers`)

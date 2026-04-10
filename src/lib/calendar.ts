@@ -1,5 +1,6 @@
 import romcal from 'romcal'
 import type { LiturgicalDayInfo, LiturgicalSeason } from './types'
+import { getMongoliaDateStr } from './timezone'
 import {
   SEASON_MAP,
   COLOR_MAP,
@@ -37,7 +38,10 @@ function mapEntry(entry: RomcalEntry, weekOfSeason: number, year: number): Litur
   const dateStr = entry.moment.slice(0, 10)
 
   // Extract psalter week from romcal (1-4 cycle)
-  const psalterWeek = (entry.data.meta.psalterWeek?.key ?? 1) as 1 | 2 | 3 | 4
+  // romcal returns 5 for Easter Octave; clamp to 1-4 with modular arithmetic
+  const rawPsalterWeek = entry.data.meta.psalterWeek?.key ?? 1
+  const clampedWeek = rawPsalterWeek > 0 ? rawPsalterWeek : 1
+  const psalterWeek = (((clampedWeek - 1) % 4) + 1) as 1 | 2 | 3 | 4
 
   return {
     date: dateStr,
@@ -126,9 +130,7 @@ export function getLiturgicalDay(dateStr: string): LiturgicalDayInfo | null {
 }
 
 export function getToday(): LiturgicalDayInfo {
-  const now = new Date()
-  const pad = (n: number) => String(n).padStart(2, '0')
-  const dateStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
+  const dateStr = getMongoliaDateStr()
   const result = getLiturgicalDay(dateStr)
   if (!result) {
     throw new Error(`No liturgical data found for today: ${dateStr}`)

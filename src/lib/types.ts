@@ -85,6 +85,7 @@ export interface PsalmEntry {
   default_antiphon: string       // Default antiphon text (Mongolian)
   title?: string                 // Psalm title (Mongolian)
   gloria_patri: boolean          // Include Glory Be
+  page?: number                  // Source PDF page number
 }
 
 export interface HourPsalmody {
@@ -110,11 +111,13 @@ export interface PsalterWeekData {
 export interface ShortReading {
   ref: string
   text?: string                  // Direct text if not from Bible
+  page?: number                  // Source PDF page number
 }
 
 export interface Responsory {
   versicle: string
   response: string
+  page?: number                  // Source PDF page number
 }
 
 export interface HourPropers {
@@ -122,10 +125,14 @@ export interface HourPropers {
   shortReading?: ShortReading
   responsory?: Responsory
   gospelCanticleAntiphon?: string
+  gospelCanticleAntiphonPage?: number   // Source PDF page number
   intercessions?: string[]
+  intercessionsPage?: number            // Source PDF page number
   concludingPrayer?: string
+  concludingPrayerPage?: number         // Source PDF page number
   alternativeConcludingPrayer?: string  // Сонголтот залбирал
   hymn?: string
+  hymnPage?: number                     // Source PDF page number
 }
 
 export interface PatristicReading {
@@ -177,23 +184,24 @@ export interface AssembledPsalm {
   antiphon: string
   verses: { verse: number; text: string }[]
   gloriaPatri: boolean
+  page?: number                  // Source PDF page number
 }
 
 export type HourSection =
-  | { type: 'invitatory'; versicle: string; response: string }
-  | { type: 'hymn'; text: string }
+  | { type: 'invitatory'; versicle: string; response: string; page?: number }
+  | { type: 'hymn'; text: string; page?: number }
   | { type: 'psalmody'; psalms: AssembledPsalm[] }
-  | { type: 'shortReading'; ref: string; bookMn: string; verses: { verse: number; text: string }[] }
-  | { type: 'responsory'; versicle: string; response: string }
-  | { type: 'gospelCanticle'; canticle: 'benedictus' | 'magnificat' | 'nuncDimittis'; antiphon: string; text: string }
-  | { type: 'intercessions'; intro: string; items: string[] }
+  | { type: 'shortReading'; ref: string; bookMn: string; verses: { verse: number; text: string }[]; page?: number }
+  | { type: 'responsory'; versicle: string; response: string; page?: number }
+  | { type: 'gospelCanticle'; canticle: 'benedictus' | 'magnificat' | 'nuncDimittis'; antiphon: string; text: string; page?: number }
+  | { type: 'intercessions'; intro: string; items: string[]; page?: number }
   | { type: 'ourFather' }
-  | { type: 'concludingPrayer'; text: string }
+  | { type: 'concludingPrayer'; text: string; page?: number }
   | { type: 'dismissal' }
-  | { type: 'patristicReading'; author: string; source: string; text: string }
-  | { type: 'examen'; text: string }
-  | { type: 'blessing'; text: string; response: string }
-  | { type: 'marianAntiphon'; title: string; text: string }
+  | { type: 'patristicReading'; author: string; source: string; text: string; page?: number }
+  | { type: 'examen'; text: string; page?: number }
+  | { type: 'blessing'; text: string; response: string; page?: number }
+  | { type: 'marianAntiphon'; title: string; text: string; page?: number }
 
 export interface AssembledHour {
   hourType: HourType
