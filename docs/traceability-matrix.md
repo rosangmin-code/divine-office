@@ -1,7 +1,7 @@
 # 추적성 매트릭스 (Traceability Matrix)
 
 **프로젝트:** Mongolian Liturgy of the Hours (Divine Office) Web App
-**최종 업데이트:** 2026-04-09
+**최종 업데이트:** 2026-04-12
 **기준 브랜치:** `main`
 
 > **참고:** 기능 요구사항은 모듈별 PRD로 분리되었습니다. 각 모듈 문서는 [`docs/modules/`](modules/) 디렉토리를 참조하세요.
@@ -19,7 +19,7 @@
 | FR-002 | 아침기도 (Lauds) 조립 | FR-010 | [hour-assembly](modules/hour-assembly.md) | `src/lib/hours/lauds.ts` — `assembleLauds`: invitatory + hymn + psalmody + short reading + responsory + Benedictus + intercessions + Our Father + concluding prayer + dismissal<br>`src/lib/loth-service.ts` — `assembleHour()` 메인 오케스트레이션<br>`src/lib/hours/shared.ts` — `buildInvitatory`, `resolveGospelCanticle`, `resolveShortReading` | `e2e/prayer-lauds.spec.ts` — 5개 테스트: header, 핵심 section 존재, invitatory V./R., back link<br>`e2e/api.spec.ts` — Lauds API 응답: invitatory 첫 번째, hymn/psalmody/dismissal/benedictus/ourFather 포함<br>`e2e/prayer-sections.spec.ts` — psalm block 구조, hymn 라벨, Our Father 본문, dismissal 구조 | 완료 |
 | FR-003 | 저녁기도 (Vespers) 조립 | FR-011 | [hour-assembly](modules/hour-assembly.md) | `src/lib/hours/vespers.ts` — `assembleVespers`: hymn + psalmody + short reading + responsory + Magnificat + intercessions + Our Father + concluding prayer + dismissal<br>`src/lib/loth-service.ts` — Saturday vespers 1st Vespers 로직 포함 | `e2e/prayer-vespers.spec.ts` — 5개 테스트: header, no invitatory, Magnificat, Our Father, hymn/psalmody/dismissal<br>`e2e/api.spec.ts` — Vespers API: no invitatory, magnificat 확인 | 완료 |
 | FR-004 | 끝기도 (Compline) 조립 | FR-012 | [hour-assembly](modules/hour-assembly.md) | `src/lib/hours/compline.ts` — `assembleCompline`: examen + hymn + psalmody + short reading + responsory + Nunc Dimittis + concluding prayer + blessing + Marian antiphon<br>`src/lib/hours/compline.ts` — `mergeComplineDefaults()`: compline.json 기본값 병합<br>`src/lib/psalter-loader.ts` — `getComplinePsalmody()`, `getFullComplineData()`: 고정 주간 주기 | `e2e/prayer-compline.spec.ts` — 7개 테스트: header, no invitatory, Nunc Dimittis, no intercessions, no Our Father, blessing, 고정 주간 주기 검증<br>`e2e/api.spec.ts` — Compline API: nuncDimittis, no intercessions/ourFather, 고정 주기 psalm 비교 | 완료 |
-| FR-005 | 낮기도 (Terce/Sext/None) 조립 | FR-013~014 | [hour-assembly](modules/hour-assembly.md) | `src/lib/hours/daytime-prayer.ts` — `assembleDaytimePrayer`: hymn + psalmody + short reading + responsory + concluding prayer + dismissal<br>`src/lib/hours/index.ts` — terce/sext/none 모두 같은 assembler 사용 | `e2e/prayer-minor-hours.spec.ts` — terce/sext/none 각각 4개 테스트: no invitatory, no gospel canticle, no intercessions/ourFather, hymn/psalmody/dismissal<br>`e2e/api.spec.ts` — Terce API: no gospelCanticle/intercessions/ourFather, psalmody/dismissal 확인 | 완료 |
+| FR-005 | 낮기도 (Terce/Sext/None) 조립 | FR-013~014 | [hour-assembly](modules/hour-assembly.md) | `src/lib/hours/daytime-prayer.ts` — `assembleDaytimePrayer`: hymn + psalmody + short reading + responsory + concluding prayer + dismissal<br>`src/lib/hours/index.ts` — terce/sext/none 모두 같은 assembler 등록<br>**`src/app/api/loth/[date]/[hour]/route.ts` — `VALID_HOURS`에서 제외 (비활성화)**<br>**`src/lib/loth-service.ts:204-210` — `getHoursSummary()`에서 제외 (홈페이지에 노출 안 됨)** | `e2e/prayer-minor-hours.spec.ts` — terce/sext/none 각각 4개 테스트 (assembler 내부 검증, 현재 API 경로로는 400 반환)<br>`e2e/api.spec.ts` — Terce API: no gospelCanticle/intercessions/ourFather, psalmody/dismissal 확인 | 부분 완료 (API/UI 비활성화) |
 | FR-006 | 독서기도 (Office of Readings) | FR-015 | [hour-assembly](modules/hour-assembly.md) | `src/lib/hours/index.ts` — assemblers에 officeOfReadings 미등록 (교부 독서 데이터 미완성)<br>`src/lib/loth-service.ts` — `getHoursSummary()`에서 officeOfReadings 비활성화<br>`src/app/api/loth/[date]/[hour]/route.ts` — VALID_HOURS에서 제외<br>`src/components/prayer-renderer.tsx` — `PatristicReadingSection` 컴포넌트 구현 완료 | `e2e/prayer-office-readings.spec.ts` — 5개 테스트 존재하나 assembler 미등록으로 실패 예상<br>`e2e/fixtures/dates.ts` — ALL_HOURS에 officeOfReadings 포함 | 부분 완료 |
 | FR-007 | 4주 시편집 (psalter) 공통문 | FR-020~023 | [psalter](modules/psalter.md) | `src/lib/psalter-loader.ts` — `getPsalterPsalmody()`: week-{1..4}.json에서 시편 로드<br>`src/lib/psalter-loader.ts` — `getPsalterCommons()`: shortReading, responsory, gospelCanticleAntiphon, intercessions, concludingPrayer 로드<br>`src/lib/loth-service.ts` — Layer 1 psalter commons 적용 | `e2e/prayer-sections.spec.ts` — psalm block 구조 검증 (antiphon, reference, verses, Gloria Patri)<br>`e2e/api.spec.ts` — sections 배열에 psalmody 포함 확인 | 완료 |
 | FR-008 | 계절 고유문 (seasonal propers) | FR-030~032 | [propers](modules/propers.md) | `src/lib/propers-loader.ts` — `getSeasonHourPropers()`: advent/christmas/lent/easter/ordinary-time.json 로드, date-keyed override (dec17-24) 지원<br>`src/lib/loth-service.ts` — Layer 2 season propers 적용 (psalter commons 위에 override) | `e2e/special-days.spec.ts` — Advent Dec 20 date-keyed propers 검증: 일반 Advent 평일과 concluding prayer 차이 확인<br>`e2e/liturgical-calendar.spec.ts` — 5개 시기별 색상/이름 매핑 확인 | 완료 |
@@ -36,6 +36,10 @@
 | FR-018 | 페이지 참조 토글 설정 | FR-018 | [PRD §7](../PRD.md#7-pdf-페이지-참조-기능) | `src/lib/settings.tsx` — `SettingsProvider` React Context + `useSettings()` hook, localStorage `loth-settings` 키<br>`src/components/settings-toggle.tsx` — 책 아이콘 토글 버튼, `aria-pressed`, active 시 빨간색 배경<br>`src/components/page-ref.tsx` — `showPageRefs` false면 null 반환 | `e2e/page-references.spec.ts` — 테스트 #1,2,3,4,5,8 | 완료 |
 | FR-019 | 설정 시스템 기반 | FR-019 | [PRD §7](../PRD.md#7-pdf-페이지-참조-기능) | `src/lib/settings.tsx` — Context + localStorage, `hydrated` 상태로 SSR 불일치 방지<br>`src/app/layout.tsx` — `<SettingsProvider>` 래핑<br>`src/app/pray/[date]/[hour]/page.tsx` — `<SettingsToggle />` 배치 | `e2e/page-references.spec.ts` — 테스트 #2,5 | 완료 |
 | FR-020 | 가이드 페이지 렌더링 (GILH) | FR-100~102 | [guide](modules/guide.md) | `src/data/loth/gilh.json` — 구조화된 GILH 데이터 (서문, 소개 §1-§11, 루브리카, 각주 28개)<br>`src/app/guide/page.tsx` — 가이드 읽기 페이지 (Server Component, 정적 생성): 목차(Гарчиг) + 3개 섹션 + 각주<br>`src/app/page.tsx` — 홈페이지에 가이드 링크 추가 | `e2e/guide.spec.ts` — 8개 테스트: 목차 렌더링, 앵커 이동, 서문 표시, §번호 소개, 루브리카 구조, 각주 역참조, 홈 링크, 다크모드 | 완료 |
+| FR-021 | Web App Manifest | FR-110 | [PRD §8](../PRD.md#8-pwa-설치-기능) | `src/app/manifest.ts` — Next.js App Router `MetadataRoute.Manifest`, `/manifest.webmanifest`로 자동 서빙, `<link rel="manifest">` 자동 삽입. 몽골어 `name`/`short_name`/`description`, `lang: 'mn'`, `display: 'standalone'`, `theme_color: '#2d6a4f'`, `background_color: '#fafaf9'` | `e2e/pwa.spec.ts` — 테스트 #1,3: 매니페스트 서빙/필드 검증, 헤드 링크 검증 | 완료 |
+| FR-022 | 앱 아이콘 (PWA) | FR-111 | [PRD §8](../PRD.md#8-pwa-설치-기능) | `public/icon.svg` — 전례 녹색(#2d6a4f) 배경의 십자가 SVG, 매니페스트 `any`+`maskable` 레퍼런스<br>`src/app/icon.tsx` — 32x32 favicon, `ImageResponse` from `next/og`<br>`src/app/apple-icon.tsx` — 180x180 Apple touch icon | `e2e/pwa.spec.ts` — 테스트 #2,4: 매니페스트 아이콘 도달, apple touch icon 도달 | 완료 |
+| FR-023 | Service Worker + 오프라인 폴백 | FR-112~114 | [PRD §8](../PRD.md#8-pwa-설치-기능) | `public/sw.js` — `divine-office-v1` 캐시, install 시 `/offline.html` 프리캐시, activate 시 구버전 정리, fetch에서 navigation은 network-first(폴백 `/offline.html`), 정적 자산은 cache-first<br>`public/offline.html` — 자체 완결적 몽골어 오프라인 페이지 (다크모드 대응)<br>`src/components/sw-registrar.tsx` — `'use client'` 등록 컴포넌트, 프로덕션 한정<br>`src/app/layout.tsx` — `<SwRegistrar />` 렌더링 | `e2e/pwa.spec.ts` — 테스트 #5,6: SW 파일 서빙(no-cache 헤더 포함)/오프라인 페이지 서빙 | 완료 |
+| FR-024 | 시편 본문 · stanza 구조 | FR-120~122 | [PRD §9](../PRD.md#9-시편-본문-및-stanza-구조) | `src/data/loth/psalter-texts.json` — 시편 참조별 stanza 배열 (PDF 교독 구분 그대로 반영, 5,900+ 줄)<br>`src/data/loth/ordinarium/invitatory-antiphons.json` — 시기/축일별 초대송 교송 분리<br>`scripts/extract-psalm-texts.js` — `parsed_data/` → psalter-texts.json 추출<br>`src/lib/hours/shared.ts` — `resolvePsalm()`에 stanza 전파, `buildInvitatory()`가 invitatory-antiphons 참조<br>`src/components/psalm-block.tsx` — stanza 경계 시각적 구분<br>`src/lib/hours/types.ts`, `src/lib/types.ts` — `AssembledPsalm.stanzas` 타입 | `e2e/prayer-psalter-commons.spec.ts` — 간접 검증 (psalmody 구조 확인)<br>`src/lib/__tests__/hours/{lauds,vespers,compline,daytime-prayer}.test.ts` — stanza/invitatory-antiphons 사용 검증 | 완료 |
 
 ### 비기능 요구사항 (Non-Functional Requirements)
 
@@ -47,6 +51,10 @@
 | NFR-007 | SSR 하이드레이션 호환 | `src/lib/settings.tsx` — `hydrated` 상태 관리, 하이드레이션 전 기본값 사용 | `e2e/page-references.spec.ts` — 테스트 #5 (새로고침 후 정상 동작) | 완료 |
 | NFR-008 | 접근성 | `src/components/settings-toggle.tsx` — `aria-label`, `aria-pressed`<br>`src/components/page-ref.tsx` — `aria-label` | `e2e/page-references.spec.ts` — 테스트 #2 (aria 속성 확인), 테스트 #8 (aria-pressed) | 완료 |
 | NFR-009 | 성능 무영향 | `src/components/page-ref.tsx` — page undefined/showPageRefs false면 null, 렌더링 없음 | `src/lib/__tests__/hours/page-propagation.test.ts` — undefined pages 테스트 | 완료 |
+| NFR-010 | PWA 설치 가능성 | `src/app/manifest.ts` + `public/sw.js` + `src/components/sw-registrar.tsx` — Vercel HTTPS 배포 시 브라우저 A2HS 기준 충족 | `e2e/pwa.spec.ts` — 테스트 #1,3,5,7: 매니페스트/SW/theme-color/apple-web-app 메타 검증 | 완료 |
+| NFR-011 | SW 업데이트 정책 | `next.config.ts` — `/sw.js`에 `Cache-Control: no-cache, no-store, must-revalidate` + `Service-Worker-Allowed: /` 헤더<br>`src/components/sw-registrar.tsx` — `updateViaCache: 'none'` 옵션 | `e2e/pwa.spec.ts` — 테스트 #5: SW 응답 헤더의 `cache-control` 검증 | 완료 |
+| NFR-012 | 오프라인 페이지 UX | `public/offline.html` — 인라인 CSS, 외부 리소스 없음, stone-50/neutral-950 다크모드, 전례 녹색 CTA, 44px 이상 터치 타겟 | `e2e/pwa.spec.ts` — 테스트 #6: 몽골어 본문/`lang="mn"` 확인 | 완료 |
+| NFR-013 | 모바일 박스 여백 최적화 | `src/components/prayer-renderer.tsx` — `article`/배경색 섹션/`AntiphonBox` padding을 모바일에서 축소, `md:` 이상에서만 기본값 사용<br>`src/components/psalm-block.tsx` — antiphon 박스 내부 여백 반응형 조정 | `e2e/mobile.spec.ts` — 375px 뷰포트에서 기도 본문 가용 폭 검증 (간접) | 완료 |
 
 ---
 
@@ -64,12 +72,14 @@
 | `e2e/special-days.spec.ts` | FR-008, FR-009, FR-010 |
 | `e2e/api.spec.ts` | FR-001, FR-002, FR-003, FR-004, FR-005, FR-009, FR-010, FR-014, FR-015 |
 | `e2e/homepage.spec.ts` | FR-016, NFR-002 |
-| `e2e/mobile.spec.ts` | NFR-001 |
+| `e2e/mobile.spec.ts` | NFR-001, NFR-013 |
 | `e2e/error-handling.spec.ts` | FR-016 |
 | `e2e/date-navigation.spec.ts` | FR-016 |
 | `e2e/page-references.spec.ts` | FR-017, FR-018, FR-019, NFR-007, NFR-008 |
 | `src/lib/__tests__/hours/page-propagation.test.ts` | FR-017, NFR-009 |
 | `e2e/guide.spec.ts` | FR-020 |
+| `e2e/pwa.spec.ts` | FR-021, FR-022, FR-023, NFR-010, NFR-011, NFR-012 |
+| `e2e/prayer-psalter-commons.spec.ts` | FR-007, FR-010, FR-024 |
 | `e2e/fixtures/dates.ts` | (테스트 데이터 — 모든 E2E 공통) |
 
 ---
@@ -80,29 +90,30 @@
 
 | 상태 | 기능 요구사항 | 비기능 요구사항 | 합계 |
 |------|:------------:|:---------------:|:----:|
-| 완료 | 17 | 5 | **22** |
-| 부분 완료 | 3 | 1 | **4** |
+| 완료 | 20 | 9 | **29** |
+| 부분 완료 | 4 | 1 | **5** |
 | 미구현 | 0 | 0 | **0** |
-| **합계** | **20** | **6** | **26** |
+| **합계** | **24** | **10** | **34** |
 
 ### 커버리지율
 
-- **전체 요구사항:** 26건
-- **완료:** 22건 (84.6%)
-- **부분 완료:** 4건 (15.4%)
+- **전체 요구사항:** 34건
+- **완료:** 29건 (85.3%)
+- **부분 완료:** 5건 (15.2%)
 - **미구현:** 0건 (0%)
 
 ### 부분 완료 항목 상세
 
 | ID | 요구사항 | 미완성 내용 | 완료를 위한 조건 |
 |----|----------|-------------|-----------------|
+| FR-005 | 낮기도 (Terce/Sext/None) | assembler 및 e2e 테스트는 구현됨. propers 데이터(짧은독서/화답/마침기도) 미완으로 API/UI에서 비활성화됨 | 1) 낮기도 propers 데이터 보충 2) `route.ts`의 `VALID_HOURS` 및 `loth-service.ts`의 `getHoursSummary()`에서 재활성화 |
 | FR-006 | 독서기도 | 교부 독서 데이터 미완성, assembler 미등록, API에서 비활성화 | 1) 교부 독서 데이터 JSON 작성 2) officeOfReadings assembler 구현 3) API VALID_HOURS에 추가 |
 | FR-011 | 토요일 저녁 = 주일 1st Vespers | 로직 구현 완료, 전용 E2E 테스트 부재 | 토요일 vespers가 주일 propers를 사용하는지 검증하는 E2E 테스트 추가 |
 | FR-017 | PDF 페이지 참조 | 코드 구현 완료, 데이터 일부만 주석됨 (week-1 일요일 lauds만) | 나머지 JSON 파일에 page 번호 주석 추가 (week-2~4, propers, sanctoral, ordinarium) |
-| NFR-003 | Vercel 배포 | 코드 배포 가능 상태이나 `vercel.json` 미존재, 배포 검증 테스트 없음 | 1) Vercel 프로젝트 연결 확인 2) 프로덕션 배포 성공 확인 |
+| NFR-003 | Vercel 배포 | 코드 배포 가능 상태이나 `vercel.json`/`vercel.ts` 미존재, 배포 검증 테스트 없음 | 1) `vercel.ts` 설정 파일 추가 2) 프로덕션 배포 성공 확인 |
 
 ### E2E 테스트 통계
 
-- **테스트 파일:** 16개 (E2E 15개 + fixtures, Vitest 10개)
+- **테스트 파일:** 18개 (E2E 17개 + fixtures, Vitest 10개)
 - **테스트 케이스:** E2E ~71개 + Vitest 74개 (terce/sext/none 반복 포함)
 - **테스트가 없는 요구사항:** 없음 (모든 요구사항에 최소 1개 이상의 테스트 존재, 단 FR-011은 간접 테스트만)
