@@ -17,6 +17,17 @@
   --color-liturgical-rose-dark: #f9a8d4;
 }
 
+html { font-size: 100%; }
+html[data-font-size="xs"] { font-size: 87.5%; }
+html[data-font-size="sm"] { font-size: 93.75%; }
+html[data-font-size="md"] { font-size: 100%; }
+html[data-font-size="lg"] { font-size: 112.5%; }
+html[data-font-size="xl"] { font-size: 125%; }
+
+html[data-font-family="serif"] body {
+  font-family: var(--font-serif), serif;
+}
+
 :focus-visible {
   outline: 2px solid #2d6a4f;
   outline-offset: 2px;

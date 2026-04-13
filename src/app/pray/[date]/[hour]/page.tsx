@@ -3,6 +3,7 @@ import { assembleHour } from '@/lib/loth-service'
 import { PrayerRenderer } from '@/components/prayer-renderer'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { SettingsToggle } from '@/components/settings-toggle'
+import { SettingsLink } from '@/components/settings-link'
 import { Footer } from '@/components/footer'
 import { HourIcon } from '@/components/hour-icon'
 import type { HourType } from '@/lib/types'
@@ -80,6 +81,7 @@ export default async function PrayPage({
         <div className="flex items-center gap-1">
           <SettingsToggle />
           <ThemeToggle />
+          <SettingsLink />
         </div>
       </div>
 

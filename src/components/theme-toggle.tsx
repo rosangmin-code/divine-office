@@ -1,20 +1,18 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useSettings } from '@/lib/settings'
 
 export function ThemeToggle() {
+  const { settings, updateSettings } = useSettings()
   const [dark, setDark] = useState(false)
 
   useEffect(() => {
-    // 초기 상태: 현재 HTML에 dark 클래스가 있는지 확인
     setDark(document.documentElement.classList.contains('dark'))
-  }, [])
+  }, [settings.theme])
 
   function toggle() {
-    const next = !dark
-    setDark(next)
-    document.documentElement.classList.toggle('dark', next)
-    localStorage.setItem('theme', next ? 'dark' : 'light')
+    updateSettings({ theme: dark ? 'light' : 'dark' })
   }
 
   return (

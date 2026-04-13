@@ -54,10 +54,17 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
-                var theme = localStorage.getItem('theme');
-                if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                  document.documentElement.classList.add('dark');
-                }
+                try {
+                  var root = document.documentElement;
+                  var raw = localStorage.getItem('loth-settings');
+                  var s = raw ? JSON.parse(raw) : {};
+                  root.dataset.fontSize = s.fontSize || 'md';
+                  root.dataset.fontFamily = s.fontFamily || 'sans';
+                  var theme = s.theme || localStorage.getItem('theme') || 'system';
+                  var dark = theme === 'dark' ||
+                    (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                  if (dark) root.classList.add('dark');
+                } catch (e) {}
               })();
             `,
           }}
