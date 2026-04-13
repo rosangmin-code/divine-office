@@ -102,7 +102,7 @@ export default async function PrayPage({
       </header>
 
       {/* Prayer content */}
-      <article className="rounded-xl bg-white p-4 md:p-6 lg:p-8 ring-1 ring-stone-200 dark:bg-neutral-900 dark:ring-stone-800">
+      <article>
         <PrayerRenderer hour={assembled} />
       </article>
 

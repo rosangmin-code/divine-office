@@ -48,7 +48,7 @@ test.describe('Mobile layout', () => {
     }
   })
 
-  test('prayer article inner width >= 280px for readability (NFR-013)', async ({ page }) => {
+  test('prayer article inner width >= 320px for readability (NFR-013)', async ({ page }) => {
     await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
 
     const article = page.locator('article').first()
@@ -58,21 +58,20 @@ test.describe('Mobile layout', () => {
       const s = getComputedStyle(el)
       return el.clientWidth - parseFloat(s.paddingLeft) - parseFloat(s.paddingRight)
     })
-    expect(contentWidth).toBeGreaterThanOrEqual(280)
+    expect(contentWidth).toBeGreaterThanOrEqual(320)
   })
 
-  test('antiphon box inner width >= 260px on mobile (NFR-013)', async ({ page }) => {
+  test('antiphon inner width >= 320px on mobile (NFR-013)', async ({ page }) => {
     await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
 
-    // AntiphonBox uses bg-amber-50 / dark:bg-amber-950
-    const antiphon = page.locator('.bg-amber-50').first()
+    const antiphon = page.locator('[data-role="antiphon"]').first()
     const count = await antiphon.count()
-    if (count === 0) test.skip(true, 'No antiphon box rendered on this page')
+    if (count === 0) test.skip(true, 'No antiphon rendered on this page')
 
     const contentWidth = await antiphon.evaluate((el) => {
       const s = getComputedStyle(el)
       return el.clientWidth - parseFloat(s.paddingLeft) - parseFloat(s.paddingRight)
     })
-    expect(contentWidth).toBeGreaterThanOrEqual(260)
+    expect(contentWidth).toBeGreaterThanOrEqual(320)
   })
 })

@@ -6,10 +6,10 @@ test.describe('Prayer section detail rendering', () => {
     test('psalm has antiphon, reference, verses, Gloria Patri', async ({ page }) => {
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
 
-      // Antiphon markers (amber background) with "Ant." prefix
-      const antiphons = page.locator('.bg-amber-50')
+      // Antiphon markers with "Ant." prefix
+      const antiphons = page.locator('[data-role="antiphon"]')
       expect(await antiphons.count()).toBeGreaterThanOrEqual(2)
-      await expect(page.locator('.bg-amber-50 >> text=Ant.').first()).toBeVisible()
+      await expect(page.locator('[data-role="antiphon"] >> text=Ant.').first()).toBeVisible()
 
       // Psalm reference header (e.g., "Psalm 63:2-9")
       const refHeaders = page.locator('h4.text-sm.font-semibold.text-stone-600')
@@ -45,7 +45,7 @@ test.describe('Prayer section detail rendering', () => {
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
 
       await expect(page.getByText('Эзэн биднийг адислаж')).toBeVisible()
-      const dismissal = page.locator('.rounded-lg.bg-stone-100').last()
+      const dismissal = page.locator('[aria-label="Илгээлт"]').last()
       await expect(dismissal.getByText('Амэн.')).toBeVisible()
     })
   })

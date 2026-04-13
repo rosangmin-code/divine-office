@@ -1,16 +1,12 @@
 import type { AssembledPsalm } from '@/lib/types'
 import { PageRef } from './page-ref'
+import { AntiphonBox } from './prayer-renderer'
 
 export function PsalmBlock({ psalm }: { psalm: AssembledPsalm }) {
   return (
     <section aria-label={psalm.reference} className="mb-6">
       {/* Antiphon (before) */}
-      {psalm.antiphon && (
-        <div role="note" className="mb-3 rounded-lg bg-amber-50 px-3 md:px-4 py-2 font-serif text-sm italic text-amber-900 dark:bg-amber-950 dark:text-amber-200">
-          <span className="font-semibold">Ant. </span>
-          {psalm.antiphon}
-        </div>
-      )}
+      {psalm.antiphon && <AntiphonBox text={psalm.antiphon} className="mb-3" />}
 
       {/* Psalm title & reference */}
       <div className="mb-2">
@@ -63,12 +59,7 @@ export function PsalmBlock({ psalm }: { psalm: AssembledPsalm }) {
       )}
 
       {/* Antiphon (after) */}
-      {psalm.antiphon && (
-        <div role="note" className="mt-3 rounded-lg bg-amber-50 px-3 md:px-4 py-2 font-serif text-sm italic text-amber-900 dark:bg-amber-950 dark:text-amber-200">
-          <span className="font-semibold">Ant. </span>
-          {psalm.antiphon}
-        </div>
-      )}
+      {psalm.antiphon && <AntiphonBox text={psalm.antiphon} className="mt-3" />}
     </section>
   )
 }

@@ -32,7 +32,7 @@ test.describe('Lauds (Morning Prayer) page', () => {
   })
 
   test('invitatory has versicle and response', async ({ page }) => {
-    const invitatory = page.locator('.rounded-lg.bg-stone-100').first()
+    const invitatory = page.locator('[aria-label="Урих дуудлага"]').first()
     await expect(invitatory.getByText('V.')).toBeVisible()
     await expect(invitatory.getByText('R.')).toBeVisible()
   })
