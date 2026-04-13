@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Noto_Sans, Noto_Serif } from 'next/font/google'
 import { SettingsProvider } from '@/lib/settings'
+import { SwRegistrar } from '@/components/sw-registrar'
 import './globals.css'
 
 const notoSans = Noto_Sans({
@@ -19,12 +20,19 @@ const notoSerif = Noto_Serif({
 
 export const viewport: Viewport = {
   viewportFit: 'cover',
+  themeColor: '#2d6a4f',
 }
 
 export const metadata: Metadata = {
   title: 'Цагийн Залбирал | Католик Шашны Өдөр Тутмын Залбирал',
   description:
     'Монгол дахь Католик итгэгчдэд зориулсан цагийн залбирлын апп',
+  applicationName: 'Цагийн Залбирал',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Цагийн Залбирал',
+  },
   openGraph: {
     title: 'Цагийн Залбирал',
     description:
@@ -61,6 +69,7 @@ export default function RootLayout({
             <main className="flex-1">{children}</main>
           </SettingsProvider>
         </div>
+        <SwRegistrar />
       </body>
     </html>
   )
