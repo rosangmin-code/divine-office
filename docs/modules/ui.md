@@ -41,6 +41,7 @@
 | FR-096 | 다크 모드/라이트 모드 토글을 지원한다 (ThemeToggle). | 완료 |
 | FR-097 | loading.tsx로 Skeleton UI를 제공한다. | 완료 |
 | FR-098 | error.tsx, not-found.tsx로 에러/404 상태를 처리한다. | 완료 |
+| FR-099 | 박스형 섹션의 padding은 모바일 우선 축소값을 사용한다: article `p-4 md:p-6 lg:p-8`, 배경색 섹션 박스 `p-3 md:p-4`, AntiphonBox `px-3 md:px-4 py-2`, PsalmBlock 절 컨테이너 `md:pl-2`. NFR-013 참조. | 완료 |
 
 ## 의존성
 - **api** — REST API를 통해 전례일 정보 및 조립된 기도문 수신

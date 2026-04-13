@@ -6,7 +6,7 @@ export function PsalmBlock({ psalm }: { psalm: AssembledPsalm }) {
     <section aria-label={psalm.reference} className="mb-6">
       {/* Antiphon (before) */}
       {psalm.antiphon && (
-        <div role="note" className="mb-3 rounded-lg bg-amber-50 px-4 py-2 font-serif text-sm italic text-amber-900 dark:bg-amber-950 dark:text-amber-200">
+        <div role="note" className="mb-3 rounded-lg bg-amber-50 px-3 md:px-4 py-2 font-serif text-sm italic text-amber-900 dark:bg-amber-950 dark:text-amber-200">
           <span className="font-semibold">Ant. </span>
           {psalm.antiphon}
         </div>
@@ -27,7 +27,7 @@ export function PsalmBlock({ psalm }: { psalm: AssembledPsalm }) {
 
       {/* Stanzas (PDF source) or Verses (fallback) */}
       {psalm.stanzas && psalm.stanzas.length > 0 ? (
-        <div className="space-y-4 pl-2">
+        <div className="space-y-4 md:pl-2">
           {psalm.stanzas.map((stanza, si) => (
             <div key={si} className="space-y-1">
               {stanza.map((line, li) => (
@@ -39,7 +39,7 @@ export function PsalmBlock({ psalm }: { psalm: AssembledPsalm }) {
           ))}
         </div>
       ) : psalm.verses.length > 0 ? (
-        <div className="space-y-1 pl-2">
+        <div className="space-y-1 md:pl-2">
           {psalm.verses.map((v, i) => (
             <p key={i} className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
               <sup className="mr-1 text-xs text-stone-500 dark:text-stone-500" aria-label={`Ишлэл ${v.verse}`}>{v.verse}</sup>
@@ -48,7 +48,7 @@ export function PsalmBlock({ psalm }: { psalm: AssembledPsalm }) {
           ))}
         </div>
       ) : (
-        <div className="pl-2">
+        <div className="md:pl-2">
           <p role="note" className="text-sm italic text-stone-500 dark:text-stone-500">
             [Орчуулга хийгдэж байна]
           </p>
@@ -64,7 +64,7 @@ export function PsalmBlock({ psalm }: { psalm: AssembledPsalm }) {
 
       {/* Antiphon (after) */}
       {psalm.antiphon && (
-        <div role="note" className="mt-3 rounded-lg bg-amber-50 px-4 py-2 font-serif text-sm italic text-amber-900 dark:bg-amber-950 dark:text-amber-200">
+        <div role="note" className="mt-3 rounded-lg bg-amber-50 px-3 md:px-4 py-2 font-serif text-sm italic text-amber-900 dark:bg-amber-950 dark:text-amber-200">
           <span className="font-semibold">Ant. </span>
           {psalm.antiphon}
         </div>
