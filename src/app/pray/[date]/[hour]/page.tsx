@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { assembleHour } from '@/lib/loth-service'
 import { PrayerRenderer } from '@/components/prayer-renderer'
-import { ThemeToggle } from '@/components/theme-toggle'
 import { SettingsToggle } from '@/components/settings-toggle'
 import { SettingsLink } from '@/components/settings-link'
 import { Footer } from '@/components/footer'
@@ -69,7 +68,7 @@ export default async function PrayPage({
 
   return (
     <div className="mx-auto max-w-2xl lg:max-w-3xl px-4 md:px-6 py-6">
-      {/* Back link + ThemeToggle */}
+      {/* Back link + settings actions */}
       <div className="mb-4 flex items-center justify-between">
         <Link
           href={`/?date=${date}`}
@@ -80,7 +79,6 @@ export default async function PrayPage({
         </Link>
         <div className="flex items-center gap-1">
           <SettingsToggle />
-          <ThemeToggle />
           <SettingsLink />
         </div>
       </div>

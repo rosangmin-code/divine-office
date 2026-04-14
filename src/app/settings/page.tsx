@@ -20,25 +20,38 @@ const FONT_FAMILIES: { value: FontFamily; label: string; sampleClass: string }[]
 const THEMES: { value: ThemeMode; label: string }[] = [
   { value: 'light', label: 'Гэрэлтэй' },
   { value: 'dark', label: 'Харанхуй' },
-  { value: 'system', label: 'Системийн дагуу' },
+  { value: 'system', label: 'Систем' },
 ]
+
+const SECTION_CARD =
+  'rounded-xl bg-white p-6 ring-1 ring-stone-200 dark:bg-neutral-900 dark:ring-stone-800'
+
+const ACTIVE_ACCENT =
+  'border-liturgical-gold bg-liturgical-gold/10 text-liturgical-gold dark:border-liturgical-gold-dark dark:bg-liturgical-gold-dark/10 dark:text-liturgical-gold-dark'
+
+const INACTIVE_ACCENT =
+  'border-stone-200 text-stone-600 hover:border-stone-300 hover:bg-stone-100 dark:border-stone-700 dark:text-stone-400 dark:hover:border-stone-600 dark:hover:bg-stone-800'
 
 export default function SettingsPage() {
   const { settings, updateSettings } = useSettings()
 
   return (
     <div className="mx-auto max-w-2xl px-4 md:px-6 py-8">
-      {/* Header */}
       <header className="mb-8">
-        <div className="flex items-center justify-between mb-4">
+        <div className="mb-4 flex items-center justify-between">
           <Link
             href="/"
-            className="text-sm text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200"
+            aria-label="Нүүр хуудас"
+            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-stone-500 transition-colors hover:bg-stone-200 hover:text-stone-700 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-stone-200"
           >
-            ← Нүүр хуудас
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M19 12H5" />
+              <path d="M12 19l-7-7 7-7" />
+            </svg>
           </Link>
+          <span aria-hidden="true" className="min-w-[44px]" />
         </div>
-        <h1 className="text-center mb-2 text-2xl md:text-3xl font-bold text-stone-900 dark:text-stone-100">
+        <h1 className="mb-2 text-center text-2xl md:text-3xl font-bold text-stone-900 dark:text-stone-100">
           Тохиргоо
         </h1>
         <p className="text-center text-sm text-stone-500 dark:text-stone-400">Settings</p>
@@ -46,14 +59,11 @@ export default function SettingsPage() {
 
       <div className="space-y-6">
         {/* Font size */}
-        <section
-          aria-labelledby="font-size-heading"
-          className="rounded-xl bg-white p-6 shadow-sm dark:bg-neutral-900 dark:ring-1 dark:ring-stone-800"
-        >
-          <h2 id="font-size-heading" className="text-lg font-semibold text-stone-800 dark:text-stone-200 mb-1">
+        <section aria-labelledby="font-size-heading" className={SECTION_CARD}>
+          <h2 id="font-size-heading" className="mb-1 text-lg font-semibold text-stone-800 dark:text-stone-200">
             Үсгийн хэмжээ
           </h2>
-          <p className="text-sm text-stone-500 dark:text-stone-400 mb-4">
+          <p className="mb-4 text-sm text-stone-500 dark:text-stone-400">
             Залбирлын бичвэрийн хэмжээ
           </p>
           <div role="radiogroup" aria-labelledby="font-size-heading" className="grid grid-cols-5 gap-2">
@@ -67,9 +77,7 @@ export default function SettingsPage() {
                   aria-label={`Үсгийн хэмжээ ${opt.label}`}
                   onClick={() => updateSettings({ fontSize: opt.value })}
                   className={`min-h-[44px] rounded-lg border-2 px-2 py-2 text-sm font-medium transition-colors ${
-                    active
-                      ? 'border-liturgical-green bg-liturgical-green/10 text-liturgical-green dark:border-liturgical-green-dark dark:bg-liturgical-green-dark/10 dark:text-liturgical-green-dark'
-                      : 'border-stone-200 text-stone-600 hover:border-stone-300 hover:bg-stone-50 dark:border-stone-700 dark:text-stone-400 dark:hover:border-stone-600 dark:hover:bg-stone-800'
+                    active ? ACTIVE_ACCENT : INACTIVE_ACCENT
                   }`}
                 >
                   <span style={{ fontSize: `${opt.scaleEm}em` }}>{opt.label}</span>
@@ -77,23 +85,14 @@ export default function SettingsPage() {
               )
             })}
           </div>
-          <p
-            aria-hidden="true"
-            className="mt-4 rounded-lg bg-stone-50 px-4 py-3 text-stone-700 dark:bg-stone-800 dark:text-stone-300"
-          >
-            Ave Maria, gratia plena, Dominus tecum.
-          </p>
         </section>
 
         {/* Font family */}
-        <section
-          aria-labelledby="font-family-heading"
-          className="rounded-xl bg-white p-6 shadow-sm dark:bg-neutral-900 dark:ring-1 dark:ring-stone-800"
-        >
-          <h2 id="font-family-heading" className="text-lg font-semibold text-stone-800 dark:text-stone-200 mb-1">
+        <section aria-labelledby="font-family-heading" className={SECTION_CARD}>
+          <h2 id="font-family-heading" className="mb-1 text-lg font-semibold text-stone-800 dark:text-stone-200">
             Үсгийн хэлбэр
           </h2>
-          <p className="text-sm text-stone-500 dark:text-stone-400 mb-4">
+          <p className="mb-4 text-sm text-stone-500 dark:text-stone-400">
             Sans (орчин үеийн) эсвэл Serif (сонгодог)
           </p>
           <div role="radiogroup" aria-labelledby="font-family-heading" className="grid grid-cols-2 gap-2">
@@ -106,9 +105,7 @@ export default function SettingsPage() {
                   aria-checked={active}
                   onClick={() => updateSettings({ fontFamily: opt.value })}
                   className={`min-h-[44px] rounded-lg border-2 px-4 py-3 text-sm transition-colors ${opt.sampleClass} ${
-                    active
-                      ? 'border-liturgical-green bg-liturgical-green/10 text-liturgical-green dark:border-liturgical-green-dark dark:bg-liturgical-green-dark/10 dark:text-liturgical-green-dark'
-                      : 'border-stone-200 text-stone-600 hover:border-stone-300 hover:bg-stone-50 dark:border-stone-700 dark:text-stone-400 dark:hover:border-stone-600 dark:hover:bg-stone-800'
+                    active ? ACTIVE_ACCENT : INACTIVE_ACCENT
                   }`}
                 >
                   {opt.label}
@@ -116,20 +113,28 @@ export default function SettingsPage() {
               )
             })}
           </div>
+
+          <div
+            data-testid="font-preview"
+            className="mt-4 rounded-lg bg-stone-50 px-4 py-3 text-stone-700 dark:bg-stone-800 dark:text-stone-300"
+          >
+            <p className="mb-1 text-xs uppercase tracking-wide text-stone-400 dark:text-stone-500">
+              Жишээ
+            </p>
+            <p>Эзэн таны нэр алдаршиг, таны хаант улс ирэх болтугай.</p>
+            <p className="mt-1 italic">Dominus tecum.</p>
+          </div>
         </section>
 
         {/* Theme */}
-        <section
-          aria-labelledby="theme-heading"
-          className="rounded-xl bg-white p-6 shadow-sm dark:bg-neutral-900 dark:ring-1 dark:ring-stone-800"
-        >
-          <h2 id="theme-heading" className="text-lg font-semibold text-stone-800 dark:text-stone-200 mb-1">
+        <section aria-labelledby="theme-heading" className={SECTION_CARD}>
+          <h2 id="theme-heading" className="mb-1 text-lg font-semibold text-stone-800 dark:text-stone-200">
             Горим
           </h2>
-          <p className="text-sm text-stone-500 dark:text-stone-400 mb-4">
+          <p className="mb-4 text-sm text-stone-500 dark:text-stone-400">
             Гэрэлтэй, харанхуй, эсвэл системийн сонголт
           </p>
-          <div role="radiogroup" aria-labelledby="theme-heading" className="grid grid-cols-3 gap-2">
+          <div role="radiogroup" aria-labelledby="theme-heading" className="grid grid-cols-1 gap-2 sm:grid-cols-3">
             {THEMES.map(opt => {
               const active = settings.theme === opt.value
               return (
@@ -139,9 +144,7 @@ export default function SettingsPage() {
                   aria-checked={active}
                   onClick={() => updateSettings({ theme: opt.value })}
                   className={`min-h-[44px] rounded-lg border-2 px-3 py-2 text-sm font-medium transition-colors ${
-                    active
-                      ? 'border-liturgical-green bg-liturgical-green/10 text-liturgical-green dark:border-liturgical-green-dark dark:bg-liturgical-green-dark/10 dark:text-liturgical-green-dark'
-                      : 'border-stone-200 text-stone-600 hover:border-stone-300 hover:bg-stone-50 dark:border-stone-700 dark:text-stone-400 dark:hover:border-stone-600 dark:hover:bg-stone-800'
+                    active ? ACTIVE_ACCENT : INACTIVE_ACCENT
                   }`}
                 >
                   {opt.label}
@@ -152,13 +155,10 @@ export default function SettingsPage() {
         </section>
 
         {/* Page references toggle */}
-        <section
-          aria-labelledby="page-refs-heading"
-          className="rounded-xl bg-white p-6 shadow-sm dark:bg-neutral-900 dark:ring-1 dark:ring-stone-800"
-        >
+        <section aria-labelledby="page-refs-heading" className={SECTION_CARD}>
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h2 id="page-refs-heading" className="text-lg font-semibold text-stone-800 dark:text-stone-200 mb-1">
+              <h2 id="page-refs-heading" className="mb-1 text-lg font-semibold text-stone-800 dark:text-stone-200">
                 Хуудасны лавлагаа
               </h2>
               <p className="text-sm text-stone-500 dark:text-stone-400">
@@ -172,7 +172,7 @@ export default function SettingsPage() {
               onClick={() => updateSettings({ showPageRefs: !settings.showPageRefs })}
               className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors ${
                 settings.showPageRefs
-                  ? 'bg-liturgical-green dark:bg-liturgical-green-dark'
+                  ? 'bg-liturgical-gold dark:bg-liturgical-gold-dark'
                   : 'bg-stone-300 dark:bg-stone-600'
               }`}
             >

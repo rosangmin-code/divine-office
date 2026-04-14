@@ -70,6 +70,11 @@ test.describe('Settings page', () => {
     await expect(page.locator('html')).not.toHaveClass(/(^|\s)dark(\s|$)/)
   })
 
+  test('theme system option uses short label "Систем"', async ({ page }) => {
+    await page.goto(SETTINGS_URL)
+    await expect(page.getByRole('radio', { name: 'Систем' })).toBeVisible()
+  })
+
   test('page-refs switch syncs with pray page toggle', async ({ page }) => {
     await page.goto(SETTINGS_URL)
     const switchBtn = page.getByRole('switch', { name: /Хуудасны лавлагаа/ })
@@ -96,5 +101,53 @@ test.describe('Settings page', () => {
 
     await page.goto('/pray/2026-02-08/lauds')
     await expect(page.locator('html')).toHaveAttribute('data-font-size', 'xl')
+  })
+
+  test('back link navigates from /settings to home (FR-029)', async ({ page }) => {
+    await page.goto(SETTINGS_URL)
+    const backLink = page.getByRole('link', { name: 'Нүүр хуудас' })
+    await expect(backLink).toBeVisible()
+    await backLink.click()
+    await expect(page).toHaveURL(/\/$/)
+  })
+
+  test('active radio uses brass gold accent, not liturgical green (NFR-016)', async ({ page }) => {
+    await page.goto(SETTINGS_URL)
+    // Default fontSize is "md" → M button is active on load
+    const mBtn = page.getByRole('radio', { name: 'Үсгийн хэмжээ M' })
+    await expect(mBtn).toHaveAttribute('aria-checked', 'true')
+    await expect(mBtn).toHaveClass(/liturgical-gold/)
+    await expect(mBtn).not.toHaveClass(/liturgical-green/)
+  })
+
+  test('page-refs switch uses gold when enabled', async ({ page }) => {
+    await page.goto(SETTINGS_URL)
+    const switchBtn = page.getByRole('switch', { name: /Хуудасны лавлагаа/ })
+    await switchBtn.click()
+    await expect(switchBtn).toHaveClass(/liturgical-gold/)
+  })
+
+  test('font preview box is visible and replaces old Ave Maria text (FR-030)', async ({ page }) => {
+    await page.goto(SETTINGS_URL)
+    const preview = page.getByTestId('font-preview')
+    await expect(preview).toBeVisible()
+    await expect(preview).toContainText('Жишээ')
+    await expect(preview).toContainText('Dominus tecum')
+    // Old Latin-only preview sentence should be gone
+    await expect(page.getByText(/Ave Maria, gratia plena/)).toHaveCount(0)
+  })
+
+  test('home header no longer renders a theme toggle (FR-028)', async ({ page }) => {
+    await page.goto('/')
+    // SettingsLink is still present
+    await expect(page.getByRole('link', { name: 'Тохиргоо' })).toBeVisible()
+    // ThemeToggle (aria-label Харанхуй горим / Гэрэлтэй горим) should be removed
+    await expect(page.getByRole('button', { name: /Харанхуй горим|Гэрэлтэй горим/ })).toHaveCount(0)
+  })
+
+  test('guide header no longer renders a theme toggle (FR-028)', async ({ page }) => {
+    await page.goto('/guide')
+    await expect(page.getByRole('button', { name: /Харанхуй горим|Гэрэлтэй горим/ })).toHaveCount(0)
+    await expect(page.getByRole('link', { name: 'Тохиргоо' })).toBeVisible()
   })
 })

@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react'
 
 export type FontSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 export type FontFamily = 'sans' | 'serif'
@@ -70,7 +70,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     return () => mq.removeEventListener('change', listener)
   }, [settings.theme])
 
-  const updateSettings = useCallback((patch: Partial<Settings>) => {
+  function updateSettings(patch: Partial<Settings>) {
     setSettings(prev => {
       const next = { ...prev, ...patch }
       try {
@@ -80,7 +80,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       }
       return next
     })
-  }, [])
+  }
 
   const value = { settings: hydrated ? settings : DEFAULTS, updateSettings }
 

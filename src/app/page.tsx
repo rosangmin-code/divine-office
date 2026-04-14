@@ -4,7 +4,6 @@ import { getHoursSummary } from '@/lib/loth-service'
 import { BORDER_COLOR_CLASSES } from '@/lib/liturgical-colors'
 import { DatePicker } from '@/components/date-picker'
 import { HourCardList } from '@/components/hour-card-list'
-import { ThemeToggle } from '@/components/theme-toggle'
 import { SettingsLink } from '@/components/settings-link'
 import { Footer } from '@/components/footer'
 
@@ -36,7 +35,6 @@ export default async function HomePage({
       {/* Header */}
       <header className="mb-8">
         <div className="flex items-center justify-end gap-1 mb-4">
-          <ThemeToggle />
           <SettingsLink />
         </div>
         <h1 className="text-center mb-2 text-3xl md:text-4xl font-bold text-stone-900 dark:text-stone-100">

@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import gilhData from '@/data/loth/gilh.json'
-import { ThemeToggle } from '@/components/theme-toggle'
 import { SettingsLink } from '@/components/settings-link'
 import { Footer } from '@/components/footer'
 
@@ -256,7 +255,6 @@ export default function GuidePage() {
             ← Нүүр хуудас
           </Link>
           <div className="flex items-center gap-1">
-            <ThemeToggle />
             <SettingsLink />
           </div>
         </div>
