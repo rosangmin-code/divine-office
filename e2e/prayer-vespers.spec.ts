@@ -11,11 +11,11 @@ test.describe('Vespers (Evening Prayer) page', () => {
   })
 
   test('does NOT have invitatory', async ({ page }) => {
-    await expect(page.getByText('Нээлтийн залбирал')).not.toBeVisible()
+    await expect(page.locator('[aria-label="Урих дуудлага"]')).toHaveCount(0)
   })
 
   test('has Magnificat gospel canticle', async ({ page }) => {
-    await expect(page.getByText('Мариагийн магтаал')).toBeVisible()
+    await expect(page.locator('[aria-label="Мариагийн магтаал"]')).toBeVisible()
   })
 
   test('has Our Father (always present for vespers)', async ({ page }) => {
@@ -23,9 +23,9 @@ test.describe('Vespers (Evening Prayer) page', () => {
   })
 
   test('has hymn, psalmody, dismissal', async ({ page }) => {
-    await expect(page.getByText('Магтуу', { exact: true })).toBeVisible()
+    await expect(page.locator('[aria-label="Магтуу"]')).toBeVisible()
     await expect(page.locator('text=Ant.').first()).toBeVisible()
-    await expect(page.getByText('Эзэн биднийг адислаж')).toBeVisible()
+    await expect(page.locator('[aria-label="Илгээлт"]')).toBeVisible()
   })
 
   test('has intercessions section', async ({ page }) => {

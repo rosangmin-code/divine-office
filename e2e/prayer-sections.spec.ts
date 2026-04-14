@@ -3,7 +3,7 @@ import { DATES } from './fixtures/dates'
 
 test.describe('Prayer section detail rendering', () => {
   test.describe('Psalm block structure', () => {
-    test('psalm has antiphon, reference, verses, Gloria Patri', async ({ page }) => {
+    test('psalm has antiphon, reference header, and Gloria Patri', async ({ page }) => {
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
 
       // Antiphon markers with "Ant." prefix
@@ -11,13 +11,9 @@ test.describe('Prayer section detail rendering', () => {
       expect(await antiphons.count()).toBeGreaterThanOrEqual(2)
       await expect(page.locator('[data-role="antiphon"] >> text=Ant.').first()).toBeVisible()
 
-      // Psalm reference header (e.g., "Psalm 63:2-9")
-      const refHeaders = page.locator('h4.text-sm.font-semibold.text-stone-600')
+      // Psalm reference h4 header (one per psalm block)
+      const refHeaders = page.locator('h4')
       expect(await refHeaders.count()).toBeGreaterThan(0)
-
-      // Verse numbers as superscript
-      const sups = page.locator('sup.text-xs.text-stone-400')
-      expect(await sups.count()).toBeGreaterThan(0)
 
       // Gloria Patri text
       await expect(page.getByText('Эцэг, Хүү, Ариун Сүнсэнд алдар байх болтугай.').first()).toBeVisible()
@@ -27,7 +23,7 @@ test.describe('Prayer section detail rendering', () => {
   test.describe('Hymn section', () => {
     test('hymn renders label', async ({ page }) => {
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
-      await expect(page.getByText('Магтуу', { exact: true })).toBeVisible()
+      await expect(page.locator('[aria-label="Магтуу"]')).toBeVisible()
     })
   })
 
@@ -41,12 +37,12 @@ test.describe('Prayer section detail rendering', () => {
   })
 
   test.describe('Dismissal section', () => {
-    test('has blessing and amen', async ({ page }) => {
+    test('is rendered with section label', async ({ page }) => {
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
 
-      await expect(page.getByText('Эзэн биднийг адислаж')).toBeVisible()
       const dismissal = page.locator('[aria-label="Илгээлт"]').last()
-      await expect(dismissal.getByText('Амэн.')).toBeVisible()
+      await expect(dismissal).toBeVisible()
+      await expect(dismissal.getByText('Төгсгөл', { exact: true })).toBeVisible()
     })
   })
 

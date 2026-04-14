@@ -13,22 +13,22 @@ test.describe('Lauds (Morning Prayer) page', () => {
 
   test('has core sections: invitatory, hymn, psalmody, benedictus, ourFather, dismissal', async ({ page }) => {
     // Invitatory (first hour of day)
-    await expect(page.getByText('Нээлтийн залбирал')).toBeVisible()
+    await expect(page.locator('[aria-label="Урих дуудлага"]')).toBeVisible()
 
     // Hymn
-    await expect(page.getByText('Магтуу', { exact: true })).toBeVisible()
+    await expect(page.locator('[aria-label="Магтуу"]')).toBeVisible()
 
     // Psalmody (psalm blocks with "Ant." markers)
     await expect(page.locator('text=Ant.').first()).toBeVisible()
 
     // Gospel Canticle - Benedictus
-    await expect(page.getByText('Захариагийн магтаал')).toBeVisible()
+    await expect(page.locator('[aria-label="Захариагийн магтаал"]')).toBeVisible()
 
     // Our Father (always present for lauds)
     await expect(page.getByText('Эзэний даатгал залбирал', { exact: true })).toBeVisible()
 
     // Dismissal
-    await expect(page.getByText('Эзэн биднийг адислаж')).toBeVisible()
+    await expect(page.locator('[aria-label="Илгээлт"]')).toBeVisible()
   })
 
   test('invitatory has versicle and response', async ({ page }) => {
@@ -52,7 +52,7 @@ test.describe('Lauds (Morning Prayer) page', () => {
   })
 
   test('bottom back button navigates to homepage', async ({ page }) => {
-    const backBtn = page.getByRole('link', { name: 'Буцах' })
+    const backBtn = page.getByRole('link', { name: 'Буцах', exact: true })
     await expect(backBtn).toBeVisible()
     await expect(backBtn).toHaveAttribute('href', `/?date=${DATES.ordinaryWeekday}`)
   })

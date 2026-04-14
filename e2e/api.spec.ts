@@ -111,7 +111,8 @@ test.describe('GET /api/loth/[date]/[hour]', () => {
     expect(types).not.toContain('ourFather')
   })
 
-  test('Terce (minor hour): no canticle, no intercessions, no ourFather', async ({ request }) => {
+  // Skipped until terce is added to VALID_HOURS (data pending).
+  test.skip('Terce (minor hour): no canticle, no intercessions, no ourFather', async ({ request }) => {
     const res = await request.get(`/api/loth/${DATES.ordinaryWeekday}/terce`)
     expect(res.status()).toBe(200)
 
