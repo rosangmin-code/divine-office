@@ -43,12 +43,12 @@ test.describe('Lauds (Morning Prayer) page', () => {
     expect(invitatory.response).toBeTruthy()
   })
 
-  test('openingVersicle precedes invitatory in section order', async ({ request }) => {
+  test('invitatory precedes openingVersicle in section order', async ({ request }) => {
     const res = await request.get(`/api/loth/${DATES.ordinaryWeekday}/lauds`)
     const body = await res.json()
     const types = body.sections.map((s: { type: string }) => s.type)
-    expect(types[0]).toBe('openingVersicle')
-    expect(types.indexOf('openingVersicle')).toBeLessThan(types.indexOf('invitatory'))
+    expect(types[0]).toBe('invitatory')
+    expect(types.indexOf('invitatory')).toBeLessThan(types.indexOf('openingVersicle'))
   })
 
   test('back link navigates to homepage with date', async ({ page }) => {

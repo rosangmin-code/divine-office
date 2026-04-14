@@ -56,11 +56,11 @@ test.describe('GET /api/loth/[date]/[hour]', () => {
     expect(body.sections).toBeInstanceOf(Array)
     expect(body.sections.length).toBeGreaterThan(0)
 
-    // Lauds always starts with openingVersicle (Удиртгал); invitatory follows when first hour of day
-    expect(body.sections[0].type).toBe('openingVersicle')
+    // Lauds (first hour of day) starts with invitatory, then openingVersicle (Удиртгал)
+    expect(body.sections[0].type).toBe('invitatory')
     const types = body.sections.map((s: { type: string }) => s.type)
-    expect(types).toContain('invitatory')
-    expect(types.indexOf('openingVersicle')).toBeLessThan(types.indexOf('invitatory'))
+    expect(types).toContain('openingVersicle')
+    expect(types.indexOf('invitatory')).toBeLessThan(types.indexOf('openingVersicle'))
 
     // Must contain hymn, psalmody, dismissal
     expect(types).toContain('hymn')
