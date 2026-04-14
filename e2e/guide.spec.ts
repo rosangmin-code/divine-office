@@ -146,4 +146,41 @@ test.describe('Guide page (GILH)', () => {
     // Section headings show page numbers
     await expect(page.locator('#foreword').getByText('х.8')).toBeVisible()
   })
+
+  test('introduction §10 section renders with its body text', async ({ page }) => {
+    await page.goto('/guide')
+
+    // §10 anchor exists (complements existing §1/§5/§11 coverage)
+    await expect(page.locator('#intro-10')).toBeVisible()
+
+    // Characteristic body text from §10 (Luke 18:1 quote)
+    await expect(
+      page
+        .locator('#intro-10')
+        .getByText('Сэтгэл алдрахгүйгээр байнга залбирах ёстой', { exact: false })
+    ).toBeVisible()
+  })
+
+  test('footnote reference in body navigates to its footnote', async ({ page }) => {
+    await page.goto('/guide')
+
+    // The [1] marker in §1 body is an anchor with id="fnref-1" pointing to #fn-1
+    const ref = page.locator('a#fnref-1')
+    await expect(ref).toBeVisible()
+    await ref.click()
+
+    await expect(page).toHaveURL(/#fn-1$/)
+    await expect(page.locator('#fn-1')).toBeInViewport()
+  })
+
+  test('footnote back-reference returns to the body marker', async ({ page }) => {
+    await page.goto('/guide#fn-1')
+
+    const back = page.locator('#fn-1 a[href="#fnref-1"]')
+    await expect(back).toBeVisible()
+    await back.click()
+
+    await expect(page).toHaveURL(/#fnref-1$/)
+    await expect(page.locator('#fnref-1')).toBeInViewport()
+  })
 })

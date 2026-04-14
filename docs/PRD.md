@@ -52,7 +52,7 @@
 | 성경 본문 | [bible.md](modules/bible.md) | FR-070~072 | 전체 완료 |
 | REST API | [api.md](modules/api.md) | FR-080~083 | 전체 완료 |
 | UI 페이지/컴포넌트 | [ui.md](modules/ui.md) | FR-090~098 | 전체 완료 |
-| 가이드 (총지침) | [guide.md](modules/guide.md) | FR-100~102 | 전체 완료 |
+| 가이드 (총지침) | [guide.md](modules/guide.md) | FR-100~102 | 전체 완료 (범위: 원서 p.8-20 — 서문·소개 발췌·지침 개요·각주 28개. 원서 p.22 이후의 "Залбиралт цагийн ёслолын дэг жаяг" 공통문 본문은 [hour-assembly](modules/hour-assembly.md)가 `/pray/[date]/[hour]`로 제공) |
 | PWA 설치 기능 | [PRD §8](#8-pwa-설치-기능) | FR-110~114 | 전체 완료 |
 | 시편 본문 · stanza | [PRD §9](#9-시편-본문-및-stanza-구조) | FR-120~122 | 전체 완료 |
 
