@@ -13,7 +13,7 @@ function SectionDivider() {
 export function AntiphonBox({ text, className = 'my-3' }: { text: string; className?: string }) {
   return (
     <div data-role="antiphon" className={`${className} text-sm italic text-amber-800 dark:text-amber-300`}>
-      <span className="font-semibold not-italic">Ant. </span>{text}
+      {text}
     </div>
   )
 }
@@ -25,10 +25,10 @@ function InvitatorySection({ section }: { section: Extract<HourSection, { type: 
       <div>
         <p className="text-sm font-semibold text-red-700 dark:text-red-400">Урих дуудлага <PageRef page={section.page} /></p>
         <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">
-          <abbr title="Ишлэл" className="font-medium text-red-700 dark:text-red-400 no-underline">V. </abbr>{section.versicle}
+          {section.versicle}
         </p>
         <p className="font-serif text-stone-800 dark:text-stone-200">
-          <abbr title="Хариу" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>{section.response}
+          <span className="text-red-700 dark:text-red-400">- </span>{section.response}
         </p>
       </div>
 
@@ -70,10 +70,10 @@ function OpeningVersicleSection({ section }: { section: Extract<HourSection, { t
     <section aria-label="Удиртгал" className="mb-4">
       <p className="text-sm font-semibold text-red-700 dark:text-red-400">Удиртгал</p>
       <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">
-        <abbr title="Ишлэл" className="font-medium text-red-700 dark:text-red-400 no-underline">V. </abbr>{section.versicle}
+        {section.versicle}
       </p>
       <p className="font-serif text-stone-800 dark:text-stone-200">
-        <abbr title="Хариу" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>{section.response}
+        <span className="text-red-700 dark:text-red-400">- </span>{section.response}
       </p>
       <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">
         {section.gloryBe}{section.alleluia ? ` ${section.alleluia}` : ''}
@@ -133,10 +133,10 @@ function ResponsorySection({ section }: { section: Extract<HourSection, { type: 
     <section aria-label="Хариу залбирал" className="mb-4">
       <p className="text-sm font-semibold text-red-700 dark:text-red-400">Хариу залбирал <PageRef page={section.page} /></p>
       <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">
-        <abbr title="Ишлэл" className="font-medium text-red-700 dark:text-red-400 no-underline">V. </abbr>{section.versicle}
+        {section.versicle}
       </p>
       <p className="font-serif text-stone-800 dark:text-stone-200">
-        <abbr title="Хариу" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>{section.response}
+        <span className="text-red-700 dark:text-red-400">- </span>{section.response}
       </p>
     </section>
   )
@@ -204,11 +204,12 @@ function OurFatherSection() {
     <section aria-label="Эзэний даатгал залбирал" className="mb-4">
       <p className="text-sm font-semibold text-red-700 dark:text-red-400">Эзэний даатгал залбирал</p>
       <p className="mt-2 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
-        Тэнгэр дэх Эцэг маань, Таны нэр ариун байх болтугай. Таны хаанчлал ирэх болтугай.
-        Таны хүсэл тэнгэрт шиг газар дээр биелэх болтугай. Өнөөдрийн өдөр тутмын талхаа
-        бидэнд өгөөч. Бидний гэм нүглийг уучлаач, бид ч бас бидэнд гэм хийсэн хүмүүсийг
-        уучилна. Биднийг уруу татлагад бүү оруулаач. Харин бузар муугаас биднийг
-        ангижруулаач. Амэн.
+        Тэнгэр дэх Эцэг минь ээ, Таны нэр алдар эрхэм дээд байх болтугай.
+        Таны хаанчлал орших болтугай.
+        Тэнгэр дэх таны дур таалал дэлхийд ч биелэх болтугай.
+        Бидэнд өдөр тутмын талхыг өнөөдөр хайрлана уу.
+        Бид бусдыг уучилдгийн адил биднийг өршөөнө үү.
+        Биднийг сорилтонд оруулалгүй, харин хорон муу бүхнээс гэтэлгэн соёрхоно уу. Амэн.
       </p>
     </section>
   )
@@ -232,30 +233,30 @@ function DismissalSection({ section }: { section: Extract<HourSection, { type: '
       <div className="mb-3">
         <p className="text-xs text-stone-500 dark:text-stone-400 mb-1 italic">Санваартан эсвэл тахилч удирдаж байгаа бол:</p>
         <p className="font-serif text-stone-800 dark:text-stone-200">
-          <abbr title="Ишлэл" className="font-medium text-red-700 dark:text-red-400 no-underline">V. </abbr>{section.priest.greeting.versicle}
+          {section.priest.greeting.versicle}
         </p>
         <p className="font-serif text-stone-800 dark:text-stone-200">
-          <abbr title="Хариу" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>{section.priest.greeting.response}
+          <span className="text-red-700 dark:text-red-400">- </span>{section.priest.greeting.response}
         </p>
         <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">{section.priest.blessing.text}</p>
         <p className="font-serif text-stone-800 dark:text-stone-200">
-          <abbr title="Хариу" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>{section.priest.blessing.response}
+          <span className="text-red-700 dark:text-red-400">- </span>{section.priest.blessing.response}
         </p>
         <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">
-          <abbr title="Ишлэл" className="font-medium text-red-700 dark:text-red-400 no-underline">V. </abbr>{section.priest.dismissalVersicle.versicle}
+          {section.priest.dismissalVersicle.versicle}
         </p>
         <p className="font-serif text-stone-800 dark:text-stone-200">
-          <abbr title="Хариу" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>{section.priest.dismissalVersicle.response}
+          <span className="text-red-700 dark:text-red-400">- </span>{section.priest.dismissalVersicle.response}
         </p>
       </div>
 
       {/* Individual form */}
       <p className="text-xs text-stone-500 dark:text-stone-400 mb-1 italic">Хувийн уншлагын үед:</p>
       <p className="font-serif text-stone-800 dark:text-stone-200">
-        <abbr title="Ишлэл" className="font-medium text-red-700 dark:text-red-400 no-underline">V. </abbr>{section.individual.versicle}
+        {section.individual.versicle}
       </p>
       <p className="font-serif text-stone-800 dark:text-stone-200">
-        <abbr title="Хариу" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>{section.individual.response}
+        <span className="text-red-700 dark:text-red-400">- </span>{section.individual.response}
       </p>
     </section>
   )
@@ -276,7 +277,7 @@ function BlessingSection({ section }: { section: Extract<HourSection, { type: 'b
       <p className="text-sm font-semibold text-red-700 dark:text-red-400">Адислал <PageRef page={section.page} /></p>
       <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">{section.text}</p>
       <p className="font-serif text-stone-800 dark:text-stone-200">
-        <abbr title="Хариу" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>{section.response}
+        <span className="text-red-700 dark:text-red-400">- </span>{section.response}
       </p>
     </section>
   )

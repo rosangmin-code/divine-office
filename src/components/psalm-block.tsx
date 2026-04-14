@@ -54,7 +54,7 @@ export function PsalmBlock({ psalm }: { psalm: AssembledPsalm }) {
       {/* Gloria Patri */}
       {psalm.gloriaPatri && (
         <p className="mt-2 font-serif text-sm italic text-stone-500 dark:text-stone-400">
-          Эцэг, Хүү, Ариун Сүнсэнд алдар байх болтугай.
+          Эцэг, Хүү, Ариун Сүнсэнд жавхланг Эхэн цагт байсан мэт аливаа цагт болготугай. Амэн.
         </p>
       )}
 

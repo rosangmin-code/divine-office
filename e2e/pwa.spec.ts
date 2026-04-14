@@ -11,8 +11,8 @@ test.describe('PWA installability', () => {
     expect(manifest.start_url).toBe('/')
     expect(manifest.display).toBe('standalone')
     expect(manifest.lang).toBe('mn')
-    expect(manifest.theme_color).toBe('#2d6a4f')
-    expect(manifest.background_color).toBe('#fafaf9')
+    expect(manifest.theme_color).toBe('#f4ecd8')
+    expect(manifest.background_color).toBe('#f4ecd8')
     expect(Array.isArray(manifest.icons)).toBe(true)
     expect(manifest.icons.length).toBeGreaterThan(0)
   })
@@ -41,7 +41,7 @@ test.describe('PWA installability', () => {
       .locator('meta[name="theme-color"]')
       .first()
       .getAttribute('content')
-    expect(themeColor).toBe('#2d6a4f')
+    expect(themeColor).toBe('#f4ecd8')
   })
 
   test('apple touch icon is served', async ({ page, request }) => {

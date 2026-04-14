@@ -18,8 +18,8 @@ test.describe('Lauds (Morning Prayer) page', () => {
     // Hymn
     await expect(page.locator('[aria-label="Магтуу"]')).toBeVisible()
 
-    // Psalmody (psalm blocks with "Ant." markers)
-    await expect(page.locator('text=Ant.').first()).toBeVisible()
+    // Psalmody (antiphon markers around psalm blocks)
+    await expect(page.locator('[data-role="antiphon"]').first()).toBeVisible()
 
     // Gospel Canticle - Benedictus
     await expect(page.locator('[aria-label="Захариагийн магтаал"]')).toBeVisible()
@@ -31,10 +31,13 @@ test.describe('Lauds (Morning Prayer) page', () => {
     await expect(page.locator('[aria-label="Илгээлт"]')).toBeVisible()
   })
 
-  test('invitatory has versicle and response', async ({ page }) => {
-    const invitatory = page.locator('[aria-label="Урих дуудлага"]').first()
-    await expect(invitatory.getByText('V.')).toBeVisible()
-    await expect(invitatory.getByText('R.')).toBeVisible()
+  test('invitatory has versicle and response', async ({ request }) => {
+    const res = await request.get(`/api/loth/${DATES.ordinaryWeekday}/lauds`)
+    const body = await res.json()
+    const invitatory = body.sections.find((s: { type: string }) => s.type === 'invitatory')
+    expect(invitatory).toBeTruthy()
+    expect(invitatory.versicle).toBeTruthy()
+    expect(invitatory.response).toBeTruthy()
   })
 
   test('back link navigates to homepage with date', async ({ page }) => {

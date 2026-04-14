@@ -24,7 +24,7 @@ test.describe('Vespers (Evening Prayer) page', () => {
 
   test('has hymn, psalmody, dismissal', async ({ page }) => {
     await expect(page.locator('[aria-label="Магтуу"]')).toBeVisible()
-    await expect(page.locator('text=Ant.').first()).toBeVisible()
+    await expect(page.locator('[data-role="antiphon"]').first()).toBeVisible()
     await expect(page.locator('[aria-label="Илгээлт"]')).toBeVisible()
   })
 

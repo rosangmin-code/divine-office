@@ -133,9 +133,10 @@ test.describe('Psalter commons (short reading, responsory, intercessions, conclu
       expect(psalmody.psalms.length).toBeGreaterThan(0)
 
       for (const psalm of psalmody.psalms) {
-        expect(psalm.verses.length).toBeGreaterThan(0)
-        // Each verse should have non-empty text
-        expect(psalm.verses[0].text).toBeTruthy()
+        const stanzaLines = (psalm.stanzas ?? []).flat()
+        const hasStanzaText = stanzaLines.some((line: string) => line && line.trim().length > 0)
+        const hasVerseText = psalm.verses.length > 0 && psalm.verses[0].text
+        expect(hasStanzaText || hasVerseText).toBeTruthy()
       }
     })
 
@@ -149,8 +150,10 @@ test.describe('Psalter commons (short reading, responsory, intercessions, conclu
       expect(psalmody.psalms.length).toBeGreaterThan(0)
 
       for (const psalm of psalmody.psalms) {
-        expect(psalm.verses.length).toBeGreaterThan(0)
-        expect(psalm.verses[0].text).toBeTruthy()
+        const stanzaLines = (psalm.stanzas ?? []).flat()
+        const hasStanzaText = stanzaLines.some((line: string) => line && line.trim().length > 0)
+        const hasVerseText = psalm.verses.length > 0 && psalm.verses[0].text
+        expect(hasStanzaText || hasVerseText).toBeTruthy()
       }
     })
   })

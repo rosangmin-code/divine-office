@@ -6,17 +6,17 @@ test.describe('Prayer section detail rendering', () => {
     test('psalm has antiphon, reference header, and Gloria Patri', async ({ page }) => {
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
 
-      // Antiphon markers with "Ant." prefix
+      // Antiphon markers (rendered as italic amber text via AntiphonBox)
       const antiphons = page.locator('[data-role="antiphon"]')
       expect(await antiphons.count()).toBeGreaterThanOrEqual(2)
-      await expect(page.locator('[data-role="antiphon"] >> text=Ant.').first()).toBeVisible()
+      await expect(antiphons.first()).toBeVisible()
 
       // Psalm reference h4 header (one per psalm block)
       const refHeaders = page.locator('h4')
       expect(await refHeaders.count()).toBeGreaterThan(0)
 
       // Gloria Patri text
-      await expect(page.getByText('Эцэг, Хүү, Ариун Сүнсэнд алдар байх болтугай.').first()).toBeVisible()
+      await expect(page.getByText('Эцэг, Хүү, Ариун Сүнсэнд жавхланг').first()).toBeVisible()
     })
   })
 
@@ -31,8 +31,9 @@ test.describe('Prayer section detail rendering', () => {
     test('contains the full prayer text', async ({ page }) => {
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
 
-      await expect(page.getByText('Эзэний даатгал залбирал', { exact: true })).toBeVisible()
-      await expect(page.getByText('Тэнгэр дэх Эцэг маань')).toBeVisible()
+      const ourFather = page.locator('[aria-label="Эзэний даатгал залбирал"]')
+      await expect(ourFather.getByText('Эзэний даатгал залбирал', { exact: true })).toBeVisible()
+      await expect(ourFather.getByText(/Тэнгэр дэх Эцэг минь ээ/)).toBeVisible()
     })
   })
 
