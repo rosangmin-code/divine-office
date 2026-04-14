@@ -27,3 +27,11 @@ next-env.d.ts
 /test-results/
 /playwright-report/
 /blob-report/
+
+# local dev artifacts — source PDF, extraction outputs, Codex marker
+.codex
+*.pdf
+/parsed_data/
+/output_sample.txt
+/parsed_raw.txt
+/psalter_full_text.txt
