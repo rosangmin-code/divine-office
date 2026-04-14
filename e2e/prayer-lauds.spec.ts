@@ -11,7 +11,10 @@ test.describe('Lauds (Morning Prayer) page', () => {
     await expect(page.getByText(DATES.ordinaryWeekday)).toBeVisible()
   })
 
-  test('has core sections: invitatory, hymn, psalmody, benedictus, ourFather, dismissal', async ({ page }) => {
+  test('has core sections: opening versicle, invitatory, hymn, psalmody, benedictus, ourFather, dismissal', async ({ page }) => {
+    // Opening Versicle (Удиртгал) — always present
+    await expect(page.locator('[aria-label="Удиртгал"]')).toBeVisible()
+
     // Invitatory (first hour of day)
     await expect(page.locator('[aria-label="Урих дуудлага"]')).toBeVisible()
 
@@ -38,6 +41,14 @@ test.describe('Lauds (Morning Prayer) page', () => {
     expect(invitatory).toBeTruthy()
     expect(invitatory.versicle).toBeTruthy()
     expect(invitatory.response).toBeTruthy()
+  })
+
+  test('openingVersicle precedes invitatory in section order', async ({ request }) => {
+    const res = await request.get(`/api/loth/${DATES.ordinaryWeekday}/lauds`)
+    const body = await res.json()
+    const types = body.sections.map((s: { type: string }) => s.type)
+    expect(types[0]).toBe('openingVersicle')
+    expect(types.indexOf('openingVersicle')).toBeLessThan(types.indexOf('invitatory'))
   })
 
   test('back link navigates to homepage with date', async ({ page }) => {

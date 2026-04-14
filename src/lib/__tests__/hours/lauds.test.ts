@@ -48,18 +48,24 @@ describe('assembleLauds', () => {
     const sections = assembleLauds(makeContext())
     const types = sections.map((s) => s.type)
     expect(types).toEqual([
-      'invitatory', 'hymn', 'psalmody', 'responsory',
+      'openingVersicle', 'invitatory', 'hymn', 'psalmody', 'responsory',
       'gospelCanticle', 'intercessions', 'ourFather', 'concludingPrayer', 'dismissal',
     ])
   })
 
-  it('includes invitatory when isFirstHourOfDay', () => {
-    const sections = assembleLauds(makeContext({ isFirstHourOfDay: true }))
-    expect(sections[0].type).toBe('invitatory')
+  it('always starts with openingVersicle', () => {
+    const sections = assembleLauds(makeContext())
+    expect(sections[0].type).toBe('openingVersicle')
   })
 
-  it('uses openingVersicle when not first hour', () => {
+  it('includes invitatory when isFirstHourOfDay', () => {
+    const sections = assembleLauds(makeContext({ isFirstHourOfDay: true }))
+    expect(sections.some((s) => s.type === 'invitatory')).toBe(true)
+  })
+
+  it('omits invitatory when not first hour', () => {
     const sections = assembleLauds(makeContext({ isFirstHourOfDay: false }))
+    expect(sections.some((s) => s.type === 'invitatory')).toBe(false)
     expect(sections[0].type).toBe('openingVersicle')
   })
 

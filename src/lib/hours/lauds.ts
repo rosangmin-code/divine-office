@@ -5,7 +5,10 @@ import { buildInvitatory, resolveInvitatoryAntiphon, buildOpeningVersicle, build
 export const assembleLauds: HourAssembler = (ctx) => {
   const sections: HourSection[] = []
 
-  // 1. Invitatory (only for the first hour of the day) or Opening Versicle
+  // 1. Opening Versicle (Удиртгал) — always present at Lauds
+  sections.push(buildOpeningVersicle(ctx.ordinarium, ctx.liturgicalDay.season))
+
+  // 2. Invitatory — only when Lauds is the first hour of the day
   if (ctx.isFirstHourOfDay) {
     const antiphon = resolveInvitatoryAntiphon(
       ctx.ordinarium.invitatoryAntiphons,
@@ -14,8 +17,6 @@ export const assembleLauds: HourAssembler = (ctx) => {
       ctx.dateStr,
     )
     sections.push(buildInvitatory(ctx.ordinarium, antiphon))
-  } else {
-    sections.push(buildOpeningVersicle(ctx.ordinarium, ctx.liturgicalDay.season))
   }
 
   // 2. Hymn
