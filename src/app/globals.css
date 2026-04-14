@@ -15,6 +15,28 @@
   --color-liturgical-white-dark: #d6cfc7;
   --color-liturgical-red-dark: #ef4444;
   --color-liturgical-rose-dark: #f9a8d4;
+
+  /* Brass gold accent (악센트: 제목·구분·포커스) */
+  --color-liturgical-gold: #a8893c;
+  --color-liturgical-gold-dark: #c9a961;
+
+  /* Parchment · Sepia · Espresso palette
+     (stone/neutral/white 오버라이드 — 전체 앱 테마) */
+  --color-white: #faf6ec;     /* 카드/페이지 surface */
+  --color-stone-50: #f4ecd8;  /* 양피지 base BG */
+  --color-stone-100: #ede2c9; /* hover BG */
+  --color-stone-200: #dfd0ad; /* divider / subtle surface */
+  --color-stone-300: #c8b58e;
+  --color-stone-400: #a08a5b; /* muted text / icon */
+  --color-stone-500: #7a6548; /* secondary text */
+  --color-stone-600: #5c4a33;
+  --color-stone-700: #3e3122;
+  --color-stone-800: #2b1f14; /* primary text */
+  --color-stone-900: #1f1610; /* heading */
+  --color-stone-950: #140e08;
+
+  --color-neutral-900: #231c14; /* dark surface (카드) */
+  --color-neutral-950: #1a1510; /* dark base BG */
 }
 
 html { font-size: 100%; }
@@ -29,13 +51,13 @@ html[data-font-family="serif"] body {
 }
 
 :focus-visible {
-  outline: 2px solid #2d6a4f;
+  outline: 2px solid #a8893c;
   outline-offset: 2px;
   border-radius: 4px;
 }
 
 .dark :focus-visible {
-  outline-color: #52b788;
+  outline-color: #c9a961;
 }
 
 @keyframes fadeIn {
@@ -67,9 +89,9 @@ html[data-font-family="serif"] body {
   content: '';
   flex: 1;
   height: 1px;
-  background: #d6d3d1;
+  background: #d9c9a8;
 }
 .dark .section-divider::before,
 .dark .section-divider::after {
-  background: #44403c;
+  background: #3e301f;
 }

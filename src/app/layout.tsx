@@ -20,7 +20,10 @@ const notoSerif = Noto_Serif({
 
 export const viewport: Viewport = {
   viewportFit: 'cover',
-  themeColor: '#2d6a4f',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f4ecd8' },
+    { media: '(prefers-color-scheme: dark)', color: '#1a1510' },
+  ],
 }
 
 export const metadata: Metadata = {
