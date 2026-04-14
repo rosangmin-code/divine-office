@@ -1,6 +1,7 @@
 import type { AssembledHour, HourSection } from '@/lib/types'
 import { PsalmBlock } from './psalm-block'
 import { PageRef } from './page-ref'
+import { InvitatorySection } from './invitatory-section'
 
 function SectionDivider() {
   return (
@@ -15,53 +16,6 @@ export function AntiphonBox({ text, className = 'my-3' }: { text: string; classN
     <div data-role="antiphon" className={`${className} text-sm italic text-amber-800 dark:text-amber-300`}>
       {text}
     </div>
-  )
-}
-
-function InvitatorySection({ section }: { section: Extract<HourSection, { type: 'invitatory' }> }) {
-  return (
-    <section aria-label="Урих дуудлага" className="mb-4">
-      {/* Opening versicle */}
-      <div>
-        <p className="text-sm font-semibold text-red-700 dark:text-red-400">Урих дуудлага <PageRef page={section.page} /></p>
-        <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">
-          {section.versicle}
-        </p>
-        <p className="font-serif text-stone-800 dark:text-stone-200">
-          <span className="text-red-700 dark:text-red-400">- </span>{section.response}
-        </p>
-      </div>
-
-      {/* Invitatory antiphon */}
-      <AntiphonBox text={section.antiphon} />
-
-      {/* Psalm header */}
-      <p className="mt-3 text-sm font-semibold text-red-700 dark:text-red-400">
-        {section.psalm.ref.replace('Psalm', 'Дуулал')}
-      </p>
-      <p className="text-xs italic text-stone-500 dark:text-stone-400">{section.psalm.title}</p>
-      {section.psalm.epigraph && (
-        <p className="mt-1 text-xs italic text-stone-500 dark:text-stone-400">{section.psalm.epigraph}</p>
-      )}
-
-      {/* Psalm stanzas with antiphon repeated between each */}
-      {section.psalm.stanzas.map((stanza, si) => (
-        <div key={si}>
-          <div className="mt-3 space-y-1 pl-2">
-            {stanza.map((line, li) => (
-              <p key={li} className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">{line}</p>
-            ))}
-          </div>
-          <AntiphonBox text={section.antiphon} />
-        </div>
-      ))}
-
-      {/* Glory Be */}
-      <div className="mt-3 space-y-1 pl-2">
-        <p className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">{section.gloryBe}</p>
-      </div>
-      <AntiphonBox text={section.antiphon} />
-    </section>
   )
 }
 

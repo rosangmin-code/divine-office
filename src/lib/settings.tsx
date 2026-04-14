@@ -11,6 +11,7 @@ export interface Settings {
   fontSize: FontSize
   fontFamily: FontFamily
   theme: ThemeMode
+  invitatoryCollapsed: boolean
 }
 
 interface SettingsContextValue {
@@ -23,6 +24,7 @@ const DEFAULTS: Settings = {
   fontSize: 'md',
   fontFamily: 'sans',
   theme: 'system',
+  invitatoryCollapsed: true,
 }
 const STORAGE_KEY = 'loth-settings'
 

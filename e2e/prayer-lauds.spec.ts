@@ -60,3 +60,35 @@ test.describe('Lauds (Morning Prayer) page', () => {
     await expect(backBtn).toHaveAttribute('href', `/?date=${DATES.ordinaryWeekday}`)
   })
 })
+
+test.describe('Invitatory collapse toggle', () => {
+  test('초대송은 기본적으로 접혀 있다', async ({ page }) => {
+    await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
+    const section = page.locator('[aria-label="Урих дуудлага"]')
+    await expect(section).toBeVisible()
+    await expect(section.locator('#invitatory-body')).toHaveCount(0)
+    const toggle = section.getByRole('button', { name: 'Урих дуудлага дэлгэх' })
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  test('토글 클릭 시 초대송 본문이 펼쳐진다', async ({ page }) => {
+    await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
+    const section = page.locator('[aria-label="Урих дуудлага"]')
+    await section.getByRole('button', { name: 'Урих дуудлага дэлгэх' }).click()
+    await expect(section.locator('#invitatory-body')).toBeVisible()
+    await expect(section.getByRole('button', { name: 'Урих дуудлага хураах' })).toHaveAttribute('aria-expanded', 'true')
+    await expect(section.getByText(/Дуулал/)).toBeVisible()
+  })
+
+  test('새로고침 후에도 펼침 상태가 유지된다', async ({ page }) => {
+    await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
+    await page
+      .locator('[aria-label="Урих дуудлага"]')
+      .getByRole('button', { name: 'Урих дуудлага дэлгэх' })
+      .click()
+    await page.reload()
+    const section = page.locator('[aria-label="Урих дуудлага"]')
+    await expect(section.locator('#invitatory-body')).toBeVisible()
+    await expect(section.getByRole('button', { name: 'Урих дуудлага хураах' })).toHaveAttribute('aria-expanded', 'true')
+  })
+})
