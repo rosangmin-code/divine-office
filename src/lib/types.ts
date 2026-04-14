@@ -7,6 +7,7 @@ export type CelebrationRank = 'SOLEMNITY' | 'FEAST' | 'MEMORIAL' | 'OPTIONAL_MEM
 export interface LiturgicalDayInfo {
   date: string
   name: string
+  nameMn: string
   season: LiturgicalSeason
   seasonMn: string
   color: LiturgicalColor
@@ -164,6 +165,7 @@ export interface SeasonPropers {
 // --- Sanctoral data structures ---
 
 export interface SanctoralEntry {
+  name?: string
   lauds?: HourPropers
   vespers?: HourPropers
   vespers2?: HourPropers

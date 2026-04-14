@@ -37,10 +37,9 @@ export default async function HomePage({
         <div className="flex items-center justify-end gap-1 mb-4">
           <SettingsLink />
         </div>
-        <h1 className="text-center mb-2 text-3xl md:text-4xl font-bold text-stone-900 dark:text-stone-100">
+        <h1 className="text-center text-3xl md:text-4xl font-bold text-stone-900 dark:text-stone-100">
           Цагийн Залбирал
         </h1>
-        <p className="text-center text-sm text-stone-500 dark:text-stone-400">Liturgy of the Hours</p>
       </header>
 
       {/* Date navigation */}
@@ -66,7 +65,7 @@ export default async function HomePage({
       <div className={`mb-8 rounded-xl bg-white p-6 shadow-sm border-l-4 ${BORDER_COLOR_CLASSES[liturgicalDay.color]} dark:bg-neutral-900 dark:shadow-none dark:ring-1 dark:ring-stone-800`}>
         <div>
           <h2 className="text-lg font-semibold text-stone-800 dark:text-stone-200">
-            {liturgicalDay.name}
+            {liturgicalDay.nameMn}
           </h2>
           <p className="text-sm text-stone-500 dark:text-stone-400">
             {liturgicalDay.seasonMn} · {liturgicalDay.colorMn} ·{' '}

@@ -90,7 +90,7 @@ export default async function PrayPage({
               {assembled.hourNameMn}
             </h1>
             <p className="text-sm text-stone-500 dark:text-stone-400">
-              {liturgicalDay.name}
+              {liturgicalDay.nameMn}
             </p>
             <p className="text-xs text-stone-400 dark:text-stone-500">
               {date} · {liturgicalDay.seasonMn}

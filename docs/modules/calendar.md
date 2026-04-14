@@ -22,6 +22,7 @@
 | FR-004 | 축일 등급 5단계를 지원한다: SOLEMNITY, FEAST, MEMORIAL, OPTIONAL_MEMORIAL, WEEKDAY. | 완료 |
 | FR-005 | 주일주기(A/B/C), 평일주기(1/2), 시편집 주간(I-IV)을 자동 계산한다. | 완료 |
 | FR-006 | 연중시기 주간 번호(otWeek)를 romcal 전례일명에서 파싱하여 할당한다. | 완료 |
+| FR-007 | 전례일명을 몽골어(`nameMn`)로도 제공한다. 대축일·축일·기념일은 sanctoral JSON의 몽골어 `name`을, 그 외는 `SEASON_NAMES_MN` + 주간번호(OT는 otWeek, 그 외는 weekOfSeason) + `DAY_NAMES_MN`으로 합성한다 (`buildLiturgicalNameMn`). | 완료 |
 
 ## 의존성
 - 없음 (기반 모듈)

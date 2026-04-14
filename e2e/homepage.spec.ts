@@ -5,9 +5,9 @@ test.describe('Homepage', () => {
   test('renders with today\'s date by default', async ({ page }) => {
     await page.goto('/')
 
-    // Title
+    // Title (Mongolian only — no English subtitle)
     await expect(page.getByRole('heading', { name: 'Цагийн Залбирал', exact: true })).toBeVisible()
-    await expect(page.getByText('Liturgy of the Hours')).toBeVisible()
+    await expect(page.getByText('Liturgy of the Hours')).toHaveCount(0)
 
     // Date input exists
     await expect(page.locator('input[type="date"]')).toBeVisible()
@@ -25,7 +25,14 @@ test.describe('Homepage', () => {
     await page.goto(`/?date=${DATES.ordinaryWeekday}`)
 
     // Season text
-    await expect(page.getByText('Жирийн цаг улирал')).toBeVisible()
+    await expect(page.getByText('Жирийн цаг улирал').first()).toBeVisible()
+
+    // Mongolian liturgical day name — no English day name rendered
+    // DATES.ordinaryWeekday = 2026-02-04 (Wednesday, OT Week 4)
+    await expect(
+      page.getByRole('heading', { name: 'Жирийн цаг улирал, 4-р долоо хоногийн Лхагва гараг' }),
+    ).toBeVisible()
+    await expect(page.getByText(/Ordinary Time|Wednesday of/)).toHaveCount(0)
 
     // Green color indicator (border-l-4)
     await expect(page.locator('.border-liturgical-green')).toBeVisible()

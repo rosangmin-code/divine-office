@@ -32,9 +32,9 @@
 
 | ID | 요구사항 | 상태 |
 |----|----------|------|
-| FR-090 | 홈페이지(`/`): 오늘의 전례일 정보 표시, 6개 기도시간 카드 목록, 날짜 전후 이동 네비게이션. | 완료 |
+| FR-090 | 홈페이지(`/`): 오늘의 전례일 정보 표시, 6개 기도시간 카드 목록, 날짜 전후 이동 네비게이션. 전례일 카드 h2는 `liturgicalDay.nameMn`(몽골어) 단일 표시, 헤더는 몽골어 제목만 유지(영어 부제 "Liturgy of the Hours" 미표시). | 완료 |
 | FR-091 | 날짜 선택기(DatePicker)로 임의 날짜 이동을 지원한다. | 완료 |
-| FR-092 | 기도 페이지(`/pray/[date]/[hour]`): 조립된 기도문을 섹션별로 렌더링한다. | 완료 |
+| FR-092 | 기도 페이지(`/pray/[date]/[hour]`): 조립된 기도문을 섹션별로 렌더링한다. 상단 헤더의 전례일 부제는 `liturgicalDay.nameMn`(몽골어)으로 표시. | 완료 |
 | FR-093 | 기도 페이지에서 이전/다음 기도시간으로 네비게이션할 수 있다. | 완료 |
 | FR-094 | 전례색에 따른 좌측 보더 색상을 표시한다 (GREEN, VIOLET, WHITE, RED, ROSE). | 완료 |
 | FR-095 | PrayerRenderer 컴포넌트가 16가지 섹션 타입을 렌더링한다: invitatory, hymn, psalmody, shortReading, responsory, gospelCanticle, intercessions, ourFather, concludingPrayer, dismissal, patristicReading, examen, blessing, marianAntiphon 등. | 완료 |

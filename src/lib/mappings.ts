@@ -1,4 +1,5 @@
-import type { LiturgicalSeason, LiturgicalColor, CelebrationRank } from './types'
+import type { LiturgicalSeason, LiturgicalColor, CelebrationRank, DayOfWeek } from './types'
+import { DAY_NAMES_MN } from './types'
 
 // romcal season key -> our LiturgicalSeason
 export const SEASON_MAP: Record<string, LiturgicalSeason> = {
@@ -70,4 +71,25 @@ export const RANK_NAMES_MN: Record<CelebrationRank, string> = {
   MEMORIAL: 'Дурсгал',
   OPTIONAL_MEMORIAL: 'Сонгомол дурсгал',
   WEEKDAY: 'Ажлын өдөр',
+}
+
+/**
+ * Build a Mongolian name for a liturgical day.
+ * Priority: sanctoral name (대축일·축일·기념일) > composed "season + week + day" string.
+ */
+export function buildLiturgicalNameMn(args: {
+  season: LiturgicalSeason
+  weekOfSeason: number
+  dayOfWeek: DayOfWeek
+  sanctoralName?: string
+}): string {
+  const { season, weekOfSeason, dayOfWeek, sanctoralName } = args
+
+  if (sanctoralName) return sanctoralName
+
+  const seasonName = SEASON_NAMES_MN[season]
+  if (dayOfWeek === 'SUN') {
+    return `${seasonName}, ${weekOfSeason}-р ням гараг`
+  }
+  return `${seasonName}, ${weekOfSeason}-р долоо хоногийн ${DAY_NAMES_MN[dayOfWeek]} гараг`
 }
