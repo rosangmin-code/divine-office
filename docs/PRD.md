@@ -204,7 +204,7 @@ src/app/
 |----|----------|------|----------|------|
 | FR-017 | **PDF 페이지 참조 표시**: 각 기도문 섹션(시편, 교송, 찬미가, 짧은독서, 화답, 복음찬가교송, 중보기도, 마침기도 등)에 원본 PDF의 페이지 번호를 루브리카 스타일로 표시한다. 형식: `(х. N)` — 빨간색 60% 투명도, 섹션 헤더 옆에 위치. | UI | P2 | 구현 완료 (데이터 일부) |
 | FR-018 | **페이지 참조 토글 설정**: 전체 설정에서 페이지 참조 표시를 켜고 끌 수 있다. 기본값: 꺼짐. 설정은 localStorage에 영구 저장되며, 페이지 새로고침 후에도 유지된다. | UI/설정 | P2 | 완료 |
-| FR-019 | **설정 시스템 기반**: SettingsProvider React Context를 통한 확장 가능한 설정 시스템. 기도 페이지 헤더에 설정 토글 버튼 표시. | UI/설정 | P2 | 완료 |
+| FR-019 | **설정 시스템 기반**: SettingsProvider React Context를 통한 확장 가능한 설정 시스템. 기도 페이지 헤더에 설정 토글 버튼 표시, 독립 설정 페이지(`/settings`)에서 통합 관리. | UI/설정 | P2 | 완료 |
 
 ### 7.2 비기능 요구사항
 
@@ -272,7 +272,35 @@ src/app/
 
 ---
 
-## 10. 용어 정의
+## 10. 사용자 설정 페이지
+
+### 10.1 기능 요구사항
+
+| ID | 요구사항 | 모듈 | 우선순위 | 상태 |
+|----|----------|------|----------|------|
+| FR-025 | **글씨 크기 조정**: `/settings`에서 5단계(XS/S/M/L/XL, 각각 87.5%/93.75%/100%/112.5%/125%)로 본문 글씨 크기를 선택한다. `<html>`의 `font-size`를 백분율로 스케일하므로 Tailwind `rem` 기반 텍스트가 전 페이지에서 비례 반영된다. 기본값 M. | UI/설정 | P2 | 완료 |
+| FR-026 | **글꼴 선택**: Sans(Noto Sans) / Serif(Noto Serif) 중 택일. `<html>`의 `data-font-family` 속성으로 전역 적용. 기본값 Sans. | UI/설정 | P2 | 완료 |
+| FR-027 | **테마 모드**: 라이트/다크/시스템 3-way 선택. "시스템"은 `prefers-color-scheme`을 따르고 OS 설정 변경에 실시간 반응한다. 기본값 시스템. 헤더의 `ThemeToggle`은 2-way(light↔dark)로 동작하되 동일한 저장소(`loth-settings.theme`)에 쓴다. | UI/설정 | P2 | 완료 |
+| FR-028 | **헤더 기어 아이콘**: 홈, 가이드, 기도 페이지 헤더에 `/settings`로 가는 기어 아이콘 링크를 제공한다. `aria-label="Тохиргоо"`. | UI | P2 | 완료 |
+
+### 10.2 비기능 요구사항
+
+| ID | 요구사항 | 상태 |
+|----|----------|------|
+| NFR-014 | **FOUC 방지**: `<head>` 인라인 스크립트가 paint 이전에 `loth-settings`를 localStorage에서 읽어 `<html>`의 `data-font-size`/`data-font-family`/`dark` 클래스를 선반영한다. | 완료 |
+| NFR-015 | **설정 페이지 접근성**: 라디오 그룹은 `role="radiogroup"` + `aria-labelledby`, 각 옵션은 `role="radio"` + `aria-checked`. 페이지참조 토글은 `role="switch"` + `aria-checked`. 최소 44px 터치 타겟. | 완료 |
+
+### 10.3 구현 상세
+
+- **Settings 확장**: `src/lib/settings.tsx` — `FontSize`/`FontFamily`/`ThemeMode` 타입 추가, `DEFAULTS`에 기본값 포함. `useEffect`가 설정 변경 시 `document.documentElement`의 data 속성과 dark 클래스를 적용. `system` 테마일 때 `matchMedia('(prefers-color-scheme: dark)')` 리스너 등록.
+- **CSS 스케일링**: `src/app/globals.css` — `html[data-font-size="xs|sm|md|lg|xl"]`에 `font-size: 87.5%..125%`; `html[data-font-family="serif"] body`에 Serif 전환.
+- **Pre-paint 스크립트**: `src/app/layout.tsx`의 `<head>` 인라인 스크립트가 `loth-settings`를 우선 읽고, 없으면 구 `theme` 키, 최종 fallback으로 `prefers-color-scheme`.
+- **UI**: `src/app/settings/page.tsx` — 라디오 그룹 3개 + 스위치 1개, 몽골어 레이블. `src/components/settings-link.tsx` — 헤더 기어 아이콘 `<Link>`.
+- **ThemeToggle 통합**: `src/components/theme-toggle.tsx` — `useSettings` 기반 2-way 토글, `loth-settings` 단일 저장소로 consolidated.
+
+---
+
+## 11. 용어 정의
 
 | 한국어 | 몽골어 | 영어 | 설명 |
 |--------|--------|------|------|
