@@ -190,7 +190,7 @@ src/app/
 | P2 | 낮기도 짧은 독서/화답/마침기도 데이터 보충 **→ 완료 후 `VALID_HOURS`/`getHoursSummary()` 재활성화** | FR-014 |
 | P2 | 독서기도 assembler 구현 및 교부 독서 데이터 확보 **→ 완료 후 `VALID_HOURS`/`getHoursSummary()` 재활성화** | FR-015 |
 | P2 | `vercel.ts` 프로젝트 설정 파일 추가 (현재 Vercel 기본 감지 의존) | NFR-003 |
-| P3 | Triduum (성삼일) 특별 전례 처리 | - |
+| P3 | Triduum (성삼일) 특별 전례(수난예식·부활성야) 처리 — 성주간 평일 기도문(성목·성금·성토 lauds/vespers)은 `lent.json weeks.6`에 구현 | - |
 | ~~P3~~ | ~~오프라인 지원 (Service Worker / PWA)~~ → 구현 완료 | FR-110~114 |
 | P3 | 주간/월간 기도 달력 뷰 | - |
 | P2 | PDF 페이지 주석 확장 (week-1 일요일 → 전체 4주 + 계절 고유문) | FR-017 |
