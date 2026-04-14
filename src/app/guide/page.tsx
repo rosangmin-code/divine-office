@@ -143,7 +143,7 @@ function SectionContent({ section }: { section: Section }) {
           {section.paragraphs.map((p, i) => (
             <p
               key={i}
-              className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200 text-justify"
+              className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200"
             >
               {renderTextWithFootnotes(p)}
             </p>
@@ -204,7 +204,7 @@ function SubsectionContent({ sub, isRubric }: { sub: Subsection; isRubric: boole
           return (
             <p
               key={i}
-              className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200 text-justify"
+              className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200"
             >
               {renderTextWithFootnotes(p)}
             </p>
