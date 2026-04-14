@@ -1,7 +1,7 @@
 # 추적성 매트릭스 (Traceability Matrix)
 
 **프로젝트:** Mongolian Liturgy of the Hours (Divine Office) Web App
-**최종 업데이트:** 2026-04-12
+**최종 업데이트:** 2026-04-15
 **기준 브랜치:** `main`
 
 > **참고:** 기능 요구사항은 모듈별 PRD로 분리되었습니다. 각 모듈 문서는 [`docs/modules/`](modules/) 디렉토리를 참조하세요.
@@ -45,6 +45,7 @@
 | FR-027 | 테마 모드 (light/dark/system) | FR-027 | [PRD §10](../PRD.md#10-사용자-설정-페이지) | `src/lib/settings.tsx` — `ThemeMode` 타입, `applyTheme()` 헬퍼, `system` 모드에서 `matchMedia('(prefers-color-scheme: dark)')` 리스너 등록<br>`src/app/layout.tsx` — pre-paint 인라인 스크립트가 `loth-settings.theme` 우선, 구 `theme` 키, `prefers-color-scheme` 순으로 fallback<br>`src/components/theme-toggle.tsx` — `useSettings` 기반 2-way 토글, 단일 저장소 consolidated | `e2e/settings.spec.ts` — 테스트 #6: 라이트/다크 `dark` 클래스 토글<br>`e2e/page-references.spec.ts` — 테스트 #5 (간접, 기존 테마 동작 유지) | 완료 |
 | FR-028 | 헤더 기어 아이콘 | FR-028 | [PRD §10](../PRD.md#10-사용자-설정-페이지) | `src/components/settings-link.tsx` — `<Link href="/settings">` 기어 SVG, `aria-label="Тохиргоо"`<br>`src/app/page.tsx`, `src/app/guide/page.tsx`, `src/app/pray/[date]/[hour]/page.tsx` — 헤더에 `<SettingsLink />` 삽입 | `e2e/settings.spec.ts` — 테스트 #8: 홈 기어 → /settings 이동 | 완료 |
 | FR-029 | 초대송 접기/펼치기 | FR-031 | [PRD §10](../PRD.md#10-사용자-설정-페이지) | `src/components/invitatory-section.tsx` — `'use client'` 추출된 Invitatory 렌더러, `useSettings()`로 `invitatoryCollapsed` 구독, chevron 토글 버튼(`aria-expanded`/`aria-controls`)<br>`src/lib/settings.tsx` — `Settings.invitatoryCollapsed: boolean` 필드 추가, `DEFAULTS.invitatoryCollapsed=true`(기본 접힘)<br>`src/components/prayer-renderer.tsx` — 인라인 `InvitatorySection` 제거 후 분리 파일에서 import | `e2e/prayer-lauds.spec.ts` — `Invitatory collapse toggle` describe 블록: 기본 접힘, 토글 시 본문 표시, 새로고침 후 상태 유지 3개 테스트 | 완료 |
+| FR-030 | 공통문 페이지 (дэг жаяг) | FR-103~105 | [ordinarium](modules/ordinarium.md) | `src/data/loth/ordinarium.json` — 원서 p.22-48 구조화 JSON (아침 8 · 저녁 7 서브섹션, 171 block). block union 타입: paragraph/rubric/versicle/heading/psalm-stanza/antiphon-group<br>`src/app/ordinarium/page.tsx` — Server Component, TOC + 2 대섹션 + block type별 렌더러(BlockRenderer), x.N PageNum 포함<br>`src/components/settings-link.tsx`, `src/components/footer.tsx` — 공유 헤더/푸터<br>`src/app/page.tsx` — 홈 하단에 📜 `/ordinarium` 링크 추가 (기존 📖 `/guide` 옆) | `e2e/ordinarium.spec.ts` — 7개 테스트: 제목/TOC, 앵커 이동(morning-invitatory-psalms), 시편 95 본문, rubric red styling, evening Magnificat, 홈 링크, 뒤로가기 | 완료 |
 
 ### 비기능 요구사항 (Non-Functional Requirements)
 
@@ -85,6 +86,7 @@
 | `e2e/page-references.spec.ts` | FR-017, FR-018, FR-019, NFR-007, NFR-008 |
 | `src/lib/__tests__/hours/page-propagation.test.ts` | FR-017, NFR-009 |
 | `e2e/guide.spec.ts` | FR-020 |
+| `e2e/ordinarium.spec.ts` | FR-030 |
 | `e2e/pwa.spec.ts` | FR-021, FR-022, FR-023, NFR-010, NFR-011, NFR-012 |
 | `e2e/prayer-psalter-commons.spec.ts` | FR-007, FR-010, FR-024 |
 | `e2e/settings.spec.ts` | FR-019, FR-025, FR-026, FR-027, FR-028, NFR-014, NFR-015 |
@@ -98,16 +100,16 @@
 
 | 상태 | 기능 요구사항 | 비기능 요구사항 | 합계 |
 |------|:------------:|:---------------:|:----:|
-| 완료 | 20 | 9 | **29** |
+| 완료 | 21 | 9 | **30** |
 | 부분 완료 | 4 | 1 | **5** |
 | 미구현 | 0 | 0 | **0** |
-| **합계** | **24** | **10** | **34** |
+| **합계** | **25** | **10** | **35** |
 
 ### 커버리지율
 
-- **전체 요구사항:** 34건
-- **완료:** 29건 (85.3%)
-- **부분 완료:** 5건 (15.2%)
+- **전체 요구사항:** 35건
+- **완료:** 30건 (85.7%)
+- **부분 완료:** 5건 (14.3%)
 - **미구현:** 0건 (0%)
 
 ### 부분 완료 항목 상세
