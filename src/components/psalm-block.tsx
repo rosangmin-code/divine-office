@@ -23,28 +23,28 @@ export function PsalmBlock({ psalm }: { psalm: AssembledPsalm }) {
 
       {/* Stanzas (PDF source) or Verses (fallback) */}
       {psalm.stanzas && psalm.stanzas.length > 0 ? (
-        <div className="space-y-4 md:pl-2">
+        <div className="space-y-5 pl-3 md:space-y-4 md:pl-2">
           {psalm.stanzas.map((stanza, si) => (
-            <div key={si} className="space-y-1">
+            <p key={si} className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
               {stanza.map((line, li) => (
-                <p key={li} className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
-                  {line}
-                </p>
+                <span key={li} className="block">{line}</span>
               ))}
-            </div>
-          ))}
-        </div>
-      ) : psalm.verses.length > 0 ? (
-        <div className="space-y-1 md:pl-2">
-          {psalm.verses.map((v, i) => (
-            <p key={i} className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
-              <sup className="mr-1 text-xs text-stone-500 dark:text-stone-500" aria-label={`Ишлэл ${v.verse}`}>{v.verse}</sup>
-              {v.text}
             </p>
           ))}
         </div>
+      ) : psalm.verses.length > 0 ? (
+        <div className="pl-3 md:pl-2">
+          <p className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
+            {psalm.verses.map((v, i) => (
+              <span key={i} className="block">
+                <sup className="mr-1 text-xs text-stone-500 dark:text-stone-500" aria-label={`Ишлэл ${v.verse}`}>{v.verse}</sup>
+                {v.text}
+              </span>
+            ))}
+          </p>
+        </div>
       ) : (
-        <div className="md:pl-2">
+        <div className="pl-3 md:pl-2">
           <p role="note" className="text-sm italic text-stone-500 dark:text-stone-500">
             [Орчуулга хийгдэж байна]
           </p>

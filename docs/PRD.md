@@ -70,6 +70,7 @@
 | NFR-005 | 데이터 캐싱: 전례력(yearCache), 시편집(psalterCache), 계절 고유문(seasonCache), 성인축일(sanctoralCache), 찬미가(_hymns, _hymnsIndex)를 인메모리 캐시한다. | 완료 |
 | NFR-006 | E2E 테스트: Playwright로 API 및 페이지 테스트를 수행한다. | 완료 |
 | NFR-013 | 모바일 박스 여백 최적화: 박스형 섹션(`article`, 배경색 섹션, `AntiphonBox`)의 padding을 모바일에서 축소하고 `md:` 이상에서만 기본값 사용. 375px 뷰포트에서 기도 본문 가용 폭 ≥ 280px, 중첩 antiphon 박스 내부 폭 ≥ 260px 보장. | 완료 |
+| NFR-014 | 모바일 시편 가독성: stanza 단위 시각적 그룹화. stanza 내부 줄 간격은 `leading-relaxed`(line-height 1.625)만으로 처리하고 줄 사이 vertical margin은 0. stanza 간 간격은 모바일 ≥20px(`space-y-5`), 데스크톱 ≥16px(`md:space-y-4`). 모바일 시편 좌측 padding ≥12px(`pl-3`). NFR-013 본문 가용 폭 보장과 호환. | 완료 |
 
 ---
 
@@ -264,11 +265,13 @@ src/app/
 | FR-120 | **Stanza 단위 시편 본문 저장**: `src/data/loth/psalter-texts.json`에 각 시편 참조(`"Psalm 63:2-9"` 등)를 키로 stanza 배열(문자열 배열의 배열)을 저장한다. PDF 원서의 교독 낭송 구분을 그대로 반영한다. | 데이터 | P2 | 완료 |
 | FR-121 | **Stanza 해석 파이프라인**: `resolvePsalm()`(`src/lib/hours/shared.ts`)이 stanza 정보를 `AssembledPsalm`의 구조화 필드로 전달해, 교독 낭송(antiphonal recitation)을 위한 UI 표시가 가능하도록 한다. | 조립 | P2 | 완료 |
 | FR-122 | **초대송 교송 분리 데이터**: `src/data/loth/ordinarium/invitatory-antiphons.json`에 시기/축일별 초대송 교송을 분리 저장한다. `buildInvitatory()`가 이를 참조해 적절한 교송을 선택한다. | 데이터 | P2 | 완료 |
+| FR-123 | **PDF 컬럼 wrap 정규화**: `extract-psalm-texts.js`가 stanza 내(및 인접 stanza 경계)에서 키릴 소문자로 시작하는 줄을 직전 줄의 wrap continuation으로 간주해 합친다. 의미 있는 절(hemistich) 줄바꿈은 보존. | 데이터 | P2 | 완료 |
+| FR-124 | **시편 구간 정확 매칭**: `Psalm N:start-end` 참조에 대해 추출기는 chapter + verseStart까지 함께 매칭한다. 매칭 실패 시 chapter-only fallback은 PDF가 전체 시편을 하나로 낭송하는 경우(예: `Дуулал 11`)에만 허용하며, sub-section 헤더(`Дуулал 119:145-152`)에는 매칭하지 않는다. 같은 chapter의 서로 다른 구간이 동일 본문을 공유하지 않는다. | 데이터 | P1 | 완료 |
 
 ### 9.2 구현 상세
 
-- **Stanza 데이터**: `src/data/loth/psalter-texts.json` (5,900+ 줄). 스크립트: `scripts/extract-psalm-texts.js` (PDF 파싱 결과 `parsed_data/` → stanza 추출).
-- **렌더링**: `src/components/psalm-block.tsx`가 stanza 경계에서 시각적 구분을 제공. 루브리카 스타일과 통합.
+- **Stanza 데이터**: `src/data/loth/psalter-texts.json`. 스크립트: `scripts/extract-psalm-texts.js`. 추출 단계에서 `mergeColumnWraps()`(소문자 시작 줄을 직전 줄로 합침)와 `mergeAcrossStanzaBoundaries()`(stanza 경계를 가로지르는 wrap continuation 처리)가 적용됨(FR-123). 헤더 매칭은 `parseRefKey()`가 verseStart까지 추출해 `buildHeaderRegexes()`가 precise + chapter-only fallback을 분리해 시도(FR-124).
+- **렌더링**: `src/components/psalm-block.tsx`. stanza = 1개의 `<p>`, 줄 = `<span className="block">` 패턴. stanza 내부 줄 사이 vertical margin 0, stanza 사이 모바일 `space-y-5`/데스크톱 `md:space-y-4`. 모바일 좌측 padding `pl-3`(NFR-014).
 - **초대송 교송**: `src/lib/hours/shared.ts`의 `buildInvitatory()`가 `invitatory-antiphons.json`에서 선택, `invitatory.json`의 Venite 본문과 결합.
 
 ---

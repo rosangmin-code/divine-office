@@ -1,4 +1,6 @@
 import { test, expect } from '@playwright/test'
+import * as fs from 'node:fs'
+import * as path from 'node:path'
 import { DATES } from './fixtures/dates'
 
 test.describe('Prayer section detail rendering', () => {
@@ -17,6 +19,22 @@ test.describe('Prayer section detail rendering', () => {
 
       // Gloria Patri text
       await expect(page.getByText('Эцэг, Хүү, Ариун Сүнсэнд жавхланг').first()).toBeVisible()
+    })
+
+    test('Psalm 119 sub-sections in psalter-texts have distinct content (FR-124)', async () => {
+      // psalter-texts.json must not assign the same body to multiple sub-ranges
+      // of Psalm 119. The extractor was previously matching on chapter alone,
+      // which made every "Psalm 119:X-Y" inherit the same wrong content.
+      const file = path.resolve(__dirname, '../src/data/loth/psalter-texts.json')
+      const data = JSON.parse(fs.readFileSync(file, 'utf-8')) as Record<string, { stanzas: string[][] }>
+      const sections = Object.keys(data).filter((k) => k.startsWith('Psalm 119:'))
+      // We expect at least the sub-sections that have distinct headers in the
+      // PDF source (Дуулал 119:105-112 and Дуулал 119:145-152) to be present
+      // and to differ from one another.
+      expect(sections.length).toBeGreaterThanOrEqual(2)
+      const firsts = sections.map((k) => data[k].stanzas[0]?.[0] ?? '')
+      const unique = new Set(firsts)
+      expect(unique.size).toBe(sections.length)
     })
   })
 

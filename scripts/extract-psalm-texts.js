@@ -64,6 +64,56 @@ function isEndMarker(line) {
   return END_MARKERS.some(p => p.test(t))
 }
 
+/**
+ * Merge PDF column-wrap continuations into the previous line.
+ *
+ * The Mongolian psalter PDF uses a narrow column, so a single hemistich often
+ * gets visually wrapped onto two lines. The continuation always starts with a
+ * lowercase Cyrillic character, because in Mongolian Cyrillic every new
+ * hemistich/sentence starts with an uppercase letter. So a lowercase-initial
+ * line is a wrap continuation and should be joined to the previous line with
+ * a single space.
+ *
+ *   Before:  ["Ам минь баясгалант уруулаар магтаалуудыг,", "өргөнө."]
+ *   After:   ["Ам минь баясгалант уруулаар магтаалуудыг, өргөнө."]
+ */
+function mergeColumnWraps(stanza) {
+  const out = []
+  for (const line of stanza) {
+    const first = line.charAt(0)
+    const isLowerCyrillic = /^[а-яёөү]/.test(first)
+    if (out.length > 0 && isLowerCyrillic) {
+      out[out.length - 1] = out[out.length - 1] + ' ' + line
+    } else {
+      out.push(line)
+    }
+  }
+  return out
+}
+
+/**
+ * Cross-stanza wrap merge: if a stanza's first line starts with a lowercase
+ * Cyrillic letter, the apparent stanza break was actually a spurious PDF
+ * blank line in the middle of a wrap. Glue the orphan into the previous
+ * stanza's last line.
+ */
+function mergeAcrossStanzaBoundaries(stanzas) {
+  const out = []
+  for (const stanza of stanzas) {
+    if (stanza.length === 0) continue
+    const first = stanza[0].charAt(0)
+    const isLowerCyrillic = /^[а-яёөү]/.test(first)
+    if (out.length > 0 && isLowerCyrillic) {
+      const prev = out[out.length - 1]
+      prev[prev.length - 1] = prev[prev.length - 1] + ' ' + stanza[0]
+      for (let i = 1; i < stanza.length; i++) prev.push(stanza[i])
+    } else {
+      out.push(stanza)
+    }
+  }
+  return out
+}
+
 // ── Reference conversion: "Psalm 5:2-10, 12-13" → "Дуулал 5:2-10, 12-13" ──
 
 // Map English book names to possible Mongolian forms in parsed_data
@@ -97,15 +147,23 @@ function escapeRegex(s) {
 }
 
 /**
- * Extract book name and chapter number from an English reference.
- * Returns all possible Mongolian book names for matching.
+ * Extract book name, chapter number, and starting verse from an English reference.
+ * "Psalm 119:9-16"  → { chapter: 119, verseStart: 9 }
+ * "Psalm 119:25-32" → { chapter: 119, verseStart: 25 }
+ * "Daniel 3:57-88, 56" → { chapter: 3, verseStart: 57 }
  */
 function parseRefKey(ref) {
   for (const [eng, mnVariants] of Object.entries(BOOK_MAP)) {
     if (ref.startsWith(eng + ' ')) {
       const rest = ref.slice(eng.length + 1)
-      const chapter = parseInt(rest.split(':')[0], 10)
-      return { bookMnVariants: mnVariants, chapter }
+      const [chapterStr, versesStr] = rest.split(':')
+      const chapter = parseInt(chapterStr, 10)
+      let verseStart = null
+      if (versesStr) {
+        const m = versesStr.match(/^(\d+)/)
+        if (m) verseStart = parseInt(m[1], 10)
+      }
+      return { bookMnVariants: mnVariants, chapter, verseStart }
     }
   }
   return null
@@ -116,13 +174,35 @@ function parseRefKey(ref) {
  * Handles variations:
  *   "Дуулал 110:1-5,7" or "Дуулал 110" or "Дуулал 19А"
  *   "1Шастирын дээд 29:10-13"
+ *
+ * Returns an ordered list: precise (chapter + verseStart) regexes first, then
+ * chapter-only fallbacks. Caller tries them in order.
  */
-function buildHeaderRegexes(bookMnVariants, chapter) {
-  return bookMnVariants.map(mn => {
-    // Match: bookMn + optional space + chapter number + optional suffix (А, Б, etc.)
-    return new RegExp(`^${escapeRegex(mn)}\\s*${chapter}(?:[АБВабв])?(?:\\s*:|\\s*$|[^0-9])`)
-  })
+function buildHeaderRegexes(bookMnVariants, chapter, verseStart) {
+  const precise = []
+  const fallback = []
+  for (const mn of bookMnVariants) {
+    const book = escapeRegex(mn)
+    if (verseStart != null) {
+      // "Дуулал 119:9" or "Дуулал 119: 9-16" — verseStart must be the first
+      // number after the colon, followed by a non-digit (-, , or end).
+      precise.push(new RegExp(`^${book}\\s*${chapter}(?:[АБВабв])?\\s*:\\s*${verseStart}(?:[^0-9]|$)`))
+    }
+    // Chapter-only fallback for headers that represent the WHOLE psalm
+    // ("Дуулал 11", "Дуулал 100", "Дуулал 19А"). Critically, must NOT match
+    // sub-section headers like "Дуулал 119:145-152" — otherwise every
+    // sub-range of Psalm 119 inherits the wrong body.
+    fallback.push(new RegExp(`^${book}\\s*${chapter}(?:[АБВабв])?(?:\\s*$|[^0-9:])`))
+  }
+  return { precise, fallback }
 }
+
+/**
+ * Detect any psalm/canticle header line — used as a "next section" stop marker
+ * when extracting a body, so we don't bleed into the following psalm.
+ */
+const ANY_PSALM_HEADER_RE = /^Дуулал\s*\d/
+const ANY_CANTICLE_HEADER_RE = /^Магтаал\b/
 
 // ── Collect all psalm refs from psalter JSONs ──
 
@@ -174,7 +254,7 @@ function loadWeekText(week) {
 
 // ── Extract psalm body from text at a given position ──
 
-function extractPsalmBody(lines, headerIdx, title) {
+function extractPsalmBody(lines, headerIdx, title, ownHeaderRegexes = []) {
   // Skip header line
   let i = headerIdx + 1
 
@@ -207,14 +287,23 @@ function extractPsalmBody(lines, headerIdx, title) {
   const epigraphEnd = skipEpigraph(lines, i)
   i = epigraphEnd
 
-  // Collect psalm body lines until end marker
+  // Collect psalm body lines until end marker or next psalm/canticle header
   const bodyLines = []
   while (i < lines.length) {
     const line = lines[i]
     const trimmed = line.trim()
 
-    // End markers
+    // End markers (Gloria Patri, next antiphon, reading header, etc.)
     if (isEndMarker(trimmed)) break
+
+    // Next psalm/canticle header — stop so we don't bleed into the following
+    // section. ownHeaderRegexes lets the caller's own header re-appear (e.g. a
+    // duplicate header in the parsed text) without prematurely stopping; any
+    // OTHER psalm/canticle header is a hard stop.
+    if (i > headerIdx && (ANY_PSALM_HEADER_RE.test(trimmed) || ANY_CANTICLE_HEADER_RE.test(trimmed))) {
+      const isOwnHeader = ownHeaderRegexes.some(re => re.test(trimmed))
+      if (!isOwnHeader) break
+    }
 
     // Skip noise
     if (isNoiseLine(line)) { i++; continue }
@@ -224,13 +313,13 @@ function extractPsalmBody(lines, headerIdx, title) {
     i++
   }
 
-  // Group into stanzas by blank lines
+  // Group into stanzas by blank lines, then merge PDF column-wrap continuations.
   const stanzas = []
   let currentStanza = []
   for (const line of bodyLines) {
     if (line === '') {
       if (currentStanza.length > 0) {
-        stanzas.push(currentStanza)
+        stanzas.push(mergeColumnWraps(currentStanza))
         currentStanza = []
       }
     } else {
@@ -238,10 +327,10 @@ function extractPsalmBody(lines, headerIdx, title) {
     }
   }
   if (currentStanza.length > 0) {
-    stanzas.push(currentStanza)
+    stanzas.push(mergeColumnWraps(currentStanza))
   }
 
-  return stanzas
+  return mergeAcrossStanzaBoundaries(stanzas)
 }
 
 /**
@@ -310,32 +399,41 @@ function main() {
       continue
     }
 
-    const { bookMnVariants, chapter } = parsed
-    const headerRegexes = buildHeaderRegexes(bookMnVariants, chapter)
+    const { bookMnVariants, chapter, verseStart } = parsed
+    const { precise, fallback } = buildHeaderRegexes(bookMnVariants, chapter, verseStart)
     let extracted = false
 
-    // Search across all weeks (psalm might appear in a different week than expected)
-    for (let w = 1; w <= 4; w++) {
-      const lines = weekLines[w]
-      if (!lines.length) continue
+    // Try precise (chapter + verseStart) first. If no precise header is found
+    // anywhere, fall back to chapter-only — but the fallback regex excludes
+    // sub-section headers (anything with `:`), so it only matches whole-psalm
+    // headers like "Дуулал 11" or "Дуулал 100".
+    const passes = precise.length > 0 ? [precise, fallback] : [fallback]
 
-      // Find ALL matching headers (same psalm chapter might appear multiple times)
-      for (let idx = 0; idx < lines.length; idx++) {
-        const t = lines[idx].trim()
-        if (!headerRegexes.some(re => re.test(t))) continue
-        // Skip lines that are clearly not psalm headers (e.g., references within epigraphs)
-        if (t.includes('нь урих дуудлагын')) continue
-        if (t.includes('нь х.')) continue
-
-        const stanzas = extractPsalmBody(lines, idx, info.title)
-        if (stanzas.length > 0 && stanzas.some(s => s.length > 0)) {
-          result[ref] = { stanzas }
-          found++
-          extracted = true
-          break
-        }
-      }
+    for (const headerRegexes of passes) {
       if (extracted) break
+      // Search across all weeks (psalm might appear in a different week than expected)
+      for (let w = 1; w <= 4; w++) {
+        const lines = weekLines[w]
+        if (!lines.length) continue
+
+        // Find ALL matching headers (same psalm chapter might appear multiple times)
+        for (let idx = 0; idx < lines.length; idx++) {
+          const t = lines[idx].trim()
+          if (!headerRegexes.some(re => re.test(t))) continue
+          // Skip lines that are clearly not psalm headers (e.g., references within epigraphs)
+          if (t.includes('нь урих дуудлагын')) continue
+          if (t.includes('нь х.')) continue
+
+          const stanzas = extractPsalmBody(lines, idx, info.title, headerRegexes)
+          if (stanzas.length > 0 && stanzas.some(s => s.length > 0)) {
+            result[ref] = { stanzas }
+            found++
+            extracted = true
+            break
+          }
+        }
+        if (extracted) break
+      }
     }
 
     if (!extracted) {

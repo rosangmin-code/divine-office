@@ -74,4 +74,36 @@ test.describe('Mobile layout', () => {
     })
     expect(contentWidth).toBeGreaterThanOrEqual(320)
   })
+
+  test('psalm has left padding on mobile (NFR-014)', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'mobile-chrome', 'Mobile-only viewport assertion')
+    await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
+    // PsalmBlock wraps stanzas in a div with `pl-3` (12px) on mobile.
+    const stanzaWrapper = page
+      .locator('section[aria-label*="Psalm"], section[aria-label*="Daniel"], section[aria-label*="Isaiah"]')
+      .locator('div.pl-3')
+      .first()
+    const count = await stanzaWrapper.count()
+    if (count === 0) test.skip(true, 'No psalm stanza wrapper rendered on this page')
+    const pl = await stanzaWrapper.evaluate((el) => parseFloat(getComputedStyle(el).paddingLeft))
+    expect(pl).toBeGreaterThanOrEqual(12)
+  })
+
+  test('psalm stanzas have visible spacing on mobile (NFR-014)', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'mobile-chrome', 'Mobile-only viewport assertion')
+    await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
+    // Find a psalm section that has at least 2 stanza paragraphs.
+    const stanzas = page
+      .locator('section[aria-label*="Psalm"], section[aria-label*="Daniel"], section[aria-label*="Isaiah"]')
+      .locator('p.font-serif')
+    const count = await stanzas.count()
+    if (count < 2) test.skip(true, 'Need at least 2 stanza paragraphs to measure spacing')
+    const a = await stanzas.nth(0).boundingBox()
+    const b = await stanzas.nth(1).boundingBox()
+    expect(a).toBeTruthy()
+    expect(b).toBeTruthy()
+    const gap = b!.y - (a!.y + a!.height)
+    // space-y-5 = 20px between stanzas on mobile (allow small subpixel slack).
+    expect(gap).toBeGreaterThanOrEqual(18)
+  })
 })
