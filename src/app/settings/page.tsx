@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useSettings, type FontSize, type FontFamily, type ThemeMode } from '@/lib/settings'
 import { Footer } from '@/components/footer'
+import { InstallAppSection } from '@/components/install-app-section'
 
 const FONT_SIZES: { value: FontSize; label: string; scaleEm: number }[] = [
   { value: 'xs', label: 'XS', scaleEm: 0.875 },
@@ -23,13 +24,13 @@ const THEMES: { value: ThemeMode; label: string }[] = [
   { value: 'system', label: 'Систем' },
 ]
 
-const SECTION_CARD =
+export const SECTION_CARD =
   'rounded-xl bg-white p-6 ring-1 ring-stone-200 dark:bg-neutral-900 dark:ring-stone-800'
 
-const ACTIVE_ACCENT =
+export const ACTIVE_ACCENT =
   'border-liturgical-gold bg-liturgical-gold/10 text-liturgical-gold dark:border-liturgical-gold-dark dark:bg-liturgical-gold-dark/10 dark:text-liturgical-gold-dark'
 
-const INACTIVE_ACCENT =
+export const INACTIVE_ACCENT =
   'border-stone-200 text-stone-600 hover:border-stone-300 hover:bg-stone-100 dark:border-stone-700 dark:text-stone-400 dark:hover:border-stone-600 dark:hover:bg-stone-800'
 
 export default function SettingsPage() {
@@ -184,6 +185,9 @@ export default function SettingsPage() {
             </button>
           </div>
         </section>
+
+        {/* App install */}
+        <InstallAppSection />
       </div>
 
       <Footer />
