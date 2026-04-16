@@ -149,8 +149,8 @@ src/app/
 | PrayerRenderer | AssembledHour의 sections 배열을 순회하며 16가지 섹션 타입 렌더링 |
 | PsalmBlock | 개별 시편/찬가 블록 (교송, 제목, 절, 영광송) |
 | DatePicker | 날짜 선택 입력 |
+| HourCardList | 기도시간 카드 목록 (단순 링크 목록, 시간 기반 상태 표시 없음) |
 | HourIcon | 기도시간별 아이콘 |
-| ThemeToggle | 다크/라이트 모드 전환 |
 | Footer | 하단 정보 |
 
 ---

@@ -44,7 +44,7 @@ test.describe('Homepage', () => {
     }
   })
 
-  test('hour cards show correct Mongolian names and time hints', async ({ page }) => {
+  test('hour cards show correct Mongolian names', async ({ page }) => {
     await page.goto(`/?date=${DATES.ordinaryWeekday}`)
 
     // Check each active hour card has the Mongolian name
@@ -52,11 +52,6 @@ test.describe('Homepage', () => {
       const link = page.locator(`a[href="/pray/${DATES.ordinaryWeekday}/${hour}"]`)
       await expect(link.getByText(HOUR_NAMES_MN[hour])).toBeVisible()
     }
-
-    // Check time hints
-    await expect(page.getByText('~06:00')).toBeVisible() // lauds
-    await expect(page.getByText('~18:00')).toBeVisible() // vespers
-    await expect(page.getByText('~21:00')).toBeVisible() // compline
   })
 
   test('shows "Өнөөдөр" button when viewing non-today date', async ({ page }) => {

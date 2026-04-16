@@ -26,9 +26,7 @@ export default async function HomePage({
 
   const { liturgicalDay, hours } = summary
 
-  // 서버 측 isToday 힌트 (클라이언트에서 재검증)
   const todayStr = getMongoliaDateStr()
-  const isToday = dateStr === todayStr
 
   return (
     <div className="mx-auto max-w-2xl px-4 md:px-6 py-8">
@@ -75,7 +73,7 @@ export default async function HomePage({
       </div>
 
       {/* Hour cards — Client Component for time-based status */}
-      <HourCardList hours={hours} dateStr={dateStr} isToday={isToday} />
+      <HourCardList hours={hours} dateStr={dateStr} />
 
       {/* Reference links */}
       <div className="mt-6 flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-4">
