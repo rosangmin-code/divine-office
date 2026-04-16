@@ -27,10 +27,10 @@ test.describe('Homepage', () => {
     // Season text
     await expect(page.getByText('Жирийн цаг улирал').first()).toBeVisible()
 
-    // Mongolian liturgical day name — no English day name rendered
+    // Mongolian liturgical day name — season is in subtitle, not in heading
     // DATES.ordinaryWeekday = 2026-02-04 (Wednesday, OT Week 4)
     await expect(
-      page.getByRole('heading', { name: 'Жирийн цаг улирал, 4-р долоо хоногийн Лхагва гараг' }),
+      page.getByRole('heading', { name: '4-р долоо хоногийн Лхагва гараг' }),
     ).toBeVisible()
     await expect(page.getByText(/Ordinary Time|Wednesday of/)).toHaveCount(0)
 

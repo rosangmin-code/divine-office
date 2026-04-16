@@ -87,9 +87,8 @@ export function buildLiturgicalNameMn(args: {
 
   if (sanctoralName) return sanctoralName
 
-  const seasonName = SEASON_NAMES_MN[season]
   if (dayOfWeek === 'SUN') {
-    return `${seasonName}, ${weekOfSeason}-р ням гараг`
+    return `${weekOfSeason}-р ням гараг`
   }
-  return `${seasonName}, ${weekOfSeason}-р долоо хоногийн ${DAY_NAMES_MN[dayOfWeek]} гараг`
+  return `${weekOfSeason}-р долоо хоногийн ${DAY_NAMES_MN[dayOfWeek]} гараг`
 }
