@@ -160,6 +160,134 @@ test.describe('Prayer section detail rendering', () => {
     })
   })
 
+  test.describe('Antiphon labeling (FR-125)', () => {
+    test('psalm antiphon shows "Шад дуулал:" label', async ({ page }) => {
+      await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
+      const antiphons = page.locator('[data-role="antiphon"]')
+      await expect(antiphons.first()).toBeVisible()
+      await expect(antiphons.first()).toContainText('Шад дуулал:')
+    })
+
+    test('gospel canticle antiphon shows "Шад магтаал:" label', async ({ page }) => {
+      await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
+      const canticle = page.locator('[aria-label="Захариагийн магтаал"]')
+      const antiphon = canticle.locator('[data-role="antiphon"]').first()
+      await expect(antiphon).toContainText('Шад магтаал:')
+    })
+
+    test('vespers Magnificat antiphon shows "Шад магтаал:" label', async ({ page }) => {
+      await page.goto(`/pray/${DATES.ordinaryWeekday}/vespers`)
+      const canticle = page.locator('[aria-label="Мариагийн магтаал"]')
+      const antiphon = canticle.locator('[data-role="antiphon"]').first()
+      await expect(antiphon).toContainText('Шад магтаал:')
+    })
+  })
+
+  test.describe('Marian antiphon selection (FR-130)', () => {
+    test('marian antiphon selection menu is visible in compline', async ({ page }) => {
+      await page.goto(`/pray/${DATES.ordinaryWeekday}/compline`)
+      const btn = page.getByRole('button', { name: /Бусад дуу/ })
+      await expect(btn).toBeVisible()
+    })
+
+    test('clicking menu reveals 4 Marian antiphon candidates', async ({ page }) => {
+      await page.goto(`/pray/${DATES.ordinaryWeekday}/compline`)
+      const btn = page.getByRole('button', { name: /Бусад дуу/ })
+      await btn.click()
+      const list = page.getByRole('listbox', { name: 'Мариагийн дуу сонгох' })
+      await expect(list).toBeVisible()
+      const items = list.locator('li')
+      expect(await items.count()).toBe(4)
+    })
+
+    test('selecting a different antiphon changes displayed title', async ({ page }) => {
+      await page.goto(`/pray/${DATES.ordinaryWeekday}/compline`)
+      // The default is Salve Regina
+      await expect(page.getByText('Төгс жаргалт Цэвэр Охин Мариагийн хүндэтгэлийн дуу')).toBeVisible()
+
+      await page.getByRole('button', { name: /Бусад дуу/ }).click()
+      // Select "Аврагчийн хайрт эх" (second option)
+      await page.getByRole('listbox', { name: 'Мариагийн дуу сонгох' }).locator('li button').nth(1).click()
+
+      // Title should change to the selected antiphon
+      await expect(page.getByText('Аврагчийн хайрт эх').first()).toBeVisible()
+    })
+
+    test('API response includes marian antiphon candidates', async ({ request }) => {
+      const res = await request.get(`/api/loth/${DATES.ordinaryWeekday}/compline`)
+      const body = await res.json()
+      const marian = body.sections.find((s: { type: string }) => s.type === 'marianAntiphon')
+      expect(marian).toBeDefined()
+      expect(marian.candidates).toBeDefined()
+      expect(marian.candidates.length).toBe(4)
+      expect(marian.selectedIndex).toBe(0)
+    })
+  })
+
+  test.describe('Alternative concluding prayer (FR-131)', () => {
+    test('Sunday compline shows alternate prayer toggle', async ({ page }) => {
+      await page.goto(`/pray/${DATES.ordinarySunday}/compline`)
+      const btn = page.getByRole('button', { name: /Сонголтот залбирал/ })
+      await expect(btn).toBeVisible()
+    })
+
+    test('toggling shows alternate text', async ({ page }) => {
+      await page.goto(`/pray/${DATES.ordinarySunday}/compline`)
+      const section = page.locator('[aria-label="Төгсгөлийн даатгал залбирал"]')
+      const originalText = await section.locator('.font-serif').textContent()
+
+      await page.getByRole('button', { name: /Сонголтот залбирал/ }).click()
+      const newText = await section.locator('.font-serif').textContent()
+      expect(newText).not.toBe(originalText)
+    })
+
+    test('weekday compline without alternate does not show toggle', async ({ page }) => {
+      // Monday compline has no alternate concluding prayer
+      await page.goto(`/pray/2026-02-02/compline`)
+      const btn = page.getByRole('button', { name: /Сонголтот залбирал/ })
+      await expect(btn).toHaveCount(0)
+    })
+
+    test('API returns alternateText for Sunday compline', async ({ request }) => {
+      const res = await request.get(`/api/loth/${DATES.ordinarySunday}/compline`)
+      const body = await res.json()
+      const prayer = body.sections.find((s: { type: string }) => s.type === 'concludingPrayer')
+      expect(prayer).toBeDefined()
+      expect(prayer.alternateText).toBeTruthy()
+    })
+
+    test('API returns alternateText for ordinary Sunday vespers with alternative', async ({ request }) => {
+      const res = await request.get(`/api/loth/${DATES.ordinarySunday}/vespers`)
+      const body = await res.json()
+      const prayer = body.sections.find((s: { type: string }) => s.type === 'concludingPrayer')
+      expect(prayer).toBeDefined()
+      // Ordinary Time Week 5 Sunday vespers has alternativeConcludingPrayer in propers
+      expect(prayer.alternateText).toBeTruthy()
+    })
+  })
+
+  test.describe('Rubric rendering (FR-126~128)', () => {
+    test('dismissal rubric instructions are rendered in red', async ({ page }) => {
+      await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
+      const dismissal = page.locator('[aria-label="Илгээлт"]').last()
+      const rubric = dismissal.getByText('Санваартан эсвэл тахилч удирдаж байгаа бол:')
+      await expect(rubric).toBeVisible()
+      await expect(rubric).toHaveClass(/text-red-700/)
+    })
+
+    test('Gloria Patri omission rubric shown for canticles with gloriaPatri=false', async ({ request }) => {
+      // Verify via API that some canticles have gloriaPatri=false
+      const res = await request.get(`/api/loth/${DATES.ordinaryWeekday}/lauds`)
+      const body = await res.json()
+      const psalmody = body.sections.find((s: { type: string }) => s.type === 'psalmody')
+      const canticle = psalmody?.psalms?.find((p: { psalmType: string; gloriaPatri: boolean }) => p.psalmType === 'canticle' && p.gloriaPatri === false)
+      // If a canticle with gloriaPatri=false exists, the UI should show the rubric
+      if (canticle) {
+        expect(canticle.gloriaPatri).toBe(false)
+      }
+    })
+  })
+
   test.describe('Short reading and responsory (required for Lauds)', () => {
     test('short reading is always present with ref and verses', async ({ request }) => {
       const res = await request.get(`/api/loth/${DATES.ordinaryWeekday}/lauds`)

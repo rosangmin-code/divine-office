@@ -54,7 +54,12 @@ export const assembleVespers: HourAssembler = (ctx) => {
 
   // 8. Concluding Prayer
   if (ctx.mergedPropers.concludingPrayer) {
-    sections.push({ type: 'concludingPrayer', text: ctx.mergedPropers.concludingPrayer, page: ctx.mergedPropers.concludingPrayerPage })
+    sections.push({
+      type: 'concludingPrayer',
+      text: ctx.mergedPropers.concludingPrayer,
+      page: ctx.mergedPropers.concludingPrayerPage,
+      alternateText: ctx.mergedPropers.alternativeConcludingPrayer,
+    })
   }
 
   // 9. Dismissal

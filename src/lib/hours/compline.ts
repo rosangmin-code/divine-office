@@ -73,7 +73,12 @@ export const assembleCompline: HourAssembler = (ctx) => {
 
   // 7. Concluding Prayer
   if (ctx.mergedPropers.concludingPrayer) {
-    sections.push({ type: 'concludingPrayer', text: ctx.mergedPropers.concludingPrayer, page: ctx.mergedPropers.concludingPrayerPage })
+    sections.push({
+      type: 'concludingPrayer',
+      text: ctx.mergedPropers.concludingPrayer,
+      page: ctx.mergedPropers.concludingPrayerPage ?? ctx.complineData?.concludingPrayer?.page,
+      alternateText: ctx.mergedPropers.alternativeConcludingPrayer ?? ctx.complineData?.concludingPrayer?.alternate,
+    })
   }
 
   // 8. Blessing
@@ -94,6 +99,8 @@ export const assembleCompline: HourAssembler = (ctx) => {
       title: marian.title,
       text: marian.text,
       page: (marian as { title: string; text: string; page?: number }).page,
+      candidates: ctx.complineData.marianAntiphon,
+      selectedIndex: 0,
     })
   }
 

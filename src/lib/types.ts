@@ -144,6 +144,12 @@ export interface HymnCandidate {
   page?: number
 }
 
+export interface MarianAntiphonCandidate {
+  title: string
+  text: string
+  page?: number
+}
+
 export interface PatristicReading {
   author: string
   source: string
@@ -208,12 +214,12 @@ export type HourSection =
   | { type: 'gospelCanticle'; canticle: 'benedictus' | 'magnificat' | 'nuncDimittis'; antiphon: string; text: string; verses?: string[]; doxology?: string; page?: number }
   | { type: 'intercessions'; intro: string; items: string[]; page?: number }
   | { type: 'ourFather' }
-  | { type: 'concludingPrayer'; text: string; page?: number }
+  | { type: 'concludingPrayer'; text: string; page?: number; alternateText?: string }
   | { type: 'dismissal'; priest: { greeting: { versicle: string; response: string }; blessing: { text: string; response: string }; dismissalVersicle: { versicle: string; response: string } }; individual: { versicle: string; response: string } }
   | { type: 'patristicReading'; author: string; source: string; text: string; page?: number }
   | { type: 'examen'; text: string; page?: number }
   | { type: 'blessing'; text: string; response: string; page?: number }
-  | { type: 'marianAntiphon'; title: string; text: string; page?: number }
+  | { type: 'marianAntiphon'; title: string; text: string; page?: number; candidates?: MarianAntiphonCandidate[]; selectedIndex?: number }
 
 export interface AssembledHour {
   hourType: HourType

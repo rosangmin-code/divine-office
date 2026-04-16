@@ -65,7 +65,12 @@ export const assembleLauds: HourAssembler = (ctx) => {
 
   // 9. Concluding Prayer
   if (ctx.mergedPropers.concludingPrayer) {
-    sections.push({ type: 'concludingPrayer', text: ctx.mergedPropers.concludingPrayer, page: ctx.mergedPropers.concludingPrayerPage })
+    sections.push({
+      type: 'concludingPrayer',
+      text: ctx.mergedPropers.concludingPrayer,
+      page: ctx.mergedPropers.concludingPrayerPage,
+      alternateText: ctx.mergedPropers.alternativeConcludingPrayer,
+    })
   }
 
   // 10. Dismissal

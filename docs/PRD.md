@@ -56,6 +56,7 @@
 | 공통문 (дэг жаяг) | [ordinarium.md](modules/ordinarium.md) | FR-103~105 | 전체 완료 (범위: 원서 p.22-48 — 아침·저녁 기도 공통문·루브릭·시편 95/100/67/24·Benedictus·Magnificat) |
 | PWA 설치 기능 | [PRD §8](#8-pwa-설치-기능) | FR-110~114 | 전체 완료 |
 | 시편 본문 · stanza | [PRD §9](#9-시편-본문-및-stanza-구조) | FR-120~122 | 전체 완료 |
+| 기도문 선택 | [PRD §13](#13-기도문-선택-기능) | FR-130~131 | 전체 완료 |
 
 ---
 
@@ -167,7 +168,7 @@ src/app/
 | `HourPropers` | 교송 오버라이드, 짧은 독서, 화답, 복음찬가교송, 중보기도, 마침기도, 찬미가 |
 | `SanctoralEntry` | 성인축일 고유문 (lauds/vespers/vespers2, 고유 시편 교체 옵션) |
 | `AssembledHour` | 최종 조립 결과: hourType, 날짜, 전례일 정보, sections 배열 |
-| `HourSection` | 16가지 discriminated union: invitatory, hymn, psalmody, shortReading, responsory, gospelCanticle, intercessions, ourFather, concludingPrayer, dismissal, patristicReading, examen, blessing, marianAntiphon |
+| `HourSection` | 16가지 discriminated union: invitatory, hymn, psalmody, shortReading, responsory, gospelCanticle, intercessions, ourFather, concludingPrayer, dismissal, patristicReading, examen, blessing, marianAntiphon. hymn에 `candidates`/`selectedIndex`, marianAntiphon에 `candidates?: MarianAntiphonCandidate[]`/`selectedIndex?`, concludingPrayer에 `alternateText?` 포함 |
 
 ---
 
@@ -197,6 +198,34 @@ src/app/
 | P2 | PDF 페이지 주석 확장 (week-1 일요일 → 전체 4주 + 계절 고유문) | FR-017 |
 
 ---
+
+## 12. 루브릭(빨간색 텍스트) 및 교송 라벨링
+
+### 12.1 기능 요구사항
+
+| ID | 요구사항 | 모듈 | 우선순위 | 상태 |
+|----|----------|------|----------|------|
+| FR-125 | **교송 라벨 구분**: PDF 원문에 따라 시편(psalm) 교송에는 "Шад дуулал:", 찬가(canticle) 교송에는 "Шад магтаал:" 접두사를 표시한다. `AntiphonBox` 컴포넌트가 `label` prop('psalm' \| 'canticle')을 받아 구분 렌더링한다. | UI | P1 | 완료 |
+| FR-126 | **Dismissal 루브릭 빨간색 표시**: 전례 지시문("Санваартан эсвэл тахилч удирдаж байгаа бол:", "Хувийн уншлагын үед:")을 PDF 원문과 동일하게 빨간색으로 렌더링한다. | UI | P1 | 완료 |
+| FR-127 | **초대송 루브릭 렌더링**: `invitatory.json`의 `rubric` 필드(대체 시편 선택 안내)를 초대송 섹션 상단에 빨간색 이탤릭으로 표시한다. | UI | P1 | 완료 |
+| FR-128 | **Gloria Patri 생략 루브릭**: `gloriaPatri: false`인 찬가에서 "Эцэг, Хүү, Ариун Сүнсэнд жавхланг... уншихгүй" 빨간색 루브릭 텍스트를 표시한다. | UI | P1 | 완료 |
+| FR-129 | **조건부 Alleluia 분리**: sanctoral 고유문에서 `(Аллэлуяа!)` 조건부 루브릭을 교송 텍스트에서 분리하고 `alleluiaConditional: true` 필드로 표현한다. | 데이터 | P1 | 완료 |
+
+### 12.2 데이터 품질 수정 (2026-04-16)
+
+| 수정 내용 | 영향 파일 |
+|-----------|-----------|
+| 잘린 concludingPrayer/gospelCanticleAntiphon 텍스트 6건 복원 | `week-2.json`, `week-3.json`, `week-4.json`, `christmas.json` |
+| Week 3 TUE vespers intercessions 오염 데이터 정리 (33→7개, shortReading 중복 제거) | `week-3.json` |
+| Week 1/3 SAT vespers 시편 3개씩 빈 antiphon/title 채움 | `week-1.json`, `week-3.json` |
+
+### 12.3 구현 상세
+
+- **교송 라벨**: `src/components/prayer-renderer.tsx`의 `AntiphonBox`가 `label?: 'psalm' | 'canticle'` prop을 받음. `psalm-block.tsx`에서 `psalm.psalmType`에 따라 전달, gospel canticle 섹션에서는 `label="canticle"` 고정, invitatory에서는 기본값 `'psalm'` 사용.
+- **루브릭 색상**: Dismissal 지시문은 `text-red-700/80 dark:text-red-400/80`으로 변경. 초대송 rubric은 `invitatory-section.tsx`에서 `text-xs italic text-red-700/80` 렌더링.
+- **초대송 루브릭 전파**: `src/lib/hours/types.ts`의 `Ordinarium.invitatory`에 `rubric?: string` 추가 → `shared.ts`의 `loadOrdinarium()`에서 추출 → `buildInvitatory()`에서 `HourSection`으로 전달 → `invitatory-section.tsx`에서 렌더링.
+- **Gloria Patri 생략**: `psalm-block.tsx`에서 `gloriaPatri === false`(명시적 false) 조건으로 빨간색 안내 텍스트 표시.
+- **조건부 Alleluia**: `solemnities.json`(03-19, 03-25), `feasts.json`(11-09)에서 `(Аллэлуяа!)` 텍스트 제거 + `"alleluiaConditional": true` 필드 추가.
 
 ## 7. PDF 페이지 참조 기능
 
@@ -325,7 +354,7 @@ src/app/
 | 고유문 | - | Propers | 계절/축일별 고유 기도문 |
 | 공통문 | - | Commons | 4주 주기 기본 기도문 |
 | 통상문 | - | Ordinarium | 매일 고정 요소 (초대송, 찬가 등) |
-| 교송 | - | Antiphon | 시편 전후에 바치는 짧은 구절 |
+| 교송 | Шад дуулал / Шад магтаал | Antiphon | 시편 전후에 바치는 짧은 구절. 시편용은 "Шад дуулал", 찬가용은 "Шад магтаал" |
 | 화답 | - | Responsory | 독서 후 응답 구절 |
 | 찬미가 | - | Hymn | 전례 시가 |
 | 초대송 | - | Invitatory | 하루 첫 기도의 도입부 |
@@ -333,3 +362,20 @@ src/app/
 | 중보기도 | - | Intercessions | 공동 청원 기도 |
 | 마침기도 | - | Concluding Prayer | 기도시간 마무리 기도 |
 | 성모교송 | - | Marian Antiphon | 끝기도 후 성모 관련 교송 (Salve Regina 등) |
+
+---
+
+## 13. 기도문 선택 기능
+
+### 13.1 기능 요구사항
+
+| ID | 요구사항 | 모듈 | 우선순위 | 상태 |
+|----|----------|------|----------|------|
+| FR-130 | **성모교송 선택**: 끝기도의 성모교송(Marian Antiphon) 4개 옵션 중 사용자가 자유롭게 선택할 수 있다. 기본값은 Salve Regina("Төгс жаргалт Цэвэр Охин Мариагийн хүндэтгэлийн дуу"). 대안: "Аврагчийн хайрт эх", "Тэнгэрийн Хатан", "Амар амгалан Мариа". 찬미가 선택 메뉴와 동일한 UI 패턴 사용. | UI/조립 | P1 | 완료 |
+| FR-131 | **대체 마침기도 선택**: 마침기도(concludingPrayer)에 대안(alternativeConcludingPrayer)이 존재하는 경우, 사용자가 기본/대체 기도문을 토글로 선택할 수 있다. 아침기도/저녁기도는 계절 고유문의 `alternativeConcludingPrayer` 필드(70건), 끝기도는 `compline.json`의 `concludingPrayer.alternate` (일요일/토요일)를 사용. 대안이 없는 날에는 토글 미표시. | UI/조립 | P1 | 완료 |
+
+### 13.2 구현 상세
+
+- **성모교송 선택**: `src/components/marian-antiphon-section.tsx` — `'use client'` 컴포넌트, `hymn-section.tsx`와 동일한 `useState` + 드롭다운 패턴. `HourSection`의 `marianAntiphon` 타입에 `candidates?: MarianAntiphonCandidate[]`와 `selectedIndex?: number` 추가. `compline.ts`가 `complineData.marianAntiphon[]` 전체를 candidates로 전달.
+- **대체 마침기도 선택**: `src/components/concluding-prayer-section.tsx` — `'use client'` 컴포넌트, 2개 옵션이므로 단순 토글 버튼 UI. `HourSection`의 `concludingPrayer` 타입에 `alternateText?: string` 추가. `lauds.ts`/`vespers.ts`는 `mergedPropers.alternativeConcludingPrayer`를, `compline.ts`는 `complineData.concludingPrayer.alternate`를 fallback으로 전달.
+- **데이터 변경 없음**: `compline.json`(4개 성모교송), `propers/*.json`(alternativeConcludingPrayer 70건) 모두 이미 완비. 로더(`psalter-loader.ts`, `propers-loader.ts`)도 변경 불필요.

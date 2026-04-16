@@ -1,7 +1,7 @@
 # 추적성 매트릭스 (Traceability Matrix)
 
 **프로젝트:** Mongolian Liturgy of the Hours (Divine Office) Web App
-**최종 업데이트:** 2026-04-15
+**최종 업데이트:** 2026-04-16
 **기준 브랜치:** `main`
 
 > **참고:** 기능 요구사항은 모듈별 PRD로 분리되었습니다. 각 모듈 문서는 [`docs/modules/`](modules/) 디렉토리를 참조하세요.
@@ -60,8 +60,11 @@
 | NFR-010 | PWA 설치 가능성 | `src/app/manifest.ts` + `public/sw.js` + `src/components/sw-registrar.tsx` — Vercel HTTPS 배포 시 브라우저 A2HS 기준 충족 | `e2e/pwa.spec.ts` — 테스트 #1,3,5,7: 매니페스트/SW/theme-color/apple-web-app 메타 검증 | 완료 |
 | NFR-011 | SW 업데이트 정책 | `next.config.ts` — `/sw.js`에 `Cache-Control: no-cache, no-store, must-revalidate` + `Service-Worker-Allowed: /` 헤더<br>`src/components/sw-registrar.tsx` — `updateViaCache: 'none'` 옵션 | `e2e/pwa.spec.ts` — 테스트 #5: SW 응답 헤더의 `cache-control` 검증 | 완료 |
 | NFR-012 | 오프라인 페이지 UX | `public/offline.html` — 인라인 CSS, 외부 리소스 없음, stone-50/neutral-950 다크모드, 전례 녹색 CTA, 44px 이상 터치 타겟 | `e2e/pwa.spec.ts` — 테스트 #6: 몽골어 본문/`lang="mn"` 확인 | 완료 |
+| FR-031 | 루브릭·교송 라벨링 | FR-125~129 | [PRD §12](../PRD.md#12-루브릭빨간색-텍스트-및-교송-라벨링) | `src/components/prayer-renderer.tsx` — `AntiphonBox`에 `label` prop 추가, Dismissal 지시문 빨간색 전환<br>`src/components/psalm-block.tsx` — `psalmType` 기반 교송 라벨 전달, Gloria Patri 생략 루브릭<br>`src/components/invitatory-section.tsx` — 초대송 rubric 렌더링<br>`src/lib/hours/shared.ts` — invitatory rubric 전파<br>`src/lib/hours/types.ts`, `src/lib/types.ts` — rubric 타입 추가<br>`src/data/loth/sanctoral/{solemnities,feasts}.json` — `alleluiaConditional` 필드<br>`src/data/loth/psalter/week-{1..4}.json`, `src/data/loth/propers/christmas.json` — 잘린 텍스트 복원, 오염 데이터 정리, 빈 교송/제목 채움 | `e2e/ordinarium.spec.ts` — rubric red styling 검증<br>`e2e/prayer-sections.spec.ts` — antiphon 마커 검증 (간접) | 완료 |
 | NFR-013 | 모바일 박스 여백 최적화 | `src/components/prayer-renderer.tsx` — `article`/배경색 섹션/`AntiphonBox` padding을 모바일에서 축소, `md:` 이상에서만 기본값 사용<br>`src/components/psalm-block.tsx` — antiphon 박스 내부 여백 반응형 조정 | `e2e/mobile.spec.ts` — 375px 뷰포트에서 기도 본문 가용 폭 검증 (간접) | 완료 |
 | NFR-014 | 설정 FOUC 방지 (pre-paint) | `src/app/layout.tsx` — `<head>` 인라인 스크립트가 paint 이전에 `loth-settings`를 읽어 `<html>`의 `data-font-size`/`data-font-family`/`dark` 클래스를 선반영 | `e2e/settings.spec.ts` — 테스트 #3: 새로고침 후 `data-font-size` 유지 | 완료 |
+| FR-032 | 성모교송 선택 (4개 옵션) | FR-130 | [PRD §13](../PRD.md#13-기도문-선택-기능) | `src/lib/types.ts` — `MarianAntiphonCandidate` 인터페이스, `marianAntiphon` 섹션에 `candidates`/`selectedIndex` 추가<br>`src/lib/hours/compline.ts` — `complineData.marianAntiphon` 전체를 candidates로 전달<br>`src/components/marian-antiphon-section.tsx` — `'use client'` 선택 UI (드롭다운 메뉴, hymn-section 패턴)<br>`src/components/prayer-renderer.tsx` — 인라인 `MarianAntiphonSection` 제거, 분리 컴포넌트 import | `e2e/prayer-sections.spec.ts` — 성모교송 선택 메뉴 표시, 선택 시 텍스트 변경, API candidates 검증 | 완료 |
+| FR-033 | 대체 마침기도 선택 | FR-131 | [PRD §13](../PRD.md#13-기도문-선택-기능) | `src/lib/types.ts` — `concludingPrayer` 섹션에 `alternateText?` 추가<br>`src/lib/hours/lauds.ts` — `mergedPropers.alternativeConcludingPrayer` 전달<br>`src/lib/hours/vespers.ts` — `mergedPropers.alternativeConcludingPrayer` 전달<br>`src/lib/hours/compline.ts` — `complineData.concludingPrayer.alternate` fallback 전달<br>`src/components/concluding-prayer-section.tsx` — `'use client'` 토글 UI<br>`src/components/prayer-renderer.tsx` — 인라인 `ConcludingPrayerSection` 제거, 분리 컴포넌트 import | `e2e/prayer-sections.spec.ts` — 끝기도 일요일 대체 마침기도 토글 검증, API alternateText 존재 확인 | 완료 |
 | NFR-015 | 설정 페이지 접근성 | `src/app/settings/page.tsx` — `role="radiogroup"` + `aria-labelledby`, `role="radio"` + `aria-checked`, `role="switch"` + `aria-checked`, 모든 버튼 `min-h-[44px]`, 몽골어 `aria-label`<br>`src/components/settings-link.tsx` — `aria-label="Тохиргоо"` | `e2e/settings.spec.ts` — 테스트 #2 (라디오/스위치 카운트), #3 (aria-checked), #7 (switch aria) | 완료 |
 
 ---
@@ -76,7 +79,7 @@
 | `e2e/prayer-compline.spec.ts` | FR-004, FR-007, NFR-002 |
 | `e2e/prayer-minor-hours.spec.ts` | FR-005 |
 | `e2e/prayer-office-readings.spec.ts` | FR-006 |
-| `e2e/prayer-sections.spec.ts` | FR-002, FR-007, FR-010, FR-013 |
+| `e2e/prayer-sections.spec.ts` | FR-002, FR-007, FR-010, FR-013, FR-032, FR-033 |
 | `e2e/special-days.spec.ts` | FR-008, FR-009, FR-010 |
 | `e2e/api.spec.ts` | FR-001, FR-002, FR-003, FR-004, FR-005, FR-009, FR-010, FR-014, FR-015 |
 | `e2e/homepage.spec.ts` | FR-016, NFR-002 |
@@ -100,16 +103,16 @@
 
 | 상태 | 기능 요구사항 | 비기능 요구사항 | 합계 |
 |------|:------------:|:---------------:|:----:|
-| 완료 | 21 | 9 | **30** |
+| 완료 | 24 | 9 | **33** |
 | 부분 완료 | 4 | 1 | **5** |
 | 미구현 | 0 | 0 | **0** |
-| **합계** | **25** | **10** | **35** |
+| **합계** | **28** | **10** | **38** |
 
 ### 커버리지율
 
-- **전체 요구사항:** 35건
-- **완료:** 30건 (85.7%)
-- **부분 완료:** 5건 (14.3%)
+- **전체 요구사항:** 38건
+- **완료:** 33건 (86.8%)
+- **부분 완료:** 5건 (13.2%)
 - **미구현:** 0건 (0%)
 
 ### 부분 완료 항목 상세

@@ -3,6 +3,8 @@ import { PsalmBlock } from './psalm-block'
 import { PageRef } from './page-ref'
 import { InvitatorySection } from './invitatory-section'
 import { HymnSection } from './hymn-section'
+import { MarianAntiphonSection } from './marian-antiphon-section'
+import { ConcludingPrayerSection } from './concluding-prayer-section'
 
 function SectionDivider() {
   return (
@@ -164,15 +166,6 @@ function OurFatherSection() {
   )
 }
 
-function ConcludingPrayerSection({ section }: { section: Extract<HourSection, { type: 'concludingPrayer' }> }) {
-  return (
-    <section aria-label="Төгсгөлийн даатгал залбирал" className="mb-4">
-      <p className="text-sm font-semibold text-red-700 dark:text-red-400">Төгсгөлийн даатгал залбирал <PageRef page={section.page} /></p>
-      <p className="mt-2 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">{section.text}</p>
-    </section>
-  )
-}
-
 function DismissalSection({ section }: { section: Extract<HourSection, { type: 'dismissal' }> }) {
   return (
     <section aria-label="Илгээлт" className="mb-4">
@@ -228,15 +221,6 @@ function BlessingSection({ section }: { section: Extract<HourSection, { type: 'b
       <p className="font-serif text-stone-800 dark:text-stone-200">
         <span className="text-red-700 dark:text-red-400">- </span>{section.response}
       </p>
-    </section>
-  )
-}
-
-function MarianAntiphonSection({ section }: { section: Extract<HourSection, { type: 'marianAntiphon' }> }) {
-  return (
-    <section aria-label={section.title} className="mb-4">
-      <p className="text-sm font-semibold text-red-700 dark:text-red-400">{section.title} <PageRef page={section.page} /></p>
-      <p className="mt-2 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">{section.text}</p>
     </section>
   )
 }
