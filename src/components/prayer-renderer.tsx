@@ -12,10 +12,10 @@ function SectionDivider() {
   )
 }
 
-export function AntiphonBox({ text, className = 'my-3' }: { text: string; className?: string }) {
+export function AntiphonBox({ text, label = 'psalm', className = 'my-3' }: { text: string; label?: 'psalm' | 'canticle'; className?: string }) {
   return (
     <div data-role="antiphon" className={`${className} text-sm italic text-amber-800 dark:text-amber-300`}>
-      <span className="font-semibold not-italic">Шад. </span>{text}
+      <span className="font-semibold not-italic">{label === 'canticle' ? 'Шад магтаал' : 'Шад дуулал'}: </span>{text}
     </div>
   )
 }
@@ -94,7 +94,7 @@ function GospelCanticleSection({ section }: { section: Extract<HourSection, { ty
       </p>
 
       {/* Antiphon */}
-      {section.antiphon && <AntiphonBox text={section.antiphon} />}
+      {section.antiphon && <AntiphonBox text={section.antiphon} label="canticle" />}
 
       {/* Canticle text */}
       {section.verses && section.verses.length > 0 ? (
@@ -119,7 +119,7 @@ function GospelCanticleSection({ section }: { section: Extract<HourSection, { ty
       )}
 
       {/* Antiphon repeat */}
-      {section.antiphon && <AntiphonBox text={section.antiphon} />}
+      {section.antiphon && <AntiphonBox text={section.antiphon} label="canticle" />}
     </section>
   )
 }
