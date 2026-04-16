@@ -50,9 +50,13 @@ export function PsalmBlock({ psalm }: { psalm: AssembledPsalm }) {
       )}
 
       {/* Gloria Patri */}
-      {psalm.gloriaPatri && (
+      {psalm.gloriaPatri ? (
         <p className="mt-2 font-serif text-sm italic text-stone-500 dark:text-stone-400">
           Эцэг, Хүү, Ариун Сүнсэнд жавхланг Эхэн цагт байсан мэт аливаа цагт болготугай. Амэн.
+        </p>
+      ) : psalm.gloriaPatri === false && (
+        <p className="mt-2 text-xs italic text-red-700/80 dark:text-red-400/80">
+          Эцэг, Хүү, Ариун Сүнсэнд жавхланг... уншихгүй
         </p>
       )}
 

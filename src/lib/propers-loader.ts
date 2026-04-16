@@ -1,4 +1,4 @@
-import type { DayPropers, HourPropers, HourType, LiturgicalSeason, DayOfWeek, SanctoralEntry } from './types'
+import type { DayPropers, HourPropers, HourType, LiturgicalSeason, DayOfWeek, SanctoralEntry, HymnCandidate } from './types'
 import fs from 'fs'
 import path from 'path'
 
@@ -136,6 +136,48 @@ function loadHymnsIndex(): HymnsIndex {
   return _hymnsIndex!
 }
 
+const DAY_INDEX: Record<DayOfWeek, number> = { SUN: 0, MON: 1, TUE: 2, WED: 3, THU: 4, FRI: 5, SAT: 6 }
+
+function getCandidateNumbers(
+  assignments: Record<string, Record<string, number[]>>,
+  season: LiturgicalSeason,
+  hour: HourType,
+): number[] {
+  switch (season) {
+    case 'ADVENT':
+      return assignments.ADVENT?.hymns ?? []
+    case 'CHRISTMAS':
+      return assignments.CHRISTMAS?.holyFamily ?? []
+    case 'LENT':
+      return assignments.LENT?.general ?? []
+    case 'EASTER':
+      return assignments.EASTER?.general ?? []
+    case 'ORDINARY_TIME':
+      if (hour === 'lauds') return assignments.ORDINARY_TIME?.lauds ?? []
+      if (hour === 'vespers') return assignments.ORDINARY_TIME?.vespers ?? []
+      if (hour === 'compline') return assignments.ORDINARY_TIME?.compline ?? []
+      return assignments.ORDINARY_TIME?.lauds ?? []
+    default:
+      return []
+  }
+}
+
+function computeRotationIndex(weekOfSeason: number, dayOfWeek: DayOfWeek, count: number): number {
+  const raw = (weekOfSeason - 1) * 7 + DAY_INDEX[dayOfWeek]
+  return ((raw % count) + count) % count
+}
+
+/** Resolve candidate numbers to valid entries (with text), filtering out missing/empty ones. */
+function resolveValidCandidates(candidateNums: number[], hymns: Record<string, HymnEntry>): { num: number; entry: HymnEntry }[] {
+  return candidateNums
+    .map(num => {
+      const entry = hymns[String(num)]
+      if (!entry || !entry.text) return null
+      return { num, entry }
+    })
+    .filter((c): c is { num: number; entry: HymnEntry } => c !== null)
+}
+
 export function getHymnForHour(
   season: LiturgicalSeason,
   weekOfSeason: number,
@@ -144,39 +186,36 @@ export function getHymnForHour(
 ): HymnEntry | null {
   const index = loadHymnsIndex()
   const hymns = loadHymns()
-  const assignments = index.seasonalAssignments
+  const candidateNums = getCandidateNumbers(index.seasonalAssignments, season, hour)
+  const valid = resolveValidCandidates(candidateNums, hymns)
 
-  let candidates: number[] = []
+  if (valid.length === 0) return null
 
-  // Determine candidate hymn numbers based on season and hour
-  switch (season) {
-    case 'ADVENT':
-      candidates = assignments.ADVENT?.hymns ?? []
-      break
-    case 'CHRISTMAS':
-      candidates = assignments.CHRISTMAS?.holyFamily ?? []
-      break
-    case 'LENT':
-      candidates = assignments.LENT?.general ?? []
-      break
-    case 'EASTER':
-      candidates = assignments.EASTER?.general ?? []
-      break
-    case 'ORDINARY_TIME':
-      if (hour === 'lauds') candidates = assignments.ORDINARY_TIME?.lauds ?? []
-      else if (hour === 'vespers') candidates = assignments.ORDINARY_TIME?.vespers ?? []
-      else if (hour === 'compline') candidates = assignments.ORDINARY_TIME?.compline ?? []
-      else candidates = assignments.ORDINARY_TIME?.lauds ?? []
-      break
-  }
+  // Deterministic daily rotation based on week of season + day of week
+  const idx = computeRotationIndex(weekOfSeason, dayOfWeek, valid.length)
+  return valid[idx].entry
+}
 
-  if (candidates.length === 0) return null
+export function getHymnCandidatesForHour(
+  season: LiturgicalSeason,
+  weekOfSeason: number,
+  dayOfWeek: DayOfWeek,
+  hour: HourType,
+): { candidates: HymnCandidate[]; selectedIndex: number } | null {
+  const index = loadHymnsIndex()
+  const hymns = loadHymns()
+  const candidateNums = getCandidateNumbers(index.seasonalAssignments, season, hour)
+  const valid = resolveValidCandidates(candidateNums, hymns)
 
-  // Deterministic rotation based on week of season
-  const idx = (weekOfSeason - 1) % candidates.length
-  const hymnNum = candidates[idx]
-  const entry = hymns[String(hymnNum)]
-  if (!entry || !entry.text) return null
+  if (valid.length === 0) return null
 
-  return entry
+  const resolved: HymnCandidate[] = valid.map(({ num, entry }) => {
+    const c: HymnCandidate = { number: num, title: entry.title, text: entry.text }
+    if (entry.page != null) c.page = entry.page
+    return c
+  })
+
+  const selectedIndex = computeRotationIndex(weekOfSeason, dayOfWeek, resolved.length)
+
+  return { candidates: resolved, selectedIndex }
 }

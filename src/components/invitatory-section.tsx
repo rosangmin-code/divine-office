@@ -45,6 +45,9 @@ export function InvitatorySection({ section }: InvitatoryProps) {
 
       {!collapsed && (
         <div id="invitatory-body">
+          {section.rubric && (
+            <p className="mt-1 text-xs italic text-red-700/80 dark:text-red-400/80">{section.rubric}</p>
+          )}
           <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">{section.versicle}</p>
           <p className="font-serif text-stone-800 dark:text-stone-200">
             <span className="text-red-700 dark:text-red-400">- </span>

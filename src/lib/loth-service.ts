@@ -10,7 +10,7 @@ import type {
 import { HOUR_NAMES_MN as hourNamesMn } from './types'
 import { getLiturgicalDay, getToday } from './calendar'
 import { getPsalterPsalmody, getComplinePsalmody, getFullComplineData, getPsalterCommons } from './psalter-loader'
-import { getSeasonHourPropers, getSanctoralPropers, getHymnForHour } from './propers-loader'
+import { getSeasonHourPropers, getSanctoralPropers, getHymnForHour, getHymnCandidatesForHour } from './propers-loader'
 
 import {
   getAssembler,
@@ -144,11 +144,20 @@ export async function assembleHour(
   }
 
   // 8c. Fill hymn from seasonal assignments if not already set
+  let hymnCandidates: import('./types').HymnCandidate[] | undefined
+  let hymnSelectedIndex: number | undefined
+
   if (!mergedPropers.hymn) {
     const hymnData = getHymnForHour(day.season, day.weekOfSeason, dayOfWeek, hour)
     if (hymnData) {
       mergedPropers.hymn = hymnData.text
       mergedPropers.hymnPage = hymnData.page
+    }
+    // Load all candidates for the hymn selection menu
+    const candidateData = getHymnCandidatesForHour(day.season, day.weekOfSeason, dayOfWeek, hour)
+    if (candidateData) {
+      hymnCandidates = candidateData.candidates
+      hymnSelectedIndex = candidateData.selectedIndex
     }
   }
 
@@ -165,6 +174,8 @@ export async function assembleHour(
     ordinarium,
     isFirstHourOfDay,
     complineData,
+    hymnCandidates,
+    hymnSelectedIndex,
   }
 
   const assembler = getAssembler(hour)

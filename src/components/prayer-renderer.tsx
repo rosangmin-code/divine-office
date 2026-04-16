@@ -2,6 +2,7 @@ import type { AssembledHour, HourSection } from '@/lib/types'
 import { PsalmBlock } from './psalm-block'
 import { PageRef } from './page-ref'
 import { InvitatorySection } from './invitatory-section'
+import { HymnSection } from './hymn-section'
 
 function SectionDivider() {
   return (
@@ -32,23 +33,6 @@ function OpeningVersicleSection({ section }: { section: Extract<HourSection, { t
       <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">
         {section.gloryBe}{section.alleluia ? ` ${section.alleluia}` : ''}
       </p>
-    </section>
-  )
-}
-
-function HymnSection({ section }: { section: Extract<HourSection, { type: 'hymn' }> }) {
-  if (!section.text) {
-    return (
-      <section aria-label="Магтуу" className="mb-4">
-        <p className="text-sm font-semibold text-red-700 dark:text-red-400">Магтуу</p>
-        <p className="mt-1 text-sm italic text-stone-500 dark:text-stone-400" role="note">[Орчуулга хийгдэж байна]</p>
-      </section>
-    )
-  }
-  return (
-    <section aria-label="Магтуу" className="mb-4">
-      <p className="text-sm font-semibold text-red-700 dark:text-red-400">Магтуу <PageRef page={section.page} /></p>
-      <div className="mt-2 whitespace-pre-line font-serif text-stone-800 dark:text-stone-200">{section.text}</div>
     </section>
   )
 }
@@ -196,7 +180,7 @@ function DismissalSection({ section }: { section: Extract<HourSection, { type: '
 
       {/* Priest form */}
       <div className="mb-3">
-        <p className="text-xs text-stone-500 dark:text-stone-400 mb-1 italic">Санваартан эсвэл тахилч удирдаж байгаа бол:</p>
+        <p className="text-xs text-red-700/80 dark:text-red-400/80 mb-1 italic">Санваартан эсвэл тахилч удирдаж байгаа бол:</p>
         <p className="font-serif text-stone-800 dark:text-stone-200">
           {section.priest.greeting.versicle}
         </p>
@@ -216,7 +200,7 @@ function DismissalSection({ section }: { section: Extract<HourSection, { type: '
       </div>
 
       {/* Individual form */}
-      <p className="text-xs text-stone-500 dark:text-stone-400 mb-1 italic">Хувийн уншлагын үед:</p>
+      <p className="text-xs text-red-700/80 dark:text-red-400/80 mb-1 italic">Хувийн уншлагын үед:</p>
       <p className="font-serif text-stone-800 dark:text-stone-200">
         {section.individual.versicle}
       </p>

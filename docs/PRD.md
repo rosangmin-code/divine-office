@@ -48,7 +48,7 @@
 | 기도시간 조립 | [hour-assembly.md](modules/hour-assembly.md) | FR-010~016 | 아침/저녁/끝기도 완료. 낮기도는 assembler 구현됨이나 propers 데이터 미비로 **API/UI 비활성화**. 독서기도는 미구현 |
 | 4주 시편집 | [psalter.md](modules/psalter.md) | FR-020~023 | 전체 완료 |
 | 고유문 | [propers.md](modules/propers.md) | FR-030~032, FR-040~045, FR-050~051 | 대부분 완료 (성인축일 확장 미완료) |
-| 찬미가 | [hymns.md](modules/hymns.md) | FR-060~063 | 전체 완료 |
+| 찬미가 | [hymns.md](modules/hymns.md) | FR-060~067 | 전체 완료 |
 | 성경 본문 | [bible.md](modules/bible.md) | FR-070~072 | 전체 완료 |
 | REST API | [api.md](modules/api.md) | FR-080~083 | 전체 완료 |
 | UI 페이지/컴포넌트 | [ui.md](modules/ui.md) | FR-090~098 | 전체 완료 |

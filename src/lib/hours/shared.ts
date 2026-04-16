@@ -42,6 +42,7 @@ export function loadOrdinarium(): Ordinarium {
         openingVersicle: invData.openingVersicle,
         invitatoryPsalms: invData.invitatoryPsalms,
         gloryBe: invData.gloryBe,
+        rubric: invData.rubric,
       },
       invitatoryAntiphons: loadJsonFile('src/data/loth/ordinarium/invitatory-antiphons.json'),
       canticles: loadJsonFile('src/data/loth/ordinarium/canticles.json'),
@@ -333,5 +334,6 @@ export function buildInvitatory(
       stanzas: psalm.stanzas,
     },
     gloryBe: ordinarium.invitatory.gloryBe.text,
+    rubric: ordinarium.invitatory.rubric,
   }
 }

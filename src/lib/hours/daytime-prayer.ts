@@ -13,7 +13,7 @@ export const assembleDaytimePrayer: HourAssembler = (ctx) => {
   sections.push(buildOpeningVersicle(ctx.ordinarium, ctx.liturgicalDay.season))
 
   // 2. Hymn
-  sections.push({ type: 'hymn', text: ctx.mergedPropers.hymn ?? '', page: ctx.mergedPropers.hymnPage })
+  sections.push({ type: 'hymn', text: ctx.mergedPropers.hymn ?? '', page: ctx.mergedPropers.hymnPage, candidates: ctx.hymnCandidates, selectedIndex: ctx.hymnSelectedIndex })
 
   // 2. Psalmody
   if (ctx.assembledPsalms.length > 0) {

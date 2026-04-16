@@ -5,6 +5,7 @@ import type {
   AssembledPsalm,
   HourSection,
   HourPropers,
+  HymnCandidate,
 } from '../types'
 import type { ComplineData } from '../psalter-loader'
 
@@ -34,6 +35,7 @@ export interface Ordinarium {
     openingVersicle: { versicle: string; response: string }
     invitatoryPsalms: InvitatoryPsalmData[]
     gloryBe: { text: string; shortText: string }
+    rubric?: string
   }
   invitatoryAntiphons: InvitatoryAntiphons
   canticles: Record<string, { ref: string; titleMn: string; title?: string; subtitle?: string; verses?: string[]; doxology?: string }>
@@ -60,6 +62,8 @@ export interface HourContext {
   ordinarium: Ordinarium
   isFirstHourOfDay: boolean
   complineData: ComplineData | null
+  hymnCandidates?: HymnCandidate[]
+  hymnSelectedIndex?: number
 }
 
 /**

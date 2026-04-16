@@ -43,6 +43,72 @@ test.describe('Prayer section detail rendering', () => {
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
       await expect(page.locator('[aria-label="Магтуу"]')).toBeVisible()
     })
+
+    test('hymn candidate menu button is visible', async ({ page }) => {
+      await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
+      const btn = page.getByRole('button', { name: /Бусад магтуу/ })
+      await expect(btn).toBeVisible()
+    })
+
+    test('clicking menu button reveals candidate list', async ({ page }) => {
+      await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
+      const btn = page.getByRole('button', { name: /Бусад магтуу/ })
+      await btn.click()
+      const list = page.getByRole('listbox', { name: 'Магтуу сонгох' })
+      await expect(list).toBeVisible()
+      const items = list.locator('li')
+      expect(await items.count()).toBeGreaterThan(1)
+    })
+
+    test('selecting a different hymn changes displayed text', async ({ page }) => {
+      await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
+      const hymnSection = page.locator('[aria-label="Магтуу"]')
+      const originalText = await hymnSection.locator('.font-serif').textContent()
+
+      // Open menu and select a different hymn
+      await page.getByRole('button', { name: /Бусад магтуу/ }).click()
+      const items = page.getByRole('listbox', { name: 'Магтуу сонгох' }).locator('li button')
+      // Find an item that is NOT currently selected
+      const count = await items.count()
+      for (let i = 0; i < count; i++) {
+        const item = items.nth(i)
+        const ariaSelected = await item.locator('..').getAttribute('aria-selected')
+        if (ariaSelected !== 'true') {
+          await item.click()
+          break
+        }
+      }
+
+      const newText = await hymnSection.locator('.font-serif').textContent()
+      expect(newText).not.toBe(originalText)
+    })
+
+    test('today marker is shown on algorithmically selected hymn', async ({ page }) => {
+      await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
+      await page.getByRole('button', { name: /Бусад магтуу/ }).click()
+      await expect(page.getByText('(өнөөдрийн)')).toBeVisible()
+    })
+
+    test('API response includes hymn candidates', async ({ request }) => {
+      const res = await request.get(`/api/loth/${DATES.ordinaryWeekday}/lauds`)
+      const body = await res.json()
+      const hymn = body.sections.find((s: { type: string }) => s.type === 'hymn')
+      expect(hymn).toBeDefined()
+      expect(hymn.candidates).toBeDefined()
+      expect(hymn.candidates.length).toBeGreaterThan(1)
+      expect(hymn.selectedIndex).toBeGreaterThanOrEqual(0)
+    })
+
+    test('different days produce different hymns via API', async ({ request }) => {
+      const res1 = await request.get(`/api/loth/${DATES.ordinaryWeekday}/lauds`)
+      // ordinaryWeekday is Wednesday (2026-02-04), get Thursday (2026-02-05)
+      const res2 = await request.get(`/api/loth/2026-02-05/lauds`)
+      const body1 = await res1.json()
+      const body2 = await res2.json()
+      const hymn1 = body1.sections.find((s: { type: string }) => s.type === 'hymn')
+      const hymn2 = body2.sections.find((s: { type: string }) => s.type === 'hymn')
+      expect(hymn1.text).not.toBe(hymn2.text)
+    })
   })
 
   test.describe('Our Father section', () => {

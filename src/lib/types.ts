@@ -126,6 +126,7 @@ export interface HourPropers {
   shortReading?: ShortReading
   responsory?: Responsory
   gospelCanticleAntiphon?: string
+  alleluiaConditional?: boolean         // true = append Alleluia outside Lent (e.g. sanctoral propers for 03-19, 03-25)
   gospelCanticleAntiphonPage?: number   // Source PDF page number
   intercessions?: string[]
   intercessionsPage?: number            // Source PDF page number
@@ -134,6 +135,13 @@ export interface HourPropers {
   alternativeConcludingPrayer?: string  // Сонголтот залбирал
   hymn?: string
   hymnPage?: number                     // Source PDF page number
+}
+
+export interface HymnCandidate {
+  number: number
+  title: string
+  text: string
+  page?: number
 }
 
 export interface PatristicReading {
@@ -191,9 +199,9 @@ export interface AssembledPsalm {
 }
 
 export type HourSection =
-  | { type: 'invitatory'; versicle: string; response: string; antiphon: string; psalm: { ref: string; title: string; epigraph?: string; stanzas: string[][] }; gloryBe: string; page?: number }
+  | { type: 'invitatory'; versicle: string; response: string; antiphon: string; psalm: { ref: string; title: string; epigraph?: string; stanzas: string[][] }; gloryBe: string; rubric?: string; page?: number }
   | { type: 'openingVersicle'; versicle: string; response: string; gloryBe: string; alleluia?: string }
-  | { type: 'hymn'; text: string; page?: number }
+  | { type: 'hymn'; text: string; page?: number; candidates?: HymnCandidate[]; selectedIndex?: number }
   | { type: 'psalmody'; psalms: AssembledPsalm[] }
   | { type: 'shortReading'; ref: string; bookMn: string; verses: { verse: number; text: string }[]; page?: number }
   | { type: 'responsory'; versicle: string; response: string; page?: number }

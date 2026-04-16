@@ -41,7 +41,7 @@ export const assembleCompline: HourAssembler = (ctx) => {
   }
 
   // 3. Hymn
-  sections.push({ type: 'hymn', text: ctx.mergedPropers.hymn ?? '', page: ctx.mergedPropers.hymnPage })
+  sections.push({ type: 'hymn', text: ctx.mergedPropers.hymn ?? '', page: ctx.mergedPropers.hymnPage, candidates: ctx.hymnCandidates, selectedIndex: ctx.hymnSelectedIndex })
 
   // 3. Psalmody
   if (ctx.assembledPsalms.length > 0) {
