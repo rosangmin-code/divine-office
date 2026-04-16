@@ -1544,24 +1544,24 @@
             "type": "psalm",
             "ref": "Psalm 113:1-9",
             "antiphon_key": "w1-sat-vesp-ps1",
-            "default_antiphon": "",
-            "title": "",
+            "default_antiphon": "Нар мандахаас жаргах хүртэл Эзэний нэр магтагдах болтугай.",
+            "title": "Эзэний нэрийг магтан дуулагтун",
             "gloria_patri": true
           },
           {
             "type": "psalm",
             "ref": "Psalm 116:10-19",
             "antiphon_key": "w1-sat-vesp-ps2",
-            "default_antiphon": "",
-            "title": "",
+            "default_antiphon": "Би авралын хундагыг өргөж, Эзэний нэр дээр дуудна.",
+            "title": "Сүм хийд доторх талархлын өргөл тахил",
             "gloria_patri": true
           },
           {
             "type": "canticle",
             "ref": "Philippians 2:6-11",
             "antiphon_key": "w1-sat-vesp-cant",
-            "default_antiphon": "",
-            "title": "",
+            "default_antiphon": "Эзэн Есүс өөрийгөө даруу болгосон бөгөөд Тэнгэрбурхан Түүнийг үүрд өргөмжлөв.",
+            "title": "Христ бол Тэнгэрбурханы ариун зардас мөн",
             "gloria_patri": false
           }
         ],
