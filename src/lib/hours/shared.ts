@@ -122,7 +122,7 @@ export async function resolvePsalm(
  */
 export function resolveGospelCanticle(
   hour: HourType,
-  canticlesData: Record<string, { ref: string; titleMn: string }>,
+  canticlesData: Record<string, { ref: string; titleMn: string; verses?: string[]; doxology?: string }>,
   antiphon: string,
   page?: number,
 ): HourSection | null {
@@ -136,6 +136,20 @@ export function resolveGospelCanticle(
   const canticleInfo = canticlesData[canticleKey]
   if (!canticleInfo) return null
 
+  // Prefer pre-loaded verses from canticles.json (PDF source)
+  if (canticleInfo.verses && canticleInfo.verses.length > 0) {
+    return {
+      type: 'gospelCanticle',
+      canticle: canticleKey,
+      antiphon: antiphon || '',
+      text: canticleInfo.verses.join('\n'),
+      verses: canticleInfo.verses,
+      doxology: canticleInfo.doxology,
+      page,
+    }
+  }
+
+  // Fallback: Bible JSONL lookup (should not be reached with current data)
   const refs = parseScriptureRef(canticleInfo.ref)
   let text = ''
   for (const ref of refs) {

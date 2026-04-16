@@ -197,7 +197,7 @@ export type HourSection =
   | { type: 'psalmody'; psalms: AssembledPsalm[] }
   | { type: 'shortReading'; ref: string; bookMn: string; verses: { verse: number; text: string }[]; page?: number }
   | { type: 'responsory'; versicle: string; response: string; page?: number }
-  | { type: 'gospelCanticle'; canticle: 'benedictus' | 'magnificat' | 'nuncDimittis'; antiphon: string; text: string; page?: number }
+  | { type: 'gospelCanticle'; canticle: 'benedictus' | 'magnificat' | 'nuncDimittis'; antiphon: string; text: string; verses?: string[]; doxology?: string; page?: number }
   | { type: 'intercessions'; intro: string; items: string[]; page?: number }
   | { type: 'ourFather' }
   | { type: 'concludingPrayer'; text: string; page?: number }

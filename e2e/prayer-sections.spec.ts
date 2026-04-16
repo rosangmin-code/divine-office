@@ -65,6 +65,35 @@ test.describe('Prayer section detail rendering', () => {
     })
   })
 
+  test.describe('Gospel canticle text fidelity (PDF source)', () => {
+    test('Benedictus uses PDF text, not Bible JSONL', async ({ page }) => {
+      await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
+      const canticle = page.locator('[aria-label="Захариагийн магтаал"]')
+      // PDF: "Тэнгэрбурхан Эзэн магтагдах болтугай" (not "Бурхан Эзэн магтагдаг" from Bible JSONL)
+      await expect(canticle.getByText('Тэнгэрбурхан Эзэн магтагдах болтугай')).toBeVisible()
+    })
+
+    test('Magnificat uses PDF text, not Bible JSONL', async ({ page }) => {
+      await page.goto(`/pray/${DATES.ordinaryWeekday}/vespers`)
+      const canticle = page.locator('[aria-label="Мариагийн магтаал"]')
+      // PDF: "Аврагч Тэнгэрбурханд баяссан" (not "Аврагч Бурхандаа баясна" from Bible JSONL)
+      await expect(canticle.getByText('Аврагч Тэнгэрбурханд баяссан')).toBeVisible()
+    })
+
+    test('Nunc Dimittis uses PDF text, not Bible JSONL', async ({ page }) => {
+      await page.goto(`/pray/${DATES.ordinaryWeekday}/compline`)
+      const canticle = page.locator('[aria-label="Сайнмэдээний айлдлын магтаал"]')
+      // PDF: "амар амгалангаар эдүгээ чөлөөлтүгэй" (not "амар тайван явуултугай" from Bible JSONL)
+      await expect(canticle.getByText('амар амгалангаар эдүгээ чөлөөлтүгэй')).toBeVisible()
+    })
+
+    test('Benedictus includes doxology', async ({ page }) => {
+      await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
+      const canticle = page.locator('[aria-label="Захариагийн магтаал"]')
+      await expect(canticle.getByText('Эцэг, Хүү, Ариун Сүнсэнд жавхланг')).toBeVisible()
+    })
+  })
+
   test.describe('Short reading and responsory (required for Lauds)', () => {
     test('short reading is always present with ref and verses', async ({ request }) => {
       const res = await request.get(`/api/loth/${DATES.ordinaryWeekday}/lauds`)

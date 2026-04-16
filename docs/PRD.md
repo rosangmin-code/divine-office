@@ -33,7 +33,7 @@
 | 성인축일 고유문 | 대축일/축일/기념일 | `src/data/loth/sanctoral/{solemnities,feasts,memorials}.json` |
 | 통상문 (Ordinarium) | 찬미가, 초대송/초대송 교송, 찬가(canticles), 끝기도, 공통기도문 | `src/data/loth/ordinarium/{invitatory.json,invitatory-antiphons.json,hymns.json,hymns-index.json,canticles.json,compline.json,common-prayers.json}` |
 | 시편 본문 (stanza 구조) | 교독 낭송용 stanza 단위 시편 본문 | `src/data/loth/psalter-texts.json` |
-| 몽골어 성경 | 구약/신약/복음서 JSONL | `src/data/bible/{bible_ot,bible_nt_rest,bible_gospels}.jsonl` |
+| 몽골어 성경 | 구약/신약/복음서 JSONL (MoSociety 2019). 시편 fallback 및 짧은 독서용. **복음 노래(Benedictus/Magnificat/Nunc Dimittis)는 PDF 원문과 번역이 다르므로 사용하지 않음** — `canticles.json`의 `verses` 배열 사용 | `src/data/bible/{bible_ot,bible_nt_rest,bible_gospels}.jsonl` |
 | romcal | 전례력 계산 라이브러리 | npm dependency |
 
 ---

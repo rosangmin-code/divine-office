@@ -42,7 +42,7 @@ function makeContext(overrides: Partial<HourContext> = {}): HourContext {
         advent: { default: 'A' }, christmas: { default: 'C' },
         lent: { default: 'L' }, easter: { default: 'E' }, feasts: {},
       },
-      canticles: { nuncDimittis: { ref: 'Luke 2:29-32', titleMn: 'Nunc Dimittis' } },
+      canticles: { nuncDimittis: { ref: 'Luke 2:29-32', titleMn: 'Nunc Dimittis', verses: ['Verse 1', 'Verse 2'], doxology: 'Glory Be.' } },
       commonPrayers: {
         openingVersicle: { versicle: 'V: God', response: 'R: Help', gloryBe: 'Glory', alleluia: 'Alleluia' },
         dismissal: { priest: { greeting: { versicle: 'V', response: 'R' }, blessing: { text: 'B', response: 'A' }, dismissalVersicle: { versicle: 'V', response: 'R' } }, individual: { versicle: 'V', response: 'R' } },

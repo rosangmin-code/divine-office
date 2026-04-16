@@ -30,7 +30,7 @@ function makeContext(overrides: Partial<HourContext> = {}): HourContext {
         advent: { default: 'Advent' }, christmas: { default: 'Christmas' },
         lent: { default: 'Lent ant' }, easter: { default: 'Easter' }, feasts: {},
       },
-      canticles: { benedictus: { ref: 'Luke 1:68-79', titleMn: 'Benedictus' } },
+      canticles: { benedictus: { ref: 'Luke 1:68-79', titleMn: 'Benedictus', verses: ['Verse 1', 'Verse 2'], doxology: 'Glory Be.' } },
       commonPrayers: {
         openingVersicle: { versicle: 'V: God', response: 'R: Help', gloryBe: 'Glory', alleluia: 'Alleluia' },
         dismissal: { priest: { greeting: { versicle: 'V', response: 'R' }, blessing: { text: 'B', response: 'A' }, dismissalVersicle: { versicle: 'V', response: 'R' } }, individual: { versicle: 'V', response: 'R' } },

@@ -36,7 +36,7 @@ export interface Ordinarium {
     gloryBe: { text: string; shortText: string }
   }
   invitatoryAntiphons: InvitatoryAntiphons
-  canticles: Record<string, { ref: string; titleMn: string }>
+  canticles: Record<string, { ref: string; titleMn: string; title?: string; subtitle?: string; verses?: string[]; doxology?: string }>
   commonPrayers: {
     openingVersicle: { versicle: string; response: string; gloryBe: string; alleluia: string }
     [key: string]: unknown
