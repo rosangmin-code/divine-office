@@ -133,6 +133,7 @@ export interface HourPropers {
   concludingPrayer?: string
   concludingPrayerPage?: number         // Source PDF page number
   alternativeConcludingPrayer?: string  // Сонголтот залбирал
+  alternativeConcludingPrayerPage?: number  // Source PDF page number
   hymn?: string
   hymnPage?: number                     // Source PDF page number
 }
@@ -189,6 +190,40 @@ export interface SanctoralEntry {
     lauds?: HourPsalmody
     vespers?: HourPsalmody
   }
+}
+
+// --- Celebration option (축일 선택) ---
+
+export interface OptionalMemorialEntry extends SanctoralEntry {
+  /** MM-DD of the calendar date on which this entry is eligible */
+  mmdd: string
+  /** English celebration name shown to liturgical-year logic */
+  name: string
+  /** Mongolian celebration name rendered in the UI */
+  nameMn: string
+  /** Ranking within the liturgical hierarchy */
+  rank: CelebrationRank
+  /** Liturgical color used when this celebration is chosen */
+  color: LiturgicalColor
+}
+
+export interface CelebrationOption {
+  /** Stable slug used in URL query + API: 'default' | `${mmdd}-${slug}` | 'saturday-mary' */
+  id: string
+  name: string
+  nameMn: string
+  rank: CelebrationRank
+  color: LiturgicalColor
+  colorMn: string
+  /** True for the celebration romcal assigns as the day's default */
+  isDefault: boolean
+  /** Origin of the option — romcal pick, optional-memorials.json entry, or votive (e.g. Saturday Mary) */
+  source: 'romcal' | 'optional' | 'votive'
+}
+
+export interface CelebrationOptionsResult {
+  date: string
+  options: CelebrationOption[]
 }
 
 // --- Assembled Hour (output of loth-service) ---

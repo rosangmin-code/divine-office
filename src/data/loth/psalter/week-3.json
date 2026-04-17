@@ -1547,7 +1547,8 @@
             "antiphon_key": "w3-sat-vesp-ps1",
             "default_antiphon": "Нар мандахаас жаргах хүртэл Эзэний нэр магтагдах болтугай.",
             "title": "Эзэний нэрийг магтан дуулагтун",
-            "gloria_patri": true
+            "gloria_patri": true,
+            "page": 288
           },
           {
             "type": "psalm",
@@ -1555,7 +1556,8 @@
             "antiphon_key": "w3-sat-vesp-ps2",
             "default_antiphon": "Би авралын хундагыг өргөж, Эзэний нэр дээр дуудна.",
             "title": "Сүм хийд доторх талархлын өргөл тахил",
-            "gloria_patri": true
+            "gloria_patri": true,
+            "page": 290
           },
           {
             "type": "canticle",
@@ -1563,7 +1565,8 @@
             "antiphon_key": "w3-sat-vesp-cant",
             "default_antiphon": "Эзэн Есүс өөрийгөө даруу болгосон бөгөөд Тэнгэрбурхан Түүнийг үүрд өргөмжлөв.",
             "title": "Христ бол Тэнгэрбурханы ариун зардас мөн",
-            "gloria_patri": false
+            "gloria_patri": false,
+            "page": 291
           }
         ],
         "shortReading": {
