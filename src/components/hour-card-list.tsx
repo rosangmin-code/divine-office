@@ -5,13 +5,14 @@ import type { HourType } from '@/lib/types'
 interface HourCardListProps {
   hours: { type: HourType; nameMn: string }[]
   dateStr: string
+  celebrationId?: string
 }
 
-export function HourCardList({ hours, dateStr }: HourCardListProps) {
+export function HourCardList({ hours, dateStr, celebrationId }: HourCardListProps) {
   return (
     <section aria-label="Цагийн залбирлууд" className="space-y-4">
       {hours.map((hour) => (
-        <HourCard key={hour.type} hour={hour} dateStr={dateStr} />
+        <HourCard key={hour.type} hour={hour} dateStr={dateStr} celebrationId={celebrationId} />
       ))}
     </section>
   )
@@ -20,13 +21,18 @@ export function HourCardList({ hours, dateStr }: HourCardListProps) {
 function HourCard({
   hour,
   dateStr,
+  celebrationId,
 }: {
   hour: { type: HourType; nameMn: string }
   dateStr: string
+  celebrationId?: string
 }) {
+  const suffix = celebrationId && celebrationId !== 'default'
+    ? `?celebration=${encodeURIComponent(celebrationId)}`
+    : ''
   return (
     <Link
-      href={`/pray/${dateStr}/${hour.type}`}
+      href={`/pray/${dateStr}/${hour.type}${suffix}`}
       className="group flex items-center gap-4 rounded-xl bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] dark:bg-neutral-900 dark:shadow-none dark:ring-1 dark:ring-stone-800"
     >
       {/* Icon */}

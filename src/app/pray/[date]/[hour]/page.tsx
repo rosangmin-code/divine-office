@@ -34,10 +34,13 @@ const HOUR_NAMES_MN: Record<HourType, string> = {
 
 export default async function PrayPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ date: string; hour: string }>
+  searchParams: Promise<{ celebration?: string }>
 }) {
   const { date, hour: hourParam } = await params
+  const { celebration } = await searchParams
 
   if (!VALID_HOURS.includes(hourParam as HourType)) {
     return (
@@ -48,7 +51,10 @@ export default async function PrayPage({
   }
 
   const hourType = hourParam as HourType
-  const assembled = await assembleHour(date, hourType)
+  const assembled = await assembleHour(date, hourType, { celebrationId: celebration })
+  const celebrationSuffix = celebration && celebration !== 'default'
+    ? `?celebration=${encodeURIComponent(celebration)}`
+    : ''
 
   if (!assembled) {
     return (
@@ -70,7 +76,7 @@ export default async function PrayPage({
       {/* Back link + settings actions */}
       <div className="mb-4 flex items-center justify-between">
         <Link
-          href={`/?date=${date}`}
+          href={`/?date=${date}${celebration && celebration !== 'default' ? `&celebration=${encodeURIComponent(celebration)}` : ''}`}
           aria-label="Бүх цагийн залбирлууд руу буцах"
           className="inline-flex items-center gap-1 text-sm text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200"
         >
@@ -108,7 +114,7 @@ export default async function PrayPage({
       <nav aria-label="Залбирлын навигаци" className="mt-6 flex items-center justify-between gap-4">
         {prevHour ? (
           <Link
-            href={`/pray/${date}/${prevHour}`}
+            href={`/pray/${date}/${prevHour}${celebrationSuffix}`}
             className="flex items-center gap-2 rounded-lg px-4 py-3 text-sm text-stone-600 hover:bg-stone-200 dark:text-stone-400 dark:hover:bg-stone-700"
           >
             <span>←</span>
@@ -118,7 +124,7 @@ export default async function PrayPage({
         ) : <div />}
 
         <Link
-          href={`/?date=${date}`}
+          href={`/?date=${date}${celebration && celebration !== 'default' ? `&celebration=${encodeURIComponent(celebration)}` : ''}`}
           className="rounded-lg bg-stone-200 px-6 py-2 text-sm font-medium text-stone-700 hover:bg-stone-300 dark:bg-stone-700 dark:text-stone-200 dark:hover:bg-stone-600"
         >
           Буцах
@@ -126,7 +132,7 @@ export default async function PrayPage({
 
         {nextHour ? (
           <Link
-            href={`/pray/${date}/${nextHour}`}
+            href={`/pray/${date}/${nextHour}${celebrationSuffix}`}
             className="flex items-center gap-2 rounded-lg px-4 py-3 text-sm text-stone-600 hover:bg-stone-200 dark:text-stone-400 dark:hover:bg-stone-700"
           >
             <span className="sm:hidden">{HOUR_ABBR_MN[nextHour]}</span>

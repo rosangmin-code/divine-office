@@ -10,7 +10,7 @@ const VALID_HOURS: HourType[] = [
 ]
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ date: string; hour: string }> },
 ) {
   const { date, hour } = await params
@@ -22,7 +22,8 @@ export async function GET(
     )
   }
 
-  const assembled = await assembleHour(date, hour as HourType)
+  const celebrationId = new URL(request.url).searchParams.get('celebration')
+  const assembled = await assembleHour(date, hour as HourType, { celebrationId })
 
   if (!assembled) {
     return NextResponse.json(

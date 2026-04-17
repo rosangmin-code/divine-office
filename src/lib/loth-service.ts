@@ -6,11 +6,14 @@ import type {
   HourPropers,
   HourPsalmody,
   HOUR_NAMES_MN,
+  SanctoralEntry,
+  CelebrationOption,
 } from './types'
 import { HOUR_NAMES_MN as hourNamesMn } from './types'
 import { getLiturgicalDay, getToday } from './calendar'
 import { getPsalterPsalmody, getComplinePsalmody, getFullComplineData, getPsalterCommons } from './psalter-loader'
 import { getSeasonHourPropers, getSanctoralPropers, getHymnForHour, getHymnCandidatesForHour } from './propers-loader'
+import { resolveCelebration } from './celebrations'
 
 import {
   getAssembler,
@@ -22,19 +25,39 @@ import {
 import { warmBibleCache } from './bible-loader'
 import type { HourContext } from './hours'
 
+export interface AssembleHourOptions {
+  celebrationId?: string | null
+}
+
 /**
  * Main assembly function: given a date and hour, produce the complete prayer.
  */
 export async function assembleHour(
   dateStr: string,
   hour: HourType,
+  opts: AssembleHourOptions = {},
 ): Promise<AssembledHour | null> {
   // 0. Pre-warm Bible cache (async I/O, no-op if already loaded)
   await warmBibleCache()
 
-  // 1. Get liturgical day info
-  const day = getLiturgicalDay(dateStr)
-  if (!day) return null
+  // 1. Get liturgical day info — optionally overridden by a user-chosen celebration.
+  const rawDay = getLiturgicalDay(dateStr)
+  if (!rawDay) return null
+
+  const resolved = resolveCelebration(dateStr, opts.celebrationId)
+  const selectedOption: CelebrationOption | null = resolved?.option ?? null
+  const celebrationOverride: SanctoralEntry | null = resolved?.sanctoralOverride ?? null
+
+  const day: LiturgicalDayInfo = celebrationOverride && selectedOption && !selectedOption.isDefault
+    ? {
+        ...rawDay,
+        name: selectedOption.name,
+        nameMn: selectedOption.nameMn,
+        rank: selectedOption.rank,
+        color: selectedOption.color,
+        colorMn: selectedOption.colorMn,
+      }
+    : rawDay
 
   const dayOfWeek = dateToDayOfWeek(dateStr)
   const ordinarium = loadOrdinarium()
@@ -73,11 +96,14 @@ export async function assembleHour(
   }
 
   // 4. Get sanctoral propers (if applicable)
+  //    When the user has chosen a non-default celebration, its propers take
+  //    precedence over whatever sanctoral entry would normally apply.
   const dateObj = new Date(dateStr + 'T00:00:00Z')
   const dateKey = `${String(dateObj.getUTCMonth() + 1).padStart(2, '0')}-${String(dateObj.getUTCDate()).padStart(2, '0')}`
-  const sanctoral = (day.rank === 'SOLEMNITY' || day.rank === 'FEAST' || day.rank === 'MEMORIAL')
-    ? getSanctoralPropers(dateKey)
-    : null
+  const sanctoral: SanctoralEntry | null = celebrationOverride
+    ?? ((day.rank === 'SOLEMNITY' || day.rank === 'FEAST' || day.rank === 'MEMORIAL')
+      ? getSanctoralPropers(dateKey)
+      : null)
 
   // 5. Determine antiphon overrides (sanctoral > season)
   //    For solemnities on the day itself, use vespers2 (Second Vespers) data

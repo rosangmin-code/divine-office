@@ -1,16 +1,18 @@
 import Link from 'next/link'
 import { getMongoliaDateStr } from '@/lib/timezone'
 import { getHoursSummary } from '@/lib/loth-service'
+import { getCelebrationOptions, resolveCelebration, DEFAULT_CELEBRATION_ID } from '@/lib/celebrations'
 import { BORDER_COLOR_CLASSES } from '@/lib/liturgical-colors'
 import { DatePicker } from '@/components/date-picker'
 import { HourCardList } from '@/components/hour-card-list'
+import { CelebrationPicker } from '@/components/celebration-picker'
 import { SettingsLink } from '@/components/settings-link'
 import { Footer } from '@/components/footer'
 
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ date?: string }>
+  searchParams: Promise<{ date?: string; celebration?: string }>
 }) {
   const params = await searchParams
   const dateStr = params.date ?? getMongoliaDateStr()
@@ -24,7 +26,21 @@ export default async function HomePage({
     )
   }
 
-  const { liturgicalDay, hours } = summary
+  const options = getCelebrationOptions(dateStr)?.options ?? []
+  const resolved = resolveCelebration(dateStr, params.celebration)
+  const selectedOption = resolved?.option ?? options[0]
+  const celebrationId = selectedOption?.id ?? DEFAULT_CELEBRATION_ID
+  const liturgicalDay = selectedOption && !selectedOption.isDefault
+    ? {
+        ...summary.liturgicalDay,
+        nameMn: selectedOption.nameMn,
+        rank: selectedOption.rank,
+        color: selectedOption.color,
+        colorMn: selectedOption.colorMn,
+      }
+    : summary.liturgicalDay
+
+  const { hours } = summary
 
   const todayStr = getMongoliaDateStr()
 
@@ -72,8 +88,11 @@ export default async function HomePage({
         </div>
       </div>
 
-      {/* Hour cards — Client Component for time-based status */}
-      <HourCardList hours={hours} dateStr={dateStr} />
+      {/* Celebration selector (only shown when multiple options exist) */}
+      <CelebrationPicker dateStr={dateStr} options={options} selectedId={celebrationId} />
+
+      {/* Hour cards */}
+      <HourCardList hours={hours} dateStr={dateStr} celebrationId={celebrationId} />
 
       {/* Reference links */}
       <div className="mt-6 flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-4">

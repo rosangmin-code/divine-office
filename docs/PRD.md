@@ -57,6 +57,7 @@
 | PWA 설치 기능 | [PRD §8](#8-pwa-설치-기능) | FR-110~114 | 전체 완료 |
 | 시편 본문 · stanza | [PRD §9](#9-시편-본문-및-stanza-구조) | FR-120~122 | 전체 완료 |
 | 기도문 선택 | [PRD §13](#13-기도문-선택-기능) | FR-130~131 | 전체 완료 |
+| 축일 선택 | [PRD §14](#14-축일-선택-기능) | FR-140~144 | 구현 진행 |
 
 ---
 
@@ -381,3 +382,98 @@ src/app/
 - **성모교송 선택**: `src/components/marian-antiphon-section.tsx` — `'use client'` 컴포넌트, `hymn-section.tsx`와 동일한 `useState` + 드롭다운 패턴. `HourSection`의 `marianAntiphon` 타입에 `candidates?: MarianAntiphonCandidate[]`와 `selectedIndex?: number` 추가. `compline.ts`가 `complineData.marianAntiphon[]` 전체를 candidates로 전달.
 - **대체 마침기도 선택**: `src/components/concluding-prayer-section.tsx` — `'use client'` 컴포넌트, 2개 옵션이므로 단순 토글 버튼 UI. `HourSection`의 `concludingPrayer` 타입에 `alternateText?: string` 추가. `lauds.ts`/`vespers.ts`는 `mergedPropers.alternativeConcludingPrayer`를, `compline.ts`는 `complineData.concludingPrayer.alternate`를 fallback으로 전달.
 - **데이터 변경 없음**: `compline.json`(4개 성모교송), `propers/*.json`(alternativeConcludingPrayer 70건) 모두 이미 완비. 로더(`psalter-loader.ts`, `propers-loader.ts`)도 변경 불필요.
+
+---
+
+## 14. 축일 선택 기능
+
+### 14.1 배경 및 목적
+
+romcal은 하루에 **한 가지 전례일**만 반환하지만, 실제 전례에서는 여러 축일/기념일이 겹치거나 **선택 가능한 기념일(Optional Memorial, 사선택 기념일)** 이 존재한다. 사용자는 다음 상황에서 축일을 스스로 선택해 해당 축일의 기도를 바칠 수 있어야 한다:
+
+1. **연중시기 평일 + 선택 기념일**: 평일 기도 또는 성인 기념 기도 중 선택.
+2. **연중시기 토요일의 성모 기념(`saturday-mary`)**: 이미 데이터는 있으나 UI에서 선택할 수 없음 → 이 섹션에서 노출.
+3. **같은 날 여러 선택 기념일**: 예) 같은 날 두 성인 중 한 명을 선택.
+
+기본값은 romcal이 반환하는 전례일이며, 사용자가 선택기로 다른 축일을 고를 때만 바뀐다.
+
+### 14.2 기능 요구사항
+
+| ID | 요구사항 | 모듈 | 우선순위 | 상태 |
+|----|----------|------|----------|------|
+| FR-140 | **선택 가능 축일 데이터**: `src/data/loth/sanctoral/optional-memorials.json`에 MM-DD 키 + 슬러그별 선택 기념일 엔트리를 정의한다. 각 엔트리는 `name`, `nameMn`, `rank`(OPTIONAL_MEMORIAL 기본), `color`(색상), `lauds`/`vespers` 고유문(HourPropers)을 포함한다. 토요일 성모 기념(`saturday-mary`)은 토요일 연중시기 평일에 가상 MM-DD로 노출된다. | 데이터 | P1 | 구현 진행 |
+| FR-141 | **축일 옵션 API**: `GET /api/calendar/options/[date]` — 주어진 날짜의 선택 가능한 모든 축일 옵션(`CelebrationOption[]`)을 반환한다. 응답 각 항목: `id`(슬러그), `name`, `nameMn`, `rank`, `color`, `colorMn`, `isDefault`, `source`('romcal'\|'optional'\|'votive'). 옵션이 단 1개(default만)인 날짜도 단일 배열로 반환. | API | P1 | 구현 진행 |
+| FR-142 | **축일 선택 UI**: 홈 페이지에서 해당 날짜에 대체 옵션이 존재하면(options.length > 1) 축일 선택기(라디오 그룹)를 표시한다. 선택 시 URL 쿼리(`?celebration=<id>`)가 갱신되고, 각 시간 카드의 링크(`/pray/[date]/[hour]?celebration=<id>`)에 쿼리가 전파된다. 단일 옵션만 있는 날짜에는 선택기를 숨긴다. | UI | P1 | 구현 진행 |
+| FR-143 | **기도 조립 오버라이드**: `assembleHour(dateStr, hour, { celebrationId })` 시그니처 확장. `celebrationId`가 해당 날짜의 유효 옵션이면 Layer 3 sanctoral propers를 해당 엔트리로 교체하고, `liturgicalDay.nameMn`·`rank`·`color`·`colorMn`을 override한다. 기본값(`celebrationId === 'default'` 또는 미지정)은 기존 romcal 흐름을 유지한다. `/api/loth/[date]/[hour]?celebration=<id>` 쿼리 파라미터로도 동일하게 적용. | 조립/API | P1 | 구현 진행 |
+| FR-144 | **pray 페이지 쿼리 전파**: `/pray/[date]/[hour]?celebration=<id>` 경로는 선택된 축일을 반영해 렌더링하며, 헤더의 전례일 라벨과 시기 배지 색상이 동기화된다. 내부 네비게이션(이전/다음 시간, 뒤로 링크)에도 쿼리 유지. | UI | P1 | 구현 진행 |
+
+### 14.3 데이터 모델
+
+```ts
+// src/lib/types.ts 추가
+export interface CelebrationOption {
+  id: string                   // 'default' | `${mmdd}-${slug}` | 'saturday-mary'
+  name: string                 // English
+  nameMn: string               // Mongolian
+  rank: CelebrationRank
+  color: LiturgicalColor
+  colorMn: string
+  isDefault: boolean           // romcal이 반환한 당일 대표 전례
+  source: 'romcal' | 'optional' | 'votive'
+}
+
+// src/data/loth/sanctoral/optional-memorials.json 샘플
+{
+  "04-17-benedict-joseph-labre": {
+    "mmdd": "04-17",
+    "name": "Saint Benedict Joseph Labre",
+    "nameMn": "Гэгээн Бенедикт Иосеф Лабрэ",
+    "rank": "OPTIONAL_MEMORIAL",
+    "color": "WHITE",
+    "lauds": { "concludingPrayer": "..." },
+    "vespers": { "concludingPrayer": "..." }
+  }
+}
+```
+
+### 14.4 구현 상세
+
+- **데이터 로더**: `src/lib/propers-loader.ts` — `loadOptionalMemorials()` + `getOptionalMemorialEntry(id)` 추가. 파일 누락 시 빈 객체 반환(기존 `memorials.json` 패턴과 동일).
+- **옵션 계산**: `src/lib/celebrations.ts` (신설) — `getCelebrationOptions(dateStr)` 함수. ① romcal 기본 전례일을 default로 추가 → ② 연중시기 평일(`WEEKDAY`)이면 optional-memorials.json에서 MM-DD 매칭 엔트리 추가 → ③ 연중시기 토요일이면 `saturday-mary` 옵션 추가. 항상 단일 배열 반환.
+- **조립 확장**: `src/lib/loth-service.ts` — `assembleHour(dateStr, hour, { celebrationId? })` 시그니처. `celebrationId !== 'default'`일 때 해당 옵션을 sanctoral 엔트리로 사용하고, `AssembledHour.liturgicalDay`의 `nameMn`/`rank`/`color`/`colorMn`를 덮어쓴다.
+- **API**: 
+  - 신설: `src/app/api/calendar/options/[date]/route.ts`.
+  - 수정: `src/app/api/loth/[date]/[hour]/route.ts` — `URL.searchParams.get('celebration')`를 `assembleHour`에 전달.
+- **UI**:
+  - 신설: `src/components/celebration-picker.tsx` — `'use client'`, 라디오 그룹, 변경 시 `router.replace`로 쿼리 갱신.
+  - 수정: `src/app/page.tsx` — options 로드, 다중 옵션 시 picker 렌더링, hour card 링크에 쿼리 전파.
+  - 수정: `src/components/hour-card-list.tsx` — `celebrationId` prop 전달 지원.
+  - 수정: `src/app/pray/[date]/[hour]/page.tsx` — `searchParams.celebration`을 `assembleHour`에 전달, 헤더에 선택된 축일 정보 반영. 내부 링크에 쿼리 유지.
+
+### 14.5 테스트 전략
+
+- **단위 (Vitest)**: `src/lib/__tests__/celebrations.test.ts`
+  - 연중시기 평일(옵션 없음)은 `length === 1`.
+  - 연중시기 토요일은 `saturday-mary`를 포함 → `length >= 2`.
+  - 특정 MM-DD(테스트용 엔트리 추가한 날짜)는 해당 옵션 포함.
+  - 알 수 없는 `celebrationId` 전달 시 기본값 fallback.
+  - `assembleHour` 오버라이드: 사용 시 sanctoral 고유문(`concludingPrayer`)이 반영됨.
+
+- **E2E (Playwright)**: `e2e/feast-selection.spec.ts`
+  - 홈페이지 토요일 방문 → 축일 선택기 보임 → 성모 기념 선택 → 시간 카드 링크에 쿼리 반영.
+  - `/pray/<sat>/lauds?celebration=saturday-mary` 직접 접근 → 성모 기념 마침기도 확인, 전례일 라벨이 성모 기념 이름으로 바뀜.
+  - 단일 옵션 날짜(예: 대축일)는 선택기 미표시.
+  - API `GET /api/calendar/options/[date]` 구조 검증.
+
+### 14.6 스키마 요약
+
+```
+GET /api/calendar/options/2026-04-25
+→ 200 { "date": "2026-04-25", "options": [
+    { "id": "default", "name": "Saturday of the 3rd week of Easter", ... "isDefault": true, "source": "romcal" },
+    { "id": "saturday-mary", "nameMn": "Төгс жаргалт цэвэр Охин Мариагийн Бямба гарагийг дурсахуй", ..., "source": "votive" }
+]}
+
+GET /api/loth/2026-04-25/lauds?celebration=saturday-mary
+→ 200 AssembledHour { liturgicalDay.nameMn: "Төгс жаргалт…", sections: [ ..., concludingPrayer: <성모 마침기도> ] }
+```

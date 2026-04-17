@@ -1,4 +1,4 @@
-import type { DayPropers, HourPropers, HourType, LiturgicalSeason, DayOfWeek, SanctoralEntry, HymnCandidate } from './types'
+import type { DayPropers, HourPropers, HourType, LiturgicalSeason, DayOfWeek, SanctoralEntry, HymnCandidate, OptionalMemorialEntry } from './types'
 import fs from 'fs'
 import path from 'path'
 
@@ -104,6 +104,52 @@ export function getSanctoralPropers(celebrationKey: string): SanctoralEntry | nu
     if (data[celebrationKey]) return data[celebrationKey]
   }
   return null
+}
+
+/**
+ * Lookup the memorial entry that replaces the weekday when the user chooses
+ * the Blessed Virgin Mary on Saturday. Delegates to the existing `memorials`
+ * sanctoral file so we keep a single source of truth.
+ */
+export function getSaturdayMaryMemorial(): SanctoralEntry | null {
+  const data = loadSanctoralFile('memorials')
+  return data['saturday-mary'] ?? null
+}
+
+// --- Optional memorials loader ---
+
+let _optionalMemorials: Record<string, OptionalMemorialEntry> | null = null
+
+export function loadOptionalMemorials(): Record<string, OptionalMemorialEntry> {
+  if (_optionalMemorials) return _optionalMemorials
+  try {
+    const filePath = path.join(process.cwd(), 'src/data/loth/sanctoral', 'optional-memorials.json')
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as Record<string, OptionalMemorialEntry>
+    _optionalMemorials = data
+    return data
+  } catch {
+    _optionalMemorials = {}
+    return _optionalMemorials
+  }
+}
+
+export function getOptionalMemorial(id: string): OptionalMemorialEntry | null {
+  return loadOptionalMemorials()[id] ?? null
+}
+
+/** All optional memorials registered on the given MM-DD. */
+export function getOptionalMemorialsForDate(mmdd: string): { id: string; entry: OptionalMemorialEntry }[] {
+  const all = loadOptionalMemorials()
+  const result: { id: string; entry: OptionalMemorialEntry }[] = []
+  for (const [id, entry] of Object.entries(all)) {
+    if (entry.mmdd === mmdd) result.push({ id, entry })
+  }
+  return result
+}
+
+/** Test hook: reset the cached optional memorials (unit test use only). */
+export function __resetOptionalMemorialsCache(): void {
+  _optionalMemorials = null
 }
 
 // --- Hymn loader ---
