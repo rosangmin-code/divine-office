@@ -11,12 +11,12 @@ test.describe('Lauds (Morning Prayer) page', () => {
     await expect(page.getByText(DATES.ordinaryWeekday)).toBeVisible()
   })
 
-  test('has core sections: opening versicle, invitatory, hymn, psalmody, benedictus, ourFather, dismissal', async ({ page }) => {
-    // Opening Versicle (Удиртгал) — always present
-    await expect(page.locator('[aria-label="Удиртгал"]')).toBeVisible()
-
-    // Invitatory (first hour of day)
+  test('has core sections: invitatory, hymn, psalmody, benedictus, ourFather, dismissal', async ({ page }) => {
+    // Invitatory (first hour of day) — replaces the opening versicle per GILH §266
     await expect(page.locator('[aria-label="Урих дуудлага"]')).toBeVisible()
+
+    // Opening Versicle (Удиртгал) must NOT appear when the Invitatory is present
+    await expect(page.locator('[aria-label="Удиртгал"]')).toHaveCount(0)
 
     // Hymn
     await expect(page.locator('[aria-label="Магтуу"]')).toBeVisible()
@@ -43,12 +43,12 @@ test.describe('Lauds (Morning Prayer) page', () => {
     expect(invitatory.response).toBeTruthy()
   })
 
-  test('invitatory precedes openingVersicle in section order', async ({ request }) => {
+  test('openingVersicle is absent when invitatory is present (GILH §266)', async ({ request }) => {
     const res = await request.get(`/api/loth/${DATES.ordinaryWeekday}/lauds`)
     const body = await res.json()
     const types = body.sections.map((s: { type: string }) => s.type)
     expect(types[0]).toBe('invitatory')
-    expect(types.indexOf('invitatory')).toBeLessThan(types.indexOf('openingVersicle'))
+    expect(types).not.toContain('openingVersicle')
   })
 
   test('back link navigates to homepage with date', async ({ page }) => {

@@ -56,11 +56,10 @@ test.describe('GET /api/loth/[date]/[hour]', () => {
     expect(body.sections).toBeInstanceOf(Array)
     expect(body.sections.length).toBeGreaterThan(0)
 
-    // Lauds (first hour of day) starts with invitatory, then openingVersicle (Удиртгал)
+    // Lauds (first hour of day) uses invitatory as opening; openingVersicle is omitted per GILH §266.
     expect(body.sections[0].type).toBe('invitatory')
     const types = body.sections.map((s: { type: string }) => s.type)
-    expect(types).toContain('openingVersicle')
-    expect(types.indexOf('invitatory')).toBeLessThan(types.indexOf('openingVersicle'))
+    expect(types).not.toContain('openingVersicle')
 
     // Must contain hymn, psalmody, dismissal
     expect(types).toContain('hymn')

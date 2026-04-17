@@ -48,21 +48,22 @@ describe('assembleLauds', () => {
     const sections = assembleLauds(makeContext())
     const types = sections.map((s) => s.type)
     expect(types).toEqual([
-      'invitatory', 'openingVersicle', 'hymn', 'psalmody', 'responsory',
+      'invitatory', 'hymn', 'psalmody', 'responsory',
       'gospelCanticle', 'intercessions', 'ourFather', 'concludingPrayer', 'dismissal',
     ])
   })
 
-  it('always includes openingVersicle', () => {
-    const sections = assembleLauds(makeContext())
-    expect(sections.some((s) => s.type === 'openingVersicle')).toBe(true)
+  it('includes openingVersicle only when not first hour (GILH §266)', () => {
+    const firstHour = assembleLauds(makeContext({ isFirstHourOfDay: true }))
+    expect(firstHour.some((s) => s.type === 'openingVersicle')).toBe(false)
+    const laterHour = assembleLauds(makeContext({ isFirstHourOfDay: false }))
+    expect(laterHour.some((s) => s.type === 'openingVersicle')).toBe(true)
   })
 
-  it('places openingVersicle right after invitatory when first hour', () => {
-    const sections = assembleLauds(makeContext({ isFirstHourOfDay: true }))
-    const types = sections.map((s) => s.type)
+  it('omits openingVersicle when invitatory is present', () => {
+    const types = assembleLauds(makeContext({ isFirstHourOfDay: true })).map((s) => s.type)
     expect(types[0]).toBe('invitatory')
-    expect(types[1]).toBe('openingVersicle')
+    expect(types).not.toContain('openingVersicle')
   })
 
   it('omits invitatory and starts with openingVersicle when not first hour', () => {

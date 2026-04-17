@@ -6,7 +6,9 @@ import { parseIntercessions } from './intercessions'
 export const assembleLauds: HourAssembler = (ctx) => {
   const sections: HourSection[] = []
 
-  // 1. Invitatory — only when Lauds is the first hour of the day
+  // 1. Invitatory OR Opening Versicle — mutually exclusive per GILH §266.
+  //    When Lauds is the first hour of the day, the Invitatory serves as the
+  //    day's opening and the "Deus in adiutorium" versicle (Удиртгал) is omitted.
   if (ctx.isFirstHourOfDay) {
     const antiphon = resolveInvitatoryAntiphon(
       ctx.ordinarium.invitatoryAntiphons,
@@ -15,10 +17,9 @@ export const assembleLauds: HourAssembler = (ctx) => {
       ctx.dateStr,
     )
     sections.push(buildInvitatory(ctx.ordinarium, antiphon))
+  } else {
+    sections.push(buildOpeningVersicle(ctx.ordinarium, ctx.liturgicalDay.season))
   }
-
-  // 2. Opening Versicle (Удиртгал) — always present at Lauds, after the Invitatory
-  sections.push(buildOpeningVersicle(ctx.ordinarium, ctx.liturgicalDay.season))
 
   // 2. Hymn
   sections.push({ type: 'hymn', text: ctx.mergedPropers.hymn ?? '', page: ctx.mergedPropers.hymnPage, candidates: ctx.hymnCandidates, selectedIndex: ctx.hymnSelectedIndex })
