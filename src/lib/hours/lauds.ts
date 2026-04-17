@@ -1,6 +1,7 @@
 import type { HourSection } from '../types'
 import type { HourAssembler } from './types'
 import { buildInvitatory, resolveInvitatoryAntiphon, buildOpeningVersicle, buildDismissal, resolveShortReading, resolveGospelCanticle } from './shared'
+import { parseIntercessions } from './intercessions'
 
 export const assembleLauds: HourAssembler = (ctx) => {
   const sections: HourSection[] = []
@@ -52,10 +53,15 @@ export const assembleLauds: HourAssembler = (ctx) => {
 
   // 7. Intercessions
   if (ctx.mergedPropers.intercessions) {
+    const parsed = parseIntercessions(ctx.mergedPropers.intercessions)
     sections.push({
       type: 'intercessions',
       intro: '',
       items: ctx.mergedPropers.intercessions,
+      introduction: parsed.introduction,
+      refrain: parsed.refrain,
+      petitions: parsed.petitions,
+      closing: parsed.closing,
       page: ctx.mergedPropers.intercessionsPage,
     })
   }

@@ -212,7 +212,16 @@ export type HourSection =
   | { type: 'shortReading'; ref: string; bookMn: string; verses: { verse: number; text: string }[]; page?: number }
   | { type: 'responsory'; versicle: string; response: string; page?: number }
   | { type: 'gospelCanticle'; canticle: 'benedictus' | 'magnificat' | 'nuncDimittis'; antiphon: string; text: string; verses?: string[]; doxology?: string; page?: number }
-  | { type: 'intercessions'; intro: string; items: string[]; page?: number }
+  | {
+      type: 'intercessions'
+      intro: string
+      items: string[]
+      introduction?: string
+      refrain?: string
+      petitions?: { versicle: string; response?: string }[]
+      closing?: string
+      page?: number
+    }
   | { type: 'ourFather' }
   | { type: 'concludingPrayer'; text: string; page?: number; alternateText?: string }
   | { type: 'dismissal'; priest: { greeting: { versicle: string; response: string }; blessing: { text: string; response: string }; dismissalVersicle: { versicle: string; response: string } }; individual: { versicle: string; response: string } }

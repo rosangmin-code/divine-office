@@ -135,17 +135,60 @@ function IntercessionsSection({ section }: { section: Extract<HourSection, { typ
       </section>
     )
   }
+
+  const petitions = section.petitions ?? []
+  const structured = petitions.length > 0
+
   return (
     <section aria-label="Гүйлтын залбирал" className="mb-4">
       <p className="text-sm font-semibold text-red-700 dark:text-red-400">Гүйлтын залбирал <PageRef page={section.page} /></p>
-      {section.intro && (
-        <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">{section.intro}</p>
+
+      {structured ? (
+        <>
+          {section.introduction && (
+            <p className="mt-3 font-serif text-stone-800 dark:text-stone-200">
+              <span data-role="intercessions-role" className="mr-1 text-xs font-semibold not-italic text-red-700/80 dark:text-red-400/80">Д.</span>
+              {section.introduction}
+            </p>
+          )}
+          {section.refrain && (
+            <p
+              data-role="intercessions-refrain"
+              className="mt-3 rounded-md bg-amber-50/60 px-3 py-2 font-serif italic text-stone-800 dark:bg-stone-800/50 dark:text-stone-200"
+            >
+              <span data-role="intercessions-role" className="mr-1 text-xs font-semibold not-italic text-red-700/80 dark:text-red-400/80">R.</span>
+              {section.refrain}
+            </p>
+          )}
+          <ul className="mt-3 space-y-3">
+            {petitions.map((p, i) => (
+              <li key={i} data-role="intercessions-petition" className="font-serif text-stone-800 dark:text-stone-200">
+                <div>— {p.versicle}</div>
+                {p.response && (
+                  <div data-role="intercessions-response" className="ml-5 mt-1 italic text-stone-700 dark:text-stone-300">
+                    <span data-role="intercessions-role" className="mr-1 text-xs font-semibold not-italic text-red-700/80 dark:text-red-400/80">R.</span>
+                    {p.response}
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+          {section.closing && (
+            <p className="mt-3 font-serif italic text-stone-700 dark:text-stone-300">«{section.closing}»</p>
+          )}
+        </>
+      ) : (
+        <>
+          {section.intro && (
+            <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">{section.intro}</p>
+          )}
+          <ul className="mt-2 space-y-2">
+            {section.items.map((item, i) => (
+              <li key={i} className="font-serif text-stone-800 dark:text-stone-200">— {item}</li>
+            ))}
+          </ul>
+        </>
       )}
-      <ul className="mt-2 space-y-2">
-        {section.items.map((item, i) => (
-          <li key={i} className="font-serif text-stone-800 dark:text-stone-200">— {item}</li>
-        ))}
-      </ul>
     </section>
   )
 }

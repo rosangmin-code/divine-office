@@ -65,6 +65,7 @@
 | NFR-014 | 설정 FOUC 방지 (pre-paint) | `src/app/layout.tsx` — `<head>` 인라인 스크립트가 paint 이전에 `loth-settings`를 읽어 `<html>`의 `data-font-size`/`data-font-family`/`dark` 클래스를 선반영 | `e2e/settings.spec.ts` — 테스트 #3: 새로고침 후 `data-font-size` 유지 | 완료 |
 | FR-032 | 성모교송 선택 (4개 옵션) | FR-130 | [PRD §13](../PRD.md#13-기도문-선택-기능) | `src/lib/types.ts` — `MarianAntiphonCandidate` 인터페이스, `marianAntiphon` 섹션에 `candidates`/`selectedIndex` 추가<br>`src/lib/hours/compline.ts` — `complineData.marianAntiphon` 전체를 candidates로 전달<br>`src/components/marian-antiphon-section.tsx` — `'use client'` 선택 UI (드롭다운 메뉴, hymn-section 패턴)<br>`src/components/prayer-renderer.tsx` — 인라인 `MarianAntiphonSection` 제거, 분리 컴포넌트 import | `e2e/prayer-sections.spec.ts` — 성모교송 선택 메뉴 표시, 선택 시 텍스트 변경, API candidates 검증 | 완료 |
 | FR-033 | 대체 마침기도 선택 | FR-131 | [PRD §13](../PRD.md#13-기도문-선택-기능) | `src/lib/types.ts` — `concludingPrayer` 섹션에 `alternateText?` 추가<br>`src/lib/hours/lauds.ts` — `mergedPropers.alternativeConcludingPrayer` 전달<br>`src/lib/hours/vespers.ts` — `mergedPropers.alternativeConcludingPrayer` 전달<br>`src/lib/hours/compline.ts` — `complineData.concludingPrayer.alternate` fallback 전달<br>`src/components/concluding-prayer-section.tsx` — `'use client'` 토글 UI<br>`src/components/prayer-renderer.tsx` — 인라인 `ConcludingPrayerSection` 제거, 분리 컴포넌트 import | `e2e/prayer-sections.spec.ts` — 끝기도 일요일 대체 마침기도 토글 검증, API alternateText 존재 확인 | 완료 |
+| FR-034 | 중보기도 역할 구조화 | FR-150 | [PRD §12](../PRD.md#12-루브릭빨간색-텍스트-및-교송-라벨링) | `src/lib/hours/intercessions.ts` — `parseIntercessions()` 순수 파서: `" - "`/`" — "` 구분자, 다중 라인 intro/response 처리, closing 분리<br>`src/lib/hours/{lauds,vespers}.ts` — 파서 호출 후 `introduction`/`refrain`/`petitions`/`closing` 필드 전달<br>`src/lib/types.ts` — `HourSection.intercessions` variant 확장<br>`src/components/prayer-renderer.tsx` — `IntercessionsSection`: 구조화 뷰(Д./R. 라벨, 후렴 강조 박스, 응답 들여쓰기) + flat 리스트 폴백 | `e2e/prayer-intercessions.spec.ts` — API `refrain`/`petitions` + UI `data-role` 속성 검증<br>`src/lib/__tests__/hours/intercessions.test.ts` — 10개 테스트: psalter commons, seasonal propers, fallback | 완료 |
 | NFR-015 | 설정 페이지 접근성 | `src/app/settings/page.tsx` — `role="radiogroup"` + `aria-labelledby`, `role="radio"` + `aria-checked`, `role="switch"` + `aria-checked`, 모든 버튼 `min-h-[44px]`, 몽골어 `aria-label`<br>`src/components/settings-link.tsx` — `aria-label="Тохиргоо"` | `e2e/settings.spec.ts` — 테스트 #2 (라디오/스위치 카운트), #3 (aria-checked), #7 (switch aria) | 완료 |
 
 ---
@@ -92,6 +93,8 @@
 | `e2e/ordinarium.spec.ts` | FR-030 |
 | `e2e/pwa.spec.ts` | FR-021, FR-022, FR-023, NFR-010, NFR-011, NFR-012 |
 | `e2e/prayer-psalter-commons.spec.ts` | FR-007, FR-010, FR-024 |
+| `e2e/prayer-intercessions.spec.ts` | FR-034 |
+| `src/lib/__tests__/hours/intercessions.test.ts` | FR-034 |
 | `e2e/settings.spec.ts` | FR-019, FR-025, FR-026, FR-027, FR-028, NFR-014, NFR-015 |
 | `e2e/fixtures/dates.ts` | (테스트 데이터 — 모든 E2E 공통) |
 
@@ -103,16 +106,16 @@
 
 | 상태 | 기능 요구사항 | 비기능 요구사항 | 합계 |
 |------|:------------:|:---------------:|:----:|
-| 완료 | 24 | 9 | **33** |
+| 완료 | 25 | 9 | **34** |
 | 부분 완료 | 4 | 1 | **5** |
 | 미구현 | 0 | 0 | **0** |
-| **합계** | **28** | **10** | **38** |
+| **합계** | **29** | **10** | **39** |
 
 ### 커버리지율
 
-- **전체 요구사항:** 38건
-- **완료:** 33건 (86.8%)
-- **부분 완료:** 5건 (13.2%)
+- **전체 요구사항:** 39건
+- **완료:** 34건 (87.2%)
+- **부분 완료:** 5건 (12.8%)
 - **미구현:** 0건 (0%)
 
 ### 부분 완료 항목 상세
