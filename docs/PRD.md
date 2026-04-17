@@ -299,10 +299,12 @@ src/app/
 | FR-122 | **초대송 교송 분리 데이터**: `src/data/loth/ordinarium/invitatory-antiphons.json`에 시기/축일별 초대송 교송을 분리 저장한다. `buildInvitatory()`가 이를 참조해 적절한 교송을 선택한다. | 데이터 | P2 | 완료 |
 | FR-123 | **PDF 컬럼 wrap 정규화**: `extract-psalm-texts.js`가 stanza 내(및 인접 stanza 경계)에서 키릴 소문자로 시작하는 줄을 직전 줄의 wrap continuation으로 간주해 합친다. 의미 있는 절(hemistich) 줄바꿈은 보존. | 데이터 | P2 | 완료 |
 | FR-124 | **시편 구간 정확 매칭**: `Psalm N:start-end` 참조에 대해 추출기는 chapter + verseStart까지 함께 매칭한다. 매칭 실패 시 chapter-only fallback은 PDF가 전체 시편을 하나로 낭송하는 경우(예: `Дуулал 11`)에만 허용하며, sub-section 헤더(`Дуулал 119:145-152`)에는 매칭하지 않는다. 같은 chapter의 서로 다른 구간이 동일 본문을 공유하지 않는다. | 데이터 | P1 | 완료 |
+| FR-132 | **Дууллыг төгсгөх залбирал (시편 마침기도)**: 각 시편 본문 뒤 Gloria Patri 직후에 PDF 원서의 "Дууллыг төгсгөх залбирал" 제목 + 기도문을 표시한다. 데이터는 `src/data/loth/psalter-texts.json`의 entry에 `psalmPrayer?: string` 필드로 저장되며 `extract-psalm-texts.js`가 parsed_data에서 stanza와 함께 추출한다. `AssembledPsalm.psalmPrayer`를 통해 `PsalmBlock`이 렌더링(`data-role="psalm-prayer"`)하며, 데이터가 없으면 섹션을 완전히 숨긴다. 동일 `ref`에서 기도문 충돌 시 첫값 유지. | UI/데이터 | P1 | 완료 |
 
 ### 9.2 구현 상세
 
 - **Stanza 데이터**: `src/data/loth/psalter-texts.json`. 스크립트: `scripts/extract-psalm-texts.js`. 추출 단계에서 `mergeColumnWraps()`(소문자 시작 줄을 직전 줄로 합침)와 `mergeAcrossStanzaBoundaries()`(stanza 경계를 가로지르는 wrap continuation 처리)가 적용됨(FR-123). 헤더 매칭은 `parseRefKey()`가 verseStart까지 추출해 `buildHeaderRegexes()`가 precise + chapter-only fallback을 분리해 시도(FR-124).
+- **시편 마침기도(FR-132)**: `psalter-texts.json` entry에 `psalmPrayer?: string` 필드 확장. `extract-psalm-texts.js`의 `extractPsalmPrayer()`가 `Дууллыг төгсгөх залбирал` 마커 뒤에서 다음 END_MARKER까지 텍스트를 수집한다. 본문 단락 내부에서 나타나는 빈 줄은 PDF 페이지 브레이크로 인한 분할로 간주해 lookahead로 이어진 줄이 소문자 키릴 시작이면 계속 수집, 그 외(새 rubric/섹션)면 종료. `mergeColumnWraps()` 적용 후 공백 결합해 한 문단 문자열로 저장. `PsalmBlock`이 Gloria Patri 바로 아래 렌더링.
 - **렌더링**: `src/components/psalm-block.tsx`. stanza = 1개의 `<p>`, 줄 = `<span className="block">` 패턴. stanza 내부 줄 사이 vertical margin 0, stanza 사이 모바일 `space-y-5`/데스크톱 `md:space-y-4`. 모바일 좌측 padding `pl-3`(NFR-014).
 - **초대송 교송**: `src/lib/hours/shared.ts`의 `buildInvitatory()`가 `invitatory-antiphons.json`에서 선택, `invitatory.json`의 Venite 본문과 결합.
 

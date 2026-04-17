@@ -36,6 +36,22 @@ test.describe('Prayer section detail rendering', () => {
       const unique = new Set(firsts)
       expect(unique.size).toBe(sections.length)
     })
+
+    test('psalm-concluding prayer renders when data is present (FR-132)', async ({ page }) => {
+      await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
+
+      const prayers = page.locator('[data-role="psalm-prayer"]')
+      const count = await prayers.count()
+      expect(count).toBeGreaterThanOrEqual(1)
+
+      const first = prayers.first()
+      await expect(first).toBeVisible()
+      await expect(first).toContainText('Дууллыг төгсгөх залбирал')
+
+      // The prayer body paragraph must be non-empty and distinct from the header.
+      const bodyText = await first.locator('p').nth(1).textContent()
+      expect((bodyText ?? '').trim().length).toBeGreaterThan(30)
+    })
   })
 
   test.describe('Hymn section', () => {

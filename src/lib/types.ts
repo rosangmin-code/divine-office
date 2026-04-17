@@ -236,6 +236,7 @@ export interface AssembledPsalm {
   verses: { verse: number; text: string }[]  // fallback when stanzas unavailable
   stanzas?: string[][]                        // poetic lines grouped by stanza (from PDF source)
   gloriaPatri: boolean
+  psalmPrayer?: string           // Дууллыг төгсгөх залбирал — post-Gloria Patri oratio
   page?: number                  // Source PDF page number
 }
 

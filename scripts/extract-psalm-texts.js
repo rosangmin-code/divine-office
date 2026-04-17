@@ -47,8 +47,8 @@ const END_MARKERS = [
   /^Дууллыг төгсгөх залбирал/,       // Concluding psalm prayer
   /^Шад\s+(магтаал|дуулал)/,         // Next antiphon
   /^Дуулал\s+\d/,                     // Next psalm header
-  /^Магтаал\b/,                       // Next canticle header (standalone)
-  /^Уншлага\b/,                       // Reading header
+  /^Магтаал(?:\s|$)/,                 // Next canticle header (standalone)
+  /^Уншлага(?:\s|$)/,                 // Reading header
   /^Богино уншлага/,                  // Short reading
   /^Хариу залбирал/,                 // Responsory
   /^Хариу дуулал/,                   // Responsory
@@ -202,7 +202,7 @@ function buildHeaderRegexes(bookMnVariants, chapter, verseStart) {
  * when extracting a body, so we don't bleed into the following psalm.
  */
 const ANY_PSALM_HEADER_RE = /^Дуулал\s*\d/
-const ANY_CANTICLE_HEADER_RE = /^Магтаал\b/
+const ANY_CANTICLE_HEADER_RE = /^Магтаал(?:\s|$)/
 
 // ── Collect all psalm refs from psalter JSONs ──
 
@@ -330,7 +330,70 @@ function extractPsalmBody(lines, headerIdx, title, ownHeaderRegexes = []) {
     stanzas.push(mergeColumnWraps(currentStanza))
   }
 
-  return mergeAcrossStanzaBoundaries(stanzas)
+  return { stanzas: mergeAcrossStanzaBoundaries(stanzas), endIdx: i }
+}
+
+/**
+ * Extract the psalm-concluding prayer (Дууллыг төгсгөх залбирал) that follows
+ * a psalm body. Scans forward from `startIdx` within a small window to locate
+ * the marker; then collects lines until the next end marker / next section
+ * header, applies column-wrap merge, and joins into a single paragraph.
+ *
+ * Returns the prayer as a single string, or null if no prayer is found.
+ */
+function extractPsalmPrayer(lines, startIdx) {
+  const PRAYER_MARKER = /^Дууллыг төгсгөх залбирал/
+  const SEARCH_WINDOW = 40
+
+  let markerIdx = -1
+  for (let i = startIdx; i < lines.length && i < startIdx + SEARCH_WINDOW; i++) {
+    const t = lines[i].trim()
+    if (PRAYER_MARKER.test(t)) { markerIdx = i; break }
+    // Stop scanning if we hit a header for the next psalm/canticle.
+    if (ANY_PSALM_HEADER_RE.test(t) || ANY_CANTICLE_HEADER_RE.test(t)) return null
+  }
+  if (markerIdx === -1) return null
+
+  const prayerLines = []
+  let sawContent = false
+  let i = markerIdx + 1
+  while (i < lines.length) {
+    const line = lines[i]
+    const t = line.trim()
+
+    if (!t) {
+      if (!sawContent) { i++; continue }
+      // After content: a blank usually means a new rubric/section follows.
+      // BUT the PDF has page breaks that split a single prayer paragraph
+      // across pages — blank + page-number/header + blank + continuation.
+      // Peek past the blank/noise block: if the next meaningful line starts
+      // with a lowercase Cyrillic letter, it's a wrap continuation and we
+      // should keep collecting; otherwise the prayer ends here.
+      let j = i + 1
+      while (j < lines.length) {
+        const tj = lines[j].trim()
+        if (!tj || isNoiseLine(lines[j])) { j++; continue }
+        break
+      }
+      if (j >= lines.length) break
+      const next = lines[j].trim()
+      if (isEndMarker(next) || ANY_PSALM_HEADER_RE.test(next) || ANY_CANTICLE_HEADER_RE.test(next)) break
+      if (!/^[а-яёөү]/.test(next)) break
+      i = j
+      continue
+    }
+
+    if (isEndMarker(t)) break
+    if (ANY_PSALM_HEADER_RE.test(t) || ANY_CANTICLE_HEADER_RE.test(t)) break
+    if (isNoiseLine(line)) { i++; continue }
+    prayerLines.push(t)
+    sawContent = true
+    i++
+  }
+
+  if (prayerLines.length === 0) return null
+
+  return mergeColumnWraps(prayerLines).join(' ').trim()
 }
 
 /**
@@ -384,6 +447,7 @@ function main() {
   const result = {}
   let found = 0
   let notFound = 0
+  let prayersFound = 0
 
   // Pre-split all week texts into lines
   const weekLines = {}
@@ -424,10 +488,14 @@ function main() {
           if (t.includes('нь урих дуудлагын')) continue
           if (t.includes('нь х.')) continue
 
-          const stanzas = extractPsalmBody(lines, idx, info.title, headerRegexes)
+          const { stanzas, endIdx } = extractPsalmBody(lines, idx, info.title, headerRegexes)
           if (stanzas.length > 0 && stanzas.some(s => s.length > 0)) {
-            result[ref] = { stanzas }
+            const entry = { stanzas }
+            const prayer = extractPsalmPrayer(lines, endIdx)
+            if (prayer) entry.psalmPrayer = prayer
+            result[ref] = entry
             found++
+            if (prayer) prayersFound++
             extracted = true
             break
           }
@@ -443,6 +511,7 @@ function main() {
   }
 
   console.log(`\nResults: ${found} found, ${notFound} not found out of ${uniqueRefs.size}`)
+  console.log(`Psalm prayers: ${prayersFound} attached`)
 
   // Write output
   fs.writeFileSync(OUTPUT, JSON.stringify(result, null, 2), 'utf-8')
