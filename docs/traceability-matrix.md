@@ -1,7 +1,7 @@
 # 추적성 매트릭스 (Traceability Matrix)
 
 **프로젝트:** Mongolian Liturgy of the Hours (Divine Office) Web App
-**최종 업데이트:** 2026-04-16
+**최종 업데이트:** 2026-04-17
 **기준 브랜치:** `main`
 
 > **참고:** 기능 요구사항은 모듈별 PRD로 분리되었습니다. 각 모듈 문서는 [`docs/modules/`](modules/) 디렉토리를 참조하세요.
@@ -26,7 +26,7 @@
 | FR-009 | 성인축일 고유문 (sanctoral propers) | FR-040~045 | [propers](modules/propers.md) | `src/lib/propers-loader.ts` — `getSanctoralPropers()`: solemnities/feasts/memorials.json 순차 검색<br>`src/lib/loth-service.ts` — Layer 3 sanctoral propers 적용 (최우선), `replacesPsalter` + `properPsalmody` 지원 | `e2e/special-days.spec.ts` — St. Joseph (03-19) Lauds: concluding prayer에 "Иосеф" 포함 확인, Vespers: Lauds와 다른 canticle antiphon<br>`e2e/api.spec.ts` — St. Joseph Lauds: sanctoral concluding prayer 확인 | 완료 |
 | FR-010 | 3단계 fallback (sanctoral > season > psalter) | FR-050~051 | [propers](modules/propers.md) | `src/lib/loth-service.ts` — 88~113행: Layer 1 psalterCommons → Layer 2 seasonPropers → Layer 3 hourPropers 순서로 병합<br>`src/lib/hours/compline.ts` — `mergeComplineDefaults()`: compline 전용 기본값 추가 병합 | `e2e/api.spec.ts` — Sanctoral propers override 테스트 (St. Joseph)<br>`e2e/special-days.spec.ts` — St. Joseph Lauds/Vespers sanctoral 우선 적용 확인<br>`e2e/prayer-sections.spec.ts` — shortReading/responsory 구조 검증 | 완료 |
 | FR-011 | 토요일 저녁 = 주일 1st Vespers | FR-032 | [propers](modules/propers.md) | `src/lib/loth-service.ts` — 55~59행: `dayOfWeek === 'SAT' && hour === 'vespers'`일 때 다음 주일 vespers propers로 fallback | 직접 테스트 없음 — 토요일 저녁기도 전용 E2E 테스트 부재 | 부분 완료 |
-| FR-012 | 찬미가 (hymn) 자동 배정 | FR-060~063 | [hymns](modules/hymns.md) | `src/lib/propers-loader.ts` — `getHymnForHour()`: hymns-index.json의 seasonalAssignments 기반, 시기/시간대별 후보 선택, weekOfSeason으로 결정적 rotation<br>`src/lib/loth-service.ts` — 122~128행: mergedPropers.hymn 미설정 시 자동 배정 | `e2e/prayer-lauds.spec.ts` — hymn section 존재 확인<br>`e2e/prayer-vespers.spec.ts` — hymn section 존재 확인<br>`e2e/prayer-sections.spec.ts` — hymn 라벨 렌더링 확인 | 완료 |
+| FR-012 | 찬미가 (hymn) 자동 배정 | FR-060~067 | [hymns](modules/hymns.md) | `src/lib/propers-loader.ts` — `getHymnForHour()`: hymns-index.json의 seasonalAssignments 기반, 시기/시간대별 후보 선택, weekOfSeason으로 결정적 rotation<br>`src/lib/loth-service.ts` — 122~128행: mergedPropers.hymn 미설정 시 자동 배정<br>`scripts/parsers/{types,lexer,hymn-parser,index}.ts` + `scripts/extract-hymns.ts` — PDF 추출 정제 파이프라인(FR-067): 날짜헤더 꼬리 태깅 → 연 마커 승격(knownTitles 교차검증) → 세그먼트 필터(≥2줄) | `e2e/prayer-lauds.spec.ts` — hymn section 존재 확인<br>`e2e/prayer-vespers.spec.ts` — hymn section 존재 확인<br>`e2e/prayer-sections.spec.ts` — hymn 라벨 렌더링 확인<br>`scripts/parsers/hymn-parser.test.ts` — 파서 6 케이스(클린/attribution/오염 preamble/TOC-only/빈 입력/연 마커 보존) | 완료 |
 | FR-013 | 성경 본문 로드 | FR-070~072 | [bible](modules/bible.md) | `src/lib/bible-loader.ts` — JSONL 파일(bible_ot/nt_rest/gospels)에서 성경 데이터 로드, `lookupRef()`: verse suffix (a/b/c) 처리, psalm offset 보정<br>`src/lib/scripture-ref-parser.ts` — 성경 참조 문자열 파싱<br>`src/lib/hours/shared.ts` — `resolvePsalm()`, `resolveShortReading()`에서 Bible JSONL 사용. **`resolveGospelCanticle()`은 `canticles.json`의 PDF 원문 `verses`를 우선 사용** (Bible JSONL은 MoSociety 2019 개신교 번역으로 가톨릭 전례문과 다름) | `e2e/prayer-sections.spec.ts` — psalm verse 확인 + **Gospel canticle text fidelity (PDF source)**: Benedictus/Magnificat/Nunc Dimittis가 PDF 원문 사용 검증<br>`e2e/prayer-lauds.spec.ts` — Benedictus gospel canticle 렌더링 확인 | 완료 |
 | FR-014 | 전례력 API | FR-080~081 | [api](modules/api.md) | `src/app/api/calendar/today/route.ts` — `GET /api/calendar/today`<br>`src/app/api/calendar/date/[date]/route.ts` — `GET /api/calendar/date/[date]` | `e2e/api.spec.ts` — today API: 응답 구조 (date, name, season 등 11개 필드), season/color 유효값 확인<br>`e2e/api.spec.ts` — date API: Ordinary Time 정확성, invalid date 404 | 완료 |
 | FR-015 | 기도 조립 API | FR-082~083 | [api](modules/api.md) | `src/app/api/loth/[date]/[hour]/route.ts` — `GET /api/loth/[date]/[hour]`: 유효 hour 검증, assembleHour() 호출, 400/404 에러 처리 | `e2e/api.spec.ts` — Lauds/Vespers/Compline/Terce API 상세 검증, invalid hour 400, invalid date 404<br>`e2e/prayer-sections.spec.ts` — API를 통한 shortReading/responsory 구조 확인 | 완료 |
@@ -96,6 +96,7 @@
 | `e2e/prayer-psalter-commons.spec.ts` | FR-007, FR-010, FR-024 |
 | `e2e/prayer-intercessions.spec.ts` | FR-034 |
 | `src/lib/__tests__/hours/intercessions.test.ts` | FR-034 |
+| `scripts/parsers/hymn-parser.test.ts` | FR-012 (FR-067) |
 | `e2e/settings.spec.ts` | FR-019, FR-025, FR-026, FR-027, FR-028, NFR-014, NFR-015 |
 | `e2e/fixtures/dates.ts` | (테스트 데이터 — 모든 E2E 공통) |
 
@@ -131,6 +132,6 @@
 
 ### E2E 테스트 통계
 
-- **테스트 파일:** 18개 (E2E 17개 + fixtures, Vitest 10개)
-- **테스트 케이스:** E2E ~71개 + Vitest 74개 (terce/sext/none 반복 포함)
+- **테스트 파일:** E2E 17개 + fixtures, Vitest 11개(`scripts/parsers/hymn-parser.test.ts` 포함)
+- **테스트 케이스:** E2E ~71개 + Vitest 119개(파서 6 케이스 포함, terce/sext/none 반복 포함)
 - **테스트가 없는 요구사항:** 없음 (모든 요구사항에 최소 1개 이상의 테스트 존재, 단 FR-011은 간접 테스트만)
