@@ -1190,21 +1190,21 @@
           },
           {
             "type": "canticle",
-            "ref": "Jeremiah 14:17-21",
+            "ref": "Tobit 13:8-11, 13-15",
             "antiphon_key": "w4-fri-lauds-cant",
             "default_antiphon": "Йерусалим аа, баярлан цэнгэгтүн. Учир нь чамаар дамжуулан бүх хүмүүс Эзэнд цугларах болно.",
             "title": "Ард түмний авралын төлөөх талархал",
             "gloria_patri": false,
-            "page": 493
+            "page": 491
           },
           {
             "type": "psalm",
-            "ref": "Psalm 100:1-5",
+            "ref": "Psalm 147:12-20",
             "antiphon_key": "w4-fri-lauds-ps3",
             "default_antiphon": "Сион хот оо Тэнгэрбурханыг магтагтун. Учир нь Тэр энэ ертөнцийг сэргээхийн тулд Өөрийн Үгийг илгээсэн.",
             "title": "Йерусалимыг сэргээн босгохуй",
             "gloria_patri": true,
-            "page": 496
+            "page": 493
           }
         ],
         "shortReading": {
