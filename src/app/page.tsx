@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { getMongoliaDateStr } from '@/lib/timezone'
 import { getHoursSummary } from '@/lib/loth-service'
 import { getCelebrationOptions, resolveCelebration, DEFAULT_CELEBRATION_ID } from '@/lib/celebrations'
-import { BORDER_COLOR_CLASSES } from '@/lib/liturgical-colors'
+import { BORDER_COLOR_CLASSES, TEXT_COLOR_CLASSES } from '@/lib/liturgical-colors'
 import { DatePicker } from '@/components/date-picker'
 import { HourCardList } from '@/components/hour-card-list'
 import { CelebrationPicker } from '@/components/celebration-picker'
@@ -78,12 +78,11 @@ export default async function HomePage({
       {/* Liturgical day info */}
       <div className={`mb-8 rounded-xl bg-white p-6 shadow-sm border-l-4 ${BORDER_COLOR_CLASSES[liturgicalDay.color]} dark:bg-neutral-900 dark:shadow-none dark:ring-1 dark:ring-stone-800`}>
         <div>
-          <h2 className="text-lg font-semibold text-stone-800 dark:text-stone-200">
+          <h2 className={`text-lg font-semibold ${TEXT_COLOR_CLASSES[liturgicalDay.color]}`}>
             {liturgicalDay.nameMn}
           </h2>
           <p className="text-sm text-stone-500 dark:text-stone-400">
-            {liturgicalDay.seasonMn} · {liturgicalDay.colorMn} ·{' '}
-            {romanNumeral(liturgicalDay.psalterWeek)} долоо хоног
+            {liturgicalDay.seasonMn} · Дуулалтын {romanNumeral(liturgicalDay.psalterWeek)}
           </p>
         </div>
       </div>

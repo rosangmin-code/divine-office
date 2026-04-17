@@ -5,7 +5,7 @@ import { SettingsLink } from '@/components/settings-link'
 import { Footer } from '@/components/footer'
 import { HourIcon } from '@/components/hour-icon'
 import type { HourType } from '@/lib/types'
-import { BORDER_COLOR_CLASSES } from '@/lib/liturgical-colors'
+import { BORDER_COLOR_CLASSES, TEXT_COLOR_CLASSES } from '@/lib/liturgical-colors'
 
 const VALID_HOURS: HourType[] = [
   // officeOfReadings, terce, sext, none: 데이터 미완성으로 임시 비활성화
@@ -92,7 +92,7 @@ export default async function PrayPage({
         <div className="flex items-center gap-3">
           <HourIcon hour={hourType} className="h-5 w-5 text-stone-400 dark:text-stone-500" />
           <div>
-            <h1 className="text-xl font-bold text-stone-900 dark:text-stone-100">
+            <h1 className={`text-xl font-bold ${TEXT_COLOR_CLASSES[liturgicalDay.color]}`}>
               {assembled.hourNameMn}
             </h1>
             <p className="text-sm text-stone-500 dark:text-stone-400">
