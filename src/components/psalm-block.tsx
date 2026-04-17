@@ -2,11 +2,11 @@ import type { AssembledPsalm } from '@/lib/types'
 import { PageRef } from './page-ref'
 import { AntiphonBox } from './prayer-renderer'
 
-export function PsalmBlock({ psalm }: { psalm: AssembledPsalm }) {
+export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; antiphonNumber?: number }) {
   return (
     <section aria-label={psalm.reference} className="mb-6">
       {/* Antiphon (before) */}
-      {psalm.antiphon && <AntiphonBox text={psalm.antiphon} label={psalm.psalmType === 'canticle' ? 'canticle' : 'psalm'} className="mb-3" />}
+      {psalm.antiphon && <AntiphonBox text={psalm.antiphon} label={psalm.psalmType === 'canticle' ? 'canticle' : 'psalm'} number={antiphonNumber} className="mb-3" />}
 
       {/* Psalm title & reference */}
       <div className="mb-2">
@@ -71,7 +71,7 @@ export function PsalmBlock({ psalm }: { psalm: AssembledPsalm }) {
       )}
 
       {/* Antiphon (after) */}
-      {psalm.antiphon && <AntiphonBox text={psalm.antiphon} label={psalm.psalmType === 'canticle' ? 'canticle' : 'psalm'} className="mt-3" />}
+      {psalm.antiphon && <AntiphonBox text={psalm.antiphon} label={psalm.psalmType === 'canticle' ? 'canticle' : 'psalm'} number={antiphonNumber} className="mt-3" />}
     </section>
   )
 }

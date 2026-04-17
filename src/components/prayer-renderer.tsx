@@ -14,10 +14,12 @@ function SectionDivider() {
   )
 }
 
-export function AntiphonBox({ text, label = 'psalm', className = 'my-3' }: { text: string; label?: 'psalm' | 'canticle'; className?: string }) {
+export function AntiphonBox({ text, label = 'psalm', number, className = 'my-3' }: { text: string; label?: 'psalm' | 'canticle'; number?: number; className?: string }) {
+  const base = label === 'canticle' ? 'Шад магтаал' : 'Шад дуулал'
+  const heading = number ? `${base} ${number}` : base
   return (
     <div data-role="antiphon" className={`${className} text-sm italic text-amber-800 dark:text-amber-300`}>
-      <span className="font-semibold not-italic">{label === 'canticle' ? 'Шад магтаал' : 'Шад дуулал'}: </span>{text}
+      <span className="font-semibold not-italic">{heading}: </span>{text}
     </div>
   )
 }
@@ -40,10 +42,11 @@ function OpeningVersicleSection({ section }: { section: Extract<HourSection, { t
 }
 
 function PsalmodySection({ section }: { section: Extract<HourSection, { type: 'psalmody' }> }) {
+  const showNumbers = section.psalms.length > 1
   return (
     <section aria-label="Дууллын залбирал">
       {section.psalms.map((psalm, i) => (
-        <PsalmBlock key={i} psalm={psalm} />
+        <PsalmBlock key={i} psalm={psalm} antiphonNumber={showNumbers ? i + 1 : undefined} />
       ))}
     </section>
   )
