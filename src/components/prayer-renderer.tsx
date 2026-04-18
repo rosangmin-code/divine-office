@@ -19,7 +19,7 @@ export function AntiphonBox({ text, label = 'psalm', number, page, className = '
   const heading = number ? `${base} ${number}` : base
   return (
     <div data-role="antiphon" className={`${className} text-sm italic text-amber-800 dark:text-amber-300`}>
-      <span className="font-semibold not-italic">{heading}<PageRef page={page} />: </span>{text}
+      <span className="font-semibold not-italic">{heading}: </span>{text}<PageRef page={page} />
     </div>
   )
 }
