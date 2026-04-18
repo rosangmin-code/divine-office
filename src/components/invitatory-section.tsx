@@ -54,7 +54,7 @@ export function InvitatorySection({ section }: InvitatoryProps) {
             {section.response}
           </p>
 
-          <AntiphonBox text={section.antiphon} />
+          <AntiphonBox text={section.antiphon} page={section.page} />
 
           <p className="mt-3 text-sm font-semibold text-red-700 dark:text-red-400">
             {section.psalm.ref.replace('Psalm', 'Дуулал')}
@@ -73,14 +73,14 @@ export function InvitatorySection({ section }: InvitatoryProps) {
                   </p>
                 ))}
               </div>
-              <AntiphonBox text={section.antiphon} />
+              <AntiphonBox text={section.antiphon} page={section.page} />
             </div>
           ))}
 
           <div className="mt-3 space-y-1 pl-2">
             <p className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">{section.gloryBe}</p>
           </div>
-          <AntiphonBox text={section.antiphon} />
+          <AntiphonBox text={section.antiphon} page={section.page} />
         </div>
       )}
     </section>

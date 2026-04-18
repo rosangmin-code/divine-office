@@ -99,7 +99,7 @@ function GospelCanticleSection({ section }: { section: Extract<HourSection, { ty
       </p>
 
       {/* Antiphon */}
-      {section.antiphon && <AntiphonBox text={section.antiphon} label="canticle" />}
+      {section.antiphon && <AntiphonBox text={section.antiphon} label="canticle" page={section.page} />}
 
       {/* Canticle text */}
       {section.verses && section.verses.length > 0 ? (
@@ -124,7 +124,7 @@ function GospelCanticleSection({ section }: { section: Extract<HourSection, { ty
       )}
 
       {/* Antiphon repeat */}
-      {section.antiphon && <AntiphonBox text={section.antiphon} label="canticle" />}
+      {section.antiphon && <AntiphonBox text={section.antiphon} label="canticle" page={section.page} />}
     </section>
   )
 }
