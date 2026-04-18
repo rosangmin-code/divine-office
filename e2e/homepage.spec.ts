@@ -24,13 +24,13 @@ test.describe('Homepage', () => {
   test('renders correctly for a specific Ordinary Time date', async ({ page }) => {
     await page.goto(`/?date=${DATES.ordinaryWeekday}`)
 
-    // Season text
-    await expect(page.getByText('Жирийн цаг улирал').first()).toBeVisible()
+    // Season is merged into the heading (genitive form)
+    await expect(page.getByText('Жирийн цаг улирлын').first()).toBeVisible()
 
-    // Mongolian liturgical day name — season is in subtitle, not in heading
+    // Mongolian liturgical day name — season + week of season (weekday omitted)
     // DATES.ordinaryWeekday = 2026-02-04 (Wednesday, OT Week 4)
     await expect(
-      page.getByRole('heading', { name: '4-р долоо хоногийн Лхагва гараг' }),
+      page.getByRole('heading', { name: 'Жирийн цаг улирлын 4-р долоо хоног' }),
     ).toBeVisible()
     await expect(page.getByText(/Ordinary Time|Wednesday of/)).toHaveCount(0)
 

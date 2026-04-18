@@ -107,9 +107,6 @@ export default async function PrayPage({
                     {liturgicalDay.nameMn}
                   </p>
                   <p className="text-sm text-stone-500 dark:text-stone-400">
-                    {liturgicalDay.seasonMn}
-                  </p>
-                  <p className="text-sm text-stone-500 dark:text-stone-400">
                     Дуулалтын {romanNumeral(liturgicalDay.psalterWeek)}
                   </p>
                 </>

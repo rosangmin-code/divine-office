@@ -57,6 +57,16 @@ export const SEASON_NAMES_MN: Record<LiturgicalSeason, string> = {
   ORDINARY_TIME: 'Жирийн цаг улирал',
 }
 
+// Mongolian season names in the genitive case ("...цаг улирлын"),
+// used when the season modifies the liturgical day name.
+export const SEASON_NAMES_MN_GEN: Record<LiturgicalSeason, string> = {
+  ADVENT: 'Ирэлтийн цаг улирлын',
+  CHRISTMAS: 'Мэндэлсэн өдрийн цаг улирлын',
+  LENT: 'Дөч хоногийн цаг улирлын',
+  EASTER: 'Дээгүүр өнгөрөх цаг улирлын',
+  ORDINARY_TIME: 'Жирийн цаг улирлын',
+}
+
 // Mongolian color names
 export const COLOR_NAMES_MN: Record<LiturgicalColor, string> = {
   GREEN: 'Ногоон',
@@ -77,7 +87,9 @@ export const RANK_NAMES_MN: Record<CelebrationRank, string> = {
 
 /**
  * Build a Mongolian name for a liturgical day.
- * Priority: sanctoral name (대축일·축일·기념일) > composed "season + week + day" string.
+ * Priority: sanctoral name (대축일·축일·기념일) > "{season-GEN} {N}-р {Ням|долоо хоног}".
+ * The specific weekday is intentionally omitted here — the calendar date line
+ * (rendered separately in the UI) already carries the weekday.
  */
 export function buildLiturgicalNameMn(args: {
   season: LiturgicalSeason
@@ -89,10 +101,11 @@ export function buildLiturgicalNameMn(args: {
 
   if (sanctoralName) return sanctoralName
 
+  const seasonGen = SEASON_NAMES_MN_GEN[season]
   if (dayOfWeek === 'SUN') {
-    return `${weekOfSeason}-р ням гараг`
+    return `${seasonGen} ${weekOfSeason}-р Ням`
   }
-  return `${weekOfSeason}-р долоо хоногийн ${DAY_NAMES_MN[dayOfWeek]} гараг`
+  return `${seasonGen} ${weekOfSeason}-р долоо хоног`
 }
 
 /**

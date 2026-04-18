@@ -8,7 +8,8 @@ test.describe('Lauds (Morning Prayer) page', () => {
 
   test('has correct header with hour name and liturgical info', async ({ page }) => {
     await expect(page.getByRole('heading', { name: 'Өглөөний даатгал залбирал' })).toBeVisible()
-    await expect(page.getByText(DATES.ordinaryWeekday)).toBeVisible()
+    // Date line uses dotted ISO format (2026.02.04) followed by the Mongolian weekday
+    await expect(page.getByText(DATES.ordinaryWeekday.replaceAll('-', '.'))).toBeVisible()
   })
 
   test('has core sections: invitatory, hymn, psalmody, benedictus, ourFather, dismissal', async ({ page }) => {
