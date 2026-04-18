@@ -1,6 +1,8 @@
 import type { LiturgicalSeason, LiturgicalColor, CelebrationRank, DayOfWeek } from './types'
 import { DAY_NAMES_MN } from './types'
 
+const DOW_CODES: DayOfWeek[] = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
+
 // romcal season key -> our LiturgicalSeason
 export const SEASON_MAP: Record<string, LiturgicalSeason> = {
   'Advent': 'ADVENT',
@@ -91,4 +93,22 @@ export function buildLiturgicalNameMn(args: {
     return `${weekOfSeason}-р ням гараг`
   }
   return `${weekOfSeason}-р долоо хоногийн ${DAY_NAMES_MN[dayOfWeek]} гараг`
+}
+
+/**
+ * Format a YYYY-MM-DD date string as "YYYY.MM.DD" plus the Mongolian weekday.
+ */
+export function formatDateMn(dateStr: string): { formatted: string; weekday: string } {
+  const d = new Date(dateStr + 'T00:00:00Z')
+  const weekday = DAY_NAMES_MN[DOW_CODES[d.getUTCDay()]]
+  return {
+    formatted: dateStr.replaceAll('-', '.'),
+    weekday,
+  }
+}
+
+/** Psalter-week Roman numeral (1-4; falls back to the raw number). */
+export function romanNumeral(n: number): string {
+  const numerals = ['I', 'II', 'III', 'IV']
+  return numerals[n - 1] ?? String(n)
 }

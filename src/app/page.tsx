@@ -3,6 +3,7 @@ import { getMongoliaDateStr } from '@/lib/timezone'
 import { getHoursSummary } from '@/lib/loth-service'
 import { getCelebrationOptions, resolveCelebration, DEFAULT_CELEBRATION_ID } from '@/lib/celebrations'
 import { BORDER_COLOR_CLASSES, TEXT_COLOR_CLASSES } from '@/lib/liturgical-colors'
+import { formatDateMn, romanNumeral } from '@/lib/mappings'
 import { DatePicker } from '@/components/date-picker'
 import { HourCardList } from '@/components/hour-card-list'
 import { CelebrationPicker } from '@/components/celebration-picker'
@@ -77,14 +78,25 @@ export default async function HomePage({
 
       {/* Liturgical day info */}
       <div className={`mb-8 rounded-xl bg-white p-6 shadow-sm border-l-4 ${BORDER_COLOR_CLASSES[liturgicalDay.color]} dark:bg-neutral-900 dark:shadow-none dark:ring-1 dark:ring-stone-800`}>
-        <div>
-          <h2 className={`text-lg font-semibold ${TEXT_COLOR_CLASSES[liturgicalDay.color]}`}>
-            {liturgicalDay.nameMn}
-          </h2>
-          <p className="text-sm text-stone-500 dark:text-stone-400">
-            {liturgicalDay.seasonMn} · Дуулалтын {romanNumeral(liturgicalDay.psalterWeek)}
-          </p>
-        </div>
+        {(() => {
+          const { formatted, weekday } = formatDateMn(dateStr)
+          return (
+            <div>
+              <p className="text-xs text-stone-500 dark:text-stone-400">
+                {formatted} {weekday}
+              </p>
+              <h2 className={`mt-1 text-lg font-semibold ${TEXT_COLOR_CLASSES[liturgicalDay.color]}`}>
+                {liturgicalDay.nameMn}
+              </h2>
+              <p className="text-sm text-stone-500 dark:text-stone-400">
+                {liturgicalDay.seasonMn}
+              </p>
+              <p className="text-sm text-stone-500 dark:text-stone-400">
+                Дуулалтын {romanNumeral(liturgicalDay.psalterWeek)}
+              </p>
+            </div>
+          )
+        })()}
       </div>
 
       {/* Celebration selector (only shown when multiple options exist) */}
@@ -127,9 +139,4 @@ function getNextDate(dateStr: string): string {
   const d = new Date(dateStr + 'T00:00:00Z')
   d.setUTCDate(d.getUTCDate() + 1)
   return d.toISOString().slice(0, 10)
-}
-
-function romanNumeral(n: number): string {
-  const numerals = ['I', 'II', 'III', 'IV']
-  return numerals[n - 1] ?? String(n)
 }

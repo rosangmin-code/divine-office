@@ -6,6 +6,7 @@ import { Footer } from '@/components/footer'
 import { HourIcon } from '@/components/hour-icon'
 import type { HourType } from '@/lib/types'
 import { BORDER_COLOR_CLASSES, TEXT_COLOR_CLASSES } from '@/lib/liturgical-colors'
+import { formatDateMn, romanNumeral } from '@/lib/mappings'
 
 const VALID_HOURS: HourType[] = [
   // officeOfReadings, terce, sext, none: 데이터 미완성으로 임시 비활성화
@@ -95,12 +96,25 @@ export default async function PrayPage({
             <h1 className={`text-xl font-bold ${TEXT_COLOR_CLASSES[liturgicalDay.color]}`}>
               {assembled.hourNameMn}
             </h1>
-            <p className="text-sm text-stone-500 dark:text-stone-400">
-              {liturgicalDay.nameMn}
-            </p>
-            <p className="text-xs text-stone-400 dark:text-stone-500">
-              {date} · {liturgicalDay.seasonMn}
-            </p>
+            {(() => {
+              const { formatted, weekday } = formatDateMn(date)
+              return (
+                <>
+                  <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+                    {formatted} {weekday}
+                  </p>
+                  <p className="text-sm text-stone-500 dark:text-stone-400">
+                    {liturgicalDay.nameMn}
+                  </p>
+                  <p className="text-sm text-stone-500 dark:text-stone-400">
+                    {liturgicalDay.seasonMn}
+                  </p>
+                  <p className="text-sm text-stone-500 dark:text-stone-400">
+                    Дуулалтын {romanNumeral(liturgicalDay.psalterWeek)}
+                  </p>
+                </>
+              )
+            })()}
           </div>
         </div>
       </header>

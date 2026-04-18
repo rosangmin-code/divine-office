@@ -45,24 +45,27 @@ test.describe('Liturgical calendar seasons and colors', () => {
 })
 
 test.describe('Liturgical day heading details (home)', () => {
-  test('subtitle shows season and psalter week in Roman numeral', async ({ page }) => {
+  test('subtitle shows season and psalter week on separate lines', async ({ page }) => {
     // OT Week 4 Wednesday → psalter week 4 (IV)
     await page.goto(`/?date=${DATES.ordinaryWeekday}`)
-    await expect(
-      page.getByText(/Жирийн цаг улирал\s*·\s*Дуулалтын IV/),
-    ).toBeVisible()
+    await expect(page.getByText('Жирийн цаг улирал', { exact: true }).first()).toBeVisible()
+    await expect(page.getByText('Дуулалтын IV', { exact: true }).first()).toBeVisible()
+  })
+
+  test('card shows gregorian date + weekday line (Mongolian)', async ({ page }) => {
+    // 2026-02-04 Wednesday → "2026.02.04 Лхагва"
+    await page.goto(`/?date=${DATES.ordinaryWeekday}`)
+    await expect(page.getByText('2026.02.04 Лхагва', { exact: true })).toBeVisible()
   })
 
   test('heading text tinted with season color class', async ({ page }) => {
     // Ordinary Time: heading carries text-liturgical-green
     await page.goto(`/?date=${DATES.ordinaryWeekday}`)
-    const greenHeading = page.locator('h2.text-liturgical-green')
-    await expect(greenHeading).toBeVisible()
+    await expect(page.locator('h2.text-liturgical-green').first()).toBeVisible()
 
     // Advent: heading carries text-liturgical-violet
     await page.goto(`/?date=${DATES.adventWeekday}`)
-    const violetHeading = page.locator('h2.text-liturgical-violet')
-    await expect(violetHeading).toBeVisible()
+    await expect(page.locator('h2.text-liturgical-violet').first()).toBeVisible()
   })
 
   test('WHITE season uses gold text class on heading (not white)', async ({ page }) => {
@@ -96,23 +99,27 @@ test.describe('Liturgical day heading details (home)', () => {
 })
 
 test.describe('Liturgical day heading details (pray page)', () => {
-  test('pray page header shows gregorian date · season tertiary line', async ({ page }) => {
+  test('pray page header shows gregorian date + weekday', async ({ page }) => {
     await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
-    await expect(
-      page.getByText(`${DATES.ordinaryWeekday} · Жирийн цаг улирал`),
-    ).toBeVisible()
+    await expect(page.getByText('2026.02.04 Лхагва', { exact: true })).toBeVisible()
+  })
+
+  test('pray page header shows season and psalter week on separate lines', async ({ page }) => {
+    await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
+    await expect(page.getByText('Жирийн цаг улирал', { exact: true }).first()).toBeVisible()
+    await expect(page.getByText('Дуулалтын IV', { exact: true }).first()).toBeVisible()
   })
 
   test('pray page hour heading is tinted with season color', async ({ page }) => {
     await page.goto(`/pray/${DATES.adventWeekday}/lauds`)
-    await expect(page.locator('h1.text-liturgical-violet')).toBeVisible()
+    await expect(page.locator('h1.text-liturgical-violet').first()).toBeVisible()
   })
 
   test('pray page header shows liturgical day name in subtitle', async ({ page }) => {
     // 2026-02-04 is OT week 4 Wednesday
     await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
     await expect(
-      page.getByText('4-р долоо хоногийн Лхагва гараг'),
+      page.getByText('4-р долоо хоногийн Лхагва гараг').first(),
     ).toBeVisible()
   })
 })
