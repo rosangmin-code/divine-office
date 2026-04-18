@@ -238,6 +238,7 @@ src/app/
 |----|----------|------|----------|------|
 | FR-017 | **PDF 페이지 참조 표시**: 각 기도문 섹션(시편, 교송, 찬미가, 짧은독서, 화답, 복음찬가교송, 중보기도, 마침기도 등)에 원본 PDF의 페이지 번호를 루브리카 스타일로 표시한다. 형식: `(х. N)` — 빨간색 60% 투명도. 배치: **섹션 헤더형** (시편 참조·마침기도 제목 등) 은 헤더 옆, **후렴형(antiphon)** 은 후렴 텍스트 **끝**(`Шад дуулал N: 텍스트... (х. N)`) 에 표시해 헤더 프리픽스의 흐름을 깨지 않는다. | UI | P2 | 완료 |
 | FR-017g | **후렴 페이지 표시**: 시편 후렴(`Шад дуулал`), 복음찬가 후렴(`Шад магтаал`), 초대송 후렴 모두 본문 끝에 `(х. N)` 를 표시한다. 시편 후렴은 부모 시편 페이지, 복음찬가·초대송 후렴은 시기별 propers 의 자체 페이지(`gospelCanticleAntiphonPage` / invitatory `section.page`) 를 사용한다. 이유: 후렴은 시기마다 본문이 달라 동일 복음찬가/초대송이라도 페이지가 바뀐다. | UI | P2 | 완료 |
+| FR-017h | **시편 마침기도 페이지 표시 (Дууллыг төгсгөх залбирал)**: 각 시편 블록 뒤 post-Gloria Patri 오라치오 제목 옆에 `(х. N)` 표시. `psalter-texts.json` 의 entry 별 `psalmPrayerPage` 병행 키(88/88 자동 주입), `AssembledPsalm.psalmPrayerPage` 로 전파. 이유: 마침기도는 시편 본문과 다른 페이지에 위치하며 사용자가 종이책에서 찾기 위해 별도 페이지 참조가 필요하다. | UI / 데이터 | P2 | 완료 |
 | FR-017a | **시편 주간 페이지 주석**: `psalter/week-{1..4}.json` 시편/교독성가/짧은독서/응송에 `page` 필드 + `intercessionsPage` 병행 키. 시편(주요시간) 95%↑ / 짧은독서·응송 95%↑ / 중보기도 85%↑. (시편의 비주요시간 — 독서기도·삼시·육시·구시 — 은 원문 페이지 헤더가 누락된 곳이 많아 30%↑로 한정.) | 데이터 | P2 | 완료 |
 | FR-017b | **시즌 propers 페이지 주석**: `propers/{advent,christmas,easter,lent,ordinary-time}.json` 의 마침기도·복음찬가교송·중보기도·짧은독서·응송 각 객체/병행 키에 페이지. 마침기도 99%↑, 응송 85%↑. | 데이터 | P2 | 완료 |
 | FR-017c | **성인력 페이지 주석**: `sanctoral/{solemnities,feasts,memorials,optional-memorials}.json` 의 마침기도/복음찬가교송 등에 페이지. 마침기도 90%↑, 복음찬가교송 80%↑. | 데이터 | P2 | 완료 |
@@ -259,7 +260,7 @@ src/app/
 
 ### 7.3 구현 상세
 
-- **데이터 스키마**: `PsalmEntry`, `ShortReading`, `Responsory`, `AssembledPsalm`, `PatristicReading`, `HourSection` variant 들에 `page?: number` 필드. `HourPropers` 에 `hymnPage?`, `intercessionsPage?`, `concludingPrayerPage?`, `gospelCanticleAntiphonPage?`, `alternativeConcludingPrayerPage?` 추가. 시편 주간 JSON 의 마침기도·중보기도는 평면 문자열/배열 옆에 `concludingPrayerPage` / `intercessionsPage` **병행 키**(parallel key) 로 저장(하위 호환).
+- **데이터 스키마**: `PsalmEntry`, `ShortReading`, `Responsory`, `AssembledPsalm`, `PatristicReading`, `HourSection` variant 들에 `page?: number` 필드. `AssembledPsalm` 은 추가로 `psalmPrayerPage?` (FR-017h) 보유. `HourPropers` 에 `hymnPage?`, `intercessionsPage?`, `concludingPrayerPage?`, `gospelCanticleAntiphonPage?`, `alternativeConcludingPrayerPage?` 추가. 시편 주간 JSON 의 마침기도·중보기도는 평면 문자열/배열 옆에 `concludingPrayerPage` / `intercessionsPage` **병행 키**(parallel key) 로 저장(하위 호환). `psalter-texts.json` 은 entry 별 `psalmPrayerPage` 병행 키.
 - **설정 시스템**: `src/lib/settings.tsx` 의 `SettingsProvider` + `useSettings()` hook. localStorage 키 `loth-settings`.
 - **UI**: `src/components/page-ref.tsx` — `PageRef` client component. `src/app/settings/page.tsx` "Хуудасны лавлагаа" switch(`role="switch"`). `AntiphonBox` (prayer-renderer.tsx) 는 `page?: number` prop 을 받아 후렴 텍스트 뒤에 PageRef 를 붙인다 — psalm-block / invitatory-section / gospelCanticle 섹션 모두 동일 경로로 전파 (FR-017g).
 - **추출 파이프라인** (`scripts/`):
@@ -268,6 +269,7 @@ src/app/
   - `extract-propers-pages.js` — **2-tier 소스**: PRIMARY = `propers_full.txt` + `hymns_full.txt` (좁은 범위, 짧은 복음찬가교송 false positive 방지), FALLBACK = `full_pdf.txt` (PRIMARY 미매칭 항목만, `safeAmbiguousMin:15`).
   - `extract-hymn-pages.js` — `full_pdf.txt` → `ordinarium/hymns.json` 122개 entry 페이지 주입.
   - `extract-psalter-pages.js` — `full_pdf.txt` (또는 fallback `week{N}_*.txt`) + `page-mapping.json` (있으면 우선) → `psalter/week-*.json`. **add-only**, `safeAmbiguousMin: 15`. `concludingPrayerPage` 도 100% 채움 (FR-017e).
+  - `extract-psalm-prayer-pages.js` — `full_pdf.txt` → `src/data/loth/psalter-texts.json` 의 88개 entry 에 `psalmPrayerPage` 병행 키 add-only 주입 (FR-017h, 88/88 매칭).
   - `audit-page-coverage.js` — 카테고리별 커버리지 리포트, 임계값 위반 시 exit code 1.
 - **소스 데이터 신뢰도**: `full_pdf.txt` 는 PDF 페이지를 LEFT/RIGHT 로 명시 분할해 페이지 마커 누락이 없다. 그래도 시편 추출은 (a) 기존 손-주석 페이지를 절대 덮어쓰지 않고 (b) 신규 추가는 ≥15 토큰 지문 매칭으로 보수 운영. 검증된 `parsed_data/week{2,3}/page-mapping.json` 이 있으면 우선 사용.
 
