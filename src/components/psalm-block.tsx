@@ -63,7 +63,9 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
       {/* Psalm-concluding prayer (Дууллыг төгсгөх залбирал) */}
       {psalm.psalmPrayer && (
         <div data-role="psalm-prayer" className="mt-3">
-          <p className="text-sm font-semibold text-red-700 dark:text-red-400">Дууллыг төгсгөх залбирал</p>
+          <p className="text-sm font-semibold text-red-700 dark:text-red-400">
+            Дууллыг төгсгөх залбирал <PageRef page={psalm.psalmPrayerPage} />
+          </p>
           <p className="mt-1 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
             {psalm.psalmPrayer}
           </p>

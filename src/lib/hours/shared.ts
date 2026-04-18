@@ -22,9 +22,9 @@ function loadJsonFile(relativePath: string) {
 }
 
 let _ordinarium: Ordinarium | null = null
-let _psalterTexts: Record<string, { stanzas: string[][]; psalmPrayer?: string }> | null = null
+let _psalterTexts: Record<string, { stanzas: string[][]; psalmPrayer?: string; psalmPrayerPage?: number }> | null = null
 
-function loadPsalterTexts(): Record<string, { stanzas: string[][]; psalmPrayer?: string }> {
+function loadPsalterTexts(): Record<string, { stanzas: string[][]; psalmPrayer?: string; psalmPrayerPage?: number }> {
   if (_psalterTexts) return _psalterTexts
   try {
     _psalterTexts = loadJsonFile('src/data/loth/psalter-texts.json')
@@ -91,6 +91,7 @@ export async function resolvePsalm(
       verses: [],
       gloriaPatri: entry.gloria_patri,
       psalmPrayer: psalmText.psalmPrayer,
+      psalmPrayerPage: psalmText.psalmPrayerPage,
       page: entry.page,
     }
   }
@@ -114,6 +115,7 @@ export async function resolvePsalm(
     verses: allVerses,
     gloriaPatri: entry.gloria_patri,
     psalmPrayer: psalmText?.psalmPrayer,
+    psalmPrayerPage: psalmText?.psalmPrayerPage,
     page: entry.page,
   }
 }
