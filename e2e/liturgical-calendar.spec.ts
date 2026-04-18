@@ -43,3 +43,76 @@ test.describe('Liturgical calendar seasons and colors', () => {
     await expect(page.getByText('Ирэлтийн цаг улирал').first()).toBeVisible()
   })
 })
+
+test.describe('Liturgical day heading details (home)', () => {
+  test('subtitle shows season and psalter week in Roman numeral', async ({ page }) => {
+    // OT Week 4 Wednesday → psalter week 4 (IV)
+    await page.goto(`/?date=${DATES.ordinaryWeekday}`)
+    await expect(
+      page.getByText(/Жирийн цаг улирал\s*·\s*Дуулалтын IV/),
+    ).toBeVisible()
+  })
+
+  test('heading text tinted with season color class', async ({ page }) => {
+    // Ordinary Time: heading carries text-liturgical-green
+    await page.goto(`/?date=${DATES.ordinaryWeekday}`)
+    const greenHeading = page.locator('h2.text-liturgical-green')
+    await expect(greenHeading).toBeVisible()
+
+    // Advent: heading carries text-liturgical-violet
+    await page.goto(`/?date=${DATES.adventWeekday}`)
+    const violetHeading = page.locator('h2.text-liturgical-violet')
+    await expect(violetHeading).toBeVisible()
+  })
+
+  test('WHITE season uses gold text class on heading (not white)', async ({ page }) => {
+    // Christmas Day is WHITE → heading should use text-liturgical-gold for readability
+    await page.goto(`/?date=${DATES.christmasDay}`)
+    await expect(page.locator('h2.text-liturgical-gold')).toBeVisible()
+  })
+
+  test('color label (Ногоон/Нил ягаан/…) is no longer displayed', async ({ page }) => {
+    // After commit 56b2914 the explicit color word was removed from the subtitle
+    await page.goto(`/?date=${DATES.ordinaryWeekday}`)
+    await expect(page.getByText('Ногоон', { exact: true })).toHaveCount(0)
+  })
+
+  test('sanctoral solemnity replaces generic weekday name (St. Joseph)', async ({ page }) => {
+    await page.goto(`/?date=${DATES.stJoseph}`)
+    // heading should NOT fall back to "...-р долоо хоногийн ... гараг"
+    await expect(page.getByRole('heading', { level: 2 })).not.toHaveText(
+      /долоо хоногийн .* гараг/,
+    )
+    // And the color border should be WHITE (rendered as stone-400)
+    await expect(page.locator('.border-stone-400').first()).toBeVisible()
+  })
+
+  test('Easter Octave psalter week is clamped to I (not V)', async ({ page }) => {
+    // romcal returns psalterWeek=5 for the octave; calendar.ts clamps to 1
+    await page.goto(`/?date=${DATES.easterFriday}`)
+    await expect(page.getByText(/Дуулалтын I\b/)).toBeVisible()
+    await expect(page.getByText(/Дуулалтын V/)).toHaveCount(0)
+  })
+})
+
+test.describe('Liturgical day heading details (pray page)', () => {
+  test('pray page header shows gregorian date · season tertiary line', async ({ page }) => {
+    await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
+    await expect(
+      page.getByText(`${DATES.ordinaryWeekday} · Жирийн цаг улирал`),
+    ).toBeVisible()
+  })
+
+  test('pray page hour heading is tinted with season color', async ({ page }) => {
+    await page.goto(`/pray/${DATES.adventWeekday}/lauds`)
+    await expect(page.locator('h1.text-liturgical-violet')).toBeVisible()
+  })
+
+  test('pray page header shows liturgical day name in subtitle', async ({ page }) => {
+    // 2026-02-04 is OT week 4 Wednesday
+    await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
+    await expect(
+      page.getByText('4-р долоо хоногийн Лхагва гараг'),
+    ).toBeVisible()
+  })
+})
