@@ -37,3 +37,25 @@ describe('getPsalterCommons — page propagation', () => {
     expect(commons?.responsory?.page).toBe(303)
   })
 })
+
+// FR-017h: AssembledPsalm carries psalmPrayerPage from psalter-texts.json.
+import { resolvePsalm } from '../hours/shared'
+import type { PsalmEntry } from '../types'
+
+describe('resolvePsalm — psalmPrayerPage propagation', () => {
+  it('exposes psalmPrayerPage when present in psalter-texts.json', async () => {
+    // Psalm 63:2-9 (Sunday Lauds psalm 1) has psalmPrayer + psalmPrayerPage
+    // populated by scripts/extract-psalm-prayer-pages.js.
+    const entry: PsalmEntry = {
+      type: 'psalm',
+      ref: 'Psalm 63:2-9',
+      antiphon_key: 'w1-sun-lauds-ps1',
+      default_antiphon: '',
+      gloria_patri: true,
+      page: 58,
+    }
+    const result = await resolvePsalm(entry, {})
+    expect(result.psalmPrayer).toBeTruthy()
+    expect(typeof result.psalmPrayerPage).toBe('number')
+  })
+})

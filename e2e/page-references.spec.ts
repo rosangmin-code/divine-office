@@ -175,4 +175,14 @@ test.describe('PDF page references', () => {
       await expect(invSection.locator('[data-role="antiphon"]').first()).toContainText(/\(х\.\s*\d+\)/)
     })
   })
+
+  // FR-017h: psalm-concluding prayer (Дууллыг төгсгөх залбирал) page marker.
+  test('psalm-concluding prayer heading shows page reference', async ({ page }) => {
+    await presetPageRefs(page, true)
+    await page.goto(LAUDS_URL)
+    await page.waitForSelector('article')
+    const prayerBlock = page.locator('[data-role="psalm-prayer"]').first()
+    await expect(prayerBlock).toBeVisible()
+    await expect(prayerBlock.getByText(/\(х\.\s*\d+\)/)).toBeVisible()
+  })
 })
