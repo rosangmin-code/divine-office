@@ -44,7 +44,7 @@
             "antiphon_key": "w4-sun-lauds-cant",
             "default_antiphon": "Аллэлуяа! Эзэний хамаг бүтээлүүд ээ, Эзэнийг магтагтун. Аллэлуяа!",
             "title": "Хамаг бүтээлүүд Эзэнийг магтах болтугай",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 409
           },
           {
@@ -197,7 +197,7 @@
             "antiphon_key": "w4-sun-vesp-cant",
             "default_antiphon": "Түүнд үйлчилдэг их, бага бүгд ээ, Тэнгэрбурханыг магтагтун. Аллэлуяа!",
             "title": "Хурганы хурим",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 419
           }
         ],
@@ -278,7 +278,7 @@
             "antiphon_key": "w4-mon-lauds-cant",
             "default_antiphon": "Дэлхийн хамгийн алслагдсан хил хязгаараас ч Тэнгэрбурхан магтагдах болтугай.",
             "title": "Ялагч бөгөөд аврагч Тэнгэрбурхан",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 427
           },
           {
@@ -423,7 +423,7 @@
             "antiphon_key": "w4-mon-vesp-cant",
             "default_antiphon": "Цагийн дүүрлийг гүйцэлдүүлэхэд Тэнгэрбурхан бүх юмсыг Христ дотор нэгтгэх зорилготой байжээ.",
             "title": "Биднийг аврагч Тэнгэрбурхан",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 436
           }
         ],
@@ -508,7 +508,7 @@
             "antiphon_key": "w4-tue-lauds-cant",
             "default_antiphon": "Эзэн, Та Өөрийн өршөөлийг биднээс бүү зайлуулаач.",
             "title": "Дүрэлзсэн гал бүхий зуухан доторх Азариагийн даатгал залбирал",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 443
           },
           {
@@ -656,7 +656,7 @@
             "antiphon_key": "w4-tue-vesp-cant",
             "default_antiphon": "Шүтэн бишрэхүй, сүр жавхлан нь нядлуулсан Хурганд ном ёсоороо хамаатай билээ.",
             "title": "Цагаатгалын магтаал",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 453
           }
         ],
@@ -743,7 +743,7 @@
             "antiphon_key": "w4-wed-lauds-cant",
             "default_antiphon": "Эзэн намайг хишиг ивээл болон авралаар хувцасласан юм.",
             "title": "Шинэ Йерусалимыг харах үед эш үзүүлэгчийн баяр хөөр",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 459
           },
           {
@@ -891,7 +891,7 @@
             "antiphon_key": "w4-wed-vesp-cant",
             "default_antiphon": "Түүгээр хамаг зүйлсийг бүтээсэн бөгөөд Тэр бүх бүтээлүүдийг Өөртөө нэгтгэдэг.",
             "title": "Христ бол хамаг бүтээлээс болон хамаг үхэгсдээс урьд анхан Төрөгч мөн",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 468
           }
         ],
@@ -979,7 +979,7 @@
             "antiphon_key": "w4-thu-lauds-cant",
             "default_antiphon": "Эзэн Йерусалимаар дамжуулан амар амгалангийн голыг бий болгон урсгана.",
             "title": "Тэнгэрийн баяр цэнгэл",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 475
           },
           {
@@ -1127,7 +1127,7 @@
             "antiphon_key": "w4-thu-vesp-cant",
             "default_antiphon": "Бидний Тэнгэрбурханы жавхлант хаанчлал одоо эхэллээ.",
             "title": "Тэнгэрбурханы шүүлт",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 484
           }
         ],
@@ -1212,7 +1212,7 @@
             "antiphon_key": "w4-fri-lauds-cant",
             "default_antiphon": "Йерусалим аа, баярлан цэнгэгтүн. Учир нь чамаар дамжуулан бүх хүмүүс Эзэнд цугларах болно.",
             "title": "Ард түмний авралын төлөөх талархал",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 491
           },
           {
@@ -1361,7 +1361,7 @@
             "antiphon_key": "w4-fri-vesp-cant",
             "default_antiphon": "Бүх үеийнхний Хаан минь, Таны зам төгс, үнэн юм.",
             "title": "Шүтэн бишрэхүйн магтаал",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 503
           }
         ],
@@ -1447,7 +1447,7 @@
             "antiphon_key": "w4-sat-lauds-cant",
             "default_antiphon": "Би та нарт шинэ зүрхийг өгч, та нарын дотор шинэ сүнсийг оруулна.",
             "title": "Эзэн Өөрийн ард түмнийг сэргээх болно",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 515
           },
           {
@@ -1594,7 +1594,7 @@
             "antiphon_key": "w4-sat-vesp-cant",
             "default_antiphon": "Есүсийн нэр алдраар тэнгэр ба газар дээрх бүх зүйл өвдөг сөгдөх болтугай.",
             "title": "Христ бол Тэнгэрбурханы ариун зардас мөн",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 402
           }
         ],

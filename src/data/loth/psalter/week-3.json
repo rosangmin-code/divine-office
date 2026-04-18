@@ -190,7 +190,7 @@
             "antiphon_key": "w3-sun-vesp-cant",
             "default_antiphon": "Төгс хүчит Хаан, Эзэн Тэнгэрбурхан минь хамаг эрх мэдэл Таных. Аллэлуяа!",
             "title": "Хурганы хурим",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 309
           }
         ],
@@ -281,7 +281,7 @@
             "antiphon_key": "w3-mon-lauds-cant",
             "default_antiphon": "Ирцгээ, Эзэний уул руу авирцгаая.",
             "title": "Бүх уулсын дээгүүрх Эзэний өргөөний уул",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 316
           },
           {
@@ -433,7 +433,7 @@
             "antiphon_key": "w3-mon-vesp-cant",
             "default_antiphon": "Тэнгэрбурхан бидэнд Есүс Христээр дамжуулан Өөрийн төлөөнөө үрчлэгдсэн хөвгүүдийнхээ заяаг урьдаас соёрхсон билээ.",
             "title": "Биднийг аврагч Тэнгэрбурхан",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 325
           }
         ],
@@ -518,7 +518,7 @@
             "antiphon_key": "w3-tue-lauds-cant",
             "default_antiphon": "Шөнөөр сэтгэл минь Таныг хүсэмжлэн, өглөө нар мандахад би Таны ирэлтийг эрэлхийлж байна.",
             "title": "Дайсны ялагдлын дараах магтаал",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 332
           },
           {
@@ -665,7 +665,7 @@
             "antiphon_key": "w3-tue-vesp-cant",
             "default_antiphon": "Эзэн, Та биднийг Эцэг Тэнгэрбурханы маань төлөөх хаанчлал ба тахилч нар болгосон.",
             "title": "Цагаатгалын магтаал",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 340
           }
         ],
@@ -737,7 +737,7 @@
             "antiphon_key": "w3-wed-lauds-cant",
             "default_antiphon": "Зөв шударгаар явж, чигч шударгыг өгүүлдэг хүн ерөөлтэй еэ!",
             "title": "Тэнгэрбурханы төгс төгөлдөр шүүлт",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 347
           },
           {
@@ -885,7 +885,7 @@
             "antiphon_key": "w3-wed-vesp-cant",
             "default_antiphon": "Тэр бол хамаг бүтээлээс урьд анхан Төрөгч, Тэрээр хамаг зүйлсийн дээр бүхэл анхдагч байдалтай.",
             "title": "Христ бол хамаг бүтээлээс болон хамаг үхэгсдээс урьд анхан Төрөгч мөн",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 355
           }
         ],
@@ -973,7 +973,7 @@
             "antiphon_key": "w3-thu-lauds-cant",
             "default_antiphon": "Эзэн, хүчирхэг байлдан дагуулагч удахгүй ирнэ. Тэрбээр ялалтын шагналыг авчрах болно.",
             "title": "Сайн Хоньчин бол дээдийн дээд бөгөөд туйлын билиг ухаантай Тэнгэрбурхан мөн",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 362
           },
           {
@@ -1122,7 +1122,7 @@
             "antiphon_key": "w3-thu-vesp-cant",
             "default_antiphon": "Эцэг Христэд бүх эрх мэдэл, нэр алдар, хаанчлалыг өгсөн. Бүх хүмүүс Түүнд дуулгавартай байх болно.",
             "title": "Тэнгэрбурханы шүүлт",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 371
           }
         ],
@@ -1206,7 +1206,7 @@
             "antiphon_key": "w3-fri-lauds-cant",
             "default_antiphon": "Эзэн, бид Таны эсрэг би нүгэл үйлдсэн тул үнэхээр өөрсдийн гэм буруугаа мэдэж байна.",
             "title": "Дайн дажин, өлсгөлөн дундаас ард түмний гашуудлын дуу",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 378
           },
           {
@@ -1355,7 +1355,7 @@
             "antiphon_key": "w3-fri-vesp-cant",
             "default_antiphon": "Аяа Эзэн, бүх үндэстнүүд ирж, Таны өмнө мөргөх болно.",
             "title": "Шүтэн бишрэхүйн магтаал",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 387
           }
         ],
@@ -1438,7 +1438,7 @@
             "antiphon_key": "w3-sat-lauds-cant",
             "default_antiphon": "Тэнгэрбурханы билиг ухаан надтай хамт байж, миний дотор үргэлж ажиллаасай.",
             "title": "Билиг ухааны магтаал",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 393
           },
           {
@@ -1589,7 +1589,7 @@
             "antiphon_key": "w3-sat-vesp-cant",
             "default_antiphon": "Эзэн Есүс өөрийгөө даруу болгосон бөгөөд Тэнгэрбурхан Түүнийг үүрд өргөмжлөв.",
             "title": "Христ бол Тэнгэрбурханы ариун зардас мөн",
-            "gloria_patri": false,
+            "gloria_patri": true,
             "page": 291
           }
         ],
