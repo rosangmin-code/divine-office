@@ -55,8 +55,6 @@ test.describe('Intercessions (Гүйлтын залбирал) role structure', 
 
       const refrain = page.locator('[data-role="intercessions-refrain"]').first()
       await expect(refrain).toBeVisible()
-      // refrain에는 R. 역할 라벨이 포함된다
-      await expect(refrain.locator('[data-role="intercessions-role"]')).toContainText('R.')
     })
 
     test('each petition splits versicle and response into separate DOM nodes', async ({ page }) => {
@@ -69,18 +67,12 @@ test.describe('Intercessions (Гүйлтын залбирал) role structure', 
       const responseNodes = page.locator('[data-role="intercessions-response"]')
       const respCount = await responseNodes.count()
       expect(respCount).toBeGreaterThan(0)
-
-      // 응답 노드는 R. 라벨을 포함한다
-      await expect(responseNodes.first().locator('[data-role="intercessions-role"]')).toContainText('R.')
     })
 
-    test('deacon introduction carries Д. role label', async ({ page }) => {
-      await page.goto(`/pray/${DATES.ordinarySunday}/lauds`)
-      const section = page.locator('section[aria-label="Гүйлтын залбирал"]')
-      await expect(section).toBeVisible()
-      // 도입부 문단의 첫 자식 span이 Д. 라벨이어야 한다 (도입부가 있는 날짜에서만)
-      const introRole = section.locator('[data-role="intercessions-role"]').filter({ hasText: 'Д.' })
-      expect(await introRole.count()).toBeGreaterThan(0)
+    test('response is prefixed with a red dash', async ({ page }) => {
+      await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
+      const responseNodes = page.locator('[data-role="intercessions-response"]')
+      await expect(responseNodes.first()).toContainText('-')
     })
   })
 })

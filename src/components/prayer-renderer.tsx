@@ -150,7 +150,6 @@ function IntercessionsSection({ section }: { section: Extract<HourSection, { typ
         <>
           {section.introduction && (
             <p className="mt-3 font-serif text-stone-800 dark:text-stone-200">
-              <span data-role="intercessions-role" className="mr-1 text-xs font-semibold not-italic text-red-700/80 dark:text-red-400/80">Д.</span>
               {section.introduction}
             </p>
           )}
@@ -159,17 +158,16 @@ function IntercessionsSection({ section }: { section: Extract<HourSection, { typ
               data-role="intercessions-refrain"
               className="mt-3 rounded-md bg-amber-50/60 px-3 py-2 font-serif italic text-stone-800 dark:bg-stone-800/50 dark:text-stone-200"
             >
-              <span data-role="intercessions-role" className="mr-1 text-xs font-semibold not-italic text-red-700/80 dark:text-red-400/80">R.</span>
               {section.refrain}
             </p>
           )}
           <ul className="mt-3 space-y-3">
             {petitions.map((p, i) => (
               <li key={i} data-role="intercessions-petition" className="font-serif text-stone-800 dark:text-stone-200">
-                <div>— {p.versicle}</div>
+                <div>{p.versicle}</div>
                 {p.response && (
-                  <div data-role="intercessions-response" className="ml-5 mt-1 italic text-stone-700 dark:text-stone-300">
-                    <span data-role="intercessions-role" className="mr-1 text-xs font-semibold not-italic text-red-700/80 dark:text-red-400/80">R.</span>
+                  <div data-role="intercessions-response" className="mt-1">
+                    <span className="text-red-700 dark:text-red-400">- </span>
                     {p.response}
                   </div>
                 )}
