@@ -52,6 +52,28 @@ test.describe('Prayer section detail rendering', () => {
       const bodyText = await first.locator('p').nth(1).textContent()
       expect((bodyText ?? '').trim().length).toBeGreaterThan(30)
     })
+
+    test('psalm-concluding prayer hidden when psalmPrayerCollapsed toggle is on (FR-032)', async ({ page, context }) => {
+      await context.clearCookies()
+
+      // Baseline: default toggle off → prayers visible.
+      await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
+      await expect(page.locator('[data-role="psalm-prayer"]').first()).toBeVisible()
+
+      // Enable collapse via /settings.
+      await page.goto('/settings')
+      await page.getByRole('switch', { name: /Дууллыг төгсгөх залбирал/ }).click()
+
+      // Prayers must disappear from the pray page.
+      await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
+      await expect(page.locator('[data-role="psalm-prayer"]')).toHaveCount(0)
+
+      // Toggle back off → prayers return.
+      await page.goto('/settings')
+      await page.getByRole('switch', { name: /Дууллыг төгсгөх залбирал/ }).click()
+      await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
+      await expect(page.locator('[data-role="psalm-prayer"]').first()).toBeVisible()
+    })
   })
 
   test.describe('Hymn section', () => {
@@ -291,15 +313,23 @@ test.describe('Prayer section detail rendering', () => {
       await expect(rubric).toHaveClass(/text-red-700/)
     })
 
-    test('Gloria Patri omission rubric shown for canticles with gloriaPatri=false', async ({ request }) => {
-      // Verify via API that some canticles have gloriaPatri=false
-      const res = await request.get(`/api/loth/${DATES.ordinaryWeekday}/lauds`)
-      const body = await res.json()
-      const psalmody = body.sections.find((s: { type: string }) => s.type === 'psalmody')
-      const canticle = psalmody?.psalms?.find((p: { psalmType: string; gloriaPatri: boolean }) => p.psalmType === 'canticle' && p.gloriaPatri === false)
-      // If a canticle with gloriaPatri=false exists, the UI should show the rubric
-      if (canticle) {
-        expect(canticle.gloriaPatri).toBe(false)
+    test('Gloria Patri omission rubric applies only to the Benedicite (Daniel 3:57-88, 56)', async ({ request }) => {
+      // Contract: only the Sunday Lauds Benedicite (weeks 1/3) has gloriaPatri=false,
+      // because the canticle's text already ends with a trinitarian doxology (GILH §123).
+      // All other psalms and canticles have gloriaPatri=true.
+      const sundayDates = [DATES.ordinarySunday, DATES.easter3rdSunday, DATES.firstAdventSunday]
+      for (const date of sundayDates) {
+        const res = await request.get(`/api/loth/${date}/lauds`)
+        const body = await res.json()
+        const psalmody = body.sections.find((s: { type: string }) => s.type === 'psalmody')
+        const psalms = psalmody?.psalms ?? []
+        for (const p of psalms as { psalmType: string; reference: string; gloriaPatri: boolean }[]) {
+          if (p.reference === 'Daniel 3:57-88, 56') {
+            expect(p.gloriaPatri).toBe(false)
+          } else {
+            expect(p.gloriaPatri).toBe(true)
+          }
+        }
       }
     })
   })

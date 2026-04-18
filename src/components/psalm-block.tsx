@@ -1,8 +1,12 @@
+'use client'
+
 import type { AssembledPsalm } from '@/lib/types'
+import { useSettings } from '@/lib/settings'
 import { PageRef } from './page-ref'
 import { AntiphonBox } from './prayer-renderer'
 
 export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; antiphonNumber?: number }) {
+  const { settings } = useSettings()
   return (
     <section aria-label={psalm.reference} className="mb-6">
       {/* Antiphon (before) */}
@@ -61,7 +65,7 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
       )}
 
       {/* Psalm-concluding prayer (Дууллыг төгсгөх залбирал) */}
-      {psalm.psalmPrayer && (
+      {psalm.psalmPrayer && !settings.psalmPrayerCollapsed && (
         <div data-role="psalm-prayer" className="mt-3">
           <p className="text-sm font-semibold text-red-700 dark:text-red-400">
             Дууллыг төгсгөх залбирал <PageRef page={psalm.psalmPrayerPage} />

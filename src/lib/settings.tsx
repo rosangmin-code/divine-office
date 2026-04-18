@@ -12,6 +12,7 @@ export interface Settings {
   fontFamily: FontFamily
   theme: ThemeMode
   invitatoryCollapsed: boolean
+  psalmPrayerCollapsed: boolean
 }
 
 interface SettingsContextValue {
@@ -25,6 +26,7 @@ const DEFAULTS: Settings = {
   fontFamily: 'sans',
   theme: 'system',
   invitatoryCollapsed: true,
+  psalmPrayerCollapsed: false,
 }
 const STORAGE_KEY = 'loth-settings'
 

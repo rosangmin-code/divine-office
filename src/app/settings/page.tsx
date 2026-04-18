@@ -186,6 +186,37 @@ export default function SettingsPage() {
           </div>
         </section>
 
+        {/* Psalm-concluding prayer collapse toggle */}
+        <section aria-labelledby="psalm-prayer-heading" className={SECTION_CARD}>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 id="psalm-prayer-heading" className="mb-1 text-lg font-semibold text-stone-800 dark:text-stone-200">
+                Дууллыг төгсгөх залбирал
+              </h2>
+              <p className="text-sm text-stone-500 dark:text-stone-400">
+                Дуулал бүрийн дараах залбирлыг нуух
+              </p>
+            </div>
+            <button
+              role="switch"
+              aria-checked={settings.psalmPrayerCollapsed}
+              aria-labelledby="psalm-prayer-heading"
+              onClick={() => updateSettings({ psalmPrayerCollapsed: !settings.psalmPrayerCollapsed })}
+              className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors ${
+                settings.psalmPrayerCollapsed
+                  ? 'bg-liturgical-gold dark:bg-liturgical-gold-dark'
+                  : 'bg-stone-300 dark:bg-stone-600'
+              }`}
+            >
+              <span
+                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${
+                  settings.psalmPrayerCollapsed ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </div>
+        </section>
+
         {/* App install */}
         <InstallAppSection />
       </div>

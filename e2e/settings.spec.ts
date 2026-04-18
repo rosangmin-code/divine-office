@@ -14,12 +14,13 @@ test.describe('Settings page', () => {
     await expect(page.getByRole('heading', { name: 'Үсгийн хэлбэр' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Горим' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Хуудасны лавлагаа' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Дууллыг төгсгөх залбирал' })).toBeVisible()
   })
 
-  test('has 5 font-size radios, 2 font-family radios, 3 theme radios, 1 switch', async ({ page }) => {
+  test('has 5 font-size radios, 2 font-family radios, 3 theme radios, 2 switches', async ({ page }) => {
     await page.goto(SETTINGS_URL)
     await expect(page.getByRole('radio')).toHaveCount(10)
-    await expect(page.getByRole('switch')).toHaveCount(1)
+    await expect(page.getByRole('switch')).toHaveCount(2)
   })
 
   test('selecting font size updates <html> data-font-size and persists', async ({ page }) => {
@@ -85,6 +86,28 @@ test.describe('Settings page', () => {
 
     const stored = await page.evaluate(() => localStorage.getItem('loth-settings'))
     expect(stored).toContain('"showPageRefs":true')
+  })
+
+  test('psalm-prayer switch persists to localStorage and survives reload (FR-032)', async ({ page }) => {
+    await page.goto(SETTINGS_URL)
+    const switchBtn = page.getByRole('switch', { name: /Дууллыг төгсгөх залбирал/ })
+    await expect(switchBtn).toHaveAttribute('aria-checked', 'false')
+
+    await switchBtn.click()
+    await expect(switchBtn).toHaveAttribute('aria-checked', 'true')
+
+    const stored = await page.evaluate(() => localStorage.getItem('loth-settings'))
+    expect(stored).toContain('"psalmPrayerCollapsed":true')
+
+    await page.reload()
+    await expect(page.getByRole('switch', { name: /Дууллыг төгсгөх залбирал/ })).toHaveAttribute('aria-checked', 'true')
+  })
+
+  test('psalm-prayer switch uses gold when enabled (FR-032)', async ({ page }) => {
+    await page.goto(SETTINGS_URL)
+    const switchBtn = page.getByRole('switch', { name: /Дууллыг төгсгөх залбирал/ })
+    await switchBtn.click()
+    await expect(switchBtn).toHaveClass(/liturgical-gold/)
   })
 
   test('gear icon on home navigates to /settings', async ({ page }) => {
