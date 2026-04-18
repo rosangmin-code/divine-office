@@ -148,8 +148,11 @@ export async function assembleHour(
     if (psalterCommons.shortReading) mergedPropers.shortReading = psalterCommons.shortReading
     if (psalterCommons.responsory) mergedPropers.responsory = psalterCommons.responsory
     if (psalterCommons.gospelCanticleAntiphon) mergedPropers.gospelCanticleAntiphon = psalterCommons.gospelCanticleAntiphon
+    if (typeof psalterCommons.gospelCanticleAntiphonPage === 'number') mergedPropers.gospelCanticleAntiphonPage = psalterCommons.gospelCanticleAntiphonPage
     if (psalterCommons.intercessions) mergedPropers.intercessions = psalterCommons.intercessions
+    if (typeof psalterCommons.intercessionsPage === 'number') mergedPropers.intercessionsPage = psalterCommons.intercessionsPage
     if (psalterCommons.concludingPrayer) mergedPropers.concludingPrayer = psalterCommons.concludingPrayer
+    if (typeof psalterCommons.concludingPrayerPage === 'number') mergedPropers.concludingPrayerPage = psalterCommons.concludingPrayerPage
   }
 
   // Layer 2: season propers (override psalter)

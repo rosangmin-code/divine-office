@@ -236,7 +236,13 @@ src/app/
 
 | ID | 요구사항 | 모듈 | 우선순위 | 상태 |
 |----|----------|------|----------|------|
-| FR-017 | **PDF 페이지 참조 표시**: 각 기도문 섹션(시편, 교송, 찬미가, 짧은독서, 화답, 복음찬가교송, 중보기도, 마침기도 등)에 원본 PDF의 페이지 번호를 루브리카 스타일로 표시한다. 형식: `(х. N)` — 빨간색 60% 투명도, 섹션 헤더 옆에 위치. | UI | P2 | 구현 완료 (데이터 일부) |
+| FR-017 | **PDF 페이지 참조 표시**: 각 기도문 섹션(시편, 교송, 찬미가, 짧은독서, 화답, 복음찬가교송, 중보기도, 마침기도 등)에 원본 PDF의 페이지 번호를 루브리카 스타일로 표시한다. 형식: `(х. N)` — 빨간색 60% 투명도, 섹션 헤더 옆에 위치. | UI | P2 | 완료 |
+| FR-017a | **시편 주간 페이지 주석**: `psalter/week-{1..4}.json` 시편/교독성가/짧은독서/응송에 `page` 필드 + `intercessionsPage` 병행 키. 시편(주요시간) 95%↑ / 짧은독서·응송 95%↑ / 중보기도 85%↑. (시편의 비주요시간 — 독서기도·삼시·육시·구시 — 은 원문 페이지 헤더가 누락된 곳이 많아 30%↑로 한정.) | 데이터 | P2 | 완료 |
+| FR-017b | **시즌 propers 페이지 주석**: `propers/{advent,christmas,easter,lent,ordinary-time}.json` 의 마침기도·복음찬가교송·중보기도·짧은독서·응송 각 객체/병행 키에 페이지. 마침기도 99%↑, 응송 85%↑. | 데이터 | P2 | 완료 |
+| FR-017c | **성인력 페이지 주석**: `sanctoral/{solemnities,feasts,memorials,optional-memorials}.json` 의 마침기도/복음찬가교송 등에 페이지. 마침기도 90%↑, 복음찬가교송 80%↑. | 데이터 | P2 | 완료 |
+| FR-017d | **찬미가 페이지 주석**: `ordinarium/hymns.json` 의 본문 보유 entry 95%↑에 `page` 필드. (본문 미입력 entry 는 추측 금지 원칙으로 비워둠.) | 데이터 | P2 | 완료 |
+| FR-017e | **시편 주간 마침기도 병행 키 (`concludingPrayerPage`)**: 평시 평일 마침기도 페이지 100% 커버리지. PDF 재추출(`scripts/reextract-pdf-pages.sh`) 로 2-up 레이아웃을 LEFT/RIGHT 반쪽씩 분리해 깨끗한 페이지 마커 확보 후 자동 매칭으로 44/44 채움. | 데이터 | P2 | 완료 |
+| FR-017f | **페이지 커버리지 감시 스크립트**: `scripts/audit-page-coverage.js` 가 카테고리별 페이지 보유율을 측정하고 임계값 미달 시 비-zero 종료한다. CI 연결 가능. | 도구 | P2 | 완료 |
 | FR-018 | **페이지 참조 토글 설정**: `/settings` 페이지의 "Хуудасны лавлагаа" switch로 페이지 참조 표시를 켜고 끌 수 있다. 기본값: 꺼짐. 설정은 localStorage에 영구 저장되며, 페이지 새로고침 후에도 유지된다. | UI/설정 | P2 | 완료 |
 | FR-019 | **설정 시스템 기반**: SettingsProvider React Context를 통한 확장 가능한 설정 시스템. 모든 설정은 독립 설정 페이지(`/settings`)에서 통합 관리한다. 기도 페이지 헤더에는 `/settings`로 이동하는 톱니바퀴 링크(`SettingsLink`)만 배치한다. | UI/설정 | P2 | 완료 |
 
@@ -247,13 +253,22 @@ src/app/
 | NFR-007 | **SSR 하이드레이션 호환**: 설정 토글은 client component로 구현하되, SSR 기본값과 client 하이드레이션 사이 불일치를 방지해야 한다. | 완료 |
 | NFR-008 | **접근성**: `/settings`의 페이지 참조 switch는 `role="switch"` + `aria-checked` + `aria-labelledby` 패턴 사용. PageRef에 aria-label 제공. | 완료 |
 | NFR-009 | **성능 무영향**: page 필드는 optional이므로 데이터 미주석 상태에서도 기존 기능에 영향 없음. | 완료 |
+| NFR-009a | **페이지 커버리지 임계값**: `audit-page-coverage.js` 의 카테고리별 임계값(7.1 참고) 을 통과해야 한다. 임계값은 현재 데이터 소스 한계를 반영하며, 소스 품질 개선 시 상향한다. | 완료 |
+| NFR-009b | **추측 금지**: 자동 추출 스크립트는 지문 매칭이 명확히 실패한 entry 의 페이지를 절대 추정·할당하지 않는다(`null`/미할당 유지). 잘못된 페이지 표시는 본문 부재보다 사용자 신뢰에 더 큰 손상을 준다. | 완료 |
 
 ### 7.3 구현 상세
 
-- **데이터 스키마**: `PsalmEntry`, `ShortReading`, `Responsory`, `AssembledPsalm`, `HourSection` 11개 variant에 `page?: number` 필드 추가. `HourPropers`에 `hymnPage?`, `intercessionsPage?`, `concludingPrayerPage?`, `gospelCanticleAntiphonPage?` 추가.
-- **설정 시스템**: `src/lib/settings.tsx`에 `SettingsProvider` + `useSettings()` hook 구현. localStorage 키 `loth-settings`.
-- **UI**: `src/components/page-ref.tsx` — `PageRef` client component. `src/app/settings/page.tsx` "Хуудасны лавлагаа" switch(`role="switch"`) — 페이지 참조 표시 on/off 단일 진입점.
-- **데이터 주석 현황**: `week-1.json` 일요일 lauds에 샘플 page 번호 주석 완료. 나머지 JSON 파일은 점진적으로 확장 필요.
+- **데이터 스키마**: `PsalmEntry`, `ShortReading`, `Responsory`, `AssembledPsalm`, `PatristicReading`, `HourSection` variant 들에 `page?: number` 필드. `HourPropers` 에 `hymnPage?`, `intercessionsPage?`, `concludingPrayerPage?`, `gospelCanticleAntiphonPage?`, `alternativeConcludingPrayerPage?` 추가. 시편 주간 JSON 의 마침기도·중보기도는 평면 문자열/배열 옆에 `concludingPrayerPage` / `intercessionsPage` **병행 키**(parallel key) 로 저장(하위 호환).
+- **설정 시스템**: `src/lib/settings.tsx` 의 `SettingsProvider` + `useSettings()` hook. localStorage 키 `loth-settings`.
+- **UI**: `src/components/page-ref.tsx` — `PageRef` client component. `src/app/settings/page.tsx` "Хуудасны лавлагаа" switch(`role="switch"`).
+- **추출 파이프라인** (`scripts/`):
+  - `reextract-pdf-pages.sh` — `Four-Week psalter.- 2025.pdf` 를 PDF 페이지 단위로 순회해 LEFT/RIGHT 반쪽을 `pdftotext -x -W -H` 로 따로 추출, 각 반쪽 앞에 인쇄 페이지 번호(`2N-2` / `2N-1`)를 bare integer 라인으로 붙여 `parsed_data/full_pdf.txt` 생성 (970개 페이지 마커, ~25초). 기존 단별 추출의 마커 누락(±1 오차) 문제를 근본 해결.
+  - `lib/page-fingerprint.js` — 공용 토큰 지문 매칭 모듈 (`tokenize`, `buildSourceIndex`, `buildSourceIndexMulti`, `buildFirstTokenIndex`, `lookupPage`, `countPageFields`).
+  - `extract-propers-pages.js` — **2-tier 소스**: PRIMARY = `propers_full.txt` + `hymns_full.txt` (좁은 범위, 짧은 복음찬가교송 false positive 방지), FALLBACK = `full_pdf.txt` (PRIMARY 미매칭 항목만, `safeAmbiguousMin:15`).
+  - `extract-hymn-pages.js` — `full_pdf.txt` → `ordinarium/hymns.json` 122개 entry 페이지 주입.
+  - `extract-psalter-pages.js` — `full_pdf.txt` (또는 fallback `week{N}_*.txt`) + `page-mapping.json` (있으면 우선) → `psalter/week-*.json`. **add-only**, `safeAmbiguousMin: 15`. `concludingPrayerPage` 도 100% 채움 (FR-017e).
+  - `audit-page-coverage.js` — 카테고리별 커버리지 리포트, 임계값 위반 시 exit code 1.
+- **소스 데이터 신뢰도**: `full_pdf.txt` 는 PDF 페이지를 LEFT/RIGHT 로 명시 분할해 페이지 마커 누락이 없다. 그래도 시편 추출은 (a) 기존 손-주석 페이지를 절대 덮어쓰지 않고 (b) 신규 추가는 ≥15 토큰 지문 매칭으로 보수 운영. 검증된 `parsed_data/week{2,3}/page-mapping.json` 이 있으면 우선 사용.
 
 ---
 

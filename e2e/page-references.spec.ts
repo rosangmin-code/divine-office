@@ -89,4 +89,52 @@ test.describe('PDF page references', () => {
     await page.waitForSelector('article')
     await expect(page.getByRole('button', { name: /Хуудасны лавлагаа/ })).toHaveCount(0)
   })
+
+  // FR-017a/b/c/d coverage: each new annotation source surfaces in UI.
+  test.describe('expanded coverage', () => {
+    test('hymn section shows page reference', async ({ page }) => {
+      // Sunday Lauds hymn — populated from hymns.json after FR-017d.
+      await presetPageRefs(page, true)
+      await page.goto(LAUDS_URL)
+      await page.waitForSelector('article')
+      const hymnSection = page.locator('section[aria-label="Магтуу"]').first()
+      await expect(hymnSection.getByText(/\(х\.\s*\d+\)/)).toBeVisible()
+    })
+
+    test('weekday lauds intercessions show page (psalter parallel-key path)', async ({ page }) => {
+      // 2026-02-09 = Monday week 1 OT — psalter cycle (no season override).
+      await presetPageRefs(page, true)
+      await page.goto('/pray/2026-02-09/lauds')
+      await page.waitForSelector('article')
+      const interSection = page.locator('section[aria-label="Гүйлтын залбирал"]').first()
+      await expect(interSection.getByText(/\(х\.\s*\d+\)/)).toBeVisible()
+    })
+
+    test('Advent Sunday responsory shows page (season propers path)', async ({ page }) => {
+      // 2026-11-29 = First Sunday of Advent 2026.
+      await presetPageRefs(page, true)
+      await page.goto('/pray/2026-11-29/lauds')
+      await page.waitForSelector('article')
+      const respSection = page.locator('section[aria-label="Хариу залбирал"]').first()
+      await expect(respSection.getByText(/\(х\.\s*\d+\)/)).toBeVisible()
+    })
+
+    test('vespers concluding prayer shows page', async ({ page }) => {
+      await presetPageRefs(page, true)
+      await page.goto(`/pray/${TEST_DATE}/vespers`)
+      await page.waitForSelector('article')
+      const prayerSection = page.locator('section[aria-label="Төгсгөлийн даатгал залбирал"]').first()
+      await expect(prayerSection.getByText(/\(х\.\s*\d+\)/)).toBeVisible()
+    })
+
+    test('compline hymn shows page', async ({ page }) => {
+      // Daytime hours (terce/sext/none) are disabled in routing; use compline
+      // as the second non-Lauds hour to verify the hymn page path.
+      await presetPageRefs(page, true)
+      await page.goto(`/pray/${TEST_DATE}/compline`)
+      await page.waitForSelector('article')
+      const hymnSection = page.locator('section[aria-label="Магтуу"]').first()
+      await expect(hymnSection.getByText(/\(х\.\s*\d+\)/)).toBeVisible()
+    })
+  })
 })

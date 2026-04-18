@@ -181,7 +181,7 @@ test.describe('Prayer section detail rendering', () => {
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
       const antiphons = page.locator('[data-role="antiphon"]')
       await expect(antiphons.first()).toBeVisible()
-      await expect(antiphons.first()).toContainText('Шад дуулал:')
+      await expect(antiphons.first()).toContainText(/Шад дуулал(\s\d+)?:/)
     })
 
     test('gospel canticle antiphon shows "Шад магтаал:" label', async ({ page }) => {

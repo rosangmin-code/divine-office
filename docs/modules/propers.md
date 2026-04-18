@@ -12,6 +12,11 @@
 - `src/data/loth/sanctoral/solemnities.json`
 - `src/data/loth/sanctoral/feasts.json`
 - `src/data/loth/sanctoral/memorials.json`
+- `src/data/loth/sanctoral/optional-memorials.json`
+
+### 페이지 주석 (FR-017b / FR-017c)
+
+`scripts/extract-propers-pages.js` 가 `parsed_data/propers/propers_full.txt` + `parsed_data/hymns/hymns_full.txt`(p.795+ OT 23주차 이후) 결합 소스에서 마침기도/복음찬가교송/대체마침기도/중보기도/짧은독서/응송 페이지를 자동 주입한다. 응송은 versicle+response 합쳐서 매칭(짧은 versicle 단독은 ambiguous 거절). 미매칭 항목은 `null` 유지 (PRD §7 NFR-009b 추측 금지). 커버리지 보장: propers 마침기도 99%↑, sanctoral 마침기도 90%↑.
 
 ## 관련 테스트 파일
 - `e2e/special-days.spec.ts` — Advent Dec 20 date-keyed propers 검증, St. Joseph sanctoral propers 확인

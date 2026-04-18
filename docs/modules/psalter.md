@@ -10,8 +10,15 @@
 - `src/data/loth/psalter/week-4.json`
 - `src/data/loth/ordinarium/compline.json`
 
+### 페이지 주석 (FR-017a / FR-017e)
+
+`scripts/extract-psalter-pages.js` 가 `parsed_data/week{N}_full.txt` (또는 `_final.txt`) 와 `parsed_data/week{2,3}/page-mapping.json` 을 결합해 시편/짧은독서/응송 객체에 `page`, intercessions 옆에 `intercessionsPage` 병행 키를 채운다. **add-only 모드** — 기존 손-주석 페이지는 절대 덮어쓰지 않는다 (PRD §7 NFR-009b). `concludingPrayerPage` 는 자동 매칭 신뢰도가 낮아 보류 (FR-017e).
+
+`PsalterCommons` 인터페이스는 `shortReading.page`, `responsory.page`, `intercessionsPage`, `concludingPrayerPage`, `gospelCanticleAntiphonPage` 를 모두 노출하며 `loth-service.ts` Layer 1 병합에서 mergedPropers 로 전파된다.
+
 ## 관련 테스트 파일
 - `e2e/prayer-psalter-commons.spec.ts`
+- `src/lib/__tests__/psalter-loader.test.ts` — `getPsalterCommons()` 페이지 노출 검증
 
 ## 기능 요구사항
 

@@ -155,6 +155,7 @@ export interface PatristicReading {
   author: string
   source: string
   text: string
+  page?: number
 }
 
 export interface OfficeOfReadingsPropers extends HourPropers {

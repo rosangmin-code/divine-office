@@ -44,11 +44,14 @@ export function getPsalterPsalmody(
  * These are the 4-week cycle defaults used on ordinary weekdays per GILH §157/§183/§199.
  */
 export interface PsalterCommons {
-  shortReading?: { ref: string; text: string }
-  responsory?: { versicle: string; response: string }
+  shortReading?: { ref: string; text: string; page?: number }
+  responsory?: { versicle: string; response: string; page?: number }
   gospelCanticleAntiphon?: string
+  gospelCanticleAntiphonPage?: number
   intercessions?: string[]
+  intercessionsPage?: number
   concludingPrayer?: string
+  concludingPrayerPage?: number
 }
 
 export function getPsalterCommons(
@@ -69,8 +72,11 @@ export function getPsalterCommons(
   if (hourEntry.shortReading) result.shortReading = hourEntry.shortReading as PsalterCommons['shortReading']
   if (hourEntry.responsory) result.responsory = hourEntry.responsory as PsalterCommons['responsory']
   if (hourEntry.gospelCanticleAntiphon) result.gospelCanticleAntiphon = hourEntry.gospelCanticleAntiphon as string
+  if (typeof hourEntry.gospelCanticleAntiphonPage === 'number') result.gospelCanticleAntiphonPage = hourEntry.gospelCanticleAntiphonPage
   if (hourEntry.intercessions) result.intercessions = hourEntry.intercessions as string[]
+  if (typeof hourEntry.intercessionsPage === 'number') result.intercessionsPage = hourEntry.intercessionsPage
   if (hourEntry.concludingPrayer) result.concludingPrayer = hourEntry.concludingPrayer as string
+  if (typeof hourEntry.concludingPrayerPage === 'number') result.concludingPrayerPage = hourEntry.concludingPrayerPage
 
   return Object.keys(result).length > 0 ? result : null
 }

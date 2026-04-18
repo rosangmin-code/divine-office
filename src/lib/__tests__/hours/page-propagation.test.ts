@@ -176,4 +176,58 @@ describe('page number propagation', () => {
       if (hymn?.type === 'hymn') expect(hymn.page).toBeUndefined()
     })
   })
+
+  describe('parallel-key propagation (psalter weekday path)', () => {
+    // Simulates a weekday where season propers are absent and psalter
+    // commons supply the prayers. The psalter loader exposes
+    // intercessionsPage/concludingPrayerPage as parallel keys; loth-service
+    // merges them into mergedPropers; assemblers read them through.
+    it('lauds carries psalter intercessionsPage', () => {
+      const sections = assembleLauds(makeContext({
+        mergedPropers: {
+          intercessions: ['Petition 1', 'Petition 2'],
+          intercessionsPage: 89,
+        },
+      }))
+      const inter = sections.find(s => s.type === 'intercessions')
+      if (inter?.type === 'intercessions') expect(inter.page).toBe(89)
+    })
+
+    it('vespers carries psalter concludingPrayerPage', () => {
+      const sections = assembleVespers(makeContext({
+        hour: 'vespers',
+        isFirstHourOfDay: false,
+        mergedPropers: {
+          concludingPrayer: 'Аяа, Эзэн минь...',
+          concludingPrayerPage: 155,
+        },
+      }))
+      const prayer = sections.find(s => s.type === 'concludingPrayer')
+      if (prayer?.type === 'concludingPrayer') expect(prayer.page).toBe(155)
+    })
+
+    it('hymn page propagates from mergedPropers.hymnPage', () => {
+      const sections = assembleLauds(makeContext({
+        mergedPropers: { hymn: 'Магтуу...', hymnPage: 880 },
+      }))
+      const hymn = sections.find(s => s.type === 'hymn')
+      if (hymn?.type === 'hymn') expect(hymn.page).toBe(880)
+    })
+
+    it('season responsory.page propagates verbatim', () => {
+      // Advent Sunday Lauds responsory shape, with .page populated by the
+      // extract-propers-pages.js script.
+      const sections = assembleLauds(makeContext({
+        mergedPropers: {
+          responsory: {
+            versicle: 'Эзэн, Та Өөрийн хайр, өршөөлөө бидэнд үзүүлнэ үү.',
+            response: 'Мөн бидэнд Өөрийн авралыг хайрлан соёрхно уу.',
+            page: 547,
+          },
+        },
+      }))
+      const resp = sections.find(s => s.type === 'responsory')
+      if (resp?.type === 'responsory') expect(resp.page).toBe(547)
+    })
+  })
 })

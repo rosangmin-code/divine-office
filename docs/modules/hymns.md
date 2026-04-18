@@ -15,7 +15,7 @@
 - `scripts/extract-hymns.ts` — `hymns-index.json`에서 `knownTitles` 구성 후 `parseHymn` 호출해 `src/data/loth/ordinarium/hymns.json` 재생성
 
 ## 관련 데이터 파일
-- `src/data/loth/ordinarium/hymns.json` — 122개 슬롯 중 107개 가사 채움 (부활시기 후보 15개로 계산)
+- `src/data/loth/ordinarium/hymns.json` — 122개 슬롯 중 107개 가사 채움 (부활시기 후보 15개로 계산). entry 별 `page?: number` 필드는 `scripts/extract-hymn-pages.js` 가 `parsed_data/hymns/hymns_full.txt` 의 `<번호>. <제목> <첫 3 본문줄>` 지문으로 매칭해 채운다 (본문 보유 entry 기준 100% 커버리지).
 - `src/data/loth/ordinarium/hymns-index.json` — 전례시기/기도시간별 찬미가 배정 규칙 (seasonalAssignments)
 
 ## 관련 테스트 파일
