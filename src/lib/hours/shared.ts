@@ -337,5 +337,6 @@ export function buildInvitatory(
     },
     gloryBe: ordinarium.invitatory.gloryBe.text,
     rubric: ordinarium.invitatory.rubric,
+    page: psalm.page,
   }
 }

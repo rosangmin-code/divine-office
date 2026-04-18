@@ -70,8 +70,11 @@ test.describe('PDF page references', () => {
     await page.goto(LAUDS_URL)
     await page.waitForSelector('article')
 
+    // Psalm 63:2-9 section has multiple (х. 58) markers now — one on the
+    // psalm reference header plus one on each surrounding antiphon (FR-017g).
+    // Assert visibility of at least the first.
     const psalmSection = page.locator('section', { has: page.getByText('Psalm 63:2-9') })
-    await expect(psalmSection.getByText(/\(х\.\s*58\)/)).toBeVisible()
+    await expect(psalmSection.getByText(/\(х\.\s*58\)/).first()).toBeVisible()
   })
 
   test('page references appear on multiple section types', async ({ page }) => {
@@ -135,6 +138,41 @@ test.describe('PDF page references', () => {
       await page.waitForSelector('article')
       const hymnSection = page.locator('section[aria-label="Магтуу"]').first()
       await expect(hymnSection.getByText(/\(х\.\s*\d+\)/)).toBeVisible()
+    })
+  })
+
+  // FR-017g: antiphon page markers at end of antiphon text.
+  test.describe('antiphon page references', () => {
+    test('psalm antiphon shows page at end of text', async ({ page }) => {
+      await presetPageRefs(page, true)
+      await page.goto(LAUDS_URL)
+      await page.waitForSelector('article')
+      // AntiphonBox sets data-role="antiphon"; first one is the opening antiphon
+      // for the first psalm of Lauds (Psalm 63:2-9, page 58).
+      const antiphon = page.locator('[data-role="antiphon"]').first()
+      await expect(antiphon).toBeVisible()
+      await expect(antiphon.getByText(/\(х\.\s*\d+\)/)).toBeVisible()
+    })
+
+    test('gospel canticle antiphon shows page', async ({ page }) => {
+      await presetPageRefs(page, true)
+      await page.goto(LAUDS_URL)
+      await page.waitForSelector('article')
+      const canticleSection = page.locator('section[aria-label="Захариагийн магтаал"]').first()
+      // Both the section header and the antiphon carry a page; assert at least
+      // one antiphon-role element inside shows the marker.
+      await expect(canticleSection.locator('[data-role="antiphon"]').first()).toContainText(/\(х\.\s*\d+\)/)
+    })
+
+    test('invitatory antiphon shows page', async ({ page }) => {
+      await presetPageRefs(page, true)
+      await page.goto(LAUDS_URL)
+      await page.waitForSelector('article')
+      // Expand invitatory if collapsed so antiphon is visible in DOM layout.
+      const toggle = page.getByRole('button', { name: /Урих дуудлага дэлгэх/ })
+      if (await toggle.isVisible()) await toggle.click()
+      const invSection = page.locator('section[aria-label="Урих дуудлага"]').first()
+      await expect(invSection.locator('[data-role="antiphon"]').first()).toContainText(/\(х\.\s*\d+\)/)
     })
   })
 })

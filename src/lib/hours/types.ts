@@ -16,6 +16,7 @@ export interface InvitatoryPsalmData {
   title: string
   epigraph?: string
   stanzas: string[][]
+  page?: number
 }
 
 export interface InvitatoryAntiphons {
