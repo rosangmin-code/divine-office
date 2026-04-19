@@ -72,7 +72,7 @@
 | NFR-005 | 데이터 캐싱: 전례력(yearCache), 시편집(psalterCache), 계절 고유문(seasonCache), 성인축일(sanctoralCache), 찬미가(_hymns, _hymnsIndex)를 인메모리 캐시한다. | 완료 |
 | NFR-006 | E2E 테스트: Playwright로 API 및 페이지 테스트를 수행한다. | 완료 |
 | NFR-013 | 모바일 박스 여백 최적화: 박스형 섹션(`article`, 배경색 섹션, `AntiphonBox`)의 padding을 모바일에서 축소하고 `md:` 이상에서만 기본값 사용. 375px 뷰포트에서 기도 본문 가용 폭 ≥ 280px, 중첩 antiphon 박스 내부 폭 ≥ 260px 보장. | 완료 |
-| NFR-014 | 모바일 시편 가독성: stanza 단위 시각적 그룹화. stanza 내부 줄 간격은 `leading-relaxed`(line-height 1.625)만으로 처리하고 줄 사이 vertical margin은 0. stanza 간 간격은 모바일 ≥20px(`space-y-5`), 데스크톱 ≥16px(`md:space-y-4`). 모바일 시편 좌측 padding ≥12px(`pl-3`). NFR-013 본문 가용 폭 보장과 호환. | 완료 |
+| NFR-018 | 모바일 시편 가독성: stanza 단위 시각적 그룹화. stanza 내부 줄 간격은 `leading-relaxed`(line-height 1.625)만으로 처리하고 줄 사이 vertical margin은 0. stanza 간 간격은 모바일 ≥20px(`space-y-5`), 데스크톱 ≥16px(`md:space-y-4`). 모바일 시편 좌측 padding ≥12px(`pl-3`). NFR-013 본문 가용 폭 보장과 호환. | 완료 |
 
 ---
 
@@ -187,11 +187,10 @@ src/app/
 | 우선순위 | 작업 | 관련 ID |
 |----------|------|---------|
 | P1 | 성인축일 고유문 확장 (14개 → 로마 보편 달력 전체) | FR-045 |
-| P2 | `vercel.ts` 프로젝트 설정 파일 추가 (현재 Vercel 기본 감지 의존) | NFR-003 |
+| P2 | `vercel.json` 프로젝트 설정 파일 추가 (현재 Vercel 기본 감지 의존) | NFR-003 |
+| P2 | PDF 뷰어 인터랙션 E2E 확장 (페이지 이동 / 범위 초과 1~969 / pdfjs 로드 실패 폴백) | FR-017i |
 | P3 | Triduum (성삼일) 특별 전례(수난예식·부활성야) 처리 — 성주간 평일 기도문(성목·성금·성토 lauds/vespers)은 `lent.json weeks.6`에 구현 | - |
-| ~~P3~~ | ~~오프라인 지원 (Service Worker / PWA)~~ → 구현 완료 | FR-110~114 |
 | P3 | 주간/월간 기도 달력 뷰 | - |
-| P2 | PDF 페이지 주석 확장 (week-1 일요일 → 전체 4주 + 계절 고유문) | FR-017 |
 
 ---
 
