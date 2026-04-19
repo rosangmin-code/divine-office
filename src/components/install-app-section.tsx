@@ -67,6 +67,7 @@ export function InstallAppSection() {
     if (typeof window === 'undefined') return
 
     if (detectStandalone()) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setStatus('standalone')
       return
     }
