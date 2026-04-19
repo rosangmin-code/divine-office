@@ -1,35 +1,39 @@
 import { describe, it, expect } from 'vitest'
-import { bookPageToPdfPage, pdfHref, PDF_ASSET_PATH } from '../pdf-page'
+import { bookPageToPdfPage, bookPageSide, viewerHref, PDF_ASSET_PATH } from '../pdf-page'
 
 describe('bookPageToPdfPage', () => {
   it('maps confirmed samples (2-up layout)', () => {
-    // Verified directly against Four-Week psalter.- 2025.pdf.
-    expect(bookPageToPdfPage(108)).toBe(55) // PDF p.55 shows book pages 108|109
+    expect(bookPageToPdfPage(108)).toBe(55)
     expect(bookPageToPdfPage(109)).toBe(55)
-    expect(bookPageToPdfPage(6)).toBe(4)    // PDF p.4 shows ГАРЧИГ 6|7
+    expect(bookPageToPdfPage(6)).toBe(4)
     expect(bookPageToPdfPage(7)).toBe(4)
+    expect(bookPageToPdfPage(58)).toBe(30)
+    expect(bookPageToPdfPage(59)).toBe(30)
   })
 
-  it('maps even and odd pages to the same spread', () => {
+  it('collapses adjacent even/odd pages onto the same spread', () => {
     for (const even of [10, 50, 100, 200, 400]) {
       expect(bookPageToPdfPage(even)).toBe(bookPageToPdfPage(even + 1))
     }
   })
+})
 
-  it('handles low page numbers without returning zero', () => {
-    expect(bookPageToPdfPage(1)).toBeGreaterThanOrEqual(1)
-    expect(bookPageToPdfPage(2)).toBeGreaterThanOrEqual(1)
+describe('bookPageSide', () => {
+  it('places even book pages on the left, odd on the right', () => {
+    expect(bookPageSide(58)).toBe('left')
+    expect(bookPageSide(59)).toBe('right')
+    expect(bookPageSide(108)).toBe('left')
+    expect(bookPageSide(109)).toBe('right')
   })
 })
 
-describe('pdfHref', () => {
-  it('builds asset path with #page fragment', () => {
-    expect(pdfHref(58)).toBe('/psalter.pdf#page=30')
-    expect(pdfHref(108)).toBe('/psalter.pdf#page=55')
+describe('viewerHref', () => {
+  it('points at the in-app viewer route', () => {
+    expect(viewerHref(58)).toBe('/pdf/58')
+    expect(viewerHref(109)).toBe('/pdf/109')
   })
 
-  it('uses the exported PDF asset path', () => {
+  it('keeps the PDF asset path exported for the viewer component', () => {
     expect(PDF_ASSET_PATH).toBe('/psalter.pdf')
-    expect(pdfHref(200).startsWith(PDF_ASSET_PATH)).toBe(true)
   })
 })

@@ -184,34 +184,62 @@ test.describe('PDF page references', () => {
     await expect(prayerBlock.getByText(/\(х\.\s*\d+\)/)).toBeVisible()
   })
 
-  // FR-017i: PageRef renders as a link that targets public/psalter.pdf with a #page fragment.
-  test.describe('PDF link behavior', () => {
-    test('page reference is an anchor pointing to psalter.pdf with #page fragment', async ({ page }) => {
+  // FR-017i: PageRef links into the in-app PDF viewer at /pdf/{bookPage}.
+  test.describe('PDF viewer link', () => {
+    test('page reference is an internal link pointing at /pdf/{bookPage}', async ({ page }) => {
       await presetPageRefs(page, true)
       await page.goto(LAUDS_URL)
       await page.waitForSelector('article')
 
       const firstLink = page.locator('[data-role="page-ref-link"]').first()
       await expect(firstLink).toBeVisible()
-      await expect(firstLink).toHaveAttribute('target', '_blank')
-      await expect(firstLink).toHaveAttribute('rel', /noopener/)
+      // Internal navigation — no new tab.
+      await expect(firstLink).not.toHaveAttribute('target', '_blank')
       const href = await firstLink.getAttribute('href')
-      expect(href).toMatch(/^\/psalter\.pdf#page=\d+$/)
+      expect(href).toMatch(/^\/pdf\/\d+$/)
     })
 
-    test('href uses bookPage/2+1 mapping for Psalm 63:2-9 (book page 58 → pdf 30)', async ({ page }) => {
+    test('Psalm 63:2-9 link points at /pdf/58', async ({ page }) => {
       await presetPageRefs(page, true)
       await page.goto(LAUDS_URL)
       await page.waitForSelector('article')
 
       const link = page.locator('[data-role="page-ref-link"]', { hasText: /\(х\.\s*58\)/ }).first()
-      await expect(link).toHaveAttribute('href', '/psalter.pdf#page=30')
+      await expect(link).toHaveAttribute('href', '/pdf/58')
     })
 
     test('no page-ref link rendered when showPageRefs is disabled', async ({ page }) => {
       await page.goto(LAUDS_URL)
       await page.waitForSelector('article')
       await expect(page.locator('[data-role="page-ref-link"]')).toHaveCount(0)
+    })
+
+    test('clicking a page reference opens the in-app viewer and renders the PDF canvas', async ({ page }) => {
+      await presetPageRefs(page, true)
+      await page.goto(LAUDS_URL)
+      await page.waitForSelector('article')
+
+      const link = page.locator('[data-role="page-ref-link"]', { hasText: /\(х\.\s*58\)/ }).first()
+      await link.click()
+
+      await expect(page).toHaveURL(/\/pdf\/58$/)
+      const canvas = page.locator('[data-role="pdf-canvas"]')
+      await expect(canvas).toBeVisible({ timeout: 15_000 })
+      await expect(canvas).toHaveAttribute('data-book-page', '58')
+      await expect(page.getByRole('button', { name: /Буцах/ })).toBeVisible()
+    })
+
+    test('Буцах button returns to the prayer page', async ({ page }) => {
+      await presetPageRefs(page, true)
+      await page.goto(LAUDS_URL)
+      await page.waitForSelector('article')
+
+      const link = page.locator('[data-role="page-ref-link"]', { hasText: /\(х\.\s*58\)/ }).first()
+      await link.click()
+      await expect(page).toHaveURL(/\/pdf\/58$/)
+
+      await page.getByRole('button', { name: /Буцах/ }).click()
+      await expect(page).toHaveURL(new RegExp(LAUDS_URL.replace(/\//g, '\\/') + '$'))
     })
   })
 })
