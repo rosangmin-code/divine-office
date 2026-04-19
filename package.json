@@ -11,7 +11,9 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:e2e:api": "playwright test api.spec.ts"
+    "test:e2e:api": "playwright test api.spec.ts",
+    "traceability": "node scripts/generate-test-fr-map.mjs",
+    "traceability:check": "node scripts/generate-test-fr-map.mjs --check"
   },
   "dependencies": {
     "next": "^16.2.4",
