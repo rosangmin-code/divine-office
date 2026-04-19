@@ -1,6 +1,14 @@
 import type { DayPropers, HourPropers, HourType, LiturgicalSeason, DayOfWeek, SanctoralEntry, HymnCandidate, OptionalMemorialEntry } from './types'
 import fs from 'fs'
 import path from 'path'
+import {
+  SeasonPropersFileSchema,
+  SanctoralFileSchema,
+  OptionalMemorialsFileSchema,
+  HymnsFileSchema,
+  HymnsIndexFileSchema,
+  safeParse,
+} from './schemas'
 
 function isEnoent(error: unknown): boolean {
   return (error as NodeJS.ErrnoException)?.code === 'ENOENT'
@@ -24,8 +32,9 @@ function loadSeasonPropers(season: LiturgicalSeason): Record<string, Record<stri
 
   try {
     const filePath = path.join(process.cwd(), 'src/data/loth/propers', `${fileMap[season]}.json`)
-    const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
-    const weeks = data.weeks ?? {}
+    const raw = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
+    safeParse(SeasonPropersFileSchema, raw, `propers/${fileMap[season]}.json`)
+    const weeks = raw.weeks ?? {}
     seasonCache.set(season, weeks)
     return weeks
   } catch (error) {
@@ -97,9 +106,10 @@ function loadSanctoralFile(type: 'solemnities' | 'feasts' | 'memorials'): Record
 
   try {
     const filePath = path.join(process.cwd(), 'src/data/loth/sanctoral', `${type}.json`)
-    const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
-    sanctoralCache.set(type, data)
-    return data
+    const raw = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
+    safeParse(SanctoralFileSchema, raw, `sanctoral/${type}.json`)
+    sanctoralCache.set(type, raw)
+    return raw
   } catch (error) {
     if (isEnoent(error)) {
       sanctoralCache.set(type, {})
@@ -137,9 +147,10 @@ export function loadOptionalMemorials(): Record<string, OptionalMemorialEntry> {
   if (_optionalMemorials) return _optionalMemorials
   try {
     const filePath = path.join(process.cwd(), 'src/data/loth/sanctoral', 'optional-memorials.json')
-    const data = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as Record<string, OptionalMemorialEntry>
-    _optionalMemorials = data
-    return data
+    const raw = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
+    safeParse(OptionalMemorialsFileSchema, raw, 'optional-memorials.json')
+    _optionalMemorials = raw as Record<string, OptionalMemorialEntry>
+    return _optionalMemorials
   } catch (error) {
     if (isEnoent(error)) {
       _optionalMemorials = {}
@@ -184,8 +195,10 @@ function loadHymns(): Record<string, HymnEntry> {
   if (_hymns) return _hymns
   try {
     const filePath = path.join(process.cwd(), 'src/data/loth/ordinarium/hymns.json')
-    _hymns = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
-    return _hymns!
+    const raw = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
+    safeParse(HymnsFileSchema, raw, 'hymns.json')
+    _hymns = raw as Record<string, HymnEntry>
+    return _hymns
   } catch (error) {
     if (isEnoent(error)) {
       _hymns = {}
@@ -198,9 +211,22 @@ function loadHymns(): Record<string, HymnEntry> {
 
 function loadHymnsIndex(): HymnsIndex {
   if (_hymnsIndex) return _hymnsIndex
-  const filePath = path.join(process.cwd(), 'src/data/loth/ordinarium/hymns-index.json')
-  _hymnsIndex = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
-  return _hymnsIndex!
+  try {
+    const filePath = path.join(process.cwd(), 'src/data/loth/ordinarium/hymns-index.json')
+    const raw = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
+    safeParse(HymnsIndexFileSchema, raw, 'hymns-index.json')
+    _hymnsIndex = raw as HymnsIndex
+    return _hymnsIndex
+  } catch (error) {
+    if (isEnoent(error)) {
+      const empty: HymnsIndex = { hymns: [], seasonalAssignments: {} }
+      _hymnsIndex = empty
+      return empty
+    }
+    console.error('[propers-loader] failed to load hymns-index.json:', error)
+    // Don't cache — the next call retries.
+    return { hymns: [], seasonalAssignments: {} }
+  }
 }
 
 const DAY_INDEX: Record<DayOfWeek, number> = { SUN: 0, MON: 1, TUE: 2, WED: 3, THU: 4, FRI: 5, SAT: 6 }

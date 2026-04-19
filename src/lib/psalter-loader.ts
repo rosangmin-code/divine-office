@@ -1,6 +1,7 @@
 import type { PsalterWeekData, HourPsalmody, HourType, DayOfWeek, PsalmEntry } from './types'
 import fs from 'fs'
 import path from 'path'
+import { PsalterWeekSchema, safeParse } from './schemas'
 
 // Cache loaded psalter weeks
 const psalterCache = new Map<number, PsalterWeekData>()
@@ -16,7 +17,13 @@ function loadWeek(week: 1 | 2 | 3 | 4): PsalterWeekData {
   if (psalterCache.has(w)) return psalterCache.get(w)!
 
   const filePath = path.join(process.cwd(), `src/data/loth/psalter/week-${w}.json`)
-  const data = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as PsalterWeekData
+  const raw = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
+  const validated = safeParse(PsalterWeekSchema, raw, `psalter week-${w}.json`)
+  // Validation failure is loud (schemas.ts logs the failing paths) but we
+  // still fall back to the raw blob so a minor schema drift does not
+  // brick the whole app — the existing PsalterWeekData cast covers the
+  // fields the rest of the code actually reads.
+  const data = (validated ?? (raw as PsalterWeekData)) as PsalterWeekData
   psalterCache.set(w, data)
   return data
 }
