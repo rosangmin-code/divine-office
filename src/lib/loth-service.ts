@@ -2,6 +2,7 @@ import type {
   HourType,
   LiturgicalDayInfo,
   AssembledHour,
+  AssembledPsalm,
   PsalmEntry,
   HourPropers,
   HourPsalmody,
@@ -126,10 +127,30 @@ export async function assembleHour(
     }
   }
 
-  // 7. Resolve psalm texts
-  const assembledPsalms = await Promise.all(
+  // 7. Resolve psalm texts — use allSettled so a single bad psalm (e.g. a
+  // scripture reference that fails to parse or a missing Bible chapter)
+  // does not collapse the whole hour into a 404. Failed entries render as
+  // empty-verse placeholders with the antiphon we already know.
+  const psalmResults = await Promise.allSettled(
     psalmEntries.map((entry) => resolvePsalm(entry, antiphonOverrides)),
   )
+  const assembledPsalms: AssembledPsalm[] = psalmResults.map((result, i) => {
+    if (result.status === 'fulfilled') return result.value
+    const entry = psalmEntries[i]
+    console.error(
+      `[loth-service] resolvePsalm failed for ${entry.ref} (${dateStr} ${hour}):`,
+      result.reason,
+    )
+    return {
+      psalmType: entry.type,
+      reference: entry.ref,
+      title: entry.title,
+      antiphon: antiphonOverrides[entry.antiphon_key] ?? entry.default_antiphon ?? '',
+      verses: [],
+      gloriaPatri: entry.gloria_patri,
+      ...(entry.page != null ? { page: entry.page } : {}),
+    }
+  })
 
   // 8. Merge propers: sanctoral > season > psalter commons > defaults
   //    Per GILH §157/§183/§199, weekday readings/responsories/intercessions/prayers

@@ -78,7 +78,18 @@ export function getCalendarForYear(year: number): LiturgicalDayInfo[] {
     return yearCache.get(year)!
   }
 
-  const entries = romcal.calendarFor({ year, locale: 'en' }) as unknown as RomcalEntry[]
+  let entries: RomcalEntry[]
+  try {
+    entries = romcal.calendarFor({ year, locale: 'en' }) as unknown as RomcalEntry[]
+  } catch (error) {
+    console.error(`[calendar] romcal.calendarFor failed for year ${year}:`, error)
+    return []
+  }
+
+  if (!Array.isArray(entries) || entries.length === 0) {
+    console.error(`[calendar] romcal returned unexpected data for year ${year}`)
+    return []
+  }
 
   // Track week of season
   let currentSeasonKey = ''

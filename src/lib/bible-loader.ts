@@ -39,25 +39,33 @@ export async function warmBibleCache(): Promise<void> {
   if (warmPromise) return warmPromise
 
   warmPromise = (async () => {
-    const index = new Map<string, BibleChapter>()
-    const dataDir = path.join(process.cwd(), 'src/data/bible')
+    try {
+      const index = new Map<string, BibleChapter>()
+      const dataDir = path.join(process.cwd(), 'src/data/bible')
 
-    const contents = await Promise.all(
-      BIBLE_FILES.map(async (file) => {
-        const filePath = path.join(dataDir, file)
-        try {
-          return await fs.promises.readFile(filePath, 'utf-8')
-        } catch {
-          return null
-        }
-      }),
-    )
+      const contents = await Promise.all(
+        BIBLE_FILES.map(async (file) => {
+          const filePath = path.join(dataDir, file)
+          try {
+            return await fs.promises.readFile(filePath, 'utf-8')
+          } catch {
+            return null
+          }
+        }),
+      )
 
-    for (const content of contents) {
-      if (content) parseLines(content, index)
+      for (const content of contents) {
+        if (content) parseLines(content, index)
+      }
+
+      bibleIndex = index
+    } catch (error) {
+      // Clear the in-flight promise so the next caller retries instead of
+      // seeing a permanently-empty bibleIndex.
+      warmPromise = null
+      console.error('[bible-loader] warmBibleCache failed:', error)
+      throw error
     }
-
-    bibleIndex = index
   })()
 
   return warmPromise

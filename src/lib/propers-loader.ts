@@ -2,6 +2,10 @@ import type { DayPropers, HourPropers, HourType, LiturgicalSeason, DayOfWeek, Sa
 import fs from 'fs'
 import path from 'path'
 
+function isEnoent(error: unknown): boolean {
+  return (error as NodeJS.ErrnoException)?.code === 'ENOENT'
+}
+
 // Date-keyed overrides (e.g. "dec24") take priority over week-based lookup
 
 // Cache for season propers
@@ -24,9 +28,14 @@ function loadSeasonPropers(season: LiturgicalSeason): Record<string, Record<stri
     const weeks = data.weeks ?? {}
     seasonCache.set(season, weeks)
     return weeks
-  } catch {
-    // File doesn't exist yet - return empty
-    seasonCache.set(season, {})
+  } catch (error) {
+    if (isEnoent(error)) {
+      // File doesn't exist yet — cache the empty result permanently.
+      seasonCache.set(season, {})
+      return {}
+    }
+    // Transient I/O or malformed JSON — don't poison the cache.
+    console.error(`[propers-loader] failed to load season ${season}:`, error)
     return {}
   }
 }
@@ -91,8 +100,12 @@ function loadSanctoralFile(type: 'solemnities' | 'feasts' | 'memorials'): Record
     const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
     sanctoralCache.set(type, data)
     return data
-  } catch {
-    sanctoralCache.set(type, {})
+  } catch (error) {
+    if (isEnoent(error)) {
+      sanctoralCache.set(type, {})
+      return {}
+    }
+    console.error(`[propers-loader] failed to load sanctoral ${type}:`, error)
     return {}
   }
 }
@@ -127,9 +140,13 @@ export function loadOptionalMemorials(): Record<string, OptionalMemorialEntry> {
     const data = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as Record<string, OptionalMemorialEntry>
     _optionalMemorials = data
     return data
-  } catch {
-    _optionalMemorials = {}
-    return _optionalMemorials
+  } catch (error) {
+    if (isEnoent(error)) {
+      _optionalMemorials = {}
+      return _optionalMemorials
+    }
+    console.error('[propers-loader] failed to load optional-memorials.json:', error)
+    return {}
   }
 }
 
@@ -169,9 +186,13 @@ function loadHymns(): Record<string, HymnEntry> {
     const filePath = path.join(process.cwd(), 'src/data/loth/ordinarium/hymns.json')
     _hymns = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
     return _hymns!
-  } catch {
-    _hymns = {}
-    return _hymns
+  } catch (error) {
+    if (isEnoent(error)) {
+      _hymns = {}
+      return _hymns
+    }
+    console.error('[propers-loader] failed to load hymns.json:', error)
+    return {}
   }
 }
 
