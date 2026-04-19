@@ -225,7 +225,11 @@ export function resolveShortReading(propers: HourPropers | null): HourSection | 
  * Used at the start of every hour except when the Invitatory is prayed.
  * Alleluia is omitted during Lent.
  */
-export function buildOpeningVersicle(ordinarium: Ordinarium, season: LiturgicalSeason): HourSection {
+export function buildOpeningVersicle(
+  ordinarium: Ordinarium,
+  season: LiturgicalSeason,
+  opts?: { pairedWithInvitatory?: boolean },
+): HourSection {
   const ov = ordinarium.commonPrayers.openingVersicle
   return {
     type: 'openingVersicle',
@@ -233,6 +237,7 @@ export function buildOpeningVersicle(ordinarium: Ordinarium, season: LiturgicalS
     response: ov.response,
     gloryBe: ov.gloryBe,
     alleluia: season === 'LENT' ? undefined : ov.alleluia,
+    pairedWithInvitatory: opts?.pairedWithInvitatory,
   }
 }
 

@@ -7,8 +7,10 @@ export const assembleLauds: HourAssembler = (ctx) => {
   const sections: HourSection[] = []
 
   // 1. Invitatory OR Opening Versicle — mutually exclusive per GILH §266.
-  //    When Lauds is the first hour of the day, the Invitatory serves as the
-  //    day's opening and the "Deus in adiutorium" versicle (Удиртгал) is omitted.
+  //    When Lauds is the first hour of the day, include both so the client can
+  //    swap between them based on the user's `invitatoryCollapsed` setting
+  //    (only one is visible at a time — paired openingVersicle is hidden when
+  //    the Invitatory body is expanded).
   if (ctx.isFirstHourOfDay) {
     const antiphon = resolveInvitatoryAntiphon(
       ctx.ordinarium.invitatoryAntiphons,
@@ -17,6 +19,11 @@ export const assembleLauds: HourAssembler = (ctx) => {
       ctx.dateStr,
     )
     sections.push(buildInvitatory(ctx.ordinarium, antiphon))
+    sections.push(
+      buildOpeningVersicle(ctx.ordinarium, ctx.liturgicalDay.season, {
+        pairedWithInvitatory: true,
+      }),
+    )
   } else {
     sections.push(buildOpeningVersicle(ctx.ordinarium, ctx.liturgicalDay.season))
   }
