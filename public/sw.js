@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'divine-office-v2'
+const CACHE_VERSION = 'divine-office-v3'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 

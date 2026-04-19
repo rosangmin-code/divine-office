@@ -22,7 +22,12 @@ export function PdfViewer({ initialBookPage }: { initialBookPage: number }) {
 
     ;(async () => {
       try {
-        const pdfjs = await import('pdfjs-dist')
+        // legacy build: ES5-compatible main API. The default build calls
+        // Uint8Array.prototype.toHex() which is Chrome 140+/Safari 18.2+ only,
+        // so it breaks on older Android Chrome. Must stay paired with the
+        // legacy worker copied to /public/pdf.worker.min.mjs — mixing builds
+        // triggers "API version X does not match the Worker version Y".
+        const pdfjs = (await import('pdfjs-dist/legacy/build/pdf.min.mjs')) as typeof import('pdfjs-dist')
         pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs'
 
         const loadingTask = pdfjs.getDocument(PDF_ASSET_PATH)
@@ -67,7 +72,8 @@ export function PdfViewer({ initialBookPage }: { initialBookPage: number }) {
         const name = (error as { name?: string } | null)?.name
         if (!cancelled && name !== 'RenderingCancelledException') {
           setStatus('error')
-          setErrorMessage((error as Error)?.message || 'Алдаа гарлаа')
+          const message = (error as Error)?.message || 'Алдаа гарлаа'
+          setErrorMessage(name ? `${name}: ${message}` : message)
         }
       }
     })()
@@ -110,9 +116,18 @@ export function PdfViewer({ initialBookPage }: { initialBookPage: number }) {
           <p className="my-8 text-sm text-stone-500 dark:text-stone-400">Ачаалж байна…</p>
         ) : null}
         {status === 'error' ? (
-          <p className="my-8 text-sm text-red-600 dark:text-red-400">
-            Уншиж чадсангүй: {errorMessage}
-          </p>
+          <div className="my-8 flex flex-col items-center gap-3 text-sm">
+            <p className="text-red-600 dark:text-red-400">Уншиж чадсангүй.</p>
+            <pre className="max-w-full whitespace-pre-wrap break-words rounded bg-stone-200 px-3 py-2 text-xs text-stone-700 dark:bg-stone-800 dark:text-stone-300">
+              {errorMessage}
+            </pre>
+            <a
+              href={PDF_ASSET_PATH}
+              className="rounded-lg bg-stone-200 px-4 py-2 text-stone-700 hover:bg-stone-300 dark:bg-stone-800 dark:text-stone-200 dark:hover:bg-stone-700"
+            >
+              PDF татах
+            </a>
+          </div>
         ) : null}
         <canvas
           ref={canvasRef}
