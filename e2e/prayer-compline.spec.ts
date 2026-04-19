@@ -19,7 +19,7 @@ test.describe('Compline (Night Prayer) page', () => {
   })
 
   test('does NOT have intercessions', async ({ page }) => {
-    await expect(page.getByText('Гүйлтын залбирал')).not.toBeVisible()
+    await expect(page.getByText('Гуйлтын залбирал')).not.toBeVisible()
   })
 
   test('does NOT have Our Father', async ({ page }) => {

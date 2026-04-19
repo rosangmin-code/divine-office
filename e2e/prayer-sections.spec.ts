@@ -163,7 +163,7 @@ test.describe('Prayer section detail rendering', () => {
     test('is rendered with section label', async ({ page }) => {
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
 
-      const dismissal = page.locator('[aria-label="Илгээлт"]').last()
+      const dismissal = page.locator('[aria-label="Төгсгөл"]').last()
       await expect(dismissal).toBeVisible()
       await expect(dismissal.getByText('Төгсгөл', { exact: true })).toBeVisible()
     })
@@ -307,7 +307,7 @@ test.describe('Prayer section detail rendering', () => {
   test.describe('Rubric rendering (FR-126~128)', () => {
     test('dismissal rubric instructions are rendered in red', async ({ page }) => {
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
-      const dismissal = page.locator('[aria-label="Илгээлт"]').last()
+      const dismissal = page.locator('[aria-label="Төгсгөл"]').last()
       const rubric = dismissal.getByText('Санваартан эсвэл тахилч удирдаж байгаа бол:')
       await expect(rubric).toBeVisible()
       await expect(rubric).toHaveClass(/text-red-700/)

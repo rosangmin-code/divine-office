@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest'
 import { assembleLauds } from '../../hours/lauds'
 import { assembleVespers } from '../../hours/vespers'
 import { assembleCompline } from '../../hours/compline'
-import { assembleDaytimePrayer } from '../../hours/daytime-prayer'
 import type { HourContext } from '../../hours/types'
 import type { LiturgicalDayInfo, AssembledPsalm, HourPropers } from '../../types'
 import type { ComplineData } from '../../psalter-loader'
@@ -106,18 +105,6 @@ describe('page number propagation', () => {
       const resp = sections.find(s => s.type === 'responsory')
       if (hymn?.type === 'hymn') expect(hymn.page).toBe(42)
       if (resp?.type === 'responsory') expect(resp.page).toBe(66)
-    })
-  })
-
-  describe('assembleDaytimePrayer', () => {
-    it('propagates page to hymn, responsory, concludingPrayer', () => {
-      const sections = assembleDaytimePrayer(makeContext({ hour: 'terce', isFirstHourOfDay: false }))
-      const hymn = sections.find(s => s.type === 'hymn')
-      const resp = sections.find(s => s.type === 'responsory')
-      const prayer = sections.find(s => s.type === 'concludingPrayer')
-      if (hymn?.type === 'hymn') expect(hymn.page).toBe(42)
-      if (resp?.type === 'responsory') expect(resp.page).toBe(66)
-      if (prayer?.type === 'concludingPrayer') expect(prayer.page).toBe(71)
     })
   })
 

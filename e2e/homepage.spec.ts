@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { DATES, ACTIVE_HOURS, HOUR_NAMES_MN } from './fixtures/dates'
+import { DATES, ALL_HOURS, HOUR_NAMES_MN } from './fixtures/dates'
 
 test.describe('Homepage', () => {
   test('renders with today\'s date by default', async ({ page }) => {
@@ -38,7 +38,7 @@ test.describe('Homepage', () => {
     await expect(page.locator('.border-liturgical-green')).toBeVisible()
 
     // 3 active hour cards link to correct date
-    for (const hour of ACTIVE_HOURS) {
+    for (const hour of ALL_HOURS) {
       const link = page.locator(`a[href="/pray/${DATES.ordinaryWeekday}/${hour}"]`)
       await expect(link).toBeVisible()
     }
@@ -48,7 +48,7 @@ test.describe('Homepage', () => {
     await page.goto(`/?date=${DATES.ordinaryWeekday}`)
 
     // Check each active hour card has the Mongolian name
-    for (const hour of ACTIVE_HOURS) {
+    for (const hour of ALL_HOURS) {
       const link = page.locator(`a[href="/pray/${DATES.ordinaryWeekday}/${hour}"]`)
       await expect(link.getByText(HOUR_NAMES_MN[hour])).toBeVisible()
     }

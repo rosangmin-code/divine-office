@@ -109,7 +109,7 @@ test.describe('PDF page references', () => {
       await presetPageRefs(page, true)
       await page.goto('/pray/2026-02-09/lauds')
       await page.waitForSelector('article')
-      const interSection = page.locator('section[aria-label="Гүйлтын залбирал"]').first()
+      const interSection = page.locator('section[aria-label="Гуйлтын залбирал"]').first()
       await expect(interSection.getByText(/\(х\.\s*\d+\)/)).toBeVisible()
     })
 
@@ -131,8 +131,6 @@ test.describe('PDF page references', () => {
     })
 
     test('compline hymn shows page', async ({ page }) => {
-      // Daytime hours (terce/sext/none) are disabled in routing; use compline
-      // as the second non-Lauds hour to verify the hymn page path.
       await presetPageRefs(page, true)
       await page.goto(`/pray/${TEST_DATE}/compline`)
       await page.waitForSelector('article')
@@ -184,5 +182,36 @@ test.describe('PDF page references', () => {
     const prayerBlock = page.locator('[data-role="psalm-prayer"]').first()
     await expect(prayerBlock).toBeVisible()
     await expect(prayerBlock.getByText(/\(х\.\s*\d+\)/)).toBeVisible()
+  })
+
+  // FR-017i: PageRef renders as a link that targets public/psalter.pdf with a #page fragment.
+  test.describe('PDF link behavior', () => {
+    test('page reference is an anchor pointing to psalter.pdf with #page fragment', async ({ page }) => {
+      await presetPageRefs(page, true)
+      await page.goto(LAUDS_URL)
+      await page.waitForSelector('article')
+
+      const firstLink = page.locator('[data-role="page-ref-link"]').first()
+      await expect(firstLink).toBeVisible()
+      await expect(firstLink).toHaveAttribute('target', '_blank')
+      await expect(firstLink).toHaveAttribute('rel', /noopener/)
+      const href = await firstLink.getAttribute('href')
+      expect(href).toMatch(/^\/psalter\.pdf#page=\d+$/)
+    })
+
+    test('href uses bookPage/2+1 mapping for Psalm 63:2-9 (book page 58 → pdf 30)', async ({ page }) => {
+      await presetPageRefs(page, true)
+      await page.goto(LAUDS_URL)
+      await page.waitForSelector('article')
+
+      const link = page.locator('[data-role="page-ref-link"]', { hasText: /\(х\.\s*58\)/ }).first()
+      await expect(link).toHaveAttribute('href', '/psalter.pdf#page=30')
+    })
+
+    test('no page-ref link rendered when showPageRefs is disabled', async ({ page }) => {
+      await page.goto(LAUDS_URL)
+      await page.waitForSelector('article')
+      await expect(page.locator('[data-role="page-ref-link"]')).toHaveCount(0)
+    })
   })
 })

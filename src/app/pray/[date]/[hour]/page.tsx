@@ -8,27 +8,16 @@ import type { HourType } from '@/lib/types'
 import { BORDER_COLOR_CLASSES, TEXT_COLOR_CLASSES } from '@/lib/liturgical-colors'
 import { formatDateMn, romanNumeral } from '@/lib/mappings'
 
-const VALID_HOURS: HourType[] = [
-  // officeOfReadings, terce, sext, none: 데이터 미완성으로 임시 비활성화
-  'lauds', 'vespers', 'compline',
-]
+const VALID_HOURS: HourType[] = ['lauds', 'vespers', 'compline']
 
 const HOUR_ABBR_MN: Record<HourType, string> = {
-  officeOfReadings: 'Уншлага',
   lauds: 'Өглөө',
-  terce: '3-р цаг',
-  sext: '6-р цаг',
-  none: '9-р цаг',
   vespers: 'Орой',
-  compline: 'Нойрны',
+  compline: 'Шөнийн',
 }
 
 const HOUR_NAMES_MN: Record<HourType, string> = {
-  officeOfReadings: 'Уншлагын цаг',
   lauds: 'Өглөөний даатгал залбирал',
-  terce: 'Гуравдугаар цаг',
-  sext: 'Зургаадугаар цаг',
-  none: 'Есдүгээр цаг',
   vespers: 'Оройн даатгал залбирал',
   compline: 'Шөнийн даатгал залбирал',
 }

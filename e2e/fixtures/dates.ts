@@ -38,24 +38,10 @@ export const DATES = {
   newYearsDay: '2026-01-01',
 } as const
 
-export const ALL_HOURS = [
-  'officeOfReadings',
-  'lauds',
-  'terce',
-  'sext',
-  'none',
-  'vespers',
-  'compline',
-] as const
-
-export const ACTIVE_HOURS = ['lauds', 'vespers', 'compline'] as const
+export const ALL_HOURS = ['lauds', 'vespers', 'compline'] as const
 
 export const HOUR_NAMES_MN: Record<string, string> = {
-  officeOfReadings: 'Уншлагын залбирал',
   lauds: 'Өглөөний даатгал залбирал',
-  terce: 'Гуравдугаар цагийн залбирал',
-  sext: 'Зургадугаар цагийн залбирал',
-  none: 'Есдүгээр цагийн залбирал',
   vespers: 'Оройн даатгал залбирал',
   compline: 'Шөнийн даатгал залбирал',
 }

@@ -2,12 +2,7 @@ import { NextResponse } from 'next/server'
 import { assembleHour } from '@/lib/loth-service'
 import type { HourType } from '@/lib/types'
 
-const VALID_HOURS: HourType[] = [
-  // officeOfReadings: 교부 독서 데이터 미완성으로 임시 비활성화
-  'lauds',
-  // terce, sext, none: 낮기도 propers 데이터 미완성으로 임시 비활성화
-  'vespers', 'compline',
-]
+const VALID_HOURS: HourType[] = ['lauds', 'vespers', 'compline']
 
 export async function GET(
   request: Request,

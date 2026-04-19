@@ -19,13 +19,6 @@ describe('getPsalterCommons — page propagation', () => {
     expect(typeof commons?.intercessionsPage).toBe('number')
   })
 
-  it('returns undefined for fields not present', () => {
-    // Office of Readings has no shortReading/responsory in week-1 SUN
-    const commons = getPsalterCommons(1, 'SUN', 'officeOfReadings')
-    expect(commons?.shortReading).toBeUndefined()
-    expect(commons?.responsory).toBeUndefined()
-  })
-
   it('returns null for compline (separate cycle)', () => {
     expect(getPsalterCommons(1, 'SUN', 'compline')).toBeNull()
   })

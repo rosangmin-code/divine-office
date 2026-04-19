@@ -37,7 +37,7 @@
 | FR-092 | 기도 페이지(`/pray/[date]/[hour]`): 조립된 기도문을 섹션별로 렌더링한다. 상단 헤더의 전례일 부제는 `liturgicalDay.nameMn`(몽골어)으로 표시. | 완료 |
 | FR-093 | 기도 페이지에서 이전/다음 기도시간으로 네비게이션할 수 있다. | 완료 |
 | FR-094 | 전례색에 따른 좌측 보더 색상을 표시한다 (GREEN, VIOLET, WHITE, RED, ROSE). | 완료 |
-| FR-095 | PrayerRenderer 컴포넌트가 16가지 섹션 타입을 렌더링한다: invitatory, hymn, psalmody, shortReading, responsory, gospelCanticle, intercessions, ourFather, concludingPrayer, dismissal, patristicReading, examen, blessing, marianAntiphon 등. | 완료 |
+| FR-095 | PrayerRenderer 컴포넌트가 15가지 섹션 타입을 렌더링한다: invitatory, openingVersicle, hymn, psalmody, shortReading, responsory, gospelCanticle, intercessions, ourFather, concludingPrayer, dismissal, examen, blessing, marianAntiphon 등. | 완료 |
 | FR-096 | 다크 모드/라이트 모드 토글을 지원한다 (ThemeToggle). | 완료 |
 | FR-097 | loading.tsx로 Skeleton UI를 제공한다. | 완료 |
 | FR-098 | error.tsx, not-found.tsx로 에러/404 상태를 처리한다. | 완료 |

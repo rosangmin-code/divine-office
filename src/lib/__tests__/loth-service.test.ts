@@ -48,11 +48,6 @@ describe('assembleHour', () => {
     expect(result).toBeNull()
   })
 
-  it('returns null for unsupported hour type', async () => {
-    const result = await assembleHour('2026-06-15', 'officeOfReadings')
-    expect(result).toBeNull()
-  })
-
   it('assembles lauds with correct structure', async () => {
     const result = await assembleHour('2026-06-15', 'lauds')
     expect(result).not.toBeNull()

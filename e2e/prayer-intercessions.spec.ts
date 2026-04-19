@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { DATES } from './fixtures/dates'
 
-test.describe('Intercessions (Гүйлтын залбирал) role structure', () => {
+test.describe('Intercessions (Гуйлтын залбирал) role structure', () => {
   test.describe('API parsed fields', () => {
     test('psalter commons: lauds exposes refrain + petitions with responses', async ({ request }) => {
       const res = await request.get(`/api/loth/${DATES.ordinarySunday}/lauds`)
@@ -51,7 +51,7 @@ test.describe('Intercessions (Гүйлтын залбирал) role structure', 
   test.describe('UI rendering', () => {
     test('refrain is visually separated from petitions', async ({ page }) => {
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
-      await expect(page.getByText('Гүйлтын залбирал')).toBeVisible()
+      await expect(page.getByText('Гуйлтын залбирал')).toBeVisible()
 
       const refrain = page.locator('[data-role="intercessions-refrain"]').first()
       await expect(refrain).toBeVisible()

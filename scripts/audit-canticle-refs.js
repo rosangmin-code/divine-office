@@ -19,7 +19,7 @@ const BASE = path.join(__dirname, '..')
 const PSALTER_DIR = path.join(BASE, 'src', 'data', 'loth', 'psalter')
 const TEXTS_PATH = path.join(BASE, 'src', 'data', 'loth', 'psalter-texts.json')
 
-const HOURS = ['officeOfReadings', 'lauds', 'vespers']
+const HOURS = ['lauds', 'vespers']
 const DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 
 function collect(typeFilter) {

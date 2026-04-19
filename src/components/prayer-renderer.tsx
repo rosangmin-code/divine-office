@@ -1,7 +1,11 @@
+'use client'
+
 import type { AssembledHour, HourSection } from '@/lib/types'
+import { useSettings } from '@/lib/settings'
 import { PsalmBlock } from './psalm-block'
 import { PageRef } from './page-ref'
 import { InvitatorySection } from './invitatory-section'
+import { OpeningVersicleSection } from './opening-versicle-section'
 import { HymnSection } from './hymn-section'
 import { MarianAntiphonSection } from './marian-antiphon-section'
 import { ConcludingPrayerSection } from './concluding-prayer-section'
@@ -21,23 +25,6 @@ export function AntiphonBox({ text, label = 'psalm', number, page, className = '
     <div data-role="antiphon" className={`${className} text-sm italic text-amber-800 dark:text-amber-300`}>
       <span className="font-semibold not-italic">{heading}: </span>{text}<PageRef page={page} />
     </div>
-  )
-}
-
-function OpeningVersicleSection({ section }: { section: Extract<HourSection, { type: 'openingVersicle' }> }) {
-  return (
-    <section aria-label="Удиртгал" className="mb-4">
-      <p className="text-sm font-semibold text-red-700 dark:text-red-400">Удиртгал</p>
-      <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">
-        {section.versicle}
-      </p>
-      <p className="font-serif text-stone-800 dark:text-stone-200">
-        <span className="text-red-700 dark:text-red-400">- </span>{section.response}
-      </p>
-      <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">
-        {section.gloryBe}{section.alleluia ? ` ${section.alleluia}` : ''}
-      </p>
-    </section>
   )
 }
 
@@ -132,8 +119,8 @@ function GospelCanticleSection({ section }: { section: Extract<HourSection, { ty
 function IntercessionsSection({ section }: { section: Extract<HourSection, { type: 'intercessions' }> }) {
   if (section.items.length === 0) {
     return (
-      <section aria-label="Гүйлтын залбирал" className="mb-4">
-        <p className="text-sm font-semibold text-red-700 dark:text-red-400">Гүйлтын залбирал</p>
+      <section aria-label="Гуйлтын залбирал" className="mb-4">
+        <p className="text-sm font-semibold text-red-700 dark:text-red-400">Гуйлтын залбирал</p>
         <p className="mt-1 text-sm italic text-stone-500 dark:text-stone-400" role="note">[Орчуулга хийгдэж байна]</p>
       </section>
     )
@@ -143,8 +130,8 @@ function IntercessionsSection({ section }: { section: Extract<HourSection, { typ
   const structured = petitions.length > 0
 
   return (
-    <section aria-label="Гүйлтын залбирал" className="mb-4">
-      <p className="text-sm font-semibold text-red-700 dark:text-red-400">Гүйлтын залбирал <PageRef page={section.page} /></p>
+    <section aria-label="Гуйлтын залбирал" className="mb-4">
+      <p className="text-sm font-semibold text-red-700 dark:text-red-400">Гуйлтын залбирал <PageRef page={section.page} /></p>
 
       {structured ? (
         <>
@@ -212,7 +199,7 @@ function OurFatherSection() {
 
 function DismissalSection({ section }: { section: Extract<HourSection, { type: 'dismissal' }> }) {
   return (
-    <section aria-label="Илгээлт" className="mb-4">
+    <section aria-label="Төгсгөл" className="mb-4">
       <p className="text-sm font-semibold text-red-700 dark:text-red-400 mb-2">Төгсгөл</p>
 
       {/* Priest form */}
@@ -269,27 +256,28 @@ function BlessingSection({ section }: { section: Extract<HourSection, { type: 'b
   )
 }
 
-function PatristicReadingSection({ section }: { section: Extract<HourSection, { type: 'patristicReading' }> }) {
-  return (
-    <section aria-label="Хоёрдугаар уншлага" className="mb-4">
-      <p className="text-sm font-semibold text-red-700 dark:text-red-400">Хоёрдугаар уншлага <PageRef page={section.page} /></p>
-      <p className="text-xs text-stone-500 dark:text-stone-400">{section.author} — {section.source}</p>
-      <div className="mt-2 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
-        {section.text || <span className="text-sm italic text-stone-500 dark:text-stone-400" role="note">[Орчуулга хийгдэж байна]</span>}
-      </div>
-    </section>
-  )
-}
-
 const MAJOR_SECTIONS = new Set([
   'psalmody', 'shortReading', 'gospelCanticle',
-  'intercessions', 'ourFather', 'concludingPrayer', 'patristicReading',
+  'intercessions', 'ourFather', 'concludingPrayer',
 ])
 
 export function PrayerRenderer({ hour }: { hour: AssembledHour }) {
+  const { settings } = useSettings()
+
+  const visibleSections = hour.sections.filter(section => {
+    if (
+      section.type === 'openingVersicle' &&
+      section.pairedWithInvitatory &&
+      !settings.invitatoryCollapsed
+    ) {
+      return false
+    }
+    return true
+  })
+
   return (
     <div>
-      {hour.sections.map((section, i) => {
+      {visibleSections.map((section, i) => {
         const showDivider = i > 0
         const spacing = i === 0 ? '' : MAJOR_SECTIONS.has(section.type) ? 'mt-6' : 'mt-2'
 
@@ -307,7 +295,6 @@ export function PrayerRenderer({ hour }: { hour: AssembledHour }) {
             {section.type === 'ourFather' && <OurFatherSection />}
             {section.type === 'concludingPrayer' && <ConcludingPrayerSection section={section} />}
             {section.type === 'dismissal' && <DismissalSection section={section} />}
-            {section.type === 'patristicReading' && <PatristicReadingSection section={section} />}
             {section.type === 'examen' && <ExamenSection section={section} />}
             {section.type === 'blessing' && <BlessingSection section={section} />}
             {section.type === 'marianAntiphon' && <MarianAntiphonSection section={section} />}

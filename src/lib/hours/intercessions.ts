@@ -1,5 +1,5 @@
 /**
- * Гүйлтын залбирал (intercessions) parser.
+ * Гуйлтын залбирал (intercessions) parser.
  *
  * 원문은 두 가지 포맷으로 존재한다.
  *  - 시편집(psalter/week-*.json): intro가 여러 배열 원소에 걸쳐 있고(`":"`로 끝나는 원소까지),

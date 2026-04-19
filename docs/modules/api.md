@@ -18,7 +18,7 @@
 |----|----------|------|
 | FR-080 | `GET /api/calendar/today` — 오늘의 전례일 정보를 JSON으로 반환한다. | 완료 |
 | FR-081 | `GET /api/calendar/date/[date]` — 지정 날짜(YYYY-MM-DD)의 전례일 정보를 JSON으로 반환한다. | 완료 |
-| FR-082 | `GET /api/loth/[date]/[hour]` — 지정 날짜/기도시간의 조립된 기도문을 JSON으로 반환한다. 유효한 hour: lauds, terce, sext, none, vespers, compline. | 완료 |
+| FR-082 | `GET /api/loth/[date]/[hour]` — 지정 날짜/기도시간의 조립된 기도문을 JSON으로 반환한다. 유효한 hour: lauds, vespers, compline. | 완료 |
 | FR-083 | 잘못된 hour 파라미터에 400, 데이터 없음에 404를 반환한다. | 완료 |
 
 ## 의존성

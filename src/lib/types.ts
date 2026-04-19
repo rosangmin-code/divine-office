@@ -54,15 +54,11 @@ export interface ReadingText {
 
 // === LOTH-specific types ===
 
-export type HourType = 'officeOfReadings' | 'lauds' | 'terce' | 'sext' | 'none' | 'vespers' | 'compline'
+export type HourType = 'lauds' | 'vespers' | 'compline'
 export type DayOfWeek = 'SUN' | 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT'
 
 export const HOUR_NAMES_MN: Record<HourType, string> = {
-  officeOfReadings: 'Уншлагын залбирал',
   lauds: 'Өглөөний даатгал залбирал',
-  terce: 'Гуравдугаар цагийн залбирал',
-  sext: 'Зургадугаар цагийн залбирал',
-  none: 'Есдүгээр цагийн залбирал',
   vespers: 'Оройн даатгал залбирал',
   compline: 'Шөнийн даатгал залбирал',
 }
@@ -94,11 +90,7 @@ export interface HourPsalmody {
 }
 
 export interface PsalterDay {
-  officeOfReadings: HourPsalmody
   lauds: HourPsalmody
-  terce: HourPsalmody
-  sext: HourPsalmody
-  none: HourPsalmody
   vespers: HourPsalmody
 }
 
@@ -151,25 +143,9 @@ export interface MarianAntiphonCandidate {
   page?: number
 }
 
-export interface PatristicReading {
-  author: string
-  source: string
-  text: string
-  page?: number
-}
-
-export interface OfficeOfReadingsPropers extends HourPropers {
-  firstReading?: { ref: string }
-  secondReading?: PatristicReading
-}
-
 export interface DayPropers {
   lauds?: HourPropers
   vespers?: HourPropers
-  officeOfReadings?: OfficeOfReadingsPropers
-  terce?: HourPropers
-  sext?: HourPropers
-  none?: HourPropers
   compline?: HourPropers
 }
 
@@ -185,7 +161,6 @@ export interface SanctoralEntry {
   lauds?: HourPropers
   vespers?: HourPropers
   vespers2?: HourPropers
-  officeOfReadings?: OfficeOfReadingsPropers
   replacesPsalter?: boolean
   properPsalmody?: {
     lauds?: HourPsalmody
@@ -244,7 +219,7 @@ export interface AssembledPsalm {
 
 export type HourSection =
   | { type: 'invitatory'; versicle: string; response: string; antiphon: string; psalm: { ref: string; title: string; epigraph?: string; stanzas: string[][] }; gloryBe: string; rubric?: string; page?: number }
-  | { type: 'openingVersicle'; versicle: string; response: string; gloryBe: string; alleluia?: string }
+  | { type: 'openingVersicle'; versicle: string; response: string; gloryBe: string; alleluia?: string; pairedWithInvitatory?: boolean }
   | { type: 'hymn'; text: string; page?: number; candidates?: HymnCandidate[]; selectedIndex?: number }
   | { type: 'psalmody'; psalms: AssembledPsalm[] }
   | { type: 'shortReading'; ref: string; bookMn: string; verses: { verse: number; text: string }[]; page?: number }
@@ -263,7 +238,6 @@ export type HourSection =
   | { type: 'ourFather' }
   | { type: 'concludingPrayer'; text: string; page?: number; alternateText?: string }
   | { type: 'dismissal'; priest: { greeting: { versicle: string; response: string }; blessing: { text: string; response: string }; dismissalVersicle: { versicle: string; response: string } }; individual: { versicle: string; response: string } }
-  | { type: 'patristicReading'; author: string; source: string; text: string; page?: number }
   | { type: 'examen'; text: string; page?: number }
   | { type: 'blessing'; text: string; response: string; page?: number }
   | { type: 'marianAntiphon'; title: string; text: string; page?: number; candidates?: MarianAntiphonCandidate[]; selectedIndex?: number }

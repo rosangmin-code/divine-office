@@ -21,7 +21,7 @@ const ROOT = path.resolve(__dirname, '..')
 
 const THRESHOLDS = {
   hymns:                    { min: 0.95 },
-  psalterPsalms:            { min: 0.30 },  // Office of Readings + minor hours uncovered
+  psalterPsalms:            { min: 0.95 },
   psalterShortReading:      { min: 0.95 },
   psalterResponsory:        { min: 0.95 },
   psalterIntercessions:     { min: 0.95 },

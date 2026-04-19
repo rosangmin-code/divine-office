@@ -213,7 +213,7 @@ function collectAllRefs() {
     if (!fs.existsSync(weekFile)) continue
     const data = JSON.parse(fs.readFileSync(weekFile, 'utf-8'))
     const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
-    const hours = ['officeOfReadings', 'lauds', 'terce', 'sext', 'none', 'vespers']
+    const hours = ['lauds', 'vespers']
 
     for (const day of days) {
       if (!data.days[day]) continue

@@ -2,31 +2,6 @@
   "week": 4,
   "days": {
     "SUN": {
-      "officeOfReadings": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 24:1-10",
-            "antiphon_key": "w4-sun-or-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 66:1-12",
-            "antiphon_key": "w4-sun-or-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 66:13-20",
-            "antiphon_key": "w4-sun-or-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
-      },
       "lauds": {
         "psalms": [
           {
@@ -96,81 +71,6 @@
         ],
         "intercessionsPage": 413
       },
-      "terce": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 118:15-21",
-            "antiphon_key": "w4-sun-terce-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 118:22-27a",
-            "antiphon_key": "w4-sun-terce-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 118:27b-29",
-            "antiphon_key": "w4-sun-terce-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
-      },
-      "sext": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 23:1-6",
-            "antiphon_key": "w4-sun-sext-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 76:2-7",
-            "antiphon_key": "w4-sun-sext-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 76:8-13",
-            "antiphon_key": "w4-sun-sext-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
-      },
-      "none": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 116:1-9",
-            "antiphon_key": "w4-sun-none-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 116:10-19",
-            "antiphon_key": "w4-sun-none-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 128:1-6",
-            "antiphon_key": "w4-sun-none-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
-      },
       "vespers": {
         "psalms": [
           {
@@ -236,31 +136,6 @@
       }
     },
     "MON": {
-      "officeOfReadings": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 73:1-14",
-            "antiphon_key": "w4-mon-or-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 73:15-28",
-            "antiphon_key": "w4-mon-or-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 74:1-11",
-            "antiphon_key": "w4-mon-or-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
-      },
       "lauds": {
         "psalms": [
           {
@@ -321,81 +196,6 @@
         "concludingPrayer": "Аяа, бүтээгч Тэнгэрбурхан минь, газар дэлхийг боловсруулахаар Та түүнийг бидэнд даатгаж өгсөн бөгөөд бидний хэрэгцээнд үйлчлэхээр нарыг соёрхсон билээ. Энэ өдөр Таны сүр жавхлан болон хөршийнхөө сайн сайхны төлөө өнгөрөөхөд бидэнд тусална уу. Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан Есүс Христ бидний Эзэн, Таны Хүүгээр уламжлан тийн болтугай.",
         "intercessionsPage": 431,
         "concludingPrayerPage": 431
-      },
-      "terce": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 119:1-8",
-            "antiphon_key": "w4-mon-terce-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 119:9-16",
-            "antiphon_key": "w4-mon-terce-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 119:17-24",
-            "antiphon_key": "w4-mon-terce-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
-      },
-      "sext": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 119:25-32",
-            "antiphon_key": "w4-mon-sext-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 119:33-40",
-            "antiphon_key": "w4-mon-sext-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 119:41-48",
-            "antiphon_key": "w4-mon-sext-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
-      },
-      "none": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 119:49-56",
-            "antiphon_key": "w4-mon-none-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 119:57-64",
-            "antiphon_key": "w4-mon-none-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 119:65-72",
-            "antiphon_key": "w4-mon-none-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
       },
       "vespers": {
         "psalms": [
@@ -466,31 +266,6 @@
       }
     },
     "TUE": {
-      "officeOfReadings": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 102:2-12",
-            "antiphon_key": "w4-tue-or-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 102:13-23",
-            "antiphon_key": "w4-tue-or-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 102:24-29",
-            "antiphon_key": "w4-tue-or-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
-      },
       "lauds": {
         "psalms": [
           {
@@ -554,81 +329,6 @@
         "concludingPrayer": "Аяа, Эзэн минь, Та бидэнд өгсөн итгэлээ нэмэгдүүлж, энэ шинэ өдрийн эхэнд Танд өргөх энэхүү магтаалыг тэнгэрийн оронд хураах зохистой ургацын дээж болгоно уу.",
         "intercessionsPage": 447,
         "concludingPrayerPage": 448
-      },
-      "terce": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 119:73-80",
-            "antiphon_key": "w4-tue-terce-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 119:81-88",
-            "antiphon_key": "w4-tue-terce-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 119:89-96",
-            "antiphon_key": "w4-tue-terce-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
-      },
-      "sext": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 119:97-104",
-            "antiphon_key": "w4-tue-sext-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 119:105-112",
-            "antiphon_key": "w4-tue-sext-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 119:113-120",
-            "antiphon_key": "w4-tue-sext-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
-      },
-      "none": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 119:121-128",
-            "antiphon_key": "w4-tue-none-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 119:129-136",
-            "antiphon_key": "w4-tue-none-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 119:137-144",
-            "antiphon_key": "w4-tue-none-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
       },
       "vespers": {
         "psalms": [
@@ -701,31 +401,6 @@
       }
     },
     "WED": {
-      "officeOfReadings": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 103:1-13",
-            "antiphon_key": "w4-wed-or-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 103:14-22",
-            "antiphon_key": "w4-wed-or-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 106:1-18",
-            "antiphon_key": "w4-wed-or-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
-      },
       "lauds": {
         "psalms": [
           {
@@ -789,81 +464,6 @@
         "concludingPrayer": "Аяа, Эцэг минь, Хурганы цусаар битүүмжилсэн ариун гэрээгээ санагтун. Өөрийн ард түмний гэм нүглийг уучилж, энэ шинэ өдөр биднийг авралд илүү ойртуулахыг зөвшөөрнө үү. Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан Есүс Христ бидний Эзэн, Таны Хүүгээр уламжлан тийн болтугай.",
         "intercessionsPage": 462,
         "concludingPrayerPage": 463
-      },
-      "terce": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 119:145-152",
-            "antiphon_key": "w4-wed-terce-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 119:153-160",
-            "antiphon_key": "w4-wed-terce-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 119:161-168",
-            "antiphon_key": "w4-wed-terce-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
-      },
-      "sext": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 119:169-176",
-            "antiphon_key": "w4-wed-sext-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 40:2-9",
-            "antiphon_key": "w4-wed-sext-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 40:10-18",
-            "antiphon_key": "w4-wed-sext-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
-      },
-      "none": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 53:1-7",
-            "antiphon_key": "w4-wed-none-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 54:3-9",
-            "antiphon_key": "w4-wed-none-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 55:2-9",
-            "antiphon_key": "w4-wed-none-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
       },
       "vespers": {
         "psalms": [
@@ -937,31 +537,6 @@
       }
     },
     "THU": {
-      "officeOfReadings": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 44:2-9",
-            "antiphon_key": "w4-thu-or-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 44:10-20",
-            "antiphon_key": "w4-thu-or-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 44:21-27",
-            "antiphon_key": "w4-thu-or-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
-      },
       "lauds": {
         "psalms": [
           {
@@ -1025,81 +600,6 @@
         "concludingPrayer": "Аяа, Эзэн минь, авралын билиг ухаан бидний зүрх сэтгэлийг гэгээрүүлэх болтугай. Ингэснээр айдас хүйдэс ба дайснуудынхаа хүчнээс чөлөөлөгдсөн бид амьдралынхаа бүх өдрүүдэд итгэлтэйгээр Танд үйлчлэх болно. Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан Есүс Христ бидний Эзэн, Таны Хүүгээр уламжлан тийн болтугай.",
         "intercessionsPage": 454,
         "concludingPrayerPage": 479
-      },
-      "terce": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 56:2-7",
-            "antiphon_key": "w4-thu-terce-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 56:8-14",
-            "antiphon_key": "w4-thu-terce-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 57:2-12",
-            "antiphon_key": "w4-thu-terce-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
-      },
-      "sext": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 58:2-12",
-            "antiphon_key": "w4-thu-sext-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 59:2-6",
-            "antiphon_key": "w4-thu-sext-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 59:7-18",
-            "antiphon_key": "w4-thu-sext-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
-      },
-      "none": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 60:3-7",
-            "antiphon_key": "w4-thu-none-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 60:8-14",
-            "antiphon_key": "w4-thu-none-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 61:2-9",
-            "antiphon_key": "w4-thu-none-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
       },
       "vespers": {
         "psalms": [
@@ -1170,31 +670,6 @@
       }
     },
     "FRI": {
-      "officeOfReadings": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 88:2-10",
-            "antiphon_key": "w4-fri-or-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 88:11-19",
-            "antiphon_key": "w4-fri-or-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 94:1-11",
-            "antiphon_key": "w4-fri-or-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
-      },
       "lauds": {
         "psalms": [
           {
@@ -1259,81 +734,6 @@
         "concludingPrayer": "Аяа, Эзэн минь, өглөө болж, нарны гэрэл тэнгэрийг дүүргэн гийгүүлдгийн адил Та бидний зүрх сэтгэлийг хайраараа дүүргэнэ үү. Таны хуулийг дээдлэн эрхэмлэснээрээ бид энэхэн амьдралдаа амар амгалан, мөн ирэх амьдралдаа цаглашгүй баяр баясгаланг эдлэх болтугай. Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан Есүс Христ бидний Эзэн, Таны Хүүгээр уламжлан тийн болтугай.",
         "intercessionsPage": 495,
         "concludingPrayerPage": 496
-      },
-      "terce": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 34:2-11",
-            "antiphon_key": "w4-fri-terce-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 34:12-23",
-            "antiphon_key": "w4-fri-terce-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 17:1-8",
-            "antiphon_key": "w4-fri-terce-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
-      },
-      "sext": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 17:9-15",
-            "antiphon_key": "w4-fri-sext-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 22:2-12",
-            "antiphon_key": "w4-fri-sext-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 22:13-22",
-            "antiphon_key": "w4-fri-sext-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
-      },
-      "none": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 22:23-32",
-            "antiphon_key": "w4-fri-none-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 23:1-6",
-            "antiphon_key": "w4-fri-none-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 40:2-14",
-            "antiphon_key": "w4-fri-none-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
       },
       "vespers": {
         "psalms": [
@@ -1405,31 +805,6 @@
       }
     },
     "SAT": {
-      "officeOfReadings": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 105:1-15",
-            "antiphon_key": "w4-sat-or-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 105:16-27",
-            "antiphon_key": "w4-sat-or-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 105:28-45",
-            "antiphon_key": "w4-sat-or-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
-      },
       "lauds": {
         "psalms": [
           {
@@ -1492,81 +867,6 @@
         "concludingPrayer": "Аяа, үнэн гэрлийн сүр жавхлан, хэзээ ч дуусахгүй өдөр болох төгс хүчит, үүрд мөнхийн амьд Тэнгэрбурхан минь, Та айсуй гэгээн гэрлээрээ гэм нүглийн харанхуйг оюун сэтгэлээс минь зайлуулж өгнө үү. Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан Есүс Христ бидний Эзэн, Таны Хүүгээр уламжлан тийн болтугай.",
         "intercessionsPage": 510,
         "concludingPrayerPage": 511
-      },
-      "terce": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 75:2-11",
-            "antiphon_key": "w4-sat-terce-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 76:2-7",
-            "antiphon_key": "w4-sat-terce-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 76:8-13",
-            "antiphon_key": "w4-sat-terce-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
-      },
-      "sext": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 78:1-8",
-            "antiphon_key": "w4-sat-sext-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 78:9-16",
-            "antiphon_key": "w4-sat-sext-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 78:17-31",
-            "antiphon_key": "w4-sat-sext-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
-      },
-      "none": {
-        "psalms": [
-          {
-            "type": "psalm",
-            "ref": "Psalm 78:32-41",
-            "antiphon_key": "w4-sat-none-ps1",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 78:42-55",
-            "antiphon_key": "w4-sat-none-ps2",
-            "default_antiphon": "",
-            "gloria_patri": true
-          },
-          {
-            "type": "psalm",
-            "ref": "Psalm 78:56-72",
-            "antiphon_key": "w4-sat-none-ps3",
-            "default_antiphon": "",
-            "gloria_patri": true
-          }
-        ]
       },
       "vespers": {
         "psalms": [

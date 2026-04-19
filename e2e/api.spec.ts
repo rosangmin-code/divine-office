@@ -56,10 +56,13 @@ test.describe('GET /api/loth/[date]/[hour]', () => {
     expect(body.sections).toBeInstanceOf(Array)
     expect(body.sections.length).toBeGreaterThan(0)
 
-    // Lauds (first hour of day) uses invitatory as opening; openingVersicle is omitted per GILH §266.
+    // Lauds (first hour of day) leads with the invitatory; the openingVersicle
+    // follows as a paired collapse fallback (GILH §266 — only one renders).
     expect(body.sections[0].type).toBe('invitatory')
     const types = body.sections.map((s: { type: string }) => s.type)
-    expect(types).not.toContain('openingVersicle')
+    expect(types[1]).toBe('openingVersicle')
+    const pairedOv = body.sections[1]
+    expect(pairedOv.pairedWithInvitatory).toBe(true)
 
     // Must contain hymn, psalmody, dismissal
     expect(types).toContain('hymn')
@@ -110,21 +113,6 @@ test.describe('GET /api/loth/[date]/[hour]', () => {
     // No intercessions or Our Father
     expect(types).not.toContain('intercessions')
     expect(types).not.toContain('ourFather')
-  })
-
-  // Skipped until terce is added to VALID_HOURS (data pending).
-  test.skip('Terce (minor hour): no canticle, no intercessions, no ourFather', async ({ request }) => {
-    const res = await request.get(`/api/loth/${DATES.ordinaryWeekday}/terce`)
-    expect(res.status()).toBe(200)
-
-    const body = await res.json()
-    const types = body.sections.map((s: { type: string }) => s.type)
-
-    expect(types).not.toContain('gospelCanticle')
-    expect(types).not.toContain('intercessions')
-    expect(types).not.toContain('ourFather')
-    expect(types).toContain('psalmody')
-    expect(types).toContain('dismissal')
   })
 
   test('Compline uses fixed weekly cycle (same psalms regardless of psalter week)', async ({ request }) => {

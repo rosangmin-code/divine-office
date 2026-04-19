@@ -25,11 +25,11 @@ test.describe('Vespers (Evening Prayer) page', () => {
   test('has hymn, psalmody, dismissal', async ({ page }) => {
     await expect(page.locator('[aria-label="Магтуу"]')).toBeVisible()
     await expect(page.locator('[data-role="antiphon"]').first()).toBeVisible()
-    await expect(page.locator('[aria-label="Илгээлт"]')).toBeVisible()
+    await expect(page.locator('[aria-label="Төгсгөл"]')).toBeVisible()
   })
 
   test('has intercessions section', async ({ page }) => {
-    await expect(page.getByText('Гүйлтын залбирал')).toBeVisible()
+    await expect(page.getByText('Гуйлтын залбирал')).toBeVisible()
   })
 
   test('has concluding prayer section', async ({ page }) => {

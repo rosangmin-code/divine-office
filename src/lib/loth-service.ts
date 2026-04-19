@@ -242,9 +242,7 @@ export function getHoursSummary(dateStr: string): {
   if (!day) return null
 
   const hours: { type: HourType; nameMn: string }[] = [
-    // officeOfReadings: 교부 독서 데이터 미완성으로 임시 비활성화
     { type: 'lauds', nameMn: hourNamesMn.lauds },
-    // terce, sext, none: 낮기도 propers 데이터 미완성으로 임시 비활성화
     { type: 'vespers', nameMn: hourNamesMn.vespers },
     { type: 'compline', nameMn: hourNamesMn.compline },
   ]

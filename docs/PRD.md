@@ -45,7 +45,7 @@
 | 모듈 | 문서 | FR 범위 | 상태 요약 |
 |------|------|---------|-----------|
 | 전례력 | [calendar.md](modules/calendar.md) | FR-001~006 | 전체 완료 |
-| 기도시간 조립 | [hour-assembly.md](modules/hour-assembly.md) | FR-010~016 | 아침/저녁/끝기도 완료. 낮기도는 assembler 구현됨이나 propers 데이터 미비로 **API/UI 비활성화**. 독서기도는 미구현 |
+| 기도시간 조립 | [hour-assembly.md](modules/hour-assembly.md) | FR-010~012 | 아침/저녁/끝기도 전체 완료 |
 | 4주 시편집 | [psalter.md](modules/psalter.md) | FR-020~023 | 전체 완료 |
 | 고유문 | [propers.md](modules/propers.md) | FR-030~032, FR-040~045, FR-050~051 | 대부분 완료 (성인축일 확장 미완료) |
 | 찬미가 | [hymns.md](modules/hymns.md) | FR-060~067 | 전체 완료 |
@@ -98,9 +98,9 @@
                                           │
                                           ▼
                               getAssembler(hour)(ctx)
-                         ┌────────┬────────┬──────────┐
-                         ▼        ▼        ▼          ▼
-                    assembleLauds  assembleVespers  assembleCompline  assembleDaytimePrayer
+                         ┌────────┬────────┐
+                         ▼        ▼        ▼
+                    assembleLauds  assembleVespers  assembleCompline
                                           │
                                           ▼
                                    AssembledHour
@@ -141,14 +141,13 @@ src/app/
 | hours/lauds | `src/lib/hours/lauds.ts` | 아침기도 조립기 |
 | hours/vespers | `src/lib/hours/vespers.ts` | 저녁기도 조립기 |
 | hours/compline | `src/lib/hours/compline.ts` | 끝기도 조립기 |
-| hours/daytime-prayer | `src/lib/hours/daytime-prayer.ts` | 낮기도 조립기 (terce/sext/none 공유) |
 | hours/shared | `src/lib/hours/shared.ts` | 공통 유틸: 시편 해석, 통상문 로드, 요일 변환 |
 
 ### 4.4 UI 컴포넌트
 
 | 컴포넌트 | 역할 |
 |----------|------|
-| PrayerRenderer | AssembledHour의 sections 배열을 순회하며 16가지 섹션 타입 렌더링 |
+| PrayerRenderer | AssembledHour의 sections 배열을 순회하며 15가지 섹션 타입 렌더링 |
 | PsalmBlock | 개별 시편/찬가 블록 (교송, 제목, 절, 영광송) |
 | DatePicker | 날짜 선택 입력 |
 | HourCardList | 기도시간 카드 목록 (단순 링크 목록, 시간 기반 상태 표시 없음) |
@@ -164,12 +163,12 @@ src/app/
 | 타입 | 설명 |
 |------|------|
 | `LiturgicalDayInfo` | 날짜, 전례일명(`name` 영어·내부용/`nameMn` 몽골어·UI 표시용), 시기, 색상, 등급, 주일주기, 평일주기, 시편집주간 |
-| `HourType` | `'officeOfReadings' \| 'lauds' \| 'terce' \| 'sext' \| 'none' \| 'vespers' \| 'compline'` |
+| `HourType` | `'lauds' \| 'vespers' \| 'compline'` |
 | `PsalmEntry` | 시편/찬가 참조, 교송 키, 기본 교송, 영광송 포함 여부 |
 | `HourPropers` | 교송 오버라이드, 짧은 독서, 화답, 복음찬가교송, 중보기도, 마침기도, 찬미가 |
 | `SanctoralEntry` | 성인축일 고유문 (lauds/vespers/vespers2, 고유 시편 교체 옵션) |
 | `AssembledHour` | 최종 조립 결과: hourType, 날짜, 전례일 정보, sections 배열 |
-| `HourSection` | 16가지 discriminated union: invitatory, hymn, psalmody, shortReading, responsory, gospelCanticle, intercessions, ourFather, concludingPrayer, dismissal, patristicReading, examen, blessing, marianAntiphon. hymn에 `candidates`/`selectedIndex`, marianAntiphon에 `candidates?: MarianAntiphonCandidate[]`/`selectedIndex?`, concludingPrayer에 `alternateText?`, intercessions에 파싱된 `introduction?`/`refrain?`/`petitions?: { versicle; response? }[]`/`closing?` 포함 |
+| `HourSection` | 15가지 discriminated union: invitatory, openingVersicle, hymn, psalmody, shortReading, responsory, gospelCanticle, intercessions, ourFather, concludingPrayer, dismissal, examen, blessing, marianAntiphon. hymn에 `candidates`/`selectedIndex`, marianAntiphon에 `candidates?: MarianAntiphonCandidate[]`/`selectedIndex?`, concludingPrayer에 `alternateText?`, intercessions에 파싱된 `introduction?`/`refrain?`/`petitions?: { versicle; response? }[]`/`closing?` 포함 |
 
 ---
 
@@ -182,16 +181,12 @@ src/app/
 | 아침기도 (Lauds) | **완성** | 연중시기 전체 (4주 공통문 + 5개 계절 고유문) |
 | 저녁기도 (Vespers) | **완성** | 연중시기 전체 (4주 공통문 + 5개 계절 고유문) |
 | 끝기도 (Compline) | **완성** | 7일 고정 주기, 양심성찰~성모교송까지 전체 |
-| 낮기도 (Terce/Sext/None) | **비활성화** | `assembleDaytimePrayer` 조립기는 구현됨 (시편+찬미가 기본). 짧은독서/화답/마침기도 데이터 미완성으로 API `VALID_HOURS` 및 홈 `getHoursSummary()`에서 제외됨 — 사용자 접근 불가 |
-| 독서기도 (Office of Readings) | **비활성화** | 타입(`OfficeOfReadingsPropers`, `PatristicReading`)만 정의, assembler 미등록. API `VALID_HOURS` 및 홈 `getHoursSummary()`에서 제외됨 |
 
 ### 6.2 남은 작업
 
 | 우선순위 | 작업 | 관련 ID |
 |----------|------|---------|
 | P1 | 성인축일 고유문 확장 (14개 → 로마 보편 달력 전체) | FR-045 |
-| P2 | 낮기도 짧은 독서/화답/마침기도 데이터 보충 **→ 완료 후 `VALID_HOURS`/`getHoursSummary()` 재활성화** | FR-014 |
-| P2 | 독서기도 assembler 구현 및 교부 독서 데이터 확보 **→ 완료 후 `VALID_HOURS`/`getHoursSummary()` 재활성화** | FR-015 |
 | P2 | `vercel.ts` 프로젝트 설정 파일 추가 (현재 Vercel 기본 감지 의존) | NFR-003 |
 | P3 | Triduum (성삼일) 특별 전례(수난예식·부활성야) 처리 — 성주간 평일 기도문(성목·성금·성토 lauds/vespers)은 `lent.json weeks.6`에 구현 | - |
 | ~~P3~~ | ~~오프라인 지원 (Service Worker / PWA)~~ → 구현 완료 | FR-110~114 |
@@ -211,7 +206,7 @@ src/app/
 | FR-127 | **초대송 루브릭 렌더링**: `invitatory.json`의 `rubric` 필드(대체 시편 선택 안내)를 초대송 섹션 상단에 빨간색 이탤릭으로 표시한다. | UI | P1 | 완료 |
 | FR-128 | **Gloria Patri 생략 루브릭**: `gloriaPatri: false`인 찬가(주일 아침기도 주1·3의 Benedicite, `Daniel 3:57-88, 56`)에서 "Эцэг, Хүү, Ариун Сүнсэнд жавхланг... уншихгүй" 빨간색 루브릭 텍스트를 표시한다. 그 외 모든 시편·찬가는 영광송을 낭송한다(GILH §123, 본문이 이미 삼위일체 송영으로 끝나는 Benedicite만 예외). | UI | P1 | 완료 |
 | FR-129 | **조건부 Alleluia 분리**: sanctoral 고유문에서 `(Аллэлуяа!)` 조건부 루브릭을 교송 텍스트에서 분리하고 `alleluiaConditional: true` 필드로 표현한다. | 데이터 | P1 | 완료 |
-| FR-150 | **중보기도 역할 구조화 (Гүйлтын залбирал)**: 중보기도 섹션을 파싱하여 도입부와 화답 후렴(amber 박스 + italic)을 분리하고, 각 청원의 부제 몫(versicle)과 회중 응답을 다른 줄로 나눠 렌더링한다. 응답 줄 앞에는 PDF 원문과 동일하게 빨간색 `- ` 접두사를 붙이며 별도의 `R.`/`Д.` 역할 라벨은 사용하지 않는다. 구분자 `" - "`(시편집) 및 `" — "`(계절/성인 고유문) 모두 인식하며, `"Тэнгэр дэх Эцэг минь ээ..."` 마침 힌트는 italic 문단으로 분리한다. 빨간색 dash는 §12.1 루브릭 규칙(`text-red-700 dark:text-red-400`)을 따른다. 파싱 실패 시 기존 flat 리스트 폴백. | UI / 데이터 | P1 | 완료 |
+| FR-150 | **중보기도 역할 구조화 (Гуйлтын залбирал)**: 중보기도 섹션을 파싱하여 도입부와 화답 후렴(amber 박스 + italic)을 분리하고, 각 청원의 부제 몫(versicle)과 회중 응답을 다른 줄로 나눠 렌더링한다. 응답 줄 앞에는 PDF 원문과 동일하게 빨간색 `- ` 접두사를 붙이며 별도의 `R.`/`Д.` 역할 라벨은 사용하지 않는다. 구분자 `" - "`(시편집) 및 `" — "`(계절/성인 고유문) 모두 인식하며, `"Тэнгэр дэх Эцэг минь ээ..."` 마침 힌트는 italic 문단으로 분리한다. 빨간색 dash는 §12.1 루브릭 규칙(`text-red-700 dark:text-red-400`)을 따른다. 파싱 실패 시 기존 flat 리스트 폴백. | UI / 데이터 | P1 | 완료 |
 
 ### 12.2 데이터 품질 수정 (2026-04-16)
 
@@ -239,7 +234,8 @@ src/app/
 | FR-017 | **PDF 페이지 참조 표시**: 각 기도문 섹션(시편, 교송, 찬미가, 짧은독서, 화답, 복음찬가교송, 중보기도, 마침기도 등)에 원본 PDF의 페이지 번호를 루브리카 스타일로 표시한다. 형식: `(х. N)` — 빨간색 60% 투명도. 배치: **섹션 헤더형** (시편 참조·마침기도 제목 등) 은 헤더 옆, **후렴형(antiphon)** 은 후렴 텍스트 **끝**(`Шад дуулал N: 텍스트... (х. N)`) 에 표시해 헤더 프리픽스의 흐름을 깨지 않는다. | UI | P2 | 완료 |
 | FR-017g | **후렴 페이지 표시**: 시편 후렴(`Шад дуулал`), 복음찬가 후렴(`Шад магтаал`), 초대송 후렴 모두 본문 끝에 `(х. N)` 를 표시한다. 시편 후렴은 부모 시편 페이지, 복음찬가·초대송 후렴은 시기별 propers 의 자체 페이지(`gospelCanticleAntiphonPage` / invitatory `section.page`) 를 사용한다. 이유: 후렴은 시기마다 본문이 달라 동일 복음찬가/초대송이라도 페이지가 바뀐다. | UI | P2 | 완료 |
 | FR-017h | **시편 마침기도 페이지 표시 (Дууллыг төгсгөх залбирал)**: 각 시편 블록 뒤 post-Gloria Patri 오라치오 제목 옆에 `(х. N)` 표시. `psalter-texts.json` 의 entry 별 `psalmPrayerPage` 병행 키(88/88 자동 주입), `AssembledPsalm.psalmPrayerPage` 로 전파. 이유: 마침기도는 시편 본문과 다른 페이지에 위치하며 사용자가 종이책에서 찾기 위해 별도 페이지 참조가 필요하다. | UI / 데이터 | P2 | 완료 |
-| FR-017a | **시편 주간 페이지 주석**: `psalter/week-{1..4}.json` 시편/교독성가/짧은독서/응송에 `page` 필드 + `intercessionsPage` 병행 키. 시편(주요시간) 95%↑ / 짧은독서·응송 95%↑ / 중보기도 85%↑. (시편의 비주요시간 — 독서기도·삼시·육시·구시 — 은 원문 페이지 헤더가 누락된 곳이 많아 30%↑로 한정.) | 데이터 | P2 | 완료 |
+| FR-017i | **페이지 번호 클릭 시 PDF 열기**: `PageRef` 는 `(х. N)` 을 클릭 가능한 링크(`<a target="_blank">`)로 렌더링하며, 새 탭에서 `public/psalter.pdf` 의 해당 페이지(`#page=M`)를 연다. PDF 가 2-up landscape 레이아웃(한 PDF 페이지에 책 좌/우 두 페이지)이므로 매핑은 `pdfPage = Math.floor(bookPage / 2) + 1` 이며, 공식과 자산 경로는 `src/lib/pdf-page.ts` 의 `bookPageToPdfPage()` / `pdfHref()` 에 집중된다. 링크 표시 여부는 `showPageRefs` 토글(FR-018) 에 의해 제어되며, 링크 요소는 `data-role="page-ref-link"` 마커를 가진다. | UI | P2 | 완료 |
+| FR-017a | **시편 주간 페이지 주석**: `psalter/week-{1..4}.json` 시편/교독성가/짧은독서/응송에 `page` 필드 + `intercessionsPage` 병행 키. 시편 95%↑ / 짧은독서·응송 95%↑ / 중보기도 85%↑. | 데이터 | P2 | 완료 |
 | FR-017b | **시즌 propers 페이지 주석**: `propers/{advent,christmas,easter,lent,ordinary-time}.json` 의 마침기도·복음찬가교송·중보기도·짧은독서·응송 각 객체/병행 키에 페이지. 마침기도 99%↑, 응송 85%↑. | 데이터 | P2 | 완료 |
 | FR-017c | **성인력 페이지 주석**: `sanctoral/{solemnities,feasts,memorials,optional-memorials}.json` 의 마침기도/복음찬가교송 등에 페이지. 마침기도 90%↑, 복음찬가교송 80%↑. | 데이터 | P2 | 완료 |
 | FR-017d | **찬미가 페이지 주석**: `ordinarium/hymns.json` 의 본문 보유 entry 95%↑에 `page` 필드. (본문 미입력 entry 는 추측 금지 원칙으로 비워둠.) | 데이터 | P2 | 완료 |
@@ -260,9 +256,10 @@ src/app/
 
 ### 7.3 구현 상세
 
-- **데이터 스키마**: `PsalmEntry`, `ShortReading`, `Responsory`, `AssembledPsalm`, `PatristicReading`, `HourSection` variant 들에 `page?: number` 필드. `AssembledPsalm` 은 추가로 `psalmPrayerPage?` (FR-017h) 보유. `HourPropers` 에 `hymnPage?`, `intercessionsPage?`, `concludingPrayerPage?`, `gospelCanticleAntiphonPage?`, `alternativeConcludingPrayerPage?` 추가. 시편 주간 JSON 의 마침기도·중보기도는 평면 문자열/배열 옆에 `concludingPrayerPage` / `intercessionsPage` **병행 키**(parallel key) 로 저장(하위 호환). `psalter-texts.json` 은 entry 별 `psalmPrayerPage` 병행 키.
+- **데이터 스키마**: `PsalmEntry`, `ShortReading`, `Responsory`, `AssembledPsalm`, `HourSection` variant 들에 `page?: number` 필드. `AssembledPsalm` 은 추가로 `psalmPrayerPage?` (FR-017h) 보유. `HourPropers` 에 `hymnPage?`, `intercessionsPage?`, `concludingPrayerPage?`, `gospelCanticleAntiphonPage?`, `alternativeConcludingPrayerPage?` 추가. 시편 주간 JSON 의 마침기도·중보기도는 평면 문자열/배열 옆에 `concludingPrayerPage` / `intercessionsPage` **병행 키**(parallel key) 로 저장(하위 호환). `psalter-texts.json` 은 entry 별 `psalmPrayerPage` 병행 키.
 - **설정 시스템**: `src/lib/settings.tsx` 의 `SettingsProvider` + `useSettings()` hook. localStorage 키 `loth-settings`.
 - **UI**: `src/components/page-ref.tsx` — `PageRef` client component. `src/app/settings/page.tsx` "Хуудасны лавлагаа" switch(`role="switch"`). `AntiphonBox` (prayer-renderer.tsx) 는 `page?: number` prop 을 받아 후렴 텍스트 뒤에 PageRef 를 붙인다 — psalm-block / invitatory-section / gospelCanticle 섹션 모두 동일 경로로 전파 (FR-017g).
+- **PDF 자산 및 링크 (FR-017i)**: `public/psalter.pdf` (원본 `Four-Week psalter.- 2025.pdf` 사본, 4.0MB, 485 pages). 페이지 매핑 함수는 `src/lib/pdf-page.ts` 의 `bookPageToPdfPage()` / `pdfHref()` 로 단일화. 2-up landscape 레이아웃이므로 각 PDF 페이지에 책 좌/우 두 페이지가 함께 렌더되며, 사용자는 해당 확대 뷰에서 원하는 반쪽을 즉시 식별할 수 있다. `PageRef` 는 `<a href="/psalter.pdf#page=M" target="_blank" rel="noopener noreferrer" data-role="page-ref-link">` 로 렌더링되어 브라우저 내장 PDF 뷰어(또는 모바일 기본 PDF 핸들러)에서 새 탭으로 열린다.
 - **추출 파이프라인** (`scripts/`):
   - `reextract-pdf-pages.sh` — `Four-Week psalter.- 2025.pdf` 를 PDF 페이지 단위로 순회해 LEFT/RIGHT 반쪽을 `pdftotext -x -W -H` 로 따로 추출, 각 반쪽 앞에 인쇄 페이지 번호(`2N-2` / `2N-1`)를 bare integer 라인으로 붙여 `parsed_data/full_pdf.txt` 생성 (970개 페이지 마커, ~25초). 기존 단별 추출의 마커 누락(±1 오차) 문제를 근본 해결.
   - `lib/page-fingerprint.js` — 공용 토큰 지문 매칭 모듈 (`tokenize`, `buildSourceIndex`, `buildSourceIndexMulti`, `buildFirstTokenIndex`, `lookupPage`, `countPageFields`).
@@ -373,8 +370,6 @@ src/app/
 | 아침기도 | Өглөөний залбирал | Lauds | 오전 주요 기도시간 |
 | 저녁기도 | Оройн залбирал | Vespers | 오후 주요 기도시간 |
 | 끝기도 | Шөнийн залбирал | Compline | 취침 전 기도 |
-| 낮기도 | Цагийн залбирал | Terce/Sext/None | 3시/6시/9시 기도 |
-| 독서기도 | Уншлагын залбирал | Office of Readings | 성경 + 교부 독서 |
 | 시편집 | - | Psalter | 4주 주기 시편 배정표 |
 | 고유문 | - | Propers | 계절/축일별 고유 기도문 |
 | 공통문 | - | Commons | 4주 주기 기본 기도문 |
