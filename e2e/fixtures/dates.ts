@@ -5,6 +5,11 @@ export const DATES = {
   // Ordinary Time Sunday
   ordinarySunday: '2026-02-08',
 
+  // Ordinary Time Saturday — the day BEFORE ordinarySunday.
+  // FR-011: Saturday vespers must use next Sunday's vespers propers
+  // (liturgical 1st Vespers of Sunday).
+  ordinarySaturday: '2026-02-07',
+
   // Advent weekday (VIOLET)
   adventWeekday: '2025-12-04', // Advent Week 1 Thursday (no memorial)
 

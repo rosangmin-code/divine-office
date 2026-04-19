@@ -79,6 +79,55 @@ test.describe('Special liturgical days', () => {
     expect(body.sections.length).toBeGreaterThan(0)
   })
 
+  // @fr FR-011
+  test('Saturday vespers uses next Sunday propers (FR-011, 1st Vespers)', async ({ request }) => {
+    const satRes = await request.get(`/api/loth/${DATES.ordinarySaturday}/vespers`)
+    const sunRes = await request.get(`/api/loth/${DATES.ordinarySunday}/vespers`)
+
+    expect(satRes.status()).toBe(200)
+    expect(sunRes.status()).toBe(200)
+
+    const sat = await satRes.json()
+    const sun = await sunRes.json()
+
+    // Core propers (concluding prayer + gospel canticle antiphon) should
+    // match Sunday's. In OT the Saturday has no self-vespers data, so the
+    // fallback in loth-service.ts at line 92 kicks in.
+    const satCp = sat.sections.find((s: { type: string }) => s.type === 'concludingPrayer')
+    const sunCp = sun.sections.find((s: { type: string }) => s.type === 'concludingPrayer')
+    expect(satCp).toBeTruthy()
+    expect(sunCp).toBeTruthy()
+    expect(satCp.text).toBe(sunCp.text)
+
+    const satAnt = sat.sections.find((s: { type: string }) => s.type === 'gospelCanticle')
+    const sunAnt = sun.sections.find((s: { type: string }) => s.type === 'gospelCanticle')
+    expect(satAnt).toBeTruthy()
+    expect(sunAnt).toBeTruthy()
+    if (satAnt.antiphon && sunAnt.antiphon) {
+      expect(satAnt.antiphon).toBe(sunAnt.antiphon)
+    }
+  })
+
+  // @fr FR-011
+  test('Saturday vespers differs from regular Saturday LAUDS (sanity: fallback is hour-scoped)', async ({ request }) => {
+    const satVespersRes = await request.get(`/api/loth/${DATES.ordinarySaturday}/vespers`)
+    const satLaudsRes = await request.get(`/api/loth/${DATES.ordinarySaturday}/lauds`)
+
+    expect(satVespersRes.status()).toBe(200)
+    expect(satLaudsRes.status()).toBe(200)
+
+    const vespers = await satVespersRes.json()
+    const lauds = await satLaudsRes.json()
+
+    // Concluding prayer text should differ — vespers uses next-Sunday fallback,
+    // lauds uses the Saturday's own psalter commons.
+    const vCp = vespers.sections.find((s: { type: string }) => s.type === 'concludingPrayer')
+    const lCp = lauds.sections.find((s: { type: string }) => s.type === 'concludingPrayer')
+    expect(vCp).toBeTruthy()
+    expect(lCp).toBeTruthy()
+    expect(vCp.text).not.toBe(lCp.text)
+  })
+
   test('Advent Dec 20: date-keyed propers differ from regular Advent weekday', async ({ request }) => {
     // Regular Advent weekday
     const regularRes = await request.get(`/api/loth/${DATES.adventWeekday}/vespers`)

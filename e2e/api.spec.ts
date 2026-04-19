@@ -37,9 +37,16 @@ test.describe('GET /api/calendar/date/[date]', () => {
     expect(body.color).toBe('GREEN')
   })
 
-  test('returns 404 for invalid date', async ({ request }) => {
+  test('returns 400 for malformed date string', async ({ request }) => {
     const res = await request.get('/api/calendar/date/invalid')
-    expect(res.status()).toBe(404)
+    expect(res.status()).toBe(400)
+    const body = await res.json()
+    expect(body.error).toContain('Invalid date')
+  })
+
+  test('returns 400 for impossible calendar date (Feb 30)', async ({ request }) => {
+    const res = await request.get('/api/calendar/date/2026-02-30')
+    expect(res.status()).toBe(400)
   })
 })
 
@@ -154,8 +161,10 @@ test.describe('GET /api/loth/[date]/[hour]', () => {
     expect(body.error).toContain('Invalid hour')
   })
 
-  test('returns 404 for invalid date', async ({ request }) => {
+  test('returns 400 for malformed date string', async ({ request }) => {
     const res = await request.get('/api/loth/invalid-date/lauds')
-    expect(res.status()).toBe(404)
+    expect(res.status()).toBe(400)
+    const body = await res.json()
+    expect(body.error).toContain('Invalid date')
   })
 })
