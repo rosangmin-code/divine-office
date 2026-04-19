@@ -1,5 +1,7 @@
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import { assembleHour } from '@/lib/loth-service'
+import { isValidDateStr } from '@/lib/date-validation'
 import { PrayerRenderer } from '@/components/prayer-renderer'
 import { SettingsLink } from '@/components/settings-link'
 import { Footer } from '@/components/footer'
@@ -31,6 +33,10 @@ export default async function PrayPage({
 }) {
   const { date, hour: hourParam } = await params
   const { celebration } = await searchParams
+
+  if (!isValidDateStr(date)) {
+    notFound()
+  }
 
   if (!VALID_HOURS.includes(hourParam as HourType)) {
     return (

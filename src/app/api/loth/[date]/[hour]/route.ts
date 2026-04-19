@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { assembleHour } from '@/lib/loth-service'
+import { isValidDateStr } from '@/lib/date-validation'
 import type { HourType } from '@/lib/types'
 
 const VALID_HOURS: HourType[] = ['lauds', 'vespers', 'compline']
@@ -9,6 +10,13 @@ export async function GET(
   { params }: { params: Promise<{ date: string; hour: string }> },
 ) {
   const { date, hour } = await params
+
+  if (!isValidDateStr(date)) {
+    return NextResponse.json(
+      { error: `Invalid date: ${date}. Expected YYYY-MM-DD.` },
+      { status: 400 },
+    )
+  }
 
   if (!VALID_HOURS.includes(hour as HourType)) {
     return NextResponse.json(
