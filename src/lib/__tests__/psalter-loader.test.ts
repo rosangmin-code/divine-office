@@ -52,3 +52,34 @@ describe('resolvePsalm — psalmPrayerPage propagation', () => {
     expect(typeof result.psalmPrayerPage).toBe('number')
   })
 })
+
+describe('resolvePsalm — missing-text failure', () => {
+  it('throws when neither stanzas nor Bible lookup yield any verses', async () => {
+    // Reference an out-of-range psalm that exists in neither psalter-texts.json
+    // nor the Bible JSONL. Previously this returned { verses: [] } silently and
+    // the UI rendered a blank psalm; now we surface it so loth-service can
+    // log it and emit a placeholder via Promise.allSettled.
+    const entry: PsalmEntry = {
+      type: 'psalm',
+      ref: 'Psalm 999:1-5',
+      antiphon_key: 'nonexistent',
+      default_antiphon: 'test',
+      gloria_patri: true,
+    }
+    await expect(resolvePsalm(entry, {})).rejects.toThrow(/no text resolved/)
+  })
+
+  it('still resolves normally for a valid reference', async () => {
+    const entry: PsalmEntry = {
+      type: 'psalm',
+      ref: 'Psalm 63:2-9',
+      antiphon_key: 'w1-sun-lauds-ps1',
+      default_antiphon: '',
+      gloria_patri: true,
+    }
+    const result = await resolvePsalm(entry, {})
+    // Either stanzas (preferred) or verses must be non-empty.
+    const hasContent = (result.stanzas?.length ?? 0) > 0 || result.verses.length > 0
+    expect(hasContent).toBe(true)
+  })
+})

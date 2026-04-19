@@ -1,0 +1,70 @@
+import type { AssembledPsalm, PsalmEntry } from '../../types'
+import { parseScriptureRef } from '../../scripture-ref-parser'
+import { lookupRef } from '../../bible-loader'
+import { loadPsalterTexts } from '../loaders'
+
+/**
+ * Resolve a psalm entry into an AssembledPsalm with actual verse text.
+ * Prefers psalter-texts.json (PDF source with stanza structure) over Bible JSONL.
+ */
+export async function resolvePsalm(
+  entry: PsalmEntry,
+  antiphonOverrides?: Record<string, string>,
+): Promise<AssembledPsalm> {
+  const antiphon =
+    antiphonOverrides?.[entry.antiphon_key] ?? entry.default_antiphon ?? ''
+
+  const psalterTexts = loadPsalterTexts()
+  const psalmText = psalterTexts[entry.ref]
+
+  if (psalmText && psalmText.stanzas.length > 0) {
+    return {
+      psalmType: entry.type,
+      reference: entry.ref,
+      title: entry.title,
+      antiphon,
+      stanzas: psalmText.stanzas,
+      verses: [],
+      gloriaPatri: entry.gloria_patri,
+      psalmPrayer: psalmText.psalmPrayer,
+      psalmPrayerPage: psalmText.psalmPrayerPage,
+      page: entry.page,
+    }
+  }
+
+  const refs = parseScriptureRef(entry.ref)
+  const allVerses: { verse: number; text: string }[] = []
+
+  for (const ref of refs) {
+    const result = lookupRef(ref)
+    if (result) {
+      allVerses.push(...result.texts)
+    }
+  }
+
+  // Fail loudly when neither the PDF-sourced stanzas nor the Bible fallback
+  // produced any text. Returning { verses: [] } would silently render a
+  // blank psalm in the UI; throwing lets loth-service's Promise.allSettled
+  // catch it and substitute a placeholder so the rest of the hour still
+  // renders AND the error surfaces in server logs for the data owner.
+  if (allVerses.length === 0) {
+    throw new Error(
+      `[resolvePsalm] no text resolved for "${entry.ref}" — ` +
+        `psalter-texts.json ${
+          psalmText ? 'has entry but stanzas is empty' : 'has no entry'
+        }, Bible lookup returned 0 verses`,
+    )
+  }
+
+  return {
+    psalmType: entry.type,
+    reference: entry.ref,
+    title: entry.title,
+    antiphon,
+    verses: allVerses,
+    gloriaPatri: entry.gloria_patri,
+    psalmPrayer: psalmText?.psalmPrayer,
+    psalmPrayerPage: psalmText?.psalmPrayerPage,
+    page: entry.page,
+  }
+}
