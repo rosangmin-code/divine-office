@@ -168,7 +168,7 @@ src/app/
 | `HourPropers` | 교송 오버라이드, 짧은 독서, 화답, 복음찬가교송, 중보기도, 마침기도, 찬미가 |
 | `SanctoralEntry` | 성인축일 고유문 (lauds/vespers/vespers2, 고유 시편 교체 옵션) |
 | `AssembledHour` | 최종 조립 결과: hourType, 날짜, 전례일 정보, sections 배열 |
-| `HourSection` | 15가지 discriminated union: invitatory, openingVersicle, hymn, psalmody, shortReading, responsory, gospelCanticle, intercessions, ourFather, concludingPrayer, dismissal, examen, blessing, marianAntiphon. hymn에 `candidates`/`selectedIndex`, marianAntiphon에 `candidates?: MarianAntiphonCandidate[]`/`selectedIndex?`, concludingPrayer에 `alternateText?`, intercessions에 파싱된 `introduction?`/`refrain?`/`petitions?: { versicle; response? }[]`/`closing?` 포함 |
+| `HourSection` | 15가지 discriminated union: invitatory, openingVersicle, hymn, psalmody, shortReading, responsory, gospelCanticle, intercessions, ourFather, concludingPrayer, dismissal, examen, blessing, marianAntiphon. hymn에 `candidates`/`selectedIndex`, marianAntiphon에 `candidates?: MarianAntiphonCandidate[]`/`selectedIndex?`, invitatory에 `candidates?`/`selectedIndex?` (4개 초대송 시편 대체), concludingPrayer에 `alternateText?`, intercessions에 파싱된 `introduction?`/`refrain?`/`petitions?: { versicle; response? }[]`/`closing?` 포함 |
 
 ---
 
@@ -282,7 +282,7 @@ src/app/
 | FR-111 | **앱 아이콘**: `public/icon.svg`(전례 녹색 배경의 십자가)를 매니페스트 `any` + `maskable` 목적으로 제공. Next.js `icon.tsx`/`apple-icon.tsx`로 favicon(32px)과 Apple touch icon(180px)을 `ImageResponse`로 자동생성한다. | PWA | P3 | 완료 |
 | FR-112 | **Service Worker 등록**: `SwRegistrar` client component가 프로덕션 환경에서 `load` 이벤트 이후 `/sw.js`를 scope `/`로 등록한다. localhost/개발 환경에서는 등록하지 않아 HMR 충돌을 방지한다. | PWA | P3 | 완료 |
 | FR-113 | **오프라인 폴백**: 네트워크 불가 시 내비게이션 요청에 대해 `/offline.html`(몽골어 "Интернэт холболтгүй байна" + 재시도 버튼)을 제공한다. 자체 완결적(외부 리소스 없음), 다크모드 대응. | PWA | P3 | 완료 |
-| FR-114 | **캐싱 전략**: Service Worker는 내비게이션 요청은 network-first(실패 시 캐시/오프라인 폴백), 정적 자산(script/style/font/image)은 cache-first로 처리한다. 활성화 시 구버전 캐시를 정리한다. | PWA | P3 | 완료 |
+| FR-114 | **캐싱 전략**: Service Worker 는 내비게이션 요청을 **network-only** (네트워크 실패 시에만 `/offline.html` 폴백) 로 처리해 구버전 HTML 이 캐시되는 문제를 원천 차단한다. 정적 자산(script/style/font/image)은 cache-first. 활성화 시 구버전 캐시를 정리한다. `CACHE_VERSION` 을 bump 하면 이전 캐시 전체가 `activate` 훅에서 제거된다. | PWA | P3 | 완료 |
 
 ### 8.2 비기능 요구사항
 
@@ -296,7 +296,7 @@ src/app/
 
 - **매니페스트**: `src/app/manifest.ts` — `MetadataRoute.Manifest` 타입, `/manifest.webmanifest`로 서빙. Next.js가 `<link rel="manifest">`를 `<head>`에 자동 삽입.
 - **아이콘**: `public/icon.svg` (매니페스트 레퍼런스), `src/app/icon.tsx` (32x32 favicon), `src/app/apple-icon.tsx` (180x180 apple-touch-icon). `next/og`의 `ImageResponse`로 PNG 런타임 생성.
-- **Service Worker**: `public/sw.js` — `divine-office-v1` 캐시, `install`에서 `/offline.html`+`/icon.svg` 프리캐시, `activate`에서 구버전 정리, `fetch`에서 navigation(network-first) / static-asset(cache-first) 분기.
+- **Service Worker**: `public/sw.js` — `divine-office-v2` 캐시, `install` 에서 `/offline.html` + `/icon.svg` 프리캐시 및 `skipWaiting()`, `activate` 에서 구버전 캐시 전체 삭제 및 `clients.claim()`, `fetch` 에서 navigation(network-only, 실패 시 `/offline.html`) / static-asset(cache-first) 분기. navigation 을 network-only 로 전환한 이유는 이전 network-first 구현이 구버전 HTML(구 PageRef 외부 링크)을 캐시해 모바일에서 PDF 가 다운로드로 처리되는 버그를 유발했기 때문.
 - **등록**: `src/components/sw-registrar.tsx` — `'use client'`, `useEffect`에서 `navigator.serviceWorker.register('/sw.js', { scope: '/', updateViaCache: 'none' })`. `NODE_ENV !== 'production'`에서는 건너뜀.
 - **레이아웃**: `src/app/layout.tsx` — `<SwRegistrar />` 렌더링, `viewport.themeColor: '#2d6a4f'`, `metadata.appleWebApp` 추가.
 - **헤더**: `next.config.ts`의 `async headers()`에서 `/sw.js` 라우트에 no-cache + Service-Worker-Allowed 헤더 주입.
@@ -321,7 +321,7 @@ src/app/
 - **Stanza 데이터**: `src/data/loth/psalter-texts.json`. 스크립트: `scripts/extract-psalm-texts.js`. 추출 단계에서 `mergeColumnWraps()`(소문자 시작 줄을 직전 줄로 합침)와 `mergeAcrossStanzaBoundaries()`(stanza 경계를 가로지르는 wrap continuation 처리)가 적용됨(FR-123). 헤더 매칭은 `parseRefKey()`가 verseStart까지 추출해 `buildHeaderRegexes()`가 precise + chapter-only fallback을 분리해 시도(FR-124).
 - **시편 마침기도(FR-132)**: `psalter-texts.json` entry에 `psalmPrayer?: string` 필드 확장. `extract-psalm-texts.js`의 `extractPsalmPrayer()`가 `Дууллыг төгсгөх залбирал` 마커 뒤에서 다음 END_MARKER까지 텍스트를 수집한다. 본문 단락 내부에서 나타나는 빈 줄은 PDF 페이지 브레이크로 인한 분할로 간주해 lookahead로 이어진 줄이 소문자 키릴 시작이면 계속 수집, 그 외(새 rubric/섹션)면 종료. `mergeColumnWraps()` 적용 후 공백 결합해 한 문단 문자열로 저장. `PsalmBlock`이 Gloria Patri 바로 아래 렌더링.
 - **렌더링**: `src/components/psalm-block.tsx`. stanza = 1개의 `<p>`, 줄 = `<span className="block">` 패턴. stanza 내부 줄 사이 vertical margin 0, stanza 사이 모바일 `space-y-5`/데스크톱 `md:space-y-4`. 모바일 좌측 padding `pl-3`(NFR-014).
-- **초대송 교송**: `src/lib/hours/shared.ts`의 `buildInvitatory()`가 `invitatory-antiphons.json`에서 선택, `invitatory.json`의 Venite 본문과 결합.
+- **초대송 교송**: `src/lib/hours/shared.ts`의 `buildInvitatory()`가 `invitatory-antiphons.json`에서 선택, `invitatory.json`의 Venite 본문과 결합. 기본값은 Psalm 95(Venite)이며 사용자 설정(FR-151)에 따라 Psalm 100/67/24로 대체 가능 — 교송·gloryBe·versicle은 불변이고 시편 본문·제목·페이지 참조만 교체된다.
 
 ---
 
@@ -393,12 +393,14 @@ src/app/
 |----|----------|------|----------|------|
 | FR-130 | **성모교송 선택**: 끝기도의 성모교송(Marian Antiphon) 4개 옵션 중 사용자가 자유롭게 선택할 수 있다. 기본값은 Salve Regina("Төгс жаргалт Цэвэр Охин Мариагийн хүндэтгэлийн дуу"). 대안: "Аврагчийн хайрт эх", "Тэнгэрийн Хатан", "Амар амгалан Мариа". 찬미가 선택 메뉴와 동일한 UI 패턴 사용. | UI/조립 | P1 | 완료 |
 | FR-131 | **대체 마침기도 선택**: 마침기도(concludingPrayer)에 대안(alternativeConcludingPrayer)이 존재하는 경우, 사용자가 기본/대체 기도문을 토글로 선택할 수 있다. 아침기도/저녁기도는 계절 고유문의 `alternativeConcludingPrayer` 필드(70건), 끝기도는 `compline.json`의 `concludingPrayer.alternate` (일요일/토요일)를 사용. 대안이 없는 날에는 토글 미표시. | UI/조립 | P1 | 완료 |
+| FR-151 | **초대송 시편 선택**: 초대송(Invitatory)의 4개 시편(Psalm 95/100/67/24) 중 사용자가 자유롭게 선택할 수 있다. 기본값은 Psalm 95(Venite). 루브릭(`invitatory.json#rubric`)이 허용하는 대체 시편(Ps 100/67/24)을 찬미가·성모교송과 동일한 드롭다운 UI로 제공한다. 선택은 `loth-settings.invitatoryPsalmIndex`에 localStorage로 영구 저장되어 매 기도시마다 재선택할 필요가 없다. | UI/조립 | P1 | 완료 |
 
 ### 13.2 구현 상세
 
 - **성모교송 선택**: `src/components/marian-antiphon-section.tsx` — `'use client'` 컴포넌트, `hymn-section.tsx`와 동일한 `useState` + 드롭다운 패턴. `HourSection`의 `marianAntiphon` 타입에 `candidates?: MarianAntiphonCandidate[]`와 `selectedIndex?: number` 추가. `compline.ts`가 `complineData.marianAntiphon[]` 전체를 candidates로 전달.
 - **대체 마침기도 선택**: `src/components/concluding-prayer-section.tsx` — `'use client'` 컴포넌트, 2개 옵션이므로 단순 토글 버튼 UI. `HourSection`의 `concludingPrayer` 타입에 `alternateText?: string` 추가. `lauds.ts`/`vespers.ts`는 `mergedPropers.alternativeConcludingPrayer`를, `compline.ts`는 `complineData.concludingPrayer.alternate`를 fallback으로 전달.
-- **데이터 변경 없음**: `compline.json`(4개 성모교송), `propers/*.json`(alternativeConcludingPrayer 70건) 모두 이미 완비. 로더(`psalter-loader.ts`, `propers-loader.ts`)도 변경 불필요.
+- **초대송 시편 선택**: `src/components/invitatory-section.tsx` — 기존 접기/펼치기 토글 아래에 `hymn-section.tsx`와 동일한 드롭다운 UI 추가. `HourSection`의 `invitatory` 타입에 `candidates?: { ref; title; epigraph?; stanzas; page? }[]`/`selectedIndex?: number` 추가. `shared.ts`의 `buildInvitatory()`가 `ordinarium.invitatory.invitatoryPsalms` 전체를 candidates로 노출하며 기본 psalm은 `[0]`(Venite)을 유지. 선택 상태는 찬미가와 달리 **설정(`useSettings().invitatoryPsalmIndex`)으로 지속**되며 로드/리로드 시에도 유지. `invitatoryCollapsed`와 공존(별도 키).
+- **데이터 변경 없음**: `compline.json`(4개 성모교송), `propers/*.json`(alternativeConcludingPrayer 70건), `invitatory.json`(4개 초대송 시편) 모두 이미 완비. 로더(`psalter-loader.ts`, `propers-loader.ts`)도 변경 불필요.
 
 ---
 

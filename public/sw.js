@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'divine-office-v1'
+const CACHE_VERSION = 'divine-office-v2'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
@@ -31,18 +31,12 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== self.location.origin) return
 
   if (request.mode === 'navigate') {
+    // Network-only for HTML: Vercel already sends no-store headers, and
+    // caching the response here caused stale markup to be served for users
+    // whose PageRef links were still pointing at the old external PDF href.
+    // Fall back to the offline page only when the network is unreachable.
     event.respondWith(
-      fetch(request)
-        .then((response) => {
-          const copy = response.clone()
-          caches.open(CACHE_VERSION).then((cache) => cache.put(request, copy))
-          return response
-        })
-        .catch(() =>
-          caches.match(request).then(
-            (cached) => cached || caches.match(OFFLINE_URL),
-          ),
-        ),
+      fetch(request).catch(() => caches.match(OFFLINE_URL)),
     )
     return
   }
