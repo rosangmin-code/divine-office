@@ -27,6 +27,7 @@ next-env.d.ts
 /test-results/
 /playwright-report/
 /blob-report/
+/.playwright-mcp/
 
 # local dev artifacts — source PDF, extraction outputs, Codex marker
 .codex
