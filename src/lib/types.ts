@@ -218,7 +218,18 @@ export interface AssembledPsalm {
 }
 
 export type HourSection =
-  | { type: 'invitatory'; versicle: string; response: string; antiphon: string; psalm: { ref: string; title: string; epigraph?: string; stanzas: string[][] }; gloryBe: string; rubric?: string; page?: number }
+  | {
+      type: 'invitatory'
+      versicle: string
+      response: string
+      antiphon: string
+      psalm: { ref: string; title: string; epigraph?: string; stanzas: string[][] }
+      candidates?: { ref: string; title: string; epigraph?: string; stanzas: string[][]; page?: number }[]
+      selectedIndex?: number
+      gloryBe: string
+      rubric?: string
+      page?: number
+    }
   | { type: 'openingVersicle'; versicle: string; response: string; gloryBe: string; alleluia?: string; pairedWithInvitatory?: boolean }
   | { type: 'hymn'; text: string; page?: number; candidates?: HymnCandidate[]; selectedIndex?: number }
   | { type: 'psalmody'; psalms: AssembledPsalm[] }
