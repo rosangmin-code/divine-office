@@ -91,3 +91,4 @@ test('Saturday vespers uses next Sunday propers', ...)
 - [ ] 새 섹션 타입 / HourSection variant 를 추가했으면 `HourSection` 개수 (`docs/PRD.md` §5.1) 가 맞는가?
 - [ ] 새 e2e 테스트에 `@fr FR-XXX` 태그를 달았는가? (매트릭스 자동 생성에 쓰임)
 - [ ] `psalter/week-*.json` 의 `page` 값을 손보았는가? → `node scripts/verify-psalter-pages.js` 돌려서 verified-correction bucket 이 0 인지 확인 (NFR-009c)
+- [ ] 다른 데이터 영역 (hymns / compline / propers / sanctoral) 의 `page` 값을 손보았는가? → 해당 verifier 실행 (`scripts/verify-{hymn,psalter-body,compline,propers,sanctoral}-pages.js`) (NFR-009d)

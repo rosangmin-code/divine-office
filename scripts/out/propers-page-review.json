@@ -1,0 +1,360 @@
+{
+  "version": 1,
+  "generated": "2026-04-21T07:59:11.047Z",
+  "entries": [
+    {
+      "file": "src/data/loth/propers/advent.json",
+      "kind": "shortReading",
+      "locator": "weeks.1.SUN.vespers.shortReading",
+      "declared": 545,
+      "matched": 548,
+      "delta": 3,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/advent.json",
+      "kind": "shortReading",
+      "locator": "weeks.1.SUN.lauds.shortReading",
+      "declared": 551,
+      "matched": 98,
+      "delta": -453,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/advent.json",
+      "kind": "responsory",
+      "locator": "weeks.1.SUN.lauds.responsory",
+      "declared": 551,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/advent.json",
+      "kind": "shortReading",
+      "locator": "weeks.1.MON.lauds.shortReading",
+      "declared": 556,
+      "matched": 316,
+      "delta": -240,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/advent.json",
+      "kind": "responsory",
+      "locator": "weeks.1.MON.vespers.responsory",
+      "declared": 557,
+      "matched": 559,
+      "delta": 2,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/advent.json",
+      "kind": "responsory",
+      "locator": "weeks.1.TUE.vespers.responsory",
+      "declared": 557,
+      "matched": 559,
+      "delta": 2,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/advent.json",
+      "kind": "responsory",
+      "locator": "weeks.1.WED.vespers.responsory",
+      "declared": 557,
+      "matched": 559,
+      "delta": 2,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/advent.json",
+      "kind": "gospelCanticleAntiphonPage",
+      "locator": "weeks.1.WED.vespers.gospelCanticleAntiphonPage",
+      "declared": 567,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/advent.json",
+      "kind": "responsory",
+      "locator": "weeks.1.THU.vespers.responsory",
+      "declared": 557,
+      "matched": 559,
+      "delta": 2,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/advent.json",
+      "kind": "gospelCanticleAntiphonPage",
+      "locator": "weeks.1.THU.vespers.gospelCanticleAntiphonPage",
+      "declared": 572,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/advent.json",
+      "kind": "responsory",
+      "locator": "weeks.1.FRI.vespers.responsory",
+      "declared": 557,
+      "matched": 559,
+      "delta": 2,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/christmas.json",
+      "kind": "responsory",
+      "locator": "weeks.dec25.SUN.lauds.responsory",
+      "declared": 590,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/christmas.json",
+      "kind": "intercessionsPage",
+      "locator": "weeks.dec25.SUN.lauds.intercessionsPage",
+      "declared": 589,
+      "matched": 591,
+      "delta": 2,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/christmas.json",
+      "kind": "responsory",
+      "locator": "weeks.dec25.SUN.vespers2.responsory",
+      "declared": 596,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/christmas.json",
+      "kind": "responsory",
+      "locator": "weeks.octave.SUN.lauds.responsory",
+      "declared": 590,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/christmas.json",
+      "kind": "responsory",
+      "locator": "weeks.octave.SUN.vespers.responsory",
+      "declared": 596,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/christmas.json",
+      "kind": "gospelCanticleAntiphonPage",
+      "locator": "weeks.epiphanyWeek.SUN.lauds.gospelCanticleAntiphonPage",
+      "declared": 607,
+      "matched": 609,
+      "delta": 2,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/easter.json",
+      "kind": "responsory",
+      "locator": "weeks.1.SUN.vespers.responsory",
+      "declared": 701,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/easter.json",
+      "kind": "shortReading",
+      "locator": "weeks.1.SUN.lauds.shortReading",
+      "declared": 689,
+      "matched": 703,
+      "delta": 14,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/easter.json",
+      "kind": "responsory",
+      "locator": "weeks.1.MON.lauds.responsory",
+      "declared": 708,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/easter.json",
+      "kind": "responsory",
+      "locator": "weeks.1.MON.vespers.responsory",
+      "declared": 701,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/easter.json",
+      "kind": "responsory",
+      "locator": "weeks.1.TUE.lauds.responsory",
+      "declared": 708,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/easter.json",
+      "kind": "responsory",
+      "locator": "weeks.1.TUE.vespers.responsory",
+      "declared": 701,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/easter.json",
+      "kind": "responsory",
+      "locator": "weeks.1.WED.lauds.responsory",
+      "declared": 708,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/easter.json",
+      "kind": "responsory",
+      "locator": "weeks.1.WED.vespers.responsory",
+      "declared": 701,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/easter.json",
+      "kind": "responsory",
+      "locator": "weeks.1.THU.lauds.responsory",
+      "declared": 708,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/easter.json",
+      "kind": "responsory",
+      "locator": "weeks.1.THU.vespers.responsory",
+      "declared": 701,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/easter.json",
+      "kind": "responsory",
+      "locator": "weeks.1.FRI.lauds.responsory",
+      "declared": 708,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/easter.json",
+      "kind": "responsory",
+      "locator": "weeks.1.FRI.vespers.responsory",
+      "declared": 701,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/easter.json",
+      "kind": "responsory",
+      "locator": "weeks.1.SAT.lauds.responsory",
+      "declared": 708,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/easter.json",
+      "kind": "shortReading",
+      "locator": "weeks.easterSunday.SUN.lauds.shortReading",
+      "declared": 689,
+      "matched": 703,
+      "delta": 14,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/easter.json",
+      "kind": "alternativeConcludingPrayerPage",
+      "locator": "weeks.easterSunday.SUN.lauds.alternativeConcludingPrayerPage",
+      "declared": 691,
+      "matched": 693,
+      "delta": 2,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/easter.json",
+      "kind": "alternativeConcludingPrayerPage",
+      "locator": "weeks.easterSunday.SUN.vespers.alternativeConcludingPrayerPage",
+      "declared": 691,
+      "matched": 693,
+      "delta": 2,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/lent.json",
+      "kind": "gospelCanticleAntiphonPage",
+      "locator": "weeks.1.MON.lauds.gospelCanticleAntiphonPage",
+      "declared": 625,
+      "matched": 627,
+      "delta": 2,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/lent.json",
+      "kind": "intercessionsPage",
+      "locator": "weeks.1.MON.lauds.intercessionsPage",
+      "declared": 625,
+      "matched": 627,
+      "delta": 2,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/lent.json",
+      "kind": "shortReading",
+      "locator": "weeks.1.TUE.vespers.shortReading",
+      "declared": 632,
+      "matched": 319,
+      "delta": -313,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/lent.json",
+      "kind": "shortReading",
+      "locator": "weeks.6.SUN.vespers.shortReading",
+      "declared": 650,
+      "matched": 259,
+      "delta": -391,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/lent.json",
+      "kind": "gospelCanticleAntiphonPage",
+      "locator": "weeks.6.THU.vespers.gospelCanticleAntiphonPage",
+      "declared": 660,
+      "matched": 662,
+      "delta": 2,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/lent.json",
+      "kind": "intercessionsPage",
+      "locator": "weeks.6.THU.vespers.intercessionsPage",
+      "declared": 660,
+      "matched": 662,
+      "delta": 2,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/lent.json",
+      "kind": "shortReading",
+      "locator": "weeks.6.SAT.vespers.shortReading",
+      "declared": 650,
+      "matched": 259,
+      "delta": -391,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/ordinary-time.json",
+      "kind": "gospelCanticleAntiphonPage",
+      "locator": "weeks.3.SUN.vespers2.gospelCanticleAntiphonPage",
+      "declared": 756,
+      "matched": 347,
+      "delta": -409,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/ordinary-time.json",
+      "kind": "gospelCanticleAntiphonPage",
+      "locator": "weeks.29.SUN.vespers2.gospelCanticleAntiphonPage",
+      "declared": 808,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/ordinary-time.json",
+      "kind": "gospelCanticleAntiphonPage",
+      "locator": "weeks.32.SUN.vespers.gospelCanticleAntiphonPage",
+      "declared": 813,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/ordinary-time.json",
+      "kind": "gospelCanticleAntiphonPage",
+      "locator": "weeks.34.SUN.vespers2.gospelCanticleAntiphonPage",
+      "declared": 816,
+      "matched": 818,
+      "delta": 2,
+      "reason": "out-of-window"
+    }
+  ]
+}

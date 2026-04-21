@@ -1,0 +1,196 @@
+{
+  "version": 1,
+  "generated": "2026-04-21T07:51:10.075Z",
+  "entries": [
+    {
+      "file": "src/data/loth/ordinarium/hymns.json",
+      "num": "1",
+      "title": "Аав аа Та миний баяр",
+      "declared": 913,
+      "reason": "no-HS-in-window",
+      "diag": {
+        "headerAll": [
+          878,
+          885
+        ],
+        "stanzaAll": [
+          913
+        ],
+        "window": [
+          912,
+          913,
+          914
+        ]
+      }
+    },
+    {
+      "file": "src/data/loth/ordinarium/hymns.json",
+      "num": "3",
+      "title": "Ааваа миний Ааваа",
+      "declared": 938,
+      "reason": "no-HS-in-window",
+      "diag": {
+        "headerAll": [
+          878,
+          886
+        ],
+        "stanzaAll": [
+          938
+        ],
+        "window": [
+          937,
+          938,
+          939
+        ]
+      }
+    },
+    {
+      "file": "src/data/loth/ordinarium/hymns.json",
+      "num": "6",
+      "title": "Аврагч ирэхийг хүсэн шүтсэн магтаал",
+      "declared": 915,
+      "reason": "no-HS-in-window",
+      "diag": {
+        "headerAll": [
+          874,
+          887
+        ],
+        "stanzaAll": [
+          915
+        ],
+        "window": [
+          914,
+          915,
+          916
+        ]
+      }
+    },
+    {
+      "file": "src/data/loth/ordinarium/hymns.json",
+      "num": "13",
+      "title": "Ариун Гурвал хийгээд аврагчийг гуйсан магтаал",
+      "declared": 919,
+      "reason": "no-HS-in-window",
+      "diag": {
+        "headerAll": [
+          880,
+          892
+        ],
+        "stanzaAll": [
+          919
+        ],
+        "window": [
+          918,
+          919,
+          920
+        ]
+      }
+    },
+    {
+      "file": "src/data/loth/ordinarium/hymns.json",
+      "num": "16",
+      "title": "Ариун Сүнс буусан магтаал",
+      "declared": 909,
+      "reason": "no-HS-in-window",
+      "diag": {
+        "headerAll": [
+          877,
+          895
+        ],
+        "stanzaAll": [
+          909
+        ],
+        "window": [
+          908,
+          909,
+          910
+        ]
+      }
+    },
+    {
+      "file": "src/data/loth/ordinarium/hymns.json",
+      "num": "48",
+      "title": "Зовлонгийн үе ойртон ирлээ",
+      "declared": 919,
+      "reason": "no-HS-in-window",
+      "diag": {
+        "headerAll": [
+          876,
+          919
+        ],
+        "stanzaAll": [],
+        "window": [
+          918,
+          919,
+          920
+        ]
+      }
+    },
+    {
+      "file": "src/data/loth/ordinarium/hymns.json",
+      "num": "52",
+      "title": "Итгэмжтэйгээр",
+      "declared": 922,
+      "reason": "no-HS-in-window",
+      "diag": {
+        "headerAll": [
+          879,
+          882,
+          883,
+          922
+        ],
+        "stanzaAll": [],
+        "window": [
+          921,
+          922,
+          923
+        ]
+      }
+    },
+    {
+      "file": "src/data/loth/ordinarium/hymns.json",
+      "num": "69",
+      "title": "Намайг өөрчлөөч",
+      "declared": 929,
+      "reason": "no-HS-in-window",
+      "diag": {
+        "headerAll": [
+          876,
+          929
+        ],
+        "stanzaAll": [],
+        "window": [
+          928,
+          929,
+          930
+        ]
+      }
+    },
+    {
+      "file": "src/data/loth/ordinarium/hymns.json",
+      "num": "107",
+      "title": "Хүмүүнийг аварсан Есүсийн магтаал",
+      "declared": 885,
+      "reason": "no-HS-in-window",
+      "diag": {
+        "headerAll": [
+          876,
+          877,
+          879,
+          880,
+          881,
+          883,
+          951
+        ],
+        "stanzaAll": [
+          885
+        ],
+        "window": [
+          884,
+          885,
+          886
+        ]
+      }
+    }
+  ]
+}

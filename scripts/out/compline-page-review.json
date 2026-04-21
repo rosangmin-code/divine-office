@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "generated": "2026-04-21T07:57:07.295Z",
+  "entries": [
+    {
+      "file": "src/data/loth/ordinarium/compline.json",
+      "locator": "days.TUE.shortReading",
+      "declared": 529,
+      "matched": 242,
+      "delta": -287,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/ordinarium/compline.json",
+      "locator": "days.WED.psalms[1]",
+      "declared": 533,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/ordinarium/compline.json",
+      "locator": "days.SAT.concludingPrayer",
+      "declared": 521,
+      "matched": 516,
+      "delta": -5,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/ordinarium/compline.json",
+      "locator": "responsory",
+      "declared": 515,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/ordinarium/compline.json",
+      "locator": "blessing",
+      "declared": 517,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/ordinarium/compline.json",
+      "locator": "anteMarian.alternatives[1]",
+      "declared": 545,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/ordinarium/compline.json",
+      "locator": "anteMarian.alternatives[2]",
+      "declared": 545,
+      "matched": 862,
+      "delta": 317,
+      "reason": "out-of-window"
+    }
+  ]
+}

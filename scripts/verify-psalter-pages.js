@@ -67,6 +67,21 @@ const CROSS_REFERENCE_SKIPS = new Set([
   'week-4|SAT|vespers|Psalm 116:10-19',
 ])
 
+// Part II psalms (or canticles) whose correct page is the "Шад дуулал <i+1>"
+// continuation page, NOT the `Дуулал N` header page (which belongs to Part I).
+// The triple-anchor rule (H ∧ S on p_h) structurally cannot validate these —
+// header is only on Part I page. Verified manually and patched out of band.
+const PART_II_SKIPS = new Set([
+  'week-1|WED|vespers|Psalm 27:7-14',
+  'week-2|MON|vespers|Psalm 45:11-18',
+  'week-2|TUE|vespers|Psalm 49:14-21',
+  'week-2|THU|vespers|Psalm 72:12-20',
+  'week-3|THU|vespers|Psalm 132:11-18',
+  'week-3|FRI|vespers|Psalm 135:13-21',
+  'week-4|FRI|vespers|Psalm 145:14-21',
+  'week-4|SAT|lauds|Ezekiel 36:24-28',
+])
+
 function weekKey(weekNum, day, hour, ref) {
   return `week-${weekNum}|${day}|${hour}|${ref}`
 }
@@ -207,6 +222,7 @@ function main() {
     'verified-correction': 0,
     'manual-review': 0,
     'cross-reference-skipped': 0,
+    'part-II-skipped': 0,
   }
   const monoRows = []
 
@@ -233,6 +249,17 @@ function main() {
               ref: entry.ref,
               declared: entry.page,
               reason: 'cross-reference-skipped',
+            })
+            continue
+          }
+          if (PART_II_SKIPS.has(key)) {
+            statusCounts['part-II-skipped']++
+            review.entries.push({
+              file: relFile,
+              locator: `days.${day}.${hour}.psalms[${i}]`,
+              ref: entry.ref,
+              declared: entry.page,
+              reason: 'part-II-skipped',
             })
             continue
           }

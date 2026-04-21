@@ -1,0 +1,362 @@
+{
+  "version": 1,
+  "generated": "2026-04-21T07:54:26.623Z",
+  "entries": [
+    {
+      "file": "src/data/loth/psalter/week-1.json",
+      "kind": "responsory",
+      "locator": "days.SUN.lauds.responsory",
+      "declared": 66,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-1.json",
+      "kind": "responsory",
+      "locator": "days.TUE.lauds.responsory",
+      "declared": 98,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-1.json",
+      "kind": "responsory",
+      "locator": "days.TUE.vespers.responsory",
+      "declared": 106,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-1.json",
+      "kind": "responsory",
+      "locator": "days.WED.lauds.responsory",
+      "declared": 114,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-1.json",
+      "kind": "responsory",
+      "locator": "days.WED.vespers.responsory",
+      "declared": 121,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-1.json",
+      "kind": "responsory",
+      "locator": "days.THU.vespers.responsory",
+      "declared": 138,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-1.json",
+      "kind": "responsory",
+      "locator": "days.FRI.lauds.responsory",
+      "declared": 148,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-1.json",
+      "kind": "responsory",
+      "locator": "days.FRI.vespers.responsory",
+      "declared": 155,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-2.json",
+      "kind": "responsory",
+      "locator": "days.SUN.vespers.responsory",
+      "declared": 192,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-2.json",
+      "kind": "responsory",
+      "locator": "days.MON.lauds.responsory",
+      "declared": 201,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-2.json",
+      "kind": "responsory",
+      "locator": "days.MON.vespers.responsory",
+      "declared": 207,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-2.json",
+      "kind": "responsory",
+      "locator": "days.TUE.lauds.responsory",
+      "declared": 217,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-2.json",
+      "kind": "responsory",
+      "locator": "days.TUE.vespers.responsory",
+      "declared": 223,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-2.json",
+      "kind": "responsory",
+      "locator": "days.WED.lauds.responsory",
+      "declared": 235,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-2.json",
+      "kind": "responsory",
+      "locator": "days.WED.vespers.responsory",
+      "declared": 243,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-2.json",
+      "kind": "responsory",
+      "locator": "days.FRI.lauds.responsory",
+      "declared": 269,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-2.json",
+      "kind": "responsory",
+      "locator": "days.FRI.vespers.responsory",
+      "declared": 275,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-2.json",
+      "kind": "responsory",
+      "locator": "days.SAT.lauds.responsory",
+      "declared": 285,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-2.json",
+      "kind": "shortReading",
+      "locator": "days.SAT.vespers.shortReading",
+      "declared": 172,
+      "matched": 191,
+      "delta": 19,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/psalter/week-2.json",
+      "kind": "responsory",
+      "locator": "days.SAT.vespers.responsory",
+      "declared": 172,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-2.json",
+      "kind": "intercessionsPage",
+      "locator": "days.SAT.vespers.intercessionsPage",
+      "declared": 173,
+      "matched": 192,
+      "delta": 19,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/psalter/week-3.json",
+      "kind": "responsory",
+      "locator": "days.SUN.lauds.responsory",
+      "declared": 303,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-3.json",
+      "kind": "intercessionsPage",
+      "locator": "days.MON.lauds.intercessionsPage",
+      "declared": 320,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-3.json",
+      "kind": "responsory",
+      "locator": "days.TUE.lauds.responsory",
+      "declared": 335,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-3.json",
+      "kind": "responsory",
+      "locator": "days.TUE.vespers.responsory",
+      "declared": 341,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-3.json",
+      "kind": "responsory",
+      "locator": "days.WED.lauds.responsory",
+      "declared": 349,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-3.json",
+      "kind": "responsory",
+      "locator": "days.THU.vespers.responsory",
+      "declared": 372,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-3.json",
+      "kind": "responsory",
+      "locator": "days.FRI.lauds.responsory",
+      "declared": 381,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-3.json",
+      "kind": "responsory",
+      "locator": "days.FRI.vespers.responsory",
+      "declared": 388,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-3.json",
+      "kind": "responsory",
+      "locator": "days.SAT.lauds.responsory",
+      "declared": 395,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-4.json",
+      "kind": "responsory",
+      "locator": "days.SUN.lauds.responsory",
+      "declared": 413,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-4.json",
+      "kind": "responsory",
+      "locator": "days.MON.lauds.responsory",
+      "declared": 431,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-4.json",
+      "kind": "responsory",
+      "locator": "days.MON.vespers.responsory",
+      "declared": 438,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-4.json",
+      "kind": "responsory",
+      "locator": "days.TUE.lauds.responsory",
+      "declared": 447,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-4.json",
+      "kind": "responsory",
+      "locator": "days.TUE.vespers.responsory",
+      "declared": 454,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-4.json",
+      "kind": "responsory",
+      "locator": "days.WED.lauds.responsory",
+      "declared": 462,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-4.json",
+      "kind": "responsory",
+      "locator": "days.WED.vespers.responsory",
+      "declared": 470,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-4.json",
+      "kind": "responsory",
+      "locator": "days.THU.lauds.responsory",
+      "declared": 479,
+      "matched": 252,
+      "delta": -227,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/psalter/week-4.json",
+      "kind": "intercessionsPage",
+      "locator": "days.THU.lauds.intercessionsPage",
+      "declared": 454,
+      "matched": 478,
+      "delta": 24,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/psalter/week-4.json",
+      "kind": "responsory",
+      "locator": "days.THU.vespers.responsory",
+      "declared": 486,
+      "matched": 259,
+      "delta": -227,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/psalter/week-4.json",
+      "kind": "shortReading",
+      "locator": "days.FRI.lauds.shortReading",
+      "declared": 497,
+      "matched": 494,
+      "delta": -3,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/psalter/week-4.json",
+      "kind": "responsory",
+      "locator": "days.FRI.lauds.responsory",
+      "declared": 498,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-4.json",
+      "kind": "shortReading",
+      "locator": "days.FRI.vespers.shortReading",
+      "declared": 504,
+      "matched": 500,
+      "delta": -4,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/psalter/week-4.json",
+      "kind": "responsory",
+      "locator": "days.FRI.vespers.responsory",
+      "declared": 505,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-4.json",
+      "kind": "shortReading",
+      "locator": "days.SAT.lauds.shortReading",
+      "declared": 518,
+      "matched": 509,
+      "delta": -9,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/psalter/week-4.json",
+      "kind": "responsory",
+      "locator": "days.SAT.lauds.responsory",
+      "declared": 519,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/psalter/week-4.json",
+      "kind": "shortReading",
+      "locator": "days.SAT.vespers.shortReading",
+      "declared": 404,
+      "matched": 420,
+      "delta": 16,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/psalter/week-4.json",
+      "kind": "responsory",
+      "locator": "days.SAT.vespers.responsory",
+      "declared": 404,
+      "matched": 421,
+      "delta": 17,
+      "reason": "out-of-window"
+    }
+  ]
+}

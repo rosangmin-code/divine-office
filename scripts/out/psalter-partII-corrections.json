@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "generated": "2026-04-21T08:00:00Z",
+  "source": "parsed_data/full_pdf.txt + manual PDF inspection",
+  "note": "Part II psalms and one canticle whose declared page was wrong. Verified by locating 'Шад дуулал <i+1>' (Part II antiphon marker) and/or canticle header on the target page. See F-bucket work in plans/parsed-coalescing-crab.md.",
+  "files": {
+    "src/data/loth/psalter/week-1.json": [
+      {
+        "ref": "Psalm 27:7-14",
+        "locator": "days.WED.vespers.psalms[1]",
+        "from": 119,
+        "to": 118,
+        "evidence": { "anchor": "Шад дуулал 2 at p.118 (Part II antiphon)" }
+      }
+    ],
+    "src/data/loth/psalter/week-2.json": [
+      {
+        "ref": "Psalm 45:11-18",
+        "locator": "days.MON.vespers.psalms[1]",
+        "from": 205,
+        "to": 204,
+        "evidence": { "anchor": "Шад дуулал 2 at p.204" }
+      },
+      {
+        "ref": "Psalm 49:14-21",
+        "locator": "days.TUE.vespers.psalms[1]",
+        "from": 221,
+        "to": 220,
+        "evidence": { "anchor": "Шад дуулал 2 at p.220" }
+      },
+      {
+        "ref": "Psalm 72:12-20",
+        "locator": "days.THU.vespers.psalms[1]",
+        "from": 257,
+        "to": 256,
+        "evidence": { "anchor": "Шад дуулал 2 at p.256" }
+      }
+    ],
+    "src/data/loth/psalter/week-3.json": [
+      {
+        "ref": "Psalm 132:11-18",
+        "locator": "days.THU.vespers.psalms[1]",
+        "from": 369,
+        "to": 368,
+        "evidence": { "anchor": "Шад дуулал 2 at p.368" }
+      }
+    ],
+    "src/data/loth/psalter/week-4.json": [
+      {
+        "ref": "Psalm 145:1-13",
+        "locator": "days.FRI.vespers.psalms[0]",
+        "from": 500,
+        "to": 497,
+        "evidence": { "anchor": "Psalm body fingerprint + Шад дуулал 1 at p.497" }
+      },
+      {
+        "ref": "Psalm 145:14-21",
+        "locator": "days.FRI.vespers.psalms[1]",
+        "from": 501,
+        "to": 498,
+        "evidence": { "anchor": "Шад дуулал 2 at p.498 (Part II)" }
+      },
+      {
+        "ref": "Ezekiel 36:24-28",
+        "locator": "days.SAT.lauds.psalms[1]",
+        "from": 515,
+        "to": 507,
+        "evidence": { "anchor": "Магтаал / Езекиел 36:24-28 header at p.507" }
+      }
+    ]
+  }
+}
