@@ -252,6 +252,7 @@ src/app/
 | NFR-009 | **성능 무영향**: page 필드는 optional이므로 데이터 미주석 상태에서도 기존 기능에 영향 없음. | 완료 |
 | NFR-009a | **페이지 커버리지 임계값**: `audit-page-coverage.js` 의 카테고리별 임계값(7.1 참고) 을 통과해야 한다. 임계값은 현재 데이터 소스 한계를 반영하며, 소스 품질 개선 시 상향한다. | 완료 |
 | NFR-009b | **추측 금지**: 자동 추출 스크립트는 지문 매칭이 명확히 실패한 entry 의 페이지를 절대 추정·할당하지 않는다(`null`/미할당 유지). 잘못된 페이지 표시는 본문 부재보다 사용자 신뢰에 더 큰 손상을 준다. | 완료 |
+| NFR-009c | **기존 페이지 값 교정 조건 (verified correction workflow)**: `scripts/verify-psalter-pages.js` 의 triple-anchor 증거 — Anchor H (`Дуулал N` / canticle 책이름 + 장) 가 창 `{declared-1, declared, declared+1}` 안의 단일 페이지 `p_h` 에, Anchor S (본문 첫 스탠자 토큰) 가 `p_h` 또는 `p_h+1` 에, Anchor A (`Шад дуулал <i+1>`) 는 evidence 수집용 soft — 가 충족될 때에만 `p_h` 로의 자동 교정이 허용된다. 모호하면 `scripts/out/psalter-page-review.json` 으로 분리. 패치 적용 시 hour 내 `psalms[i].page ≤ psalms[i+1].page` monotonicity 위반 수는 증가해서는 안 된다 (증가 시 verifier exit 1 = `MONOTONICITY_REGRESSED`). Cross-reference 시편은 `CROSS_REFERENCE_SKIPS` 에 하드코딩. | 완료 |
 
 ### 7.3 구현 상세
 
