@@ -86,10 +86,22 @@ function weekKey(weekNum, day, hour, ref) {
   return `week-${weekNum}|${day}|${hour}|${ref}`
 }
 
+// Some psalms are printed with a Cyrillic part suffix in Mongolian
+// (e.g. `Дуулал 19А` / `Дуулал 19Б`). The suffix attaches to the chapter
+// digits without whitespace, so tokenize() emits a single token `19а`
+// instead of two tokens `19` `а`. We probe the bare form first, then
+// fall back to suffixed variants.
+const PSALM_PART_SUFFIXES = ['а', 'б', 'в']
+
 function parseRef(ref) {
   let m = ref.match(/^Psalm\s+(\d+)/i)
   if (m) {
-    return { kind: 'psalm', headerTokens: ['дуулал', m[1]], chapterNum: parseInt(m[1], 10) }
+    const num = m[1]
+    const headerCandidates = [['дуулал', num]]
+    for (const suf of PSALM_PART_SUFFIXES) {
+      headerCandidates.push(['дуулал', num + suf])
+    }
+    return { kind: 'psalm', headerCandidates, chapterNum: parseInt(num, 10) }
   }
   m = ref.match(/^(.+?)\s+(\d+)[:\s]/)
   if (m) {
@@ -97,7 +109,7 @@ function parseRef(ref) {
     const chap = m[2]
     const bookTokens = CANTICLE_HEADERS[book]
     if (!bookTokens) return { kind: 'unknown-canticle', book }
-    return { kind: 'canticle', headerTokens: [...bookTokens, chap], chapterNum: parseInt(chap, 10), book }
+    return { kind: 'canticle', headerCandidates: [[...bookTokens, chap]], chapterNum: parseInt(chap, 10), book }
   }
   return { kind: 'unparseable' }
 }
@@ -129,7 +141,10 @@ function classify(entry, psalmIndex, ctx) {
   }
 
   const window = [declared - 1, declared, declared + 1]
-  const headerPages = pagesMatching(parsed.headerTokens, ctx.srcTokens, ctx.firstTokenIndex)
+  const headerPages = new Set()
+  for (const cand of parsed.headerCandidates) {
+    for (const p of pagesMatching(cand, ctx.srcTokens, ctx.firstTokenIndex)) headerPages.add(p)
+  }
   const stanzaToks = stanzaFingerprint(entry.ref, ctx.psalmTexts)
   if (!stanzaToks) {
     return {

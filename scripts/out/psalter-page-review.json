@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-04-22T05:52:39.440Z",
+  "generated": "2026-04-22T05:58:24.558Z",
   "entries": [
     {
       "file": "src/data/loth/psalter/week-1.json",
@@ -156,25 +156,6 @@
           162,
           163,
           164
-        ]
-      }
-    },
-    {
-      "file": "src/data/loth/psalter/week-2.json",
-      "locator": "days.MON.lauds.psalms[2]",
-      "ref": "Psalm 19:2-7",
-      "declared": 199,
-      "reason": "no-HS-in-window",
-      "diag": {
-        "headerAll": [],
-        "stanzaAll": [
-          199
-        ],
-        "antiphonAll": [],
-        "window": [
-          198,
-          199,
-          200
         ]
       }
     },
