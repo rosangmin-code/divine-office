@@ -30,9 +30,18 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
         <div className="space-y-5 pl-3 md:space-y-4 md:pl-2">
           {psalm.stanzas.map((stanza, si) => (
             <p key={si} className="whitespace-pre-line font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
-              {stanza.map((line, li) => (
-                <span key={li} className="block">{line}</span>
-              ))}
+              {stanza.map((line, li) => {
+                // Leading whitespace in the JSON encodes a colon/response indent
+                // level — 2 spaces = 1 level. Backward compatible: existing
+                // entries without leading spaces render at indent 0.
+                const leading = line.match(/^ */)![0].length
+                const level = Math.min(Math.floor(leading / 2), 2)
+                const trimmed = line.slice(leading)
+                const indentClass = level === 0 ? '' : level === 1 ? 'pl-6' : 'pl-12'
+                return (
+                  <span key={li} className={`block${indentClass ? ' ' + indentClass : ''}`}>{trimmed}</span>
+                )
+              })}
             </p>
           ))}
         </div>
