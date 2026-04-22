@@ -63,9 +63,7 @@ const CANTICLE_HEADERS = {
 // Psalms whose data ref does not match the printed body at the expected position
 // (e.g. data claims Ps 116:10-19 but book prints Ps 130 at that slot). These need
 // ref/antiphon reconciliation before page correction; excluded from auto-correction.
-const CROSS_REFERENCE_SKIPS = new Set([
-  'week-4|SAT|vespers|Psalm 116:10-19',
-])
+const CROSS_REFERENCE_SKIPS = new Set([])
 
 // Part II psalms (or canticles) whose correct page is the "Шад дуулал <i+1>"
 // continuation page, NOT the `Дуулал N` header page (which belongs to Part I).
