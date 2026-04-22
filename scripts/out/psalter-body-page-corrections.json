@@ -1,6 +1,32 @@
 {
   "version": 1,
-  "generated": "2026-04-21T07:54:26.623Z",
+  "generated": "2026-04-22T13:37:31.267Z",
   "source": "parsed_data/full_pdf.txt",
-  "files": {}
+  "files": {
+    "src/data/loth/psalter/week-1.json": [
+      {
+        "kind": "responsory",
+        "locator": "days.TUE.lauds.responsory",
+        "from": 98,
+        "to": 99,
+        "delta": 1
+      },
+      {
+        "kind": "responsory",
+        "locator": "days.WED.vespers.responsory",
+        "from": 121,
+        "to": 122,
+        "delta": 1
+      }
+    ],
+    "src/data/loth/psalter/week-3.json": [
+      {
+        "kind": "responsory",
+        "locator": "days.SUN.lauds.responsory",
+        "from": 303,
+        "to": 302,
+        "delta": -1
+      }
+    ]
+  }
 }

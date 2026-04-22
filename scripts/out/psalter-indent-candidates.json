@@ -1,0 +1,1139 @@
+{
+  "generatedAt": "2026-04-22T06:33:36.885Z",
+  "stats": {
+    "total": 135,
+    "skippedAlreadyIndented": 18,
+    "perfectMatch": 22,
+    "partialMatch": 95,
+    "noMatch": 0,
+    "wouldChange": 84,
+    "wouldApply": 45
+  },
+  "results": [
+    {
+      "engRef": "Psalm 63:2-9",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 25,
+      "matchedLines": 24,
+      "matchRatio": 0.96,
+      "changedLines": 11
+    },
+    {
+      "engRef": "Daniel 3:57-88, 56",
+      "status": "already-indented"
+    },
+    {
+      "engRef": "Psalm 149:1-9",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 22,
+      "matchedLines": 19,
+      "matchRatio": 0.86,
+      "changedLines": 17
+    },
+    {
+      "engRef": "Psalm 110:1-5, 7",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 20,
+      "matchedLines": 19,
+      "matchRatio": 0.95,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 114:1-8",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 16,
+      "matchedLines": 15,
+      "matchRatio": 0.94,
+      "changedLines": 4
+    },
+    {
+      "engRef": "Revelation 19:1-7",
+      "status": "already-indented"
+    },
+    {
+      "engRef": "Psalm 5:2-10, 12-13",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 37,
+      "matchedLines": 35,
+      "matchRatio": 0.95,
+      "changedLines": 14
+    },
+    {
+      "engRef": "1 Chronicles 29:10-13",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 19,
+      "matchedLines": 18,
+      "matchRatio": 0.95,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 29:1-10",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 35,
+      "matchedLines": 35,
+      "matchRatio": 1,
+      "changedLines": 18
+    },
+    {
+      "engRef": "Psalm 19:8-11",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 16,
+      "matchedLines": 15,
+      "matchRatio": 0.94,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 19:12-15",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 16,
+      "matchedLines": 15,
+      "matchRatio": 0.94,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 11:1-7",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 24,
+      "matchedLines": 21,
+      "matchRatio": 0.88,
+      "changedLines": 5
+    },
+    {
+      "engRef": "Ephesians 1:3-10",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 23,
+      "matchedLines": 21,
+      "matchRatio": 0.91,
+      "changedLines": 4
+    },
+    {
+      "engRef": "Psalm 24:1-10",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 27,
+      "matchedLines": 25,
+      "matchRatio": 0.93,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Tobit 13:1-8",
+      "status": "already-indented"
+    },
+    {
+      "engRef": "Psalm 33:1-9",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 52,
+      "matchedLines": 47,
+      "matchRatio": 0.9,
+      "changedLines": 23
+    },
+    {
+      "engRef": "Psalm 16:1-6",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 26,
+      "matchedLines": 18,
+      "matchRatio": 0.69,
+      "changedLines": 4
+    },
+    {
+      "engRef": "Psalm 16:7-11",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 26,
+      "matchedLines": 18,
+      "matchRatio": 0.69,
+      "changedLines": 4
+    },
+    {
+      "engRef": "Psalm 20:2-8",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 25,
+      "matchedLines": 21,
+      "matchRatio": 0.84,
+      "changedLines": 15
+    },
+    {
+      "engRef": "Psalm 21:2-8, 14",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 19,
+      "matchedLines": 12,
+      "matchRatio": 0.63,
+      "changedLines": 4
+    },
+    {
+      "engRef": "Revelation 4:11; 5:9-10, 12",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 19,
+      "matchedLines": 19,
+      "matchRatio": 1,
+      "changedLines": 8
+    },
+    {
+      "engRef": "Psalm 36:6-13",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 33,
+      "matchedLines": 29,
+      "matchRatio": 0.88,
+      "changedLines": 11
+    },
+    {
+      "engRef": "Judith 16:2-3a, 13-15",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 21,
+      "matchedLines": 20,
+      "matchRatio": 0.95,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 47:2-10",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 17,
+      "matchedLines": 13,
+      "matchRatio": 0.76,
+      "changedLines": 13
+    },
+    {
+      "engRef": "Psalm 119:105-112",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 16,
+      "matchedLines": 12,
+      "matchRatio": 0.75,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 119:145-152",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 20,
+      "matchedLines": 18,
+      "matchRatio": 0.9,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 27:1-6",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 29,
+      "matchedLines": 25,
+      "matchRatio": 0.86,
+      "changedLines": 4
+    },
+    {
+      "engRef": "Psalm 27:7-14",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 29,
+      "matchedLines": 25,
+      "matchRatio": 0.86,
+      "changedLines": 4
+    },
+    {
+      "engRef": "Colossians 1:12-20",
+      "status": "already-indented"
+    },
+    {
+      "engRef": "Psalm 57:2-12",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 30,
+      "matchedLines": 26,
+      "matchRatio": 0.87,
+      "changedLines": 9
+    },
+    {
+      "engRef": "Jeremiah 31:10-14",
+      "status": "already-indented"
+    },
+    {
+      "engRef": "Psalm 48:2-12",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 34,
+      "matchedLines": 32,
+      "matchRatio": 0.94,
+      "changedLines": 8
+    },
+    {
+      "engRef": "Psalm 30:2-13",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 42,
+      "matchedLines": 41,
+      "matchRatio": 0.98,
+      "changedLines": 14
+    },
+    {
+      "engRef": "Psalm 32:1-11",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 33,
+      "matchedLines": 30,
+      "matchRatio": 0.91,
+      "changedLines": 15
+    },
+    {
+      "engRef": "Revelation 11:17-18; 12:10b-12a",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 24,
+      "matchedLines": 23,
+      "matchRatio": 0.96,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 51:3-19",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 55,
+      "matchedLines": 53,
+      "matchRatio": 0.96,
+      "changedLines": 1
+    },
+    {
+      "engRef": "Isaiah 45:15-26",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 45,
+      "matchedLines": 38,
+      "matchRatio": 0.84,
+      "changedLines": 22
+    },
+    {
+      "engRef": "Psalm 100:1-5",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 17,
+      "matchedLines": 17,
+      "matchRatio": 1,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 41:2-14",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 31,
+      "matchedLines": 25,
+      "matchRatio": 0.81,
+      "changedLines": 6
+    },
+    {
+      "engRef": "Psalm 46:2-12",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 28,
+      "matchedLines": 25,
+      "matchRatio": 0.89,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Revelation 15:3-4",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 11,
+      "matchedLines": 8,
+      "matchRatio": 0.73,
+      "changedLines": 1
+    },
+    {
+      "engRef": "Psalm 131:1-3",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 5,
+      "matchedLines": 5,
+      "matchRatio": 1,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 132:1-10",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 22,
+      "matchedLines": 20,
+      "matchRatio": 0.91,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 132:11-18",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 22,
+      "matchedLines": 20,
+      "matchRatio": 0.91,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Exodus 15:1-4a, 8-13, 17-18",
+      "status": "already-indented"
+    },
+    {
+      "engRef": "Psalm 117:1-2",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 1,
+      "matchedLines": 1,
+      "matchRatio": 1,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 113:1-9",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 19,
+      "matchedLines": 17,
+      "matchRatio": 0.89,
+      "changedLines": 10
+    },
+    {
+      "engRef": "Psalm 116:10-19",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 21,
+      "matchedLines": 21,
+      "matchRatio": 1,
+      "changedLines": 3
+    },
+    {
+      "engRef": "Psalm 122:1-9",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 19,
+      "matchedLines": 19,
+      "matchRatio": 1,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 130:1-8",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 19,
+      "matchedLines": 19,
+      "matchRatio": 1,
+      "changedLines": 6
+    },
+    {
+      "engRef": "Philippians 2:6-11",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 16,
+      "matchedLines": 14,
+      "matchRatio": 0.88,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 8:1-10",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 27,
+      "matchedLines": 27,
+      "matchRatio": 1,
+      "changedLines": 8
+    },
+    {
+      "engRef": "Psalm 118:1-16",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 62,
+      "matchedLines": 53,
+      "matchRatio": 0.85,
+      "changedLines": 8
+    },
+    {
+      "engRef": "Daniel 3:52-57",
+      "status": "already-indented"
+    },
+    {
+      "engRef": "Psalm 150:1-6",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 19,
+      "matchedLines": 19,
+      "matchRatio": 1,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 115:1-13",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 42,
+      "matchedLines": 40,
+      "matchRatio": 0.95,
+      "changedLines": 12
+    },
+    {
+      "engRef": "Psalm 31:1-17",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 14,
+      "matchedLines": 12,
+      "matchRatio": 0.86,
+      "changedLines": 8
+    },
+    {
+      "engRef": "Psalm 42:2-6",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 49,
+      "matchedLines": 46,
+      "matchRatio": 0.94,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Sirach 36:1-7, 13-16",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 20,
+      "matchedLines": 16,
+      "matchRatio": 0.8,
+      "changedLines": 16
+    },
+    {
+      "engRef": "Psalm 19:2-7",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 16,
+      "matchedLines": 15,
+      "matchRatio": 0.94,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 45:2-10",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 27,
+      "matchedLines": 25,
+      "matchRatio": 0.93,
+      "changedLines": 11
+    },
+    {
+      "engRef": "Psalm 45:11-18",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 27,
+      "matchedLines": 25,
+      "matchRatio": 0.93,
+      "changedLines": 11
+    },
+    {
+      "engRef": "Psalm 43:1-5",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 22,
+      "matchedLines": 21,
+      "matchRatio": 0.95,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Isaiah 38:10-14, 17-20",
+      "status": "already-indented"
+    },
+    {
+      "engRef": "Psalm 65:2-9",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 40,
+      "matchedLines": 38,
+      "matchRatio": 0.95,
+      "changedLines": 3
+    },
+    {
+      "engRef": "Psalm 49:1-13",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 29,
+      "matchedLines": 28,
+      "matchRatio": 0.97,
+      "changedLines": 14
+    },
+    {
+      "engRef": "Psalm 49:14-21",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 29,
+      "matchedLines": 28,
+      "matchRatio": 0.97,
+      "changedLines": 14
+    },
+    {
+      "engRef": "Psalm 77:2-13",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 47,
+      "matchedLines": 42,
+      "matchRatio": 0.89,
+      "changedLines": 2
+    },
+    {
+      "engRef": "1 Samuel 2:1-10",
+      "status": "already-indented"
+    },
+    {
+      "engRef": "Psalm 97:1-12",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 25,
+      "matchedLines": 20,
+      "matchRatio": 0.8,
+      "changedLines": 12
+    },
+    {
+      "engRef": "Psalm 62:2-9",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 34,
+      "matchedLines": 33,
+      "matchRatio": 0.97,
+      "changedLines": 8
+    },
+    {
+      "engRef": "Psalm 67:2-8",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 17,
+      "matchedLines": 15,
+      "matchRatio": 0.88,
+      "changedLines": 1
+    },
+    {
+      "engRef": "Psalm 80:2-8, 15-20",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 54,
+      "matchedLines": 48,
+      "matchRatio": 0.89,
+      "changedLines": 24
+    },
+    {
+      "engRef": "Isaiah 12:1-6",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 12,
+      "matchedLines": 12,
+      "matchRatio": 1,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 81:2-11",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 39,
+      "matchedLines": 37,
+      "matchRatio": 0.95,
+      "changedLines": 19
+    },
+    {
+      "engRef": "Psalm 72:1-11",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 28,
+      "matchedLines": 28,
+      "matchRatio": 1,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 72:12-20",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 28,
+      "matchedLines": 28,
+      "matchRatio": 1,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Habakkuk 3:2-4, 13a, 15-19",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 33,
+      "matchedLines": 31,
+      "matchRatio": 0.94,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 147:1-11",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 24,
+      "matchedLines": 22,
+      "matchRatio": 0.92,
+      "changedLines": 12
+    },
+    {
+      "engRef": "Psalm 116:1-9",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 11,
+      "matchedLines": 10,
+      "matchRatio": 0.91,
+      "changedLines": 3
+    },
+    {
+      "engRef": "Psalm 121:1-8",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 7,
+      "matchedLines": 7,
+      "matchRatio": 1,
+      "changedLines": 7
+    },
+    {
+      "engRef": "Psalm 136:1-9",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 20,
+      "matchedLines": 17,
+      "matchRatio": 0.85,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 136:10-26",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 20,
+      "matchedLines": 17,
+      "matchRatio": 0.85,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 92:2-9",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 35,
+      "matchedLines": 32,
+      "matchRatio": 0.91,
+      "changedLines": 8
+    },
+    {
+      "engRef": "Deuteronomy 32:1-12",
+      "status": "already-indented"
+    },
+    {
+      "engRef": "Psalm 8:2-10",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 27,
+      "matchedLines": 27,
+      "matchRatio": 1,
+      "changedLines": 8
+    },
+    {
+      "engRef": "Psalm 145:1-13",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 30,
+      "matchedLines": 28,
+      "matchRatio": 0.93,
+      "changedLines": 12
+    },
+    {
+      "engRef": "Psalm 145:14-21",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 30,
+      "matchedLines": 28,
+      "matchRatio": 0.93,
+      "changedLines": 12
+    },
+    {
+      "engRef": "Psalm 146:1-10",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 23,
+      "matchedLines": 23,
+      "matchRatio": 1,
+      "changedLines": 8
+    },
+    {
+      "engRef": "Psalm 93:1-5",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 15,
+      "matchedLines": 13,
+      "matchRatio": 0.87,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 148:1-14",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 31,
+      "matchedLines": 31,
+      "matchRatio": 1,
+      "changedLines": 12
+    },
+    {
+      "engRef": "Psalm 111:1-10",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 18,
+      "matchedLines": 16,
+      "matchRatio": 0.89,
+      "changedLines": 7
+    },
+    {
+      "engRef": "Psalm 84:2-13",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 35,
+      "matchedLines": 28,
+      "matchRatio": 0.8,
+      "changedLines": 12
+    },
+    {
+      "engRef": "Isaiah 2:2-5",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 20,
+      "matchedLines": 20,
+      "matchRatio": 1,
+      "changedLines": 12
+    },
+    {
+      "engRef": "Psalm 96:1-13",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 34,
+      "matchedLines": 24,
+      "matchRatio": 0.71,
+      "changedLines": 4
+    },
+    {
+      "engRef": "Psalm 123:1-4",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 11,
+      "matchedLines": 7,
+      "matchRatio": 0.64,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 124:1-8",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 16,
+      "matchedLines": 14,
+      "matchRatio": 0.88,
+      "changedLines": 14
+    },
+    {
+      "engRef": "Psalm 85:2-14",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 28,
+      "matchedLines": 26,
+      "matchRatio": 0.93,
+      "changedLines": 15
+    },
+    {
+      "engRef": "Isaiah 26:1-6",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 25,
+      "matchedLines": 24,
+      "matchRatio": 0.96,
+      "changedLines": 23
+    },
+    {
+      "engRef": "Psalm 125:1-5",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 15,
+      "matchedLines": 14,
+      "matchRatio": 0.93,
+      "changedLines": 1
+    },
+    {
+      "engRef": "Psalm 86:1-17",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 43,
+      "matchedLines": 36,
+      "matchRatio": 0.84,
+      "changedLines": 12
+    },
+    {
+      "engRef": "Isaiah 33:13-16",
+      "status": "already-indented"
+    },
+    {
+      "engRef": "Psalm 98:1-9",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 27,
+      "matchedLines": 26,
+      "matchRatio": 0.96,
+      "changedLines": 23
+    },
+    {
+      "engRef": "Psalm 126:1-6",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 16,
+      "matchedLines": 14,
+      "matchRatio": 0.88,
+      "changedLines": 14
+    },
+    {
+      "engRef": "Psalm 127:1-5",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 16,
+      "matchedLines": 12,
+      "matchRatio": 0.75,
+      "changedLines": 7
+    },
+    {
+      "engRef": "Psalm 87:1-7",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 17,
+      "matchedLines": 14,
+      "matchRatio": 0.82,
+      "changedLines": 14
+    },
+    {
+      "engRef": "Isaiah 40:10-17",
+      "status": "already-indented"
+    },
+    {
+      "engRef": "Psalm 99:1-9",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 26,
+      "matchedLines": 21,
+      "matchRatio": 0.81,
+      "changedLines": 10
+    },
+    {
+      "engRef": "Jeremiah 14:17-21",
+      "status": "already-indented"
+    },
+    {
+      "engRef": "Psalm 135:1-12",
+      "status": "already-indented"
+    },
+    {
+      "engRef": "Psalm 135:13-21",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 33,
+      "matchedLines": 26,
+      "matchRatio": 0.79,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Wisdom 9:1-6, 9-11",
+      "status": "already-indented"
+    },
+    {
+      "engRef": "Psalm 118:1-14",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 62,
+      "matchedLines": 53,
+      "matchRatio": 0.85,
+      "changedLines": 8
+    },
+    {
+      "engRef": "Psalm 118:15-21",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 62,
+      "matchedLines": 53,
+      "matchRatio": 0.85,
+      "changedLines": 8
+    },
+    {
+      "engRef": "Psalm 118:22-27a",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 62,
+      "matchedLines": 53,
+      "matchRatio": 0.85,
+      "changedLines": 8
+    },
+    {
+      "engRef": "Psalm 118:27b-29",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 62,
+      "matchedLines": 53,
+      "matchRatio": 0.85,
+      "changedLines": 8
+    },
+    {
+      "engRef": "Psalm 112:1-10",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 24,
+      "matchedLines": 23,
+      "matchRatio": 0.96,
+      "changedLines": 3
+    },
+    {
+      "engRef": "Psalm 90:1-12",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 43,
+      "matchedLines": 32,
+      "matchRatio": 0.74,
+      "changedLines": 18
+    },
+    {
+      "engRef": "Isaiah 42:10-16",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 26,
+      "matchedLines": 24,
+      "matchRatio": 0.92,
+      "changedLines": 2
+    },
+    {
+      "engRef": "Psalm 101:1-8",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 32,
+      "matchedLines": 32,
+      "matchRatio": 1,
+      "changedLines": 4
+    },
+    {
+      "engRef": "Daniel 3:26-27, 29, 34-41",
+      "status": "already-indented"
+    },
+    {
+      "engRef": "Psalm 144:1-10",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 14,
+      "matchedLines": 11,
+      "matchRatio": 0.79,
+      "changedLines": 1
+    },
+    {
+      "engRef": "Psalm 137:1-6",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 14,
+      "matchedLines": 12,
+      "matchRatio": 0.86,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 138:1-8",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 23,
+      "matchedLines": 20,
+      "matchRatio": 0.87,
+      "changedLines": 7
+    },
+    {
+      "engRef": "Psalm 108:2-7",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 34,
+      "matchedLines": 32,
+      "matchRatio": 0.94,
+      "changedLines": 13
+    },
+    {
+      "engRef": "Isaiah 61:10-62:5",
+      "status": "already-indented"
+    },
+    {
+      "engRef": "Psalm 139:1-18",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 24,
+      "matchedLines": 22,
+      "matchRatio": 0.92,
+      "changedLines": 2
+    },
+    {
+      "engRef": "Psalm 143:1-11",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 33,
+      "matchedLines": 31,
+      "matchRatio": 0.94,
+      "changedLines": 9
+    },
+    {
+      "engRef": "Isaiah 66:10-14a",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 16,
+      "matchedLines": 13,
+      "matchRatio": 0.81,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 147:12-20",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 16,
+      "matchedLines": 15,
+      "matchRatio": 0.94,
+      "changedLines": 0
+    },
+    {
+      "engRef": "Psalm 144:11-15",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 17,
+      "matchedLines": 17,
+      "matchRatio": 1,
+      "changedLines": 1
+    },
+    {
+      "engRef": "Psalm 88:2-10",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 37,
+      "matchedLines": 37,
+      "matchRatio": 1,
+      "changedLines": 17
+    },
+    {
+      "engRef": "Psalm 88:11-19",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 37,
+      "matchedLines": 37,
+      "matchRatio": 1,
+      "changedLines": 17
+    },
+    {
+      "engRef": "Ezekiel 36:24-28",
+      "status": "already-indented"
+    },
+    {
+      "engRef": "Tobit 13:8-11, 13-15",
+      "status": "derived",
+      "alreadyIndented": false,
+      "totalLines": 35,
+      "matchedLines": 29,
+      "matchRatio": 0.83,
+      "changedLines": 11
+    }
+  ]
+}
