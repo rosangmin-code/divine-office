@@ -48,7 +48,7 @@ function walkPropers(node: unknown, cov: Cover) {
     bump(cov, 'propersShortReading', typeof sr.page === 'number')
   }
   const r = n.responsory as Record<string, unknown> | undefined
-  if (r && r.versicle) {
+  if (r && (r.fullResponse || r.versicle)) {
     bump(cov, 'propersResponsory', typeof r.page === 'number')
   }
   for (const v of Object.values(n)) walkPropers(v, cov)
@@ -79,8 +79,8 @@ function collect(): Cover {
         }
         const sr = hourData.shortReading as { text?: string; page?: number } | undefined
         if (sr?.text) bump(cov, 'psalterShortReading', typeof sr.page === 'number')
-        const r = hourData.responsory as { versicle?: string; page?: number } | undefined
-        if (r?.versicle) bump(cov, 'psalterResponsory', typeof r.page === 'number')
+        const r = hourData.responsory as { fullResponse?: string; versicle?: string; page?: number } | undefined
+        if (r?.fullResponse || r?.versicle) bump(cov, 'psalterResponsory', typeof r?.page === 'number')
         if (Array.isArray(hourData.intercessions) && (hourData.intercessions as unknown[]).length > 0) {
           bump(cov, 'psalterIntercessions', typeof hourData.intercessionsPage === 'number')
         }

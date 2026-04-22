@@ -7,7 +7,7 @@ import type { ComplineData } from '../../psalter-loader'
 const mockComplineData: ComplineData = {
   psalms: [],
   shortReading: { ref: 'Jeremiah 14:9', text: 'Direct text' },
-  responsory: { versicle: 'CV', response: 'CR' },
+  responsory: { fullResponse: 'CFR', versicle: 'CV', shortResponse: 'CSR' },
   nuncDimittisAntiphon: 'Nunc ant',
   concludingPrayer: { primary: 'Primary prayer' },
   examen: 'Examen text',
@@ -27,7 +27,7 @@ function makeContext(overrides: Partial<HourContext> = {}): HourContext {
     mergedPropers: {
       hymn: 'Compline hymn',
       shortReading: { ref: 'Jeremiah 14:9', text: 'Direct text' },
-      responsory: { versicle: 'CV', response: 'CR' },
+      responsory: { fullResponse: 'CFR', versicle: 'CV', shortResponse: 'CSR' },
       gospelCanticleAntiphon: 'Nunc ant',
       concludingPrayer: 'Primary prayer',
     } as HourPropers,
@@ -112,7 +112,7 @@ describe('mergeComplineDefaults', () => {
   it('does not override existing propers', () => {
     const existing: HourPropers = {
       shortReading: { ref: 'Custom:1:1' },
-      responsory: { versicle: 'CustomV', response: 'CustomR' },
+      responsory: { fullResponse: 'CustomFR', versicle: 'CustomV', shortResponse: 'CustomSR' },
       gospelCanticleAntiphon: 'Custom ant',
       concludingPrayer: 'Custom prayer',
     }

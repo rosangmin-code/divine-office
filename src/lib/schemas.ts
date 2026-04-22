@@ -23,8 +23,9 @@ const ShortReadingSchema = z
 
 const ResponsorySchema = z
   .object({
+    fullResponse: z.string(),
     versicle: z.string(),
-    response: z.string(),
+    shortResponse: z.string(),
     page: PageSchema,
   })
   .loose()

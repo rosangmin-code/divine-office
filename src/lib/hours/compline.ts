@@ -56,8 +56,9 @@ export const assembleCompline: HourAssembler = (ctx) => {
   if (ctx.mergedPropers.responsory) {
     sections.push({
       type: 'responsory',
+      fullResponse: ctx.mergedPropers.responsory.fullResponse,
       versicle: ctx.mergedPropers.responsory.versicle,
-      response: ctx.mergedPropers.responsory.response,
+      shortResponse: ctx.mergedPropers.responsory.shortResponse,
       page: ctx.mergedPropers.responsory.page,
     })
   }

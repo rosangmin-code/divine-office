@@ -108,8 +108,9 @@ export interface ShortReading {
 }
 
 export interface Responsory {
-  versicle: string
-  response: string
+  fullResponse: string           // R. 전체 응답 (시작과 끝에 반복)
+  versicle: string               // V. 전구 (중간 구절)
+  shortResponse: string          // R. 짧은 응답
   page?: number                  // Source PDF page number
 }
 
@@ -234,7 +235,7 @@ export type HourSection =
   | { type: 'hymn'; text: string; page?: number; candidates?: HymnCandidate[]; selectedIndex?: number }
   | { type: 'psalmody'; psalms: AssembledPsalm[] }
   | { type: 'shortReading'; ref: string; bookMn: string; verses: { verse: number; text: string }[]; page?: number }
-  | { type: 'responsory'; versicle: string; response: string; page?: number }
+  | { type: 'responsory'; fullResponse: string; versicle: string; shortResponse: string; page?: number }
   | { type: 'gospelCanticle'; canticle: 'benedictus' | 'magnificat' | 'nuncDimittis'; antiphon: string; text: string; verses?: string[]; doxology?: string; page?: number }
   | {
       type: 'intercessions'

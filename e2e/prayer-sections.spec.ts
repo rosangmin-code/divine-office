@@ -347,7 +347,7 @@ test.describe('Prayer section detail rendering', () => {
       expect(reading).toHaveProperty('verses')
     })
 
-    test('responsory is always present with versicle and response', async ({ request }) => {
+    test('responsory is always present with fullResponse, versicle, shortResponse', async ({ request }) => {
       const res = await request.get(`/api/loth/${DATES.ordinaryWeekday}/lauds`)
       const body = await res.json()
       const types = body.sections.map((s: { type: string }) => s.type)
@@ -355,8 +355,9 @@ test.describe('Prayer section detail rendering', () => {
       // responsory is required — psalter commons guarantee it
       expect(types).toContain('responsory')
       const resp = body.sections.find((s: { type: string }) => s.type === 'responsory')
+      expect(resp).toHaveProperty('fullResponse')
       expect(resp).toHaveProperty('versicle')
-      expect(resp).toHaveProperty('response')
+      expect(resp).toHaveProperty('shortResponse')
     })
   })
 })

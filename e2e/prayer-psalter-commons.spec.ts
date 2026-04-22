@@ -16,15 +16,16 @@ test.describe('Psalter commons (short reading, responsory, intercessions, conclu
       expect(reading.verses[0]).toBeTruthy()
     })
 
-    test('has responsory with versicle and response', async ({ request }) => {
+    test('has responsory with fullResponse, versicle, shortResponse', async ({ request }) => {
       const res = await request.get(`/api/loth/${DATES.ordinaryWeekday}/lauds`)
       expect(res.status()).toBe(200)
 
       const body = await res.json()
       const resp = body.sections.find((s: { type: string }) => s.type === 'responsory')
       expect(resp).toBeTruthy()
+      expect(resp).toHaveProperty('fullResponse')
       expect(resp).toHaveProperty('versicle')
-      expect(resp).toHaveProperty('response')
+      expect(resp).toHaveProperty('shortResponse')
     })
 
     test('has intercessions with items array', async ({ request }) => {
@@ -63,15 +64,16 @@ test.describe('Psalter commons (short reading, responsory, intercessions, conclu
       expect(reading.verses[0]).toBeTruthy()
     })
 
-    test('has responsory with versicle and response', async ({ request }) => {
+    test('has responsory with fullResponse, versicle, shortResponse', async ({ request }) => {
       const res = await request.get(`/api/loth/${DATES.ordinaryWeekday}/vespers`)
       expect(res.status()).toBe(200)
 
       const body = await res.json()
       const resp = body.sections.find((s: { type: string }) => s.type === 'responsory')
       expect(resp).toBeTruthy()
+      expect(resp).toHaveProperty('fullResponse')
       expect(resp).toHaveProperty('versicle')
-      expect(resp).toHaveProperty('response')
+      expect(resp).toHaveProperty('shortResponse')
     })
 
     test('has intercessions with items array', async ({ request }) => {

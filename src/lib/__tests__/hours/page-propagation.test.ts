@@ -18,7 +18,7 @@ function makeContext(overrides: Partial<HourContext> = {}): HourContext {
     mergedPropers: {
       hymn: 'Test hymn text',
       hymnPage: 42,
-      responsory: { versicle: 'V', response: 'R', page: 66 },
+      responsory: { fullResponse: 'FR', versicle: 'V', shortResponse: 'SR', page: 66 },
       gospelCanticleAntiphon: 'Canticle ant',
       gospelCanticleAntiphonPage: 70,
       intercessions: ['Prayer 1', 'Prayer 2'],
@@ -113,7 +113,7 @@ describe('page number propagation', () => {
       const complineData: ComplineData = {
         psalms: [],
         shortReading: { ref: 'Rev 22:4-5', text: 'Text', page: 100 },
-        responsory: { versicle: 'V', response: 'R', page: 101 },
+        responsory: { fullResponse: 'FR', versicle: 'V', shortResponse: 'SR', page: 101 },
         nuncDimittisAntiphon: 'Ant',
         concludingPrayer: { primary: 'Prayer', page: 102 },
         examen: 'Examen text',
@@ -150,7 +150,7 @@ describe('page number propagation', () => {
       const ctx = makeContext({
         mergedPropers: {
           hymn: 'Text',
-          responsory: { versicle: 'V', response: 'R' },
+          responsory: { fullResponse: 'FR', versicle: 'V', shortResponse: 'SR' },
           intercessions: ['P1'],
           concludingPrayer: 'Prayer',
         },
@@ -207,8 +207,9 @@ describe('page number propagation', () => {
       const sections = assembleLauds(makeContext({
         mergedPropers: {
           responsory: {
-            versicle: 'Эзэн, Та Өөрийн хайр, өршөөлөө бидэнд үзүүлнэ үү.',
-            response: 'Мөн бидэнд Өөрийн авралыг хайрлан соёрхно уу.',
+            fullResponse: 'Эзэн, Та Өөрийн хайр, өршөөлөө бидэнд үзүүлнэ үү.',
+            versicle: 'Мөн бидэнд Өөрийн авралыг хайрлан соёрхно уу.',
+            shortResponse: 'Өөрийн хайр, өршөөлөө бидэнд үзүүлнэ үү.',
             page: 547,
           },
         },

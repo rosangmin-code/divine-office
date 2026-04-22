@@ -14,7 +14,7 @@ function makeContext(overrides: Partial<HourContext> = {}): HourContext {
     ] as AssembledPsalm[],
     mergedPropers: {
       hymn: 'Vespers hymn',
-      responsory: { versicle: 'V', response: 'R' },
+      responsory: { fullResponse: 'FR', versicle: 'V', shortResponse: 'SR' },
       gospelCanticleAntiphon: 'Magnificat ant',
       intercessions: ['Int 1'],
       concludingPrayer: 'Prayer text',

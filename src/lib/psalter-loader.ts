@@ -52,7 +52,7 @@ export function getPsalterPsalmody(
  */
 export interface PsalterCommons {
   shortReading?: { ref: string; text: string; page?: number }
-  responsory?: { versicle: string; response: string; page?: number }
+  responsory?: { fullResponse: string; versicle: string; shortResponse: string; page?: number }
   gospelCanticleAntiphon?: string
   gospelCanticleAntiphonPage?: number
   intercessions?: string[]
@@ -105,7 +105,7 @@ export function getComplinePsalmody(day: DayOfWeek): PsalmEntry[] {
 export interface ComplineData {
   psalms: PsalmEntry[]
   shortReading: { ref: string; text: string; page?: number } | null
-  responsory: { versicle: string; response: string; page?: number } | null
+  responsory: { fullResponse: string; versicle: string; shortResponse: string; page?: number } | null
   nuncDimittisAntiphon: string
   concludingPrayer: { primary: string; alternate?: string; page?: number } | null
   examen: string
@@ -120,7 +120,7 @@ export function getFullComplineData(day: DayOfWeek): ComplineData {
   const days = data.days as Record<string, Record<string, unknown>>
   const dayData = days[day] ?? {}
 
-  const globalResponsory = data.responsory as { versicle: string; response: string } | undefined
+  const globalResponsory = data.responsory as { fullResponse: string; versicle: string; shortResponse: string } | undefined
   const nuncDimittis = data.nuncDimittis as { antiphon: string } | undefined
   const examen = data.examen as { text: string } | undefined
   const blessing = data.blessing as { text: string; response: string } | undefined
@@ -136,7 +136,7 @@ export function getFullComplineData(day: DayOfWeek): ComplineData {
   return {
     psalms: (dayData.psalms as PsalmEntry[]) ?? [],
     shortReading: (dayData.shortReading as { ref: string; text: string; page?: number }) ?? null,
-    responsory: globalResponsory as { versicle: string; response: string; page?: number } | null ?? null,
+    responsory: globalResponsory as { fullResponse: string; versicle: string; shortResponse: string; page?: number } | null ?? null,
     nuncDimittisAntiphon: nuncDimittis?.antiphon ?? '',
     concludingPrayer: (dayData.concludingPrayer as { primary: string; alternate?: string; page?: number }) ?? null,
     examen: examen?.text ?? '',
