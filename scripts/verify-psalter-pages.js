@@ -60,10 +60,10 @@ const CANTICLE_HEADERS = {
   Ezekiel: ['езекиел'],
 }
 
-// Psalms that intentionally cross-reference another week's body
-// (book format: "См. х. N" style reuse). Excluded from auto-correction.
+// Psalms whose data ref does not match the printed body at the expected position
+// (e.g. data claims Ps 116:10-19 but book prints Ps 130 at that slot). These need
+// ref/antiphon reconciliation before page correction; excluded from auto-correction.
 const CROSS_REFERENCE_SKIPS = new Set([
-  'week-2|SAT|vespers|Psalm 116:10-19',
   'week-4|SAT|vespers|Psalm 116:10-19',
 ])
 
