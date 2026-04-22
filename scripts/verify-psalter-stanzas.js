@@ -43,12 +43,12 @@ const BOOK_MAP = {
   Philippians: ['Филиппой', 'Филипп'],
   '1 Chronicles': ['1 Шастирын дээд', '1Шастирын дээд'],
   '1 Samuel': ['1 Самуел'],
-  Deuteronomy: ['Хууль'],
+  Deuteronomy: ['Дэд хууль', 'Хууль'],
   Exodus: ['Гэтлэл'],
-  Ezekiel: ['Хэзеки', 'Иезекиел'],
+  Ezekiel: ['Езекиел', 'Хэзеки', 'Иезекиел'],
   Habakkuk: ['Хабаккук'],
   Isaiah: ['Исаиа'],
-  Jeremiah: ['Иеремия'],
+  Jeremiah: ['Иеремиа', 'Иеремия'],
   Judith: ['Иудит'],
   Sirach: ['Сирак'],
   Wisdom: ['Мэргэн ухаан'],
@@ -65,6 +65,7 @@ const NOISE_RES = [
   /^\d+$/,
   /^\d+\s+\d+\s*(дүгээр|дугаар)\s+долоо хоног$/,
   /^\d+\s*(дүгээр|дугаар)\s+долоо хоног\s+\d+$/,
+  /^\d+\s*(дүгээр|дугаар)\s+долоо хоног$/,
   /^(Ням|Даваа|Мягмар|Лхагва|Пүрэв|Баасан|Бямба) гара(гийн|гын) (өглөө|орой)$/,
   /^(Өглөөний|Оройн) даатгал залбирал$/,
 ]
@@ -114,22 +115,66 @@ function toMongolianRefs(engRef) {
   return []
 }
 
+function expandVerseSet(spec) {
+  // "26-27, 29, 34-41" → Set([26,27,29,34..41])
+  const out = new Set()
+  for (const part of spec.split(',')) {
+    const m = part.trim().match(/^(\d+)(?:-(\d+))?[a-zа-яА-ЯбВвАа]?$/)
+    if (!m) continue
+    const start = +m[1]
+    const end = m[2] ? +m[2] : start
+    for (let i = start; i <= end; i++) out.add(i)
+  }
+  return out
+}
+
+function setEq(a, b) {
+  if (a.size !== b.size) return false
+  for (const v of a) if (!b.has(v)) return false
+  return true
+}
+
 function findHeader(pdfLines, mnRef) {
   const target = normalizeRefForMatch(mnRef)
   // 1) exact match
   for (let i = 0; i < pdfLines.length; i++) {
     if (normalizeRefForMatch(pdfLines[i]) === target) return { idx: i, kind: 'exact' }
   }
-  // 2) chapter-prefix match: PDF often drops the verse range,
-  //    e.g. JSON "Дуулал 149:1-9" → PDF "Дуулал 149"
-  const m = target.match(/^(.+?)\s+(\d+)(?::|$)/)
+  const m = target.match(/^(.+?)\s+(\d+)(?::(.+))?$/)
   if (m) {
     const prefix = `${m[1]} ${m[2]}`
+    const targetVerseSet = m[3] ? expandVerseSet(m[3]) : null
+    // 2) verse-set equivalence: same book+chapter, equivalent verse set
+    //    (e.g. JSON "3:26-27, 29, 34-41" ↔ PDF "3:26, 27, 29, 34-41")
+    if (targetVerseSet && targetVerseSet.size > 0) {
+      const re = new RegExp(
+        '^' + prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ':(.+)$',
+      )
+      for (let i = 0; i < pdfLines.length; i++) {
+        const t = normalizeRefForMatch(pdfLines[i])
+        const mv = t.match(re)
+        if (!mv) continue
+        const pdfSet = expandVerseSet(mv[1])
+        if (pdfSet.size > 0 && setEq(pdfSet, targetVerseSet))
+          return { idx: i, kind: 'verse-set' }
+      }
+    }
+    // 3) chapter-prefix match: PDF often drops the verse range,
+    //    e.g. JSON "Дуулал 149:1-9" → PDF "Дуулал 149"
     for (let i = 0; i < pdfLines.length; i++) {
       const t = normalizeRefForMatch(pdfLines[i])
       if (t === prefix) return { idx: i, kind: 'chapter-only' }
     }
-    // 3) chapter-with-different-verse-range: same book+chapter, any tail
+    // 4) chapter-with-suffix match: e.g. PDF "Дуулал 19А" / "Дуулал 19Б"
+    //    (one-letter Cyrillic suffix marking psalm sub-section)
+    const reSuffix = new RegExp(
+      '^' + prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[А-Я]$',
+    )
+    for (let i = 0; i < pdfLines.length; i++) {
+      if (reSuffix.test(normalizeRefForMatch(pdfLines[i])))
+        return { idx: i, kind: 'chapter-suffix' }
+    }
+    // 5) chapter-with-different-verse-range: same book+chapter, any tail
     //    (helps when JSON splits one psalm into two refs like 16:1-6 / 16:7-11)
     const re = new RegExp(
       '^' + prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ':',
@@ -173,8 +218,20 @@ function jsonLineCount(entry) {
   return entry.stanzas.reduce((s, st) => s + st.length, 0)
 }
 
+function isDoxologyRubric(line) {
+  // "Эцэг, Хүү, Ариун Сүнсэнд жавхланг…" — the standard Gloria Patri
+  // *rubric* (one-line, ends with ellipsis or trailing dot+ellipsis).
+  // Body doxology (Daniel 3 / Tobit) reads as a complete poetic stanza
+  // and never ends with "…" on its first occurrence line.
+  return /Эцэг.*Хүү.*Сүнс.*[……]\s*$/.test(line.trim())
+}
+
 function hasTrinitarianDoxology(lines) {
-  return lines.some(l => /Эцэг/.test(l) && /Хүү/.test(l) && /Сүнс/.test(l))
+  // True only when there is a doxology *body* (a line that mentions all
+  // three persons but is NOT the standalone rubric ending in "…").
+  return lines.some(l =>
+    /Эцэг/.test(l) && /Хүү/.test(l) && /Сүнс/.test(l) && !isDoxologyRubric(l),
+  )
 }
 
 function jsonHasTrinitarianDoxology(entry) {
