@@ -58,6 +58,7 @@
 | FR-034 | 중보기도 역할 구조화 | FR-150 | [PRD §12](../PRD.md#12-루브릭빨간색-텍스트-및-교송-라벨링) | `src/lib/hours/intercessions.ts` — `parseIntercessions()` 순수 파서: `" - "`/`" — "` 구분자, 다중 라인 intro/response 처리, closing 분리<br>`src/lib/hours/{lauds,vespers}.ts` — 파서 호출 후 `introduction`/`refrain`/`petitions`/`closing` 필드 전달<br>`src/lib/types.ts` — `HourSection.intercessions` variant 확장<br>`src/components/prayer-renderer.tsx` — `IntercessionsSection`: 구조화 뷰(도입부 본문 + 후렴 amber 박스 + 청원 versicle/응답 분리, 응답 줄에 빨간 `- ` 접두) + flat 리스트 폴백 | `e2e/prayer-intercessions.spec.ts` — API `refrain`/`petitions` + UI `data-role` 속성 검증<br>`src/lib/__tests__/hours/intercessions.test.ts` — 10개 테스트: psalter commons, seasonal propers, fallback | 완료 |
 | FR-035 | Дууллыг төгсгөх залбирал (시편 마침기도) | FR-132 | [PRD §9](../PRD.md#9-시편-본문-및-stanza-구조) | `src/lib/types.ts` — `AssembledPsalm.psalmPrayer?: string` 필드 추가<br>`scripts/extract-psalm-texts.js` — `extractPsalmPrayer()` 헬퍼<br>`src/data/loth/psalter-texts.json` — 각 entry에 `psalmPrayer` 필드(현재 88개)<br>`src/lib/hours/shared.ts` — `resolvePsalm()` 양쪽 return 분기에서 `psalmPrayer` 전파<br>`src/components/psalm-block.tsx` — Gloria Patri 바로 아래 `data-role="psalm-prayer"` 블록 렌더링, prayer 없으면 섹션 숨김 | `e2e/prayer-sections.spec.ts` — psalm-prayer 렌더링 assertion | 완료 |
 | FR-036 | 초대송 시편 선택 (4개 옵션) | FR-151 | [PRD §13](../PRD.md#13-기도문-선택-기능) | `src/lib/types.ts` — `invitatory` 섹션에 `candidates?: { ref; title; epigraph?; stanzas; page? }[]`/`selectedIndex?` 추가<br>`src/lib/hours/shared.ts` — `buildInvitatory()`가 `invitatoryPsalms` 전체를 candidates로 노출, 기본 `selectedIndex: 0`<br>`src/lib/settings.tsx` — `Settings.invitatoryPsalmIndex: number` 필드 + DEFAULTS(`0`), `migrateSettings()` 가 [0, 4) 범위 검증<br>`src/components/invitatory-section.tsx` — `useSettings()`로 index 지속화, hymn-section 패턴의 "Бусад дуулал (4)" 드롭다운 UI, 선택된 시편의 ref/title/epigraph/stanzas/page로 본문 스왑 | `e2e/prayer-lauds.spec.ts` — `Invitatory psalm selection (FR-151)` describe 5개 테스트: API candidates 4개 노출, 드롭다운 토글/listbox 표시, Psalm 100 선택 시 본문 교체, 영구 저장 (`loth-settings.invitatoryPsalmIndex=2` 확인) | 완료 |
+| FR-038 | 응송 6행 구조 (Хариу залбирал) | FR-152 | [PRD §12](../PRD.md#12-루브릭빨간색-텍스트-및-교송-라벨링) | `src/lib/types.ts` — `Responsory` 인터페이스 + `HourSection.responsory` variant 를 `{fullResponse, versicle, shortResponse, page?}` 3필드로 재설계<br>`src/lib/schemas.ts` — `ResponsorySchema` 런타임 검증 동기화<br>`src/lib/psalter-loader.ts` — `PsalterCommons`/`ComplineData` 의 `responsory` 타입 갱신<br>`src/lib/hours/{lauds,vespers,compline}.ts` — 새 3필드 그대로 전달<br>`src/components/prayer-sections/responsory-section.tsx` — 6행 렌더(전체응답 ×2 → 전구 → 짧은응답 → 영광송 → 전체응답), Triduum 간소화형식 fallback, `data-role="responsory"`<br>`scripts/lib/responsory-parser.js` — Glory Be 앵커 + V1 토큰 길이 기반 파서<br>`scripts/fix-responsories.js` — 118건(psalter 56 + propers 61 + compline 1) 일괄 재추출 | `src/lib/__tests__/hours/{lauds,vespers,compline}.test.ts` — 새 필드 mock<br>`src/lib/__tests__/hours/page-propagation.test.ts` — 새 필드로 page 전파 검증<br>`src/lib/__tests__/data/page-coverage.test.ts` — `fullResponse`/`versicle` 양쪽 인식<br>`e2e/prayer-sections.spec.ts`, `e2e/prayer-psalter-commons.spec.ts` — API 응답의 `fullResponse`/`versicle`/`shortResponse` 노출 검증<br>`e2e/prayer-responsory.spec.ts` — 6행 DOM 구조 + `data-role="responsory"` 가시성 | 완료 |
 | FR-037 | 루브릭·교송 라벨링 | FR-125~129 | [PRD §12](../PRD.md#12-루브릭빨간색-텍스트-및-교송-라벨링) | `src/components/prayer-renderer.tsx` — `AntiphonBox`에 `label` prop 추가, Dismissal 지시문 빨간색 전환<br>`src/components/psalm-block.tsx` — `psalmType` 기반 교송 라벨 전달, Gloria Patri 생략 루브릭<br>`src/components/invitatory-section.tsx` — 초대송 rubric 렌더링<br>`src/lib/hours/shared.ts` — invitatory rubric 전파<br>`src/lib/hours/types.ts`, `src/lib/types.ts` — rubric 타입 추가<br>`src/data/loth/sanctoral/{solemnities,feasts}.json` — `alleluiaConditional` 필드<br>`src/data/loth/psalter/week-{1..4}.json`, `src/data/loth/propers/christmas.json` — 잘린 텍스트 복원, 오염 데이터 정리, 빈 교송/제목 채움 | `e2e/ordinarium.spec.ts` — rubric red styling 검증<br>`e2e/prayer-sections.spec.ts` — antiphon 마커 검증 (간접) | 완료 |
 
 ### 비기능 요구사항 (Non-Functional Requirements)
@@ -105,9 +106,10 @@
 | `e2e/guide.spec.ts` | FR-020 |
 | `e2e/ordinarium.spec.ts` | FR-030, FR-037 |
 | `e2e/pwa.spec.ts` | FR-021, FR-022, FR-023, NFR-010, NFR-011, NFR-012 |
-| `e2e/prayer-psalter-commons.spec.ts` | FR-007, FR-010, FR-024 |
+| `e2e/prayer-psalter-commons.spec.ts` | FR-007, FR-010, FR-024, FR-038 |
 | `e2e/prayer-intercessions.spec.ts` | FR-034 |
 | `src/lib/__tests__/hours/intercessions.test.ts` | FR-034 |
+| `e2e/prayer-responsory.spec.ts` | FR-038 |
 | `scripts/parsers/hymn-parser.test.ts` | FR-012 (FR-067) |
 | `e2e/settings.spec.ts` | FR-019, FR-025, FR-026, FR-027, FR-028, NFR-014, NFR-015 |
 | `e2e/feast-selection.spec.ts` | FR-031 |
@@ -122,10 +124,10 @@
 
 | 상태 | 기능 요구사항 | 비기능 요구사항 | 합계 |
 |------|:------------:|:---------------:|:----:|
-| 완료 | 42 | 16 | **58** |
+| 완료 | 43 | 16 | **59** |
 | 부분 완료 | 1 | 1 | **2** |
 | 미구현 | 0 | 0 | **0** |
-| **합계** | **43** | **17** | **60** |
+| **합계** | **44** | **17** | **61** |
 
 ### 커버리지율
 

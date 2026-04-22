@@ -22,6 +22,10 @@ export const DATES = {
   // Lent weekday (VIOLET)
   lentWeekday: '2026-03-04', // Lent Week 1 Wednesday
 
+  // Sacred Triduum — Holy Thursday Lauds uses the simplified single-antiphon
+  // responsory format (FR-152 Triduum fallback branch).
+  holyThursday: '2026-04-02',
+
   // Easter Sunday (WHITE)
   easterSunday: '2026-04-05',
 
