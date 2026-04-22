@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-04-21T07:59:11.047Z",
+  "generated": "2026-04-22T14:28:09.551Z",
   "entries": [
     {
       "file": "src/data/loth/propers/advent.json",
@@ -10,6 +10,13 @@
       "matched": 548,
       "delta": 3,
       "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/advent.json",
+      "kind": "responsory",
+      "locator": "weeks.1.SUN.vespers.responsory",
+      "declared": 549,
+      "reason": "no-fingerprint-match"
     },
     {
       "file": "src/data/loth/propers/advent.json",
@@ -23,8 +30,8 @@
     {
       "file": "src/data/loth/propers/advent.json",
       "kind": "responsory",
-      "locator": "weeks.1.SUN.lauds.responsory",
-      "declared": 551,
+      "locator": "weeks.1.SUN.vespers2.responsory",
+      "declared": 549,
       "reason": "no-fingerprint-match"
     },
     {
@@ -39,29 +46,44 @@
     {
       "file": "src/data/loth/propers/advent.json",
       "kind": "responsory",
+      "locator": "weeks.1.MON.lauds.responsory",
+      "declared": 557,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/advent.json",
+      "kind": "responsory",
       "locator": "weeks.1.MON.vespers.responsory",
       "declared": 557,
-      "matched": 559,
-      "delta": 2,
-      "reason": "out-of-window"
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/advent.json",
+      "kind": "responsory",
+      "locator": "weeks.1.TUE.lauds.responsory",
+      "declared": 557,
+      "reason": "no-fingerprint-match"
     },
     {
       "file": "src/data/loth/propers/advent.json",
       "kind": "responsory",
       "locator": "weeks.1.TUE.vespers.responsory",
       "declared": 557,
-      "matched": 559,
-      "delta": 2,
-      "reason": "out-of-window"
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/advent.json",
+      "kind": "responsory",
+      "locator": "weeks.1.WED.lauds.responsory",
+      "declared": 557,
+      "reason": "no-fingerprint-match"
     },
     {
       "file": "src/data/loth/propers/advent.json",
       "kind": "responsory",
       "locator": "weeks.1.WED.vespers.responsory",
       "declared": 557,
-      "matched": 559,
-      "delta": 2,
-      "reason": "out-of-window"
+      "reason": "no-fingerprint-match"
     },
     {
       "file": "src/data/loth/propers/advent.json",
@@ -73,11 +95,16 @@
     {
       "file": "src/data/loth/propers/advent.json",
       "kind": "responsory",
+      "locator": "weeks.1.THU.lauds.responsory",
+      "declared": 557,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/advent.json",
+      "kind": "responsory",
       "locator": "weeks.1.THU.vespers.responsory",
       "declared": 557,
-      "matched": 559,
-      "delta": 2,
-      "reason": "out-of-window"
+      "reason": "no-fingerprint-match"
     },
     {
       "file": "src/data/loth/propers/advent.json",
@@ -89,11 +116,23 @@
     {
       "file": "src/data/loth/propers/advent.json",
       "kind": "responsory",
+      "locator": "weeks.1.FRI.lauds.responsory",
+      "declared": 557,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/advent.json",
+      "kind": "responsory",
       "locator": "weeks.1.FRI.vespers.responsory",
       "declared": 557,
-      "matched": 559,
-      "delta": 2,
-      "reason": "out-of-window"
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/advent.json",
+      "kind": "responsory",
+      "locator": "weeks.1.SAT.lauds.responsory",
+      "declared": 557,
+      "reason": "no-fingerprint-match"
     },
     {
       "file": "src/data/loth/propers/christmas.json",
@@ -263,6 +302,27 @@
     },
     {
       "file": "src/data/loth/propers/lent.json",
+      "kind": "responsory",
+      "locator": "weeks.1.SUN.vespers.responsory",
+      "declared": 619,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/lent.json",
+      "kind": "responsory",
+      "locator": "weeks.1.SUN.vespers2.responsory",
+      "declared": 619,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/lent.json",
+      "kind": "responsory",
+      "locator": "weeks.1.MON.lauds.responsory",
+      "declared": 626,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/lent.json",
       "kind": "gospelCanticleAntiphonPage",
       "locator": "weeks.1.MON.lauds.gospelCanticleAntiphonPage",
       "declared": 625,
@@ -281,6 +341,20 @@
     },
     {
       "file": "src/data/loth/propers/lent.json",
+      "kind": "responsory",
+      "locator": "weeks.1.MON.vespers.responsory",
+      "declared": 628,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/lent.json",
+      "kind": "responsory",
+      "locator": "weeks.1.TUE.lauds.responsory",
+      "declared": 626,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/lent.json",
       "kind": "shortReading",
       "locator": "weeks.1.TUE.vespers.shortReading",
       "declared": 632,
@@ -290,12 +364,82 @@
     },
     {
       "file": "src/data/loth/propers/lent.json",
+      "kind": "responsory",
+      "locator": "weeks.1.TUE.vespers.responsory",
+      "declared": 628,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/lent.json",
+      "kind": "responsory",
+      "locator": "weeks.1.WED.lauds.responsory",
+      "declared": 626,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/lent.json",
+      "kind": "responsory",
+      "locator": "weeks.1.WED.vespers.responsory",
+      "declared": 628,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/lent.json",
+      "kind": "responsory",
+      "locator": "weeks.1.THU.lauds.responsory",
+      "declared": 626,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/lent.json",
+      "kind": "responsory",
+      "locator": "weeks.1.THU.vespers.responsory",
+      "declared": 628,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/lent.json",
+      "kind": "responsory",
+      "locator": "weeks.1.FRI.lauds.responsory",
+      "declared": 626,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/lent.json",
+      "kind": "responsory",
+      "locator": "weeks.1.FRI.vespers.responsory",
+      "declared": 628,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/lent.json",
+      "kind": "responsory",
+      "locator": "weeks.1.SAT.lauds.responsory",
+      "declared": 626,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/lent.json",
       "kind": "shortReading",
       "locator": "weeks.6.SUN.vespers.shortReading",
       "declared": 650,
       "matched": 259,
       "delta": -391,
       "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/lent.json",
+      "kind": "responsory",
+      "locator": "weeks.6.SUN.vespers.responsory",
+      "declared": 651,
+      "reason": "no-fingerprint-match"
+    },
+    {
+      "file": "src/data/loth/propers/lent.json",
+      "kind": "responsory",
+      "locator": "weeks.6.SUN.vespers2.responsory",
+      "declared": 651,
+      "reason": "no-fingerprint-match"
     },
     {
       "file": "src/data/loth/propers/lent.json",

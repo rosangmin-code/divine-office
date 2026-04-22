@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-04-22T10:18:27.908Z",
+  "generated": "2026-04-22T14:43:38.652Z",
   "entries": [
     {
       "file": "src/data/loth/psalter/week-1.json",
@@ -378,33 +378,6 @@
       "ref": "Psalm 72:12-20",
       "declared": 256,
       "reason": "part-II-skipped"
-    },
-    {
-      "file": "src/data/loth/psalter/week-2.json",
-      "locator": "days.FRI.lauds.psalms[2]",
-      "ref": "Psalm 147:1-11",
-      "declared": 267,
-      "reason": "no-HS-in-window",
-      "diag": {
-        "headerAll": [
-          267,
-          476,
-          492,
-          584,
-          668,
-          734
-        ],
-        "stanzaAll": [
-          476,
-          734
-        ],
-        "antiphonAll": [],
-        "window": [
-          266,
-          267,
-          268
-        ]
-      }
     },
     {
       "file": "src/data/loth/psalter/week-2.json",
@@ -1156,35 +1129,6 @@
     },
     {
       "file": "src/data/loth/psalter/week-4.json",
-      "locator": "days.THU.lauds.psalms[2]",
-      "ref": "Psalm 147:12-20",
-      "declared": 477,
-      "reason": "no-HS-in-window",
-      "diag": {
-        "headerAll": [
-          267,
-          476,
-          492,
-          584,
-          668,
-          734
-        ],
-        "stanzaAll": [
-          267,
-          493,
-          584,
-          668
-        ],
-        "antiphonAll": [],
-        "window": [
-          476,
-          477,
-          478
-        ]
-      }
-    },
-    {
-      "file": "src/data/loth/psalter/week-4.json",
       "locator": "days.THU.vespers.psalms[0]",
       "ref": "Psalm 144:1-10",
       "declared": 481,
@@ -1508,166 +1452,10 @@
     },
     {
       "file": "src/data/loth/psalter/week-4.json",
-      "locator": "days.FRI.vespers.psalms[2]",
-      "ref": "Revelation 15:3-4",
-      "declared": 503,
-      "reason": "no-HS-in-window",
-      "diag": {
-        "headerAll": [
-          154,
-          160,
-          274,
-          306,
-          316,
-          386,
-          500,
-          735
-        ],
-        "stanzaAll": [
-          154,
-          274,
-          386,
-          500,
-          735
-        ],
-        "antiphonAll": [],
-        "window": [
-          502,
-          503,
-          504
-        ]
-      }
-    },
-    {
-      "file": "src/data/loth/psalter/week-4.json",
-      "locator": "days.SAT.lauds.psalms[0]",
-      "ref": "Psalm 92:2-9",
-      "declared": 513,
-      "reason": "no-HS-in-window",
-      "diag": {
-        "headerAll": [
-          279,
-          505
-        ],
-        "stanzaAll": [
-          279,
-          505
-        ],
-        "antiphonAll": [
-          49,
-          57,
-          67,
-          76,
-          84,
-          91,
-          101,
-          108,
-          116,
-          124,
-          132,
-          141,
-          150,
-          158,
-          166,
-          174,
-          184,
-          194,
-          203,
-          210,
-          219,
-          226,
-          236,
-          245,
-          254,
-          262,
-          271,
-          278,
-          287,
-          294,
-          304,
-          313,
-          322,
-          329,
-          337,
-          343,
-          351,
-          359,
-          367,
-          374,
-          383,
-          390,
-          398,
-          405,
-          414,
-          423,
-          432,
-          440,
-          449,
-          456,
-          464,
-          465,
-          472,
-          480,
-          487,
-          497,
-          504,
-          512,
-          517,
-          523,
-          531,
-          580,
-          583,
-          589,
-          592,
-          664,
-          671,
-          677,
-          683,
-          690,
-          693,
-          733,
-          739,
-          742,
-          844,
-          854
-        ],
-        "window": [
-          512,
-          513,
-          514
-        ]
-      }
-    },
-    {
-      "file": "src/data/loth/psalter/week-4.json",
       "locator": "days.SAT.lauds.psalms[1]",
       "ref": "Ezekiel 36:24-28",
       "declared": 507,
       "reason": "part-II-skipped"
-    },
-    {
-      "file": "src/data/loth/psalter/week-4.json",
-      "locator": "days.SAT.lauds.psalms[2]",
-      "ref": "Psalm 8:2-10",
-      "declared": 517,
-      "reason": "no-HS-in-window",
-      "diag": {
-        "headerAll": [
-          282,
-          508
-        ],
-        "stanzaAll": [
-          283,
-          508,
-          509
-        ],
-        "antiphonAll": [],
-        "window": [
-          516,
-          517,
-          518
-        ]
-      }
     }
   ]
 }
