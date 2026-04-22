@@ -869,7 +869,8 @@
             "antiphon_key": "w2-sat-vesp-ps1",
             "default_antiphon": "Нар мандахаас жаргах хүртэл Эзэний нэр магтагдах болтугай.",
             "title": "Эзэний нэр алдрыг магтан дуулагтун",
-            "gloria_patri": true
+            "gloria_patri": true,
+            "page": 287
           },
           {
             "type": "psalm",

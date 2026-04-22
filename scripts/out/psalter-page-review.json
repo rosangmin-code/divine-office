@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-04-22T05:58:24.558Z",
+  "generated": "2026-04-22T06:23:58.994Z",
   "entries": [
     {
       "file": "src/data/loth/psalter/week-1.json",
@@ -28,18 +28,29 @@
     },
     {
       "file": "src/data/loth/psalter/week-1.json",
-      "locator": "days.THU.lauds.psalms[1]",
-      "ref": "Jeremiah 31:10-14",
-      "declared": 127,
+      "locator": "days.FRI.lauds.psalms[2]",
+      "ref": "Psalm 100:1-5",
+      "declared": 147,
+      "reason": "multiple-HS-in-window",
+      "diag": {
+        "hsMatches": [
+          146,
+          147
+        ],
+        "antiphonAll": []
+      }
+    },
+    {
+      "file": "src/data/loth/psalter/week-1.json",
+      "locator": "days.SAT.lauds.psalms[1]",
+      "ref": "Exodus 15:1-4a, 8-13, 17-18",
+      "declared": 160,
       "reason": "no-HS-in-window",
       "diag": {
         "headerAll": [
-          127
+          160
         ],
-        "stanzaAll": [
-          126,
-          457
-        ],
+        "stanzaAll": [],
         "antiphonAll": [
           51,
           63,
@@ -116,24 +127,10 @@
           855
         ],
         "window": [
-          126,
-          127,
-          128
+          159,
+          160,
+          161
         ]
-      }
-    },
-    {
-      "file": "src/data/loth/psalter/week-1.json",
-      "locator": "days.FRI.lauds.psalms[2]",
-      "ref": "Psalm 100:1-5",
-      "declared": 147,
-      "reason": "multiple-HS-in-window",
-      "diag": {
-        "hsMatches": [
-          146,
-          147
-        ],
-        "antiphonAll": []
       }
     },
     {
@@ -533,25 +530,15 @@
     },
     {
       "file": "src/data/loth/psalter/week-3.json",
-      "locator": "days.THU.vespers.psalms[1]",
-      "ref": "Psalm 132:11-18",
-      "declared": 368,
-      "reason": "part-II-skipped"
-    },
-    {
-      "file": "src/data/loth/psalter/week-3.json",
-      "locator": "days.FRI.lauds.psalms[1]",
-      "ref": "Jeremiah 14:17-21",
-      "declared": 378,
+      "locator": "days.WED.lauds.psalms[1]",
+      "ref": "Isaiah 33:13-16",
+      "declared": 346,
       "reason": "no-HS-in-window",
       "diag": {
         "headerAll": [
-          377,
-          541
+          346
         ],
-        "stanzaAll": [
-          379
-        ],
+        "stanzaAll": [],
         "antiphonAll": [
           51,
           63,
@@ -628,11 +615,18 @@
           855
         ],
         "window": [
-          377,
-          378,
-          379
+          345,
+          346,
+          347
         ]
       }
+    },
+    {
+      "file": "src/data/loth/psalter/week-3.json",
+      "locator": "days.THU.vespers.psalms[1]",
+      "ref": "Psalm 132:11-18",
+      "declared": 368,
+      "reason": "part-II-skipped"
     },
     {
       "file": "src/data/loth/psalter/week-3.json",
