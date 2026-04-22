@@ -7,6 +7,7 @@
 export type LineKind =
   | 'blank'
   | 'verse'
+  | 'metadata'
   | 'refrainMarker'
   | 'stanzaMarker'
   | 'hymnRef'

@@ -45,6 +45,7 @@ export interface HymnParseOptions {
 }
 
 const NOISE_KINDS: ReadonlySet<LineKind> = new Set<LineKind>([
+  'metadata',
   'dateHeader',
   'dateHeaderTail',
   'hymnRef',
@@ -76,6 +77,7 @@ export function parseHymn(raw: string, options: HymnParseOptions = {}): ParseRes
   const lines = classifyLines(raw)
   const diagnostics: ParseDiagnostic[] = []
 
+  tagLeadingMetadata(lines)
   tagDateHeaderTails(lines)
   promoteStanzaMarkers(lines, options.knownTitles)
 
@@ -97,6 +99,38 @@ export function parseHymn(raw: string, options: HymnParseOptions = {}): ParseRes
   }
 
   return { value: { text: kept.join('\n') }, diagnostics }
+}
+
+function tagLeadingMetadata(lines: ClassifiedLine[]): void {
+  let start = 0
+  while (start < lines.length && lines[start].kind === 'blank') start++
+  if (start >= lines.length) return
+  if (!lines[start].trimmed.startsWith('(')) return
+
+  const block: ClassifiedLine[] = []
+  let seenClosing = false
+  for (let i = start; i < lines.length; i++) {
+    const line = lines[i]
+    if (seenClosing) break
+    if (line.kind === 'blank') {
+      break
+    }
+    if (line.kind !== 'verse') break
+    block.push(line)
+    if (line.trimmed.endsWith(')')) {
+      seenClosing = true
+    }
+  }
+
+  if (!block.length || !seenClosing) return
+
+  const blockText = block.map(line => line.trimmed).join(' ')
+  const looksLikeAttribution =
+    block.length > 1 ||
+    /©|(?:^|\s)Ая\s*[-:]|(?:^|\s)Үг\s*[:]|H\.K\.L\.|KUAFA|MUKADI|албан ёсны дуу/i.test(blockText)
+
+  if (!looksLikeAttribution) return
+  for (const line of block) line.kind = 'metadata'
 }
 
 function tagDateHeaderTails(lines: ClassifiedLine[]): void {

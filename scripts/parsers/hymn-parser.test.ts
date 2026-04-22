@@ -95,6 +95,49 @@ const RAW_STANZA_MARKERS_13 = [
   'Дахилт: Өө өө өө өө',
 ].join('\n')
 
+const RAW_LEADING_METADATA_71 = [
+  '(Монгол дахь католик хамтын тунхаглал; Ая - Үг: Hervé',
+  'KUAFA, cicm, Улаанбаатар, © 2009, H.K.L.)',
+  '',
+  '1. Оролцоот сүмийн төлөө',
+  'Тэнгэрбурханы хайрыг гэрчилж',
+  'Тэнгэрлэг түүх соёлоо эрхэмлэж',
+  'Эв нэгдэл шударга ёсыг бэхжүүлж',
+  'Энэрэнгүйгээр нийгэмдээ үйлчилье',
+].join('\n')
+
+const RAW_LEADING_METADATA_98 = [
+  '(Ая: Эрвэ Кюафа Лонци, Улаанбаатар, © 2007, H.K.L.; Үг:',
+  'М. Азжаргал & Б. Болорчимэг)',
+  '',
+  '1. Одод түгсэн нэгэн шөнөөр',
+  'Эртний Давидын хотод',
+  'Бүх ертөнцийн жаргалын төлөө',
+  'Бяцхан элч Есүс мэндэллээ',
+].join('\n')
+
+const RAW_LEADING_METADATA_106 = [
+  '(2023 онд АРИУН ЭЦЭГ ПАП ФРАНЦИС-ийн Монголд',
+  'хийсэн айлчлалын албан ёсны дуу. Дууны үгийг Fr Dido',
+  'MUKADI, Апостолик Захиргааны Шашны ёслолын хороо',
+  'болон Hervé KUAFA бичсэн. Хөгжмийг Hervé KUAFA',
+  'зохиож, найруулсан - Улаанбаатар, © 2023, Монгол дахь',
+  'Католик Шашин Бүх эрх хуулиар хамгаалагдсан)',
+  '',
+  'Хамтдаа найдацгаая (4x)',
+  '1.Ирээдүйд биднийг юу хүлээж байгааг бид харж',
+  'чадахгүй',
+  'Дахилт: Найдвар алдалгүй итгэж найдацгаая',
+].join('\n')
+
+const RAW_PARENTHETICAL_SUBTITLE_70 = [
+  '(Мариад залбирах дуу)',
+  'Намуун дөлгөөн эмэгтэй тайван гэрэл',
+  'өглөөний од',
+  'Тэгээд хүчтэй бас хурц даруу ээж энхийн тагтаа',
+  'Бидний төлөө та залбираач',
+].join('\n')
+
 const KNOWN_TITLES_SMALL = new Set([
   'Аав аа Та миний баяр', // hymn #1 — should be recognized as TOC target
   'Амар амгалан Мариа',   // #10
@@ -150,5 +193,31 @@ describe('parseHymn', () => {
     expect(text).toContain('7. Хүний гэмийг хүчрэлгүй')
     expect(text).toContain('Өвдөг сөхрөн унасан ч')
     expect(text).toContain('Дахилт: Өө өө')
+  })
+
+  it('strips a leading parenthetical attribution block before the hymn body (#71, #98)', () => {
+    for (const raw of [RAW_LEADING_METADATA_71, RAW_LEADING_METADATA_98]) {
+      const result = parseHymn(raw)
+      const text = result.value?.text ?? ''
+      expect(text).not.toContain('©')
+      expect(text).not.toContain('KUAFA')
+      expect(text.split('\n')[0]).not.toMatch(/^\(/)
+    }
+  })
+
+  it('strips a multi-line parenthetical preface before real verses (#106)', () => {
+    const result = parseHymn(RAW_LEADING_METADATA_106)
+    const text = result.value?.text ?? ''
+    expect(text).toContain('Хамтдаа найдацгаая (4x)')
+    expect(text).toContain('Дахилт: Найдвар алдалгүй')
+    expect(text).not.toContain('АРИУН ЭЦЭГ ПАП ФРАНЦИС')
+    expect(text).not.toContain('© 2023')
+  })
+
+  it('keeps a single-line parenthetical subtitle when it is part of the hymn body (#70)', () => {
+    const result = parseHymn(RAW_PARENTHETICAL_SUBTITLE_70)
+    const text = result.value?.text ?? ''
+    expect(text.split('\n')[0]).toBe('(Мариад залбирах дуу)')
+    expect(text).toContain('Намуун дөлгөөн эмэгтэй тайван гэрэл')
   })
 })
