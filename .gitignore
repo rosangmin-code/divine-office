@@ -39,3 +39,6 @@ next-env.d.ts
 /output_sample.txt
 /parsed_raw.txt
 /psalter_full_text.txt
+
+# personal operational checklists (not shared to repo)
+/docs/security-incident-*.md
