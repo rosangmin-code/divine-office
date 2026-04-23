@@ -34,6 +34,14 @@ const OUT_REVIEW = path.join(OUT_DIR, 'propers-page-review.json')
 const SEASONS = ['advent', 'christmas', 'easter', 'lent', 'ordinary-time']
 const WINDOW = 1
 
+// shortReading bodies often span page breaks (heading on N, body wraps onto
+// N+1 of the facing-page spread) and reuse generic openers ("Тэр үед...",
+// "Ах дүү нар...") that collide across many passages. Give this kind a wider
+// in-window tolerance and attempt body-fingerprint offsets so the matcher
+// tolerates generic openers. Other kinds keep the tight WINDOW=1.
+const SHORT_READING_WINDOW = 25
+const SHORT_READING_BODY_OFFSETS = [0, 5, 10]
+
 function collectFromHour(hourData, pathPrefix, out) {
   if (!hourData || typeof hourData !== 'object') return
   // shortReading
@@ -139,7 +147,10 @@ function main() {
         review.entries.push({ file: relFile, kind: e.kind, locator: e.locator, declared: e.declared, reason: 'empty-body' })
         continue
       }
-      const match = lookupPage(e.body, srcTokens, firstTokenIndex, { safeAmbiguousMin: 15 })
+      const lookupOpts = { safeAmbiguousMin: 15, preferNearPage: e.declared }
+      if (e.kind === 'shortReading') lookupOpts.bodyOffsets = SHORT_READING_BODY_OFFSETS
+      const match = lookupPage(e.body, srcTokens, firstTokenIndex, lookupOpts)
+      const kindWindow = e.kind === 'shortReading' ? SHORT_READING_WINDOW : WINDOW
       if (match === null) {
         statusCounts['manual-review']++
         perKind[e.kind].review++
@@ -147,7 +158,7 @@ function main() {
         continue
       }
       if (match === e.declared) { statusCounts.agree++; perKind[e.kind].agree++; continue }
-      if (Math.abs(match - e.declared) > WINDOW) {
+      if (Math.abs(match - e.declared) > kindWindow) {
         statusCounts['manual-review']++
         perKind[e.kind].review++
         review.entries.push({ file: relFile, kind: e.kind, locator: e.locator, declared: e.declared, matched: match, delta: match - e.declared, reason: 'out-of-window' })

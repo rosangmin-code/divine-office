@@ -88,30 +88,75 @@ function findAllPagesForFingerprint(needle, tokens, firstTokenIndex) {
  *  - Try a long fingerprint (up to 25 tokens). Shrink one token at a time.
  *  - Stop at the first length that yields any match.
  *  - If that match resolves to a single distinct page → return it.
- *  - If multiple distinct pages but the fingerprint is long (≥ SAFE_AMBIGUOUS_MIN)
- *    → return the earliest page (genuinely repeated PDF text, not prefix collision).
- *  - Otherwise (short ambiguous match) → return null (refuse to guess).
+ *  - If multiple distinct pages but the fingerprint is long (≥ SAFE_AMBIGUOUS_MIN):
+ *    - With `preferNearPage` hint → return the page closest to the hint
+ *      (tie → earlier). Used when callers know a *declared* page and want
+ *      to validate whether it matches.
+ *    - Without hint → return the earliest page (current default behaviour).
+ *  - For short ambiguous matches, with a hint → pick the nearest page within
+ *    `nearWindow`; otherwise null.
+ *
+ * Body-fingerprint mode: when `bodyOffsets` includes offsets > 0, the matcher
+ * also attempts mid-body token windows. This resists false positives from
+ * generic openers ("Тэр үед...", "Ах дүү нар маань...") that recur across
+ * many Bible passages — the deeper window carries distinctive tokens that
+ * disambiguate.
+ *
+ * Options:
+ *  - safeAmbiguousMin  - fingerprint length threshold for "trust earliest/nearest"
+ *  - maxFingerprint, minFingerprint - length bounds
+ *  - preferNearPage    - when ambiguous, pick the page closest to this hint
+ *  - nearWindow        - distance ceiling for short-ambiguous fallback (default 3)
+ *  - bodyOffsets       - start offsets to attempt; default [0]
  */
 function lookupPage(text, tokens, firstTokenIndex, options = {}) {
   const SAFE_AMBIGUOUS_MIN = options.safeAmbiguousMin ?? 10
   const maxFingerprint = options.maxFingerprint ?? 25
   const minFingerprint = options.minFingerprint ?? 3
+  const preferNearPage = options.preferNearPage ?? null
+  const nearWindow = options.nearWindow ?? 3
+  const bodyOffsets = options.bodyOffsets ?? [0]
 
   const all = tokenize(text)
   if (all.length === 0) return null
 
-  const maxLen = Math.min(all.length, maxFingerprint)
-  for (let len = maxLen; len >= minFingerprint; len--) {
-    if (len > all.length) continue
-    const pages = findAllPagesForFingerprint(all.slice(0, len), tokens, firstTokenIndex)
-    if (pages.length === 0) continue
-    const distinct = [...new Set(pages.filter(p => p !== null))]
-    if (distinct.length === 0) continue
-    if (distinct.length === 1) return distinct[0]
-    if (len >= SAFE_AMBIGUOUS_MIN) return Math.min(...distinct)
+  function pickNearest(distinct) {
+    if (preferNearPage == null) return Math.min(...distinct)
+    return [...distinct].sort((a, b) => {
+      const da = Math.abs(a - preferNearPage)
+      const db = Math.abs(b - preferNearPage)
+      return da !== db ? da - db : a - b
+    })[0]
+  }
+
+  function tryFrom(offset) {
+    const slice = all.slice(offset)
+    const maxLen = Math.min(slice.length, maxFingerprint)
+    for (let len = maxLen; len >= minFingerprint; len--) {
+      if (len > slice.length) continue
+      const pages = findAllPagesForFingerprint(slice.slice(0, len), tokens, firstTokenIndex)
+      if (pages.length === 0) continue
+      const distinct = [...new Set(pages.filter(p => p !== null))]
+      if (distinct.length === 0) continue
+      if (distinct.length === 1) return distinct[0]
+      if (len >= SAFE_AMBIGUOUS_MIN) return pickNearest(distinct)
+      if (preferNearPage != null) {
+        const near = distinct.filter(p => Math.abs(p - preferNearPage) <= nearWindow)
+        if (near.length > 0) return pickNearest(near)
+      }
+      return null
+    }
     return null
   }
-  return null
+
+  const candidates = []
+  for (const off of bodyOffsets) {
+    const m = tryFrom(off)
+    if (m !== null) candidates.push(m)
+  }
+  if (candidates.length === 0) return null
+  if (preferNearPage != null) return pickNearest([...new Set(candidates)])
+  return candidates[0]
 }
 
 /**
