@@ -75,4 +75,44 @@ test.describe('Intercessions (Гуйлтын залбирал) role structure', 
       await expect(responseNodes.first()).toContainText('-')
     })
   })
+
+  // Stage 6 확산 — intercessions rich overlay (propers 56/56 PASS). FR-153 의
+  // Stage 6 범위로 관리. rich overlay 가 merge 된 seasonal propers (예: Advent
+  // Week 1 THU Lauds, page 570) 에서 PrayerText AST 가 렌더된다.
+  test.describe('Rich overlay — seasonal propers (FR-153 Stage 6)', () => {
+    // @fr FR-153
+    test('Advent weekday lauds uses rich overlay (single-node body, no data-role fallback)', async ({
+      page,
+    }) => {
+      await page.goto(`/pray/${DATES.adventWeekday}/lauds`)
+      const section = page.locator('section[aria-label="Гуйлтын залбирал"]')
+      await expect(section).toBeVisible()
+
+      // Rich 경로는 RichContent 단일 컨테이너를 통해 렌더되며, 기존 구조화
+      // data-role (refrain/petition/response) 을 부여하지 않는다. 반대로
+      // legacy 경로는 data-role 을 단다. rich 경로가 활성화됐다는 증거.
+      const legacyRefrain = section.locator('[data-role="intercessions-refrain"]')
+      await expect(legacyRefrain).toHaveCount(0)
+
+      // RichContent 래퍼 (`<div class="space-y-2">`) 가 적어도 하나 존재.
+      const richWrapper = section.locator('div.space-y-2')
+      await expect(richWrapper).toHaveCount(1)
+
+      // 본문 내용 확인: Advent Week 1 Thursday Lauds intercessions 첫 문장.
+      // 원문 JSON 의 items[0] 앞부분. 도입문이 ":" 으로 끝나는지도 검증.
+      await expect(section).toContainText('Христ бол Тэнгэрбурханы')
+      await expect(section).toContainText('залбирцгаая:')
+    })
+
+    // @fr FR-153
+    test('rich response line renders red hyphen prefix (PDF rubric)', async ({ page }) => {
+      await page.goto(`/pray/${DATES.adventWeekday}/lauds`)
+      const section = page.locator('section[aria-label="Гуйлтын залбирал"]')
+
+      // stanza line 1 의 rubric span 으로 "- " 가 들어간다 → RichContent 는
+      // rubric span 을 RUBRIC_CLASS (text-red-700) 로 감싼다.
+      const rubricDash = section.locator('span.text-red-700', { hasText: /^-\s*$/ })
+      await expect(rubricDash.first()).toBeVisible()
+    })
+  })
 })

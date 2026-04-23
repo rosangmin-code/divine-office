@@ -736,6 +736,21 @@ export async function buildProsePrayer({
   maxExtraPages = 0,
   pdfCorrections = [],
 }) {
+  const applyCorrectionsToLines = (lines) => {
+    if (!Array.isArray(pdfCorrections) || pdfCorrections.length === 0) return lines
+    return lines.map((line) => {
+      if (typeof line !== 'string') return line
+      let out = line
+      for (const { from, to } of pdfCorrections) {
+        if (typeof from === 'string' && typeof to === 'string') {
+          out = out.split(from).join(to)
+        }
+      }
+      return out
+    })
+  }
+  // Line-level 치환이 잡지 못하는 단락 경계 넘는 교정을 위해 블록 text
+  // 위에서도 한 번 더 적용. 동일 치환이 idempotent 하므로 이중 적용 안전.
   const applyCorrections = (blocks) => {
     if (!Array.isArray(pdfCorrections) || pdfCorrections.length === 0) return
     for (const block of blocks) {
@@ -764,7 +779,7 @@ export async function buildProsePrayer({
     maxExtraPages: 0,
   })
   let blocks = buildProseBlocks({
-    bodyLines: region.bodyLines,
+    bodyLines: applyCorrectionsToLines(region.bodyLines),
     stylePageBody: region.stylePageBody,
   })
   applyCorrections(blocks)
@@ -798,7 +813,7 @@ export async function buildProsePrayer({
         maxExtraPages,
       })
       blocks = buildProseBlocks({
-        bodyLines: region.bodyLines,
+        bodyLines: applyCorrectionsToLines(region.bodyLines),
         stylePageBody: region.stylePageBody,
       })
       applyCorrections(blocks)

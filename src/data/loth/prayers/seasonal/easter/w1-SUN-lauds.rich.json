@@ -194,5 +194,74 @@
       "dayKey": "SUN",
       "hour": "lauds"
     }
+  },
+  "alternativeConcludingPrayerRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Аяа, юм бүхнийг бүтээгч Тэнгэрбурхан Эцэг"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "минь, Таны бүтээлийн титэм Хүний Хүү байсан"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "билээ. Эхлэл үгүй боловч, эмэгтэйгээс мэндэлсэн"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Тэрээр бидний төлөө зовсон боловч мөнх амьтай"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "болсон билээ. Бидний мөнх бусын амьдрал Түүнтэй хамт амилах гэсэн туйлын аз жаргалын титмийг хүртэх болтугай. Тэрээр мөнхийн мөнх Эзэн билээ."
+          }
+        ]
+      }
+    ],
+    "page": 702,
+    "source": {
+      "kind": "seasonal",
+      "season": "EASTER",
+      "weekKey": "1",
+      "dayKey": "SUN",
+      "hour": "lauds"
+    }
   }
 }

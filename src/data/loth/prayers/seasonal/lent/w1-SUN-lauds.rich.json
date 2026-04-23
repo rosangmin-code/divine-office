@@ -182,5 +182,86 @@
       "dayKey": "SUN",
       "hour": "lauds"
     }
+  },
+  "alternativeConcludingPrayerRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Аяа, Эзэн Тэнгэрбурхан минь, Та газрын"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "шорооноос хүнийг хэлбэржүүлж, амин"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "амьсгалыг үлээж оруулсан боловч тэр Танаас"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "нүүр бууруулан, гэм нүгэл үйлдсэн билээ. Гэмших энэ цаг үеэр бид Танаас өршөөлийг гуйж байна. Биднийг Тан руу болон загалмайн үхлийг бидний төлөө ялсан Таны Хүүгийн амьдрал руу"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "буцан очиход тусална уу."
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Тэрээр үүрд мөнх оршин хаанчилдаг билээ."
+          }
+        ]
+      }
+    ],
+    "page": 620,
+    "source": {
+      "kind": "seasonal",
+      "season": "LENT",
+      "weekKey": "1",
+      "dayKey": "SUN",
+      "hour": "lauds"
+    }
   }
 }

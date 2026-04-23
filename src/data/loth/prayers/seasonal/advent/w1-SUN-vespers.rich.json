@@ -242,5 +242,110 @@
       "dayKey": "SUN",
       "hour": "vespers"
     }
+  },
+  "alternativeConcludingPrayerRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Аяа, Тэнгэр дэх Эцэг минь, бидний зүрх сэтгэл"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Таны хайр энэрлийг хүсдэг бөгөөд бидний"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "оюун ухаан Таны Үгийн гэгээн гэрлийг хайдаг тул бидний Аврагч Есүс Христийн төлөөх хүслийг минь Та нэмэгдүүлж, мөн хайрын дотор өсөж хөгжих хүч чадлыг бидэнд соёрхоно уу. Ингэснээр Түүнийг ирэхэд бид Түүнтэй хамт баярлацгааж, Түүний үнэний гэгээн гэрлийг"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "хүлээн авах болно."
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Үүнийг бид Эзэн Христээр уламжлан залбиран"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "гуйж байна. Тэрээр Тантай, Ариун Сүнсний"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "нэгдэлтэй, үүрд мөнх оршин хаанчилдаг цорын"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "ганц Тэнгэрбурхан билээ."
+          }
+        ]
+      }
+    ],
+    "page": 550,
+    "source": {
+      "kind": "seasonal",
+      "season": "ADVENT",
+      "weekKey": "1",
+      "dayKey": "SUN",
+      "hour": "vespers"
+    }
   }
 }
