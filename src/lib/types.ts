@@ -262,6 +262,7 @@ export interface AssembledPsalm {
   stanzasRich?: PrayerText       // FR-153f: rich AST overlay for stanzas (indent 0/1/2 + refrain role)
   gloriaPatri: boolean
   psalmPrayer?: string           // Дууллыг төгсгөх залбирал — post-Gloria Patri oratio
+  psalmPrayerRich?: PrayerText   // FR-153h: rich AST overlay for psalmPrayer (prose blocks + rubric spans)
   psalmPrayerPage?: number       // Source PDF page number of the psalmPrayer
   page?: number                  // Source PDF page number
 }

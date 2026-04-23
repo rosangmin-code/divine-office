@@ -4,6 +4,7 @@ import type { AssembledPsalm } from '@/lib/types'
 import { useSettings } from '@/lib/settings'
 import { PageRef } from './page-ref'
 import { AntiphonBox } from './prayer-renderer'
+import { RichContent } from './prayer-sections/rich-content'
 
 export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; antiphonNumber?: number }) {
   const { settings } = useSettings()
@@ -109,9 +110,16 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
           <p className="text-sm font-semibold text-red-700 dark:text-red-400">
             Дууллыг төгсгөх залбирал <PageRef page={psalm.psalmPrayerPage} />
           </p>
-          <p className="mt-1 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
-            {psalm.psalmPrayer}
-          </p>
+          {psalm.psalmPrayerRich && psalm.psalmPrayerRich.blocks.length > 0 ? (
+            <RichContent
+              content={psalm.psalmPrayerRich}
+              className="mt-1"
+            />
+          ) : (
+            <p className="mt-1 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
+              {psalm.psalmPrayer}
+            </p>
+          )}
         </div>
       )}
 
