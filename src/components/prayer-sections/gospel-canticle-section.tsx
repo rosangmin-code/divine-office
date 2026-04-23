@@ -16,8 +16,15 @@ export function GospelCanticleSection({
   const name = CANTICLE_NAMES[section.canticle] ?? section.canticle
   return (
     <section aria-label={name} className="mb-4">
+      {/*
+        Heading page ref points at the FIXED ordinarium body (`bodyPage`),
+        not the daily propers antiphon page. The antiphon page is rendered
+        on the AntiphonBox below. This split prevents the long-standing
+        confusion where users opened the PDF to e.g. p722 expecting the
+        Magnificat body and found only the seasonal antiphon (task #11).
+      */}
       <p className="text-sm font-semibold text-red-700 dark:text-red-400">
-        {name} <PageRef page={section.page} />
+        {name} <PageRef page={section.bodyPage} />
       </p>
 
       {section.antiphon && (

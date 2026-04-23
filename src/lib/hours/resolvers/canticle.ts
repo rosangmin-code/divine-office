@@ -9,7 +9,7 @@ export function resolveGospelCanticle(
   hour: HourType,
   canticlesData: Record<
     string,
-    { ref: string; titleMn: string; verses?: string[]; doxology?: string }
+    { ref: string; titleMn: string; verses?: string[]; doxology?: string; page?: number }
   >,
   antiphon: string,
   page?: number,
@@ -24,6 +24,13 @@ export function resolveGospelCanticle(
   const canticleInfo = canticlesData[canticleKey]
   if (!canticleInfo) return null
 
+  // `page` is the seasonal antiphon page (from propers); `bodyPage` is the
+  // fixed ordinarium page where the canticle verses are printed (same every
+  // day). Prior to this split, `page` alone was attached to the canticle
+  // heading in the UI, which made it look as though the Magnificat body was
+  // printed on the daily propers page. See task #11.
+  const bodyPage = typeof canticleInfo.page === 'number' ? canticleInfo.page : undefined
+
   if (canticleInfo.verses && canticleInfo.verses.length > 0) {
     return {
       type: 'gospelCanticle',
@@ -33,6 +40,7 @@ export function resolveGospelCanticle(
       verses: canticleInfo.verses,
       doxology: canticleInfo.doxology,
       page,
+      bodyPage,
     }
   }
 
@@ -51,5 +59,6 @@ export function resolveGospelCanticle(
     antiphon: antiphon || '',
     text,
     page,
+    bodyPage,
   }
 }
