@@ -10,11 +10,13 @@
  *
  * Schema: PsalmEntry.seasonal_antiphons?: {
  *   easter?: string
+ *   easterAlt?: string
  *   advent?: string
  *   adventDec17_23?: string
  *   adventDec24?: string
  *   easterSunday?: Record<number, string>
  *   lentSunday?: Record<number, string>
+ *   lentPassionSunday?: string
  * }
  */
 
@@ -54,11 +56,13 @@ function main() {
             const ordered = {}
             for (const k of [
               'easter',
+              'easterAlt',
               'advent',
               'adventDec17_23',
               'adventDec24',
               'easterSunday',
               'lentSunday',
+              'lentPassionSunday',
             ]) {
               if (k in sa) ordered[k] = sa[k]
             }

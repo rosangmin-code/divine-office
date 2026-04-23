@@ -44,6 +44,7 @@ const PsalmEntrySchema = z
     seasonal_antiphons: z
       .object({
         easter: z.string().optional(),
+        easterAlt: z.string().optional(),
         advent: z.string().optional(),
         adventDec17_23: z.string().optional(),
         adventDec24: z.string().optional(),
@@ -53,6 +54,7 @@ const PsalmEntrySchema = z
         // values automatically, so callers can write { 3: "…", 4: "…" }.
         easterSunday: z.record(z.string(), z.string()).optional(),
         lentSunday: z.record(z.string(), z.string()).optional(),
+        lentPassionSunday: z.string().optional(),
       })
       .loose()
       .optional(),

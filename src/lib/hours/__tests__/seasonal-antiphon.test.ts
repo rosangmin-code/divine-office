@@ -199,4 +199,75 @@ describe('pickSeasonalVariant', () => {
       'Амилсан Эзэн. Аллэлуяа!',
     )
   })
+
+  // @fr FR-155 Phase 3
+  it('lentPassionSunday wins over lentSunday[5] on Lent 5th Sunday (Passion Sunday)', () => {
+    const entry: PsalmEntry = {
+      ...baseEntry,
+      seasonal_antiphons: {
+        lentSunday: { 5: 'Lent 5th generic.' },
+        lentPassionSunday: 'Христ жанчигдаж, гутаан доромжлогдсон.',
+      },
+    }
+    // Passion Sunday (week 5) picks the more-specific field.
+    expect(pickSeasonalVariant(entry, 'LENT', '2026-03-29', 'SUN', 5)).toBe(
+      'Христ жанчигдаж, гутаан доромжлогдсон.',
+    )
+    // Other Lent Sundays still use lentSunday[N].
+    const entryNoPassion: PsalmEntry = {
+      ...baseEntry,
+      seasonal_antiphons: {
+        lentSunday: { 4: 'Lent 4th Laetare.' },
+      },
+    }
+    expect(pickSeasonalVariant(entryNoPassion, 'LENT', '2026-03-22', 'SUN', 4)).toBe(
+      'Lent 4th Laetare.',
+    )
+    // Passion Sunday weekday (MON of week 5) — per-Sunday gate requires SUN, falls through.
+    expect(pickSeasonalVariant(entry, 'LENT', '2026-03-30', 'MON', 5)).toBeUndefined()
+  })
+
+  // @fr FR-155 Phase 3
+  it('easterAlt is a fallback — used only when easter is absent/empty', () => {
+    // easter present → easterAlt ignored
+    const entryBoth: PsalmEntry = {
+      ...baseEntry,
+      seasonal_antiphons: {
+        easter: 'Primary Easter. Аллэлуяа!',
+        easterAlt: 'Alternate Easter. Аллэлуяа!',
+      },
+    }
+    expect(pickSeasonalVariant(entryBoth, 'EASTER', '2026-04-23', 'THU', 3)).toBe(
+      'Primary Easter. Аллэлуяа!',
+    )
+    // easter absent → easterAlt chosen
+    const entryAltOnly: PsalmEntry = {
+      ...baseEntry,
+      seasonal_antiphons: { easterAlt: 'Үхлээс амилсан Христ. Аллэлуяа!' },
+    }
+    expect(pickSeasonalVariant(entryAltOnly, 'EASTER', '2026-04-23', 'THU', 3)).toBe(
+      'Үхлээс амилсан Христ. Аллэлуяа!',
+    )
+    // easter empty string → easterAlt chosen (treats empty as absent)
+    const entryEmptyEaster: PsalmEntry = {
+      ...baseEntry,
+      seasonal_antiphons: { easter: '', easterAlt: 'Fallback picked.' },
+    }
+    expect(pickSeasonalVariant(entryEmptyEaster, 'EASTER', '2026-04-23', 'THU', 3)).toBe(
+      'Fallback picked.',
+    )
+    // Non-Easter season ignores both.
+    expect(pickSeasonalVariant(entryAltOnly, 'ADVENT', '2025-12-04', 'THU', 1)).toBeUndefined()
+    // Per-Sunday easter override still outranks easterAlt on matching SUN+week.
+    const entryAllThree: PsalmEntry = {
+      ...baseEntry,
+      seasonal_antiphons: {
+        easterAlt: 'Alt fallback.',
+        easterSunday: { 3: 'Per-Sunday win. Аллэлуяа!' },
+      },
+    }
+    expect(pickSeasonalVariant(entryAllThree, 'EASTER', '2026-04-19', 'SUN', 3)).toBe(
+      'Per-Sunday win. Аллэлуяа!',
+    )
+  })
 })

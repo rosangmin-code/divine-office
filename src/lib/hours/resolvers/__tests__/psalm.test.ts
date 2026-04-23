@@ -135,4 +135,39 @@ describe('resolvePsalm — seasonal antiphon selection chain', () => {
     const result = await resolvePsalm(entry, undefined, 'ORDINARY_TIME', '2026-06-15', 'MON', 11)
     expect(result.antiphon).toBe(baseEntry.default_antiphon)
   })
+
+  // @fr FR-155 Phase 3
+  it('Passion Sunday (LENT SUN week 5) picks lentPassionSunday over lentSunday[5]', async () => {
+    const entry: PsalmEntry = {
+      ...baseEntry,
+      seasonal_antiphons: {
+        lentSunday: { 5: 'Lent 5th generic.' },
+        lentPassionSunday: 'Христ жанчигдаж, гутаан доромжлогдсон.',
+      },
+    }
+    // Passion Sunday 2026-03-29 (Lent week 5)
+    const passion = await resolvePsalm(entry, undefined, 'LENT', '2026-03-29', 'SUN', 5)
+    expect(passion.antiphon).toBe('Христ жанчигдаж, гутаан доромжлогдсон.')
+  })
+
+  // @fr FR-155 Phase 3
+  it('easterAlt fallback fires only when easter is absent/empty', async () => {
+    // easter absent → easterAlt chosen, append-Alleluia SKIPPED (PDF variant)
+    const altOnly: PsalmEntry = {
+      ...baseEntry,
+      seasonal_antiphons: { easterAlt: 'Үхлээс амилсан Христ. Аллэлуяа!' },
+    }
+    const r1 = await resolvePsalm(altOnly, undefined, 'EASTER', '2026-04-23', 'THU', 3)
+    expect(r1.antiphon).toBe('Үхлээс амилсан Христ. Аллэлуяа!')
+    // easter present → easterAlt ignored
+    const bothPresent: PsalmEntry = {
+      ...baseEntry,
+      seasonal_antiphons: {
+        easter: 'Primary. Аллэлуяа!',
+        easterAlt: 'Alternate.',
+      },
+    }
+    const r2 = await resolvePsalm(bothPresent, undefined, 'EASTER', '2026-04-23', 'THU', 3)
+    expect(r2.antiphon).toBe('Primary. Аллэлуяа!')
+  })
 })

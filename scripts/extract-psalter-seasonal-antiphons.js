@@ -18,11 +18,13 @@
  *
  * Markers recognised:
  *   Амилалтын улирал:                                        → easter
+ *   Эсвэл, амилалтын цаг улирлын үед:                        → easterAlt
  *   Ирэлтийн цаг улирал:                                     → advent
  *   12 сарын 17-23:                                          → adventDec17_23
  *   12 сарын 24:                                             → adventDec24
  *   Амилалтын цаг улирлын {M,N} дэх/дахь Ням гараг:         → easterSunday[N]
  *   Дөчин хоногийн цаг улирлын N дэх/дахь Ням гараг:        → lentSunday[N]
+ *   тарчлалтын Ням гараг:                                    → lentPassionSunday
  *
  * Matching strategy:
  *   Sequential: JSON entries appear in PDF in the same order (w1 SUN
@@ -114,17 +116,23 @@ const TERMINATORS = [
   /^["“][Дд]уулал\s+\d+["”]\s+нь/,
 ]
 
-// SKIP markers: these introduce antiphon variants that the Phase 1
-// schema does not represent (Passion Sunday, Holy Week, Dec 24 fallback
-// rubric). When encountered, we flush the current variant (if any) and
-// switch to a "discard" state that consumes following text until the
+// SKIP markers: these introduce antiphon variants that the schema does
+// not represent yet (Holy Week fine-grained Triduum antiphons, conditional
+// Dec 24 rubric). When encountered, we flush the current variant (if any)
+// and switch to a "discard" state that consumes following text until the
 // next real marker or terminator. This prevents bleed-through into the
 // preceding legitimate variant.
+//
+// Phase 3 (task #15) promoted `тарчлалтын Ням гараг:` to lentPassionSunday
+// (see MARKERS below). The wrapped compound forms are still listed as
+// SKIP because their label prefix overlaps other markers ambiguously —
+// they occur as standalone variant labels in the PDF and the extractor
+// cannot safely commit them to a single field without more layout work.
 const SKIP_MARKERS = [
-  /^тарчлалтын\s+Ням\s+гараг:/,
   /^Ариун\s+долоо\s+хоног:/,
   /^Хэрэв\s+энэ\s+Ням\s+гараг/,
-  // Wrapped / compound forms of Passion Sunday marker.
+  // Wrapped / compound forms of Passion Sunday marker (standalone forms
+  // outside the per-entry Passion Sunday rubric — kept as SKIP).
   /^Дөчин хоногийн цаг улирал,\s+Эзэний тарчлалтын\s+Ням\s+гараг:/,
   /^Ням\s+гараг\s+Дөчин хоногийн цаг улирал,\s+Эзэний\s+тарчлалтын\s+Ням\s+гараг:/,
 ]
@@ -144,6 +152,21 @@ const MARKERS = [
     season: 'easterSunday',
     re: /^Амилалтын цаг улирлын\s+([\d,\s]+)\s+(?:дэх|дахь)\s+Ням\s+гараг:\s*(.*)$/,
     isPerSunday: true,
+  },
+  // Passion Sunday (Phase 3, task #15). Matches only the bare per-entry
+  // label "тарчлалтын Ням гараг:" — the wrapped compound forms
+  // ("Дөчин хоногийн цаг улирал, Эзэний тарчлалтын...") remain SKIP
+  // markers because they introduce different content in the PDF.
+  {
+    season: 'lentPassionSunday',
+    re: /^тарчлалтын\s+Ням\s+гараг:\s*(.*)$/,
+  },
+  // Easter alternate (Phase 3, task #15). Marker precedes easter (short
+  // form) because both start with "Амилалтын"; longer prefix must match
+  // first to avoid being shadowed.
+  {
+    season: 'easterAlt',
+    re: /^Эсвэл,\s+амилалтын\s+цаг\s+улирлын\s+үед:\s*(.*)$/,
   },
   {
     season: 'adventDec24',
