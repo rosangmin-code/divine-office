@@ -48,6 +48,14 @@ html[data-font-size="md"] { font-size: 100%; }
 html[data-font-size="lg"] { font-size: 112.5%; }
 html[data-font-size="xl"] { font-size: 125%; }
 
+/* Horizontal swipe 시 오른쪽에 노출되는 흰 여백 제거. 모바일 Safari/Chrome
+   에서 viewport 밖으로 미는 터치 제스처가 body 를 오버스크롤해 배경이
+   드러나는 문제를 차단. overscroll-behavior-x 는 chained scroll 차단. */
+html, body {
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+}
+
 html[data-font-family="serif"] body {
   font-family: var(--font-serif), serif;
 }
