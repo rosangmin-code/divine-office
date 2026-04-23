@@ -1,0 +1,95 @@
+{
+  "concludingPrayerRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Аяа, Эцэг минь, Таны Хүү Өөрийгөө хүмүүн"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "бидний мөн чанарт илчлэхдээ бидний адил"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "хүмүүн болсон тул биднийг Түүнтэй улам илүү"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "адил болоход тусална уу."
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Тэрээр Тантай, Ариун Сүнсний нэгдэлтэй,"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "үүрд мөнх оршин хаанчилдаг цорын ганц"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Тэнгэрбурхан билээ."
+          }
+        ]
+      }
+    ],
+    "page": 613,
+    "source": {
+      "kind": "seasonal",
+      "season": "CHRISTMAS",
+      "weekKey": "epiphany",
+      "dayKey": "SUN",
+      "hour": "lauds"
+    }
+  }
+}

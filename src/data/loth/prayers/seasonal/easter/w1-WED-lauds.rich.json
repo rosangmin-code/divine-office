@@ -1,0 +1,59 @@
+{
+  "concludingPrayerRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Аяа, Эзэн минь, бид Таны Хүүгийн амилалтыг"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "ёслон тэмдэглэж буй лугаа адил Түүнийг сүр"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "жавхланд нь буцан ирэхэд хамаг гэгээнтнүүдтэй"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "хамт баярлан цэнгэх болтугай. Тэрээр Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг цорын ганц Тэнгэрбурхан билээ."
+          }
+        ]
+      }
+    ],
+    "page": 717,
+    "source": {
+      "kind": "seasonal",
+      "season": "EASTER",
+      "weekKey": "1",
+      "dayKey": "WED",
+      "hour": "lauds"
+    }
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "concludingPrayerRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Аяа, Тэнгэрбурхан Эцэг минь, Та биднийг Өөрсдийн охид хөвгүүд болгосон бөгөөд бидний залуу насны баяр баясгаланг сэргээсэн тул бид найдвар дүүрэн өөрсдийнхөө амилалтыг хүсэн хүлээх болтугай."
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "оршин хаанчилдаг Тэнгэрбурхан Есүс Христ"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "бидний Эзэн, Таны Хүүгээр уламжлан тийн"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "болтугай."
+          }
+        ]
+      }
+    ],
+    "page": 713,
+    "source": {
+      "kind": "seasonal",
+      "season": "EASTER",
+      "weekKey": "1",
+      "dayKey": "TUE",
+      "hour": "lauds"
+    }
+  }
+}

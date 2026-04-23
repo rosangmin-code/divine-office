@@ -1,0 +1,47 @@
+{
+  "concludingPrayerRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Аяа, хамаг сайн сайхны Эцэг минь, Танд үйлчлэх"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "нь бидний баяр баясгалан тул биднийг Танд"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "үйлчлэхэд үнэнч байлгана уу. Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан Есүс Христ бидний Эзэн, Таны Хүүгээр уламжлан тийн болтугай."
+          }
+        ]
+      }
+    ],
+    "page": 815,
+    "source": {
+      "kind": "seasonal",
+      "season": "ORDINARY_TIME",
+      "weekKey": "33",
+      "dayKey": "SUN",
+      "hour": "vespers"
+    }
+  }
+}

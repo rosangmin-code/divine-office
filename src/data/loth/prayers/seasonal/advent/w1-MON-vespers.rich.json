@@ -1,0 +1,71 @@
+{
+  "concludingPrayerRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Аяа, Эзэн Тэнгэрбурхан минь, биднийг Таны Хүү Христийн ирэлтэд бэлдэхэд бидэнд тусална уу. Сэргэг байх бөгөөд даатгал залбиралд баяр цэнгэлтэй биднийг Тэр олох болтугай."
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "оршин хаанчилдаг Тэнгэрбурхан Есүс Христ"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "бидний Эзэн, Таны Хүүгээр уламжлан тийн"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "болтугай."
+          }
+        ]
+      }
+    ],
+    "page": 558,
+    "source": {
+      "kind": "seasonal",
+      "season": "ADVENT",
+      "weekKey": "1",
+      "dayKey": "MON",
+      "hour": "vespers"
+    }
+  }
+}

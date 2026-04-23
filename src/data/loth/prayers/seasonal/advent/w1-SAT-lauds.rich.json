@@ -1,0 +1,119 @@
+{
+  "concludingPrayerRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Аяа, Тэнгэрбурхан бидний Эцэг минь, Та энэ"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "дэлхийг ихэд хайрласан тул Та биднийг хийсэн"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "гэм нүглээс маань болон үхлийн хүчнээс"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "чөлөөлөхийн тулд Өөрийн цорын ганц Хүүг"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "бидэнд өгсөн. Түүний ирэлтийг хүлээж буй"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "тэдгээр хүмүүст туслан, Жинхэнэ эрх чөлөө рүү биднийг хөтөлнө үү."
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "оршин хаанчилдаг Тэнгэрбурхан Есүс Христ"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "бидний Эзэн, Таны Хүүгээр уламжлан тийн болтугай."
+          }
+        ]
+      }
+    ],
+    "page": 579,
+    "source": {
+      "kind": "seasonal",
+      "season": "ADVENT",
+      "weekKey": "1",
+      "dayKey": "SAT",
+      "hour": "lauds"
+    }
+  }
+}

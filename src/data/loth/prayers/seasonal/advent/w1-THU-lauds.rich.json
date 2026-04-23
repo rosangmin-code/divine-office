@@ -1,0 +1,59 @@
+{
+  "concludingPrayerRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Аяа, Эцэг минь, бидэнд Таны тусламж хэрэгтэй байна. Биднийг гэм нүглээс маань чөлөөлж, амьдралд хүргэнэ үү. Та Өөрийн хүч чадлаар"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "биднийг тэтгэнэ үү."
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан Есүс Христ бидний Эзэн, Таны Хүүгээр уламжлан тийн"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "болтугай."
+          }
+        ]
+      }
+    ],
+    "page": 571,
+    "source": {
+      "kind": "seasonal",
+      "season": "ADVENT",
+      "weekKey": "1",
+      "dayKey": "THU",
+      "hour": "lauds"
+    }
+  }
+}

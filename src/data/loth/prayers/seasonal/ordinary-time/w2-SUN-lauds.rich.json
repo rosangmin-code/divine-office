@@ -1,0 +1,59 @@
+{
+  "concludingPrayerRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Аяа, Тэнгэр газрын Эцэг минь, Та бидний даатгал залбирлыг сонсоод, энэ дэлхий дээр амар амгаланд хүрэх замыг бидэнд зааж өгнө үү."
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "оршин хаанчилдаг Тэнгэрбурхан Есүс Христ"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "бидний Эзэн, Таны Хүүгээр уламжлан тийн болтугай."
+          }
+        ]
+      }
+    ],
+    "page": 754,
+    "source": {
+      "kind": "seasonal",
+      "season": "ORDINARY_TIME",
+      "weekKey": "2",
+      "dayKey": "SUN",
+      "hour": "lauds"
+    }
+  }
+}

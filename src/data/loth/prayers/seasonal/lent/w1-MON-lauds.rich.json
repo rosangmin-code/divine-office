@@ -1,0 +1,95 @@
+{
+  "concludingPrayerRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Аяа, бидний Аврагч Тэнгэрбурхан минь, Та биднийг Өөртөө буцаан эргүүлж, бидний оюун ухааныг Өөрийн мэргэн ухаанаар бялхаана уу."
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Бид Дөчин хоногийн цаг улирлын сахилгаараа"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "уламжлан сэтгэлээрээ баян байх болтугай."
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "оршин хаанчилдаг Тэнгэрбурхан Есүс Христ"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "бидний Эзэн, Таны Хүүгээр уламжлан тийн"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "болтугай."
+          }
+        ]
+      }
+    ],
+    "page": 628,
+    "source": {
+      "kind": "seasonal",
+      "season": "LENT",
+      "weekKey": "1",
+      "dayKey": "MON",
+      "hour": "lauds"
+    }
+  }
+}

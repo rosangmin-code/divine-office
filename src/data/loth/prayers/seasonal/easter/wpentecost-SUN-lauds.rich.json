@@ -1,0 +1,83 @@
+{
+  "concludingPrayerRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Аяа, Тэнгэрбурхан Эцэг минь, Сайнмэдээний"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "айлдлын сургалтыг эхлүүлэхийн тулд Таны"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Шашинд илгээсэн Сүнс хамаг итгэгч нарын"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "зүрх сэтгэлээр дамжуулан Өөрийн ажлыг дэлхий"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "дахинаа үргэлжлүүлэх болтугай."
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан Есүс Христ бидний Эзэн, Таны Хүүгээр уламжлан тийн болтугай."
+          }
+        ]
+      }
+    ],
+    "page": 741,
+    "source": {
+      "kind": "seasonal",
+      "season": "EASTER",
+      "weekKey": "pentecost",
+      "dayKey": "SUN",
+      "hour": "lauds"
+    }
+  }
+}
