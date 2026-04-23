@@ -2,6 +2,7 @@ import type { AssembledPsalm, PsalmEntry } from '../../types'
 import { parseScriptureRef } from '../../scripture-ref-parser'
 import { lookupRef } from '../../bible-loader'
 import { loadPsalterTexts } from '../loaders'
+import { loadPsalterTextRich } from '../../prayers/rich-overlay'
 
 /**
  * Resolve a psalm entry into an AssembledPsalm with actual verse text.
@@ -18,12 +19,14 @@ export async function resolvePsalm(
   const psalmText = psalterTexts[entry.ref]
 
   if (psalmText && psalmText.stanzas.length > 0) {
+    const stanzasRich = loadPsalterTextRich(entry.ref) ?? undefined
     return {
       psalmType: entry.type,
       reference: entry.ref,
       title: entry.title,
       antiphon,
       stanzas: psalmText.stanzas,
+      stanzasRich,
       verses: [],
       gloriaPatri: entry.gloria_patri,
       psalmPrayer: psalmText.psalmPrayer,

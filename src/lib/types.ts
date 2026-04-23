@@ -90,7 +90,7 @@ export type PrayerSpan =
 export type PrayerBlock =
   | { kind: 'para'; spans: PrayerSpan[]; indent?: 0 | 1 | 2 }
   | { kind: 'rubric-line'; text: string }      // 단독 루브릭 줄(섹션 제목 등)
-  | { kind: 'stanza'; lines: { spans: PrayerSpan[]; indent: 0 | 1 | 2 }[] }
+  | { kind: 'stanza'; lines: { spans: PrayerSpan[]; indent: 0 | 1 | 2; role?: 'refrain' | 'doxology' }[] }
   | { kind: 'divider' }
 
 export type PrayerSourceRef =
@@ -259,6 +259,7 @@ export interface AssembledPsalm {
   antiphon: string
   verses: { verse: number; text: string }[]  // fallback when stanzas unavailable
   stanzas?: string[][]                        // poetic lines grouped by stanza (from PDF source)
+  stanzasRich?: PrayerText       // FR-153f: rich AST overlay for stanzas (indent 0/1/2 + refrain role)
   gloriaPatri: boolean
   psalmPrayer?: string           // Дууллыг төгсгөх залбирал — post-Gloria Patri oratio
   psalmPrayerPage?: number       // Source PDF page number of the psalmPrayer

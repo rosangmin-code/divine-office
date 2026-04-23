@@ -26,10 +26,40 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
       </div>
 
       {/* Stanzas (PDF source) or Verses (fallback) */}
-      {psalm.stanzas && psalm.stanzas.length > 0 ? (
+      {psalm.stanzasRich && psalm.stanzasRich.blocks && psalm.stanzasRich.blocks.length > 0 ? (
+        <div className="space-y-5 pl-3 md:space-y-4 md:pl-2">
+          {psalm.stanzasRich.blocks.map((block, bi) => {
+            if (block.kind !== 'stanza') return null
+            return (
+              <p
+                key={bi}
+                data-role="psalm-stanza"
+                className="whitespace-pre-line font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200"
+              >
+                {block.lines.map((line, li) => {
+                  const indent = line.indent ?? 0
+                  const indentClass = indent === 0 ? '' : indent === 1 ? 'pl-6' : 'pl-12'
+                  const isRefrain = line.role === 'refrain'
+                  const refrainClass = isRefrain ? ' text-red-700 dark:text-red-400' : ''
+                  const text = line.spans.map((sp) => sp.text ?? '').join('')
+                  return (
+                    <span
+                      key={li}
+                      data-role={isRefrain ? 'psalm-stanza-refrain' : undefined}
+                      className={`block${indentClass ? ' ' + indentClass : ''}${refrainClass}`}
+                    >
+                      {text}
+                    </span>
+                  )
+                })}
+              </p>
+            )
+          })}
+        </div>
+      ) : psalm.stanzas && psalm.stanzas.length > 0 ? (
         <div className="space-y-5 pl-3 md:space-y-4 md:pl-2">
           {psalm.stanzas.map((stanza, si) => (
-            <p key={si} className="whitespace-pre-line font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
+            <p key={si} data-role="psalm-stanza" className="whitespace-pre-line font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
               {stanza.map((line, li) => {
                 // Leading whitespace in the JSON encodes a colon/response indent
                 // level — 2 spaces = 1 level. Backward compatible: existing
