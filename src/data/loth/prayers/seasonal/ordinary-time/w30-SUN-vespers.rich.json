@@ -19,5 +19,122 @@
       "dayKey": "SUN",
       "hour": "vespers"
     }
+  },
+  "alternativeConcludingPrayerRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Аяа, бидний Эзэн Есүс Христийн Эцэг Тэнгэрбурхан минь, Та магтагдах болтугай."
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Таны эвслийн гэрээнээс гаралгүйгээр сайныг үйлдэх хүч гэж байхгүй. Мөн Таны хайр энэрлээс гаралгүйгээр хийх найдварын амлалт гэж байхгүй билээ. Тиймээс Таны эвслийн гэрээг хүлээж авах"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "итгэл бишрэлийг маань Та хүчирхэгжүүлнэ үү."
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Мөн бидэнд Таны тушаалуудыг дагах хайрыг"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "хайрлан соёрхоно уу."
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Үүнийг бид Эзэн Христээр уламжлан залбиран"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "гуйж байна. Тэрээр Тантай, Ариун Сүнсний"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "нэгдэлтэй, үүрд мөнх оршин хаанчилдаг цорын"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "ганц Тэнгэрбурхан билээ."
+          }
+        ]
+      }
+    ],
+    "page": 809,
+    "source": {
+      "kind": "seasonal",
+      "season": "ORDINARY_TIME",
+      "weekKey": "30",
+      "dayKey": "SUN",
+      "hour": "vespers"
+    }
   }
 }

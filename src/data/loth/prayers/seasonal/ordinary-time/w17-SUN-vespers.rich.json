@@ -19,5 +19,122 @@
       "dayKey": "SUN",
       "hour": "vespers"
     }
+  },
+  "alternativeConcludingPrayerRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Аяа, Тэнгэрбурхан бидний Эцэг минь, Таны бүтээлийн гоёмсог байдал дахь, хүн төрөлхтний"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "амьдралын гоо үзэсгэлэн дэх Таны гарын бүтээлүүдийг харуулахад бидний нүдийг нээж өгнө үү. Таны гараар бүтээгдсэн бидний ертөнц ариун нандин байдаг тул эргэн тойрондоо байгаа"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "хишгүүдийг хайрлан нандигнахад Та бидэнд"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "тусална уу. Ингэснээр бид Таны адисыг ахан"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "дүүстэйгээ хуваалцаж, Таны оршихуй дахь"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "амийн баяр жаргалыг мэдрэх болно."
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан Есүс Христ"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "бидний Эзэн, Таны Хүүгээр уламжлан тийн"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "болтугай."
+          }
+        ]
+      }
+    ],
+    "page": 783,
+    "source": {
+      "kind": "seasonal",
+      "season": "ORDINARY_TIME",
+      "weekKey": "17",
+      "dayKey": "SUN",
+      "hour": "vespers"
+    }
   }
 }

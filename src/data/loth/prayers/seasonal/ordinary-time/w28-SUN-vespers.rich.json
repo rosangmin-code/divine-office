@@ -19,5 +19,110 @@
       "dayKey": "SUN",
       "hour": "vespers"
     }
+  },
+  "alternativeConcludingPrayerRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Аяа, тэнгэр дэх Эцэг минь, Таны ачит мутар бидний өдрүүдийн цаг мөч бүрийг хүчтэй хэрнээ"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "алгуурхнаар удирддаг тул Та бидний өмнө эргэл мөргөлийн амьдралын зам дээр маань түрүүлж явж, хэрэгтэй зүйлсээр маань хангаж харин унахаас сэргийлнэ үү. Биднийг итгэл бишрэлээрээ"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "нэгтгэхийн тулд Та Өөрийн Сүнсийг илгээнэ үү."
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Ингэснээр Таны үйлчлэлд оролцсоноороо бид"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Таны оршихуйд баярлах болно."
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан Есүс Христ"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "бидний Эзэн, Таны Хүүгээр уламжлан тийн"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "болтугай."
+          }
+        ]
+      }
+    ],
+    "page": 805,
+    "source": {
+      "kind": "seasonal",
+      "season": "ORDINARY_TIME",
+      "weekKey": "28",
+      "dayKey": "SUN",
+      "hour": "vespers"
+    }
   }
 }

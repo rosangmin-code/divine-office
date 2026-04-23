@@ -31,5 +31,156 @@
       "dayKey": "SUN",
       "hour": "lauds"
     }
+  },
+  "intercessionsRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эзэн Есүс Христэд болон илчлэлтэд баяр хөөртэйгөөр найдан хүлээх ивээлийг бидэнд өгсөн Тэнгэрбурхан Эцэгт хандан бүгдээрээ ийн залбирцгаая:"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "indent": 1,
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эзэн минь, Та өршөөлөө бидэнд үзүүлнэ үү."
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "indent": 0,
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Та бидний оюун ухаан, бие махбодыг ариусгана уу."
+              }
+            ]
+          },
+          {
+            "indent": 1,
+            "spans": [
+              {
+                "kind": "rubric",
+                "text": "- "
+              },
+              {
+                "kind": "text",
+                "text": "Өөрийн Хүүгээ ирэх хүртэл биднийг гэм нүгэлгүй байлгана уу."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "indent": 0,
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Та эдгээр өдрүүдэд биднийг ариун байдал дотор алхуулж,"
+              }
+            ]
+          },
+          {
+            "indent": 1,
+            "spans": [
+              {
+                "kind": "rubric",
+                "text": "- "
+              },
+              {
+                "kind": "text",
+                "text": "Зөвт бөгөөд сүсэг бишрэлтэй амьдралаар энэ дэлхийд амьдруулна уу."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "indent": 0,
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Бид Эзэн Есүс Христээр хувцаслаж"
+              }
+            ]
+          },
+          {
+            "indent": 1,
+            "spans": [
+              {
+                "kind": "rubric",
+                "text": "- "
+              },
+              {
+                "kind": "text",
+                "text": "Ариун Сүнсээр дүүрэх болтугай."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "indent": 0,
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Эзэн, Таны Хүү бүх сүр жавхлангаа илчлэх хүртэл"
+              }
+            ]
+          },
+          {
+            "indent": 1,
+            "spans": [
+              {
+                "kind": "rubric",
+                "text": "- "
+              },
+              {
+                "kind": "text",
+                "text": "Биднийг сэрэмжтэй, бэлэн болгоно уу."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "page": 552,
+    "source": {
+      "kind": "seasonal",
+      "season": "ADVENT",
+      "weekKey": "1",
+      "dayKey": "SUN",
+      "hour": "lauds"
+    }
   }
 }

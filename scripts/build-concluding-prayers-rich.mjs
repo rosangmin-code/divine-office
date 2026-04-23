@@ -47,6 +47,10 @@ const END_OF_BLOCK_PATTERNS = [
   /^Эсвэл/,
   /^Сонголтот\s+залбирал/,
   /^(?:\d+\s+(?:дугаар|дэх|дахь|дүгээр)\s+)?(?:Оройн|Өглөөний)\s+даатгал\s+залбирал/,
+  // "Ням гарагийн 2 дугаар Оройн даатгал залбирлын..." 같이 요일 전치사로
+  // 시작하는 Subscript note (LENT w6/THU/vespers). 기도문 종료 후 다음
+  // 블록으로 넘어가는 이정표로 사용.
+  /^(?:Ням|Да|Мя|Лха|Пү|Ба|Бя)\s+гарагийн/,
   /^(?:Мариагийн|Захариагийн|Шад)\s+магтаал/,
   /^Дууллын\s+залбирал/,
   /^(?:Уншлага|Хариу\s+залбирал|Гуйлтын\s+залбирал)/,
@@ -57,6 +61,15 @@ const END_OF_BLOCK = new RegExp(
   END_OF_BLOCK_PATTERNS.map((p) => `(?:${p.source})`).join('|'),
   'u',
 )
+
+// PDF 원문 오탈자 (스캔/조판 오류) 보정 — bookPage → [{from,to}].
+// JSON 캐논 텍스트가 "올바른" 형태이고 PDF 에 철자/구두점 오류가 있는 경우
+// rich AST 를 캐논과 일치시키기 위한 1:1 치환. 확산 범위가 concludingPrayer
+// 뿐이라 여기 지역화. 새 오탈자가 발견되면 페이지번호와 함께 append.
+const PDF_CORRECTIONS_BY_PAGE = {
+  763: [{ from: 'нүдинй', to: 'нүдний' }],
+  795: [{ from: 'хайрлаж.', to: 'хайрлаж,' }],
+}
 
 const HOURS = ['lauds', 'vespers', 'compline']
 
@@ -109,6 +122,10 @@ async function main() {
                 dayKey,
                 hour,
               },
+              // 일부 concludingPrayer 가 book page 경계를 넘어 다음 페이지로
+              // 흘러가는 경우 (솔렘니티 / 특정 주일) 대응. 2 페이지까지 허용.
+              maxExtraPages: 2,
+              pdfCorrections: PDF_CORRECTIONS_BY_PAGE[page] ?? [],
             })
             if (result.pass === true) {
               const overlayPath = resolve(

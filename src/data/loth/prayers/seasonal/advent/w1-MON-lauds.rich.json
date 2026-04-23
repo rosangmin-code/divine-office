@@ -67,5 +67,156 @@
       "dayKey": "MON",
       "hour": "lauds"
     }
+  },
+  "intercessionsRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Амьд Тэнгэрбурханы Хүү, Эзэн Христ, Гэрлийн гэрэл Та биднийг гэрэл рүү удирдан залж, түүний ариун гэгээн байдлыг илчилнэ үү. Итгэлтэйгээр ийн залбирцгаая:"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "indent": 1,
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эзэн Есүс ээ, Та ирэгтүн!"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "indent": 0,
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Цаглашгүй гэрэл минь, бидний дэргэдэх мананг замхруулна уу."
+              }
+            ]
+          },
+          {
+            "indent": 1,
+            "spans": [
+              {
+                "kind": "rubric",
+                "text": "- "
+              },
+              {
+                "kind": "text",
+                "text": "Бидний итгэлийг нойрноос нь сэрээнэ үү."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "indent": 0,
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Өнөөдөр биднийг хамаг хорон муугаас хамгаална уу."
+              }
+            ]
+          },
+          {
+            "indent": 1,
+            "spans": [
+              {
+                "kind": "rubric",
+                "text": "- "
+              },
+              {
+                "kind": "text",
+                "text": "Таны цог жавхлан биднийг баяр хөөрөөр бялхаах болтугай."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "indent": 0,
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Бидний уулзаж буй бүх хүмүүст хандах үед"
+              }
+            ]
+          },
+          {
+            "indent": 1,
+            "spans": [
+              {
+                "kind": "rubric",
+                "text": "- "
+              },
+              {
+                "kind": "text",
+                "text": "Бидэнд нинжин сэтгэлийг хайрлана уу."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "indent": 0,
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Бидэнд зориулж шинэ дэлхийг бий болгохоор Та ирэгтүн."
+              }
+            ]
+          },
+          {
+            "indent": 1,
+            "spans": [
+              {
+                "kind": "rubric",
+                "text": "- "
+              },
+              {
+                "kind": "text",
+                "text": "Тэнд шударга ёс, амар амгалан байх болно."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "page": 557,
+    "source": {
+      "kind": "seasonal",
+      "season": "ADVENT",
+      "weekKey": "1",
+      "dayKey": "MON",
+      "hour": "lauds"
+    }
   }
 }

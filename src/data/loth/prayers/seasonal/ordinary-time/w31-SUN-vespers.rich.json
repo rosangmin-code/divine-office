@@ -43,5 +43,146 @@
       "dayKey": "SUN",
       "hour": "vespers"
     }
+  },
+  "alternativeConcludingPrayerRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Аяа, тэнгэр дэх Эцэг минь, ид хүчний Тэнгэрбурхан ба нигүүлсэхүйн Эзэн минь, Таны дүүрнээс бид хишиг дээрээ хишгийг хүлээн авсан тул өдөр тутмын хичээл зүтгэлийн алхам"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "бүрийг маань чиглүүлнэ үү. Хүний сэтгэл зүрхний тогтворгүй зан ааш хийгээд найдварыг хязгаарладаг бидний алдаа дутагдал хамаг сайн сайхны эх үүсвэр болсон Таны тухайд биднийг"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "хэзээ ч бүү сохор болготугай. Итгэл бишрэл"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "бидэнд амар амгалангийн амлалтыг өгдөг бөгөөд"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "хайрын шаардлагыг мэдүүлдэг тул итгэлийн"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "билгийн харааг бүдгэрүүлсэн амиа бодох үзлийг"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Та арилгана уу."
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "оршин хаанчилдаг Тэнгэрбурхан Есүс Христ"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "бидний Эзэн, Таны Хүүгээр уламжлан тийн"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "болтугай."
+          }
+        ]
+      }
+    ],
+    "page": 811,
+    "source": {
+      "kind": "seasonal",
+      "season": "ORDINARY_TIME",
+      "weekKey": "31",
+      "dayKey": "SUN",
+      "hour": "vespers"
+    }
   }
 }

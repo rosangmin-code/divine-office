@@ -31,5 +31,216 @@
       "dayKey": "SUN",
       "hour": "vespers"
     }
+  },
+  "intercessionsRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Есүс Христ бол Түүний ирэлтийг хүсэн хүлээж буй бүх хүмүүсийн баяр баясгалан аз жаргал юм. Бүгдээрээ Түүнд хандан ийн залбирцгаая:"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "indent": 1,
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эзэн ирэгтүн, хоцролгүй ирэгтүн!"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "indent": 0,
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Бид Таны ирэхийг баяртайгаар хүлээж байгаа тул"
+              }
+            ]
+          },
+          {
+            "indent": 1,
+            "spans": [
+              {
+                "kind": "rubric",
+                "text": "- "
+              },
+              {
+                "kind": "text",
+                "text": "Ирэгтүн! Эзэн Есүс ээ."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "indent": 0,
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Цаг нь болохоос өмнө Та Эцэгтэйгээ амьдралыг хуваалцсан тул"
+              }
+            ]
+          },
+          {
+            "indent": 1,
+            "spans": [
+              {
+                "kind": "rubric",
+                "text": "- "
+              },
+              {
+                "kind": "text",
+                "text": "Ирэгтүн! Биднийг аварна уу."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "indent": 0,
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Та энэ ертөнцийг болон түүн дээр амьдрах бүх хүмүүсийг бүтээсэн тул"
+              }
+            ]
+          },
+          {
+            "indent": 1,
+            "spans": [
+              {
+                "kind": "rubric",
+                "text": "- "
+              },
+              {
+                "kind": "text",
+                "text": "Ирэгтүн! Өөрийн гарын бүтээлүүдээ аварна уу."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "indent": 0,
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Та үхлийн эрх мэдэл дор хүмүүн болохоос татгалзаагүй тул"
+              }
+            ]
+          },
+          {
+            "indent": 1,
+            "spans": [
+              {
+                "kind": "rubric",
+                "text": "- "
+              },
+              {
+                "kind": "text",
+                "text": "Ирэгтүн! Үхлийн эрх мэдлээс биднийг аварна уу."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "indent": 0,
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Та бидэнд бялхам амийг өгөхөөр ирсэн юм."
+              }
+            ]
+          },
+          {
+            "indent": 1,
+            "spans": [
+              {
+                "kind": "rubric",
+                "text": "- "
+              },
+              {
+                "kind": "text",
+                "text": "Ирэгтүн! Мөнхийн амийг бидэнд хайрлана уу."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "indent": 0,
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Та бүх хүмүүсийг хаанчлалынхаа хайраар амьдруулахыг таалдаг тул"
+              }
+            ]
+          },
+          {
+            "indent": 1,
+            "spans": [
+              {
+                "kind": "rubric",
+                "text": "- "
+              },
+              {
+                "kind": "text",
+                "text": "Ирэгтүн! Тантай нүүр тулан уулзахыг хүссэн тэдгээр хүмүүсийг цуглуулна уу."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "page": 549,
+    "source": {
+      "kind": "seasonal",
+      "season": "ADVENT",
+      "weekKey": "1",
+      "dayKey": "SUN",
+      "hour": "vespers"
+    }
   }
 }

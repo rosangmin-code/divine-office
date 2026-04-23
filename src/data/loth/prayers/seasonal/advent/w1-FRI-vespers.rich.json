@@ -31,5 +31,176 @@
       "dayKey": "FRI",
       "hour": "vespers"
     }
+  },
+  "intercessionsRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Бидний сэтгэлийн Хоньчин болон Харгалзагч болох Христэд бүгдээрээ итгэлтэйгээр ийн хандан дуудацгаая. Эзэн, биднийг өршөөгөөрэй."
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "indent": 0,
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Тэнгэрбурханы хонин сүргийн Сайн хоньчин"
+              }
+            ]
+          },
+          {
+            "indent": 1,
+            "spans": [
+              {
+                "kind": "rubric",
+                "text": "- "
+              },
+              {
+                "kind": "text",
+                "text": "Бүгдийг Шашныхаа дотор цуглуулна уу."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "indent": 0,
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Эзэн Есүс ээ, Өөрийн мөргөлч хүмүүсийн хоньчдод тусална уу."
+              }
+            ]
+          },
+          {
+            "indent": 1,
+            "spans": [
+              {
+                "kind": "rubric",
+                "text": "- "
+              },
+              {
+                "kind": "text",
+                "text": "Таныг дахин иртэл тэд Таны сүргийг хичээнгүйлэн тэжээн тэтгэх болтугай."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "indent": 0,
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Таны сайнмэдээний айлдлыг дэлхийн хязгаар хүртэл тунхаглахын төлөө"
+              }
+            ]
+          },
+          {
+            "indent": 1,
+            "spans": [
+              {
+                "kind": "rubric",
+                "text": "- "
+              },
+              {
+                "kind": "text",
+                "text": "Та бидний дундаас Өөрийн үгийг тунхаглагчдыг сонгоно уу."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "indent": 0,
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Замдаа тэмцэж байгаа болон унаж байгаа бүх хүмүүсийг Та өршөөнө үү."
+              }
+            ]
+          },
+          {
+            "indent": 1,
+            "spans": [
+              {
+                "kind": "rubric",
+                "text": "- "
+              },
+              {
+                "kind": "text",
+                "text": "Тэдэнд туслах найз олох болтугай."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "indent": 0,
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Дэлхий дээр Таны дуу хоолойг сонсдог хүмүүст"
+              }
+            ]
+          },
+          {
+            "indent": 1,
+            "spans": [
+              {
+                "kind": "rubric",
+                "text": "- "
+              },
+              {
+                "kind": "text",
+                "text": "Тэнгэрийн оронд Та Өөрийн сүр жавхланг үзүүлнэ үү."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "page": 576,
+    "source": {
+      "kind": "seasonal",
+      "season": "ADVENT",
+      "weekKey": "1",
+      "dayKey": "FRI",
+      "hour": "vespers"
+    }
   }
 }

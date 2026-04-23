@@ -115,5 +115,156 @@
       "dayKey": "SAT",
       "hour": "lauds"
     }
+  },
+  "intercessionsRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Өөрийн ард түмнийг авралд хүргэхээр дууддаг Тэнгэрбурхан Эцэгтээ ийн залбирцгаая:"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "indent": 1,
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эзэн, Өөрийн ард түмнээ хамгаална уу."
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "indent": 0,
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Та Өөрийн ард түмний дунд зөв шударгын үрийг тарихаа амласан тул"
+              }
+            ]
+          },
+          {
+            "indent": 1,
+            "spans": [
+              {
+                "kind": "rubric",
+                "text": "- "
+              },
+              {
+                "kind": "text",
+                "text": "Та Шашныхаа ариун байдлыг хамгаална уу."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "indent": 0,
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Эзэн, бүх эрэгтэйчүүд болон эмэгтэйчүүдэд Таны үгийг сонсохыг зааж өгнө үү."
+              }
+            ]
+          },
+          {
+            "indent": 1,
+            "spans": [
+              {
+                "kind": "rubric",
+                "text": "- "
+              },
+              {
+                "kind": "text",
+                "text": "Итгэгчдэд ариун байдалд тууштай байхад нь тусална уу."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "indent": 0,
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Биднийг Таны Сүнсийг хайрлахад тусална уу."
+              }
+            ]
+          },
+          {
+            "indent": 1,
+            "spans": [
+              {
+                "kind": "rubric",
+                "text": "- "
+              },
+              {
+                "kind": "text",
+                "text": "Ингэснээр бид удахгүй ирэх Таны Хүүгийн өршөөлийг хүлээн авч болно."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "indent": 0,
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Хамгийн энэрэнгүй Эцэг минь,"
+              }
+            ]
+          },
+          {
+            "indent": 1,
+            "spans": [
+              {
+                "kind": "rubric",
+                "text": "- "
+              },
+              {
+                "kind": "text",
+                "text": "Эзэн Есүс Христийн ирэлтийн өдрийг хүртэл биднийг тасралгүй хүчирхэгжүүлнэ үү."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "page": 578,
+    "source": {
+      "kind": "seasonal",
+      "season": "ADVENT",
+      "weekKey": "1",
+      "dayKey": "SAT",
+      "hour": "lauds"
+    }
   }
 }

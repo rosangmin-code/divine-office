@@ -1,0 +1,83 @@
+{
+  "concludingPrayerRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Аяа, төгс хүчит Тэнгэрбурхан минь, хүмүүнийн"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "дундах Таны Хүүгийн мэндлэлт биднийг гэм"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "нүглийн боолчлолоос чөлөөлж, шинэ амьдралыг"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "хайрлан соёрхох болтугай."
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Үүнийг бид Эзэн Христээр уламжлан залбиран"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "гуйж байна. Тэрээр Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг цорын ганц Тэнгэрбурхан билээ."
+          }
+        ]
+      }
+    ],
+    "page": 603,
+    "source": {
+      "kind": "seasonal",
+      "season": "CHRISTMAS",
+      "weekKey": "octave",
+      "dayKey": "SUN",
+      "hour": "vespers"
+    }
+  }
+}

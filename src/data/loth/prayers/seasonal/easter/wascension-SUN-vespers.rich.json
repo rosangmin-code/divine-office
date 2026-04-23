@@ -19,5 +19,50 @@
       "dayKey": "SUN",
       "hour": "vespers"
     }
+  },
+  "alternativeConcludingPrayerRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Аяа, Тэнгэр дэх Эцэг минь, Та Христийг бидний нүдний өмнөөс авсан үед бидний оюун ухаан Таны хаанчлалын ирэхүйн төлөө бэлэн байсан"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "болохоор бид Түүнийг сүр жавхланд нь эрэн"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "хайх болно. Түүнийг бид явсан замаар нь дагаж яваад, Түүний сүр жавхлангаас өөрсдийн горьдол найдварыг олох болтугай. Тэрээр мөнхийн мөнх Эзэн билээ."
+          }
+        ]
+      }
+    ],
+    "page": 732,
+    "source": {
+      "kind": "seasonal",
+      "season": "EASTER",
+      "weekKey": "ascension",
+      "dayKey": "SUN",
+      "hour": "vespers"
+    }
   }
 }

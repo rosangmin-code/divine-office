@@ -279,6 +279,21 @@ function resolveLineGutter(line, cutColumn) {
   }
 
   if (runs.length === 0) {
+    // No internal gutter on this line. Two sub-cases:
+    //   (a) Right-only line — content starts deep enough to be in the right
+    //       column (typical for headings / shorter lines). Signal by pushing
+    //       leftEnd/rightStart to firstNonSpace so the left slice is empty
+    //       and the right slice preserves the line from its first character.
+    //   (b) Otherwise, fall back to nominal cut (may bisect, but that's only
+    //       an issue for atypically wide left-column content).
+    const firstNonSpace = line.length - line.trimStart().length
+    // Threshold: content must start at or after the right column's baseline
+    // minus a small tolerance. Using cutColumn - 10 covers right-column
+    // headings that extend slightly left of the majority cut (observed on
+    // pages 813 / 607 where titles begin ~6 chars before the detected cut).
+    if (firstNonSpace >= Math.max(20, cutColumn - 10)) {
+      return { leftEnd: firstNonSpace, rightStart: firstNonSpace }
+    }
     return { leftEnd: cutColumn, rightStart: cutColumn }
   }
 
