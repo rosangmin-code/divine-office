@@ -25,9 +25,16 @@ describe('getPsalterCommons — page propagation', () => {
 
   it('week 3 SUN lauds matches page-mapping.json reference', () => {
     // Cross-check that hand-annotated values still match (regression guard).
+    // Book page 302 contains both the Reading (Езекиел 37:12б-14) and the
+    // Responsory (Хариу залбирал — "Амьд Тэнгэрбурханы Хүү Христ минь..."),
+    // verified against public/psalter.pdf via pdftotext (parsed_data/full_pdf.txt
+    // lines 10303 "Уншлага" and 10316 "Хариу залбирал", both preceding the
+    // book-page-303 marker on line 10331). The Intercessions ("Гуйлтын залбирал")
+    // begin on the following book page 303 — exposed separately as
+    // `intercessionsPage`, not via `responsory.page`.
     const commons = getPsalterCommons(3, 'SUN', 'lauds')
     expect(commons?.shortReading?.page).toBe(302)
-    expect(commons?.responsory?.page).toBe(303)
+    expect(commons?.responsory?.page).toBe(302)
   })
 })
 
