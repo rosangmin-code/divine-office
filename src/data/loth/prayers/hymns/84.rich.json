@@ -1,0 +1,70 @@
+{
+  "hymnRich": {
+    "blocks": [
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Их Эзэн Их Эзэн зөвхөн Тандаа би хайртай"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Миний Хаан миний Эзэн Их Эзэнийг мэдэхийг"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "би хүснэ"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Би Их Эзэн зөвхөн Таныг магтъя Ариун Та Ариун"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Их Эзэн Тандаа би хайртай хүндэт хүндэт Та"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "хүндэт"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      }
+    ],
+    "page": 939,
+    "source": {
+      "kind": "common",
+      "id": "hymn-84"
+    }
+  }
+}

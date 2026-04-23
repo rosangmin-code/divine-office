@@ -1,0 +1,78 @@
+{
+  "hymnRich": {
+    "blocks": [
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Цовдлогдож, булшлагдсан Эзэн минь"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Зарлигийн ёсоор үхлээс амилсан"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Өнө мөнхөд бидэнтэй хамт"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Жаргалтайгаар Эзэнээ магтан дуулцгаая"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Дахилт: Аллэлүяа, Аллэлүяа, Аллэлүяа, Аллэлүяа"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Аллэлүяа, Аллэлүяа, Аллэлүяа, Аллэлүяа"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      }
+    ],
+    "page": 890,
+    "source": {
+      "kind": "common",
+      "id": "hymn-9"
+    }
+  }
+}

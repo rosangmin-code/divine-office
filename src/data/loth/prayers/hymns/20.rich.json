@@ -1,0 +1,70 @@
+{
+  "hymnRich": {
+    "blocks": [
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Баярлалаа Есүс намайг хайрласанд"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Баярлалаа Есүс намайг ивээсэнд"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ая дуугаараа Таны нэрийг"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Мөнхийн мөнхөд магтъя"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Амьдралд бүхнийг захирагч"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Их Эзэн минь"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      }
+    ],
+    "page": 897,
+    "source": {
+      "kind": "common",
+      "id": "hymn-20"
+    }
+  }
+}

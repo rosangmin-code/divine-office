@@ -1,0 +1,70 @@
+{
+  "hymnRich": {
+    "blocks": [
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Миний сэтгэл Эзэнийг магтана"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Миний Сүнс Эзэнд талархана"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Аврагч минь Та Ариун нэрээрээ"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Мөхөс надад ивээлээ хайрласан"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Аврагч минь Та Хаадын Хааны"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Шудрага суудлаас биднийг захираач"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      }
+    ],
+    "page": 927,
+    "source": {
+      "kind": "common",
+      "id": "hymn-63"
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "hymnRich": {
+    "blocks": [
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Битгий айгаарай битгий зовоорой"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Бурхан дандаа хамт байдаг"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Битгий айгаарай битгий зовоорой"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Энэ л бидэнд хангалттай"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      }
+    ],
+    "page": 900,
+    "source": {
+      "kind": "common",
+      "id": "hymn-26"
+    }
+  }
+}

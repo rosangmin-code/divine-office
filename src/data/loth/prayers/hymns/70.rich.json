@@ -1,0 +1,88 @@
+{
+  "hymnRich": {
+    "blocks": [
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "(Мариад залбирах дуу)"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Намуун дөлгөөн эмэгтэй тайван гэрэл"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "өглөөний од"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Тэгээд хүчтэй бас хурц даруу ээж энхийн тагтаа"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Бидний төлөө та залбираач"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Бидэнд хайраа та харуулаач"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Та Эцэгийн дэргэд сонгогдсон"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Гэрэлтэх Мариа ээж минь. Амэн"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      }
+    ],
+    "page": 930,
+    "source": {
+      "kind": "common",
+      "id": "hymn-70"
+    }
+  }
+}

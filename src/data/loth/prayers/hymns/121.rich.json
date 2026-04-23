@@ -1,0 +1,70 @@
+{
+  "hymnRich": {
+    "blocks": [
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "ЭЗЭНийг магтагтун"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "ЭЗЭНийг магтагтун"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ард түмнүүд ээ, Aллэлуяа"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Laudate Dominum"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Laudate Dominum"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Omnes Gentes alleluia"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      }
+    ],
+    "page": 961,
+    "source": {
+      "kind": "common",
+      "id": "hymn-121"
+    }
+  }
+}

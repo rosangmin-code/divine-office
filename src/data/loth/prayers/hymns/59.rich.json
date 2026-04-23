@@ -1,0 +1,34 @@
+{
+  "hymnRich": {
+    "blocks": [
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Магтан дуулья Эзэнийг ээ магтан дуулья"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Магтан дуулья Аврагч Эзэн минь ээ"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      }
+    ],
+    "page": 925,
+    "source": {
+      "kind": "common",
+      "id": "hymn-59"
+    }
+  }
+}

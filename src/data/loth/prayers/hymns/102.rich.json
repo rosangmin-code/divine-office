@@ -1,0 +1,34 @@
+{
+  "hymnRich": {
+    "blocks": [
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Хайраа хуваалцдаг газар Бурхан тэнд бий"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Хайраа хуваалцдаг газар Бурхан тэнд бий"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      }
+    ],
+    "page": 948,
+    "source": {
+      "kind": "common",
+      "id": "hymn-102"
+    }
+  }
+}

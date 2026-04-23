@@ -1,0 +1,61 @@
+{
+  "hymnRich": {
+    "blocks": [
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ариун Сүнс ирээч"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ариун Сүнс ирээч"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Зүрхийг минь дүүргэж"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ирээсэй гэж би дуудаж байна"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ариун Сүнс ирээсэй"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      }
+    ],
+    "page": 896,
+    "source": {
+      "kind": "common",
+      "id": "hymn-17"
+    }
+  }
+}

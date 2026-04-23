@@ -1,0 +1,87 @@
+{
+  "hymnRich": {
+    "blocks": [
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Итгэмжтэйгээр үнэн зүрхээр"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ариун замаар хөтлөн дагуулаач"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Итгэмжтэйгээр үнэн зүрхээр"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ариун замаар хөтлөн дагуулаач"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Эзэн минь миний зүрхэнд мутраа хүргээч Та"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Бурхан минь миний Сүнсийг Шинээс шинэ"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "болгооч Та"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      }
+    ],
+    "page": 922,
+    "source": {
+      "kind": "common",
+      "id": "hymn-52"
+    }
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "hymnRich": {
+    "blocks": [
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Бурханыг ерөөгөөрэй бүх хүмүүсээ"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Бурхандаа үйлчилээрэй аз жаргалтайгаар"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Аллелүяа аллелүяа аз жаргалтайгаар"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Аллелүяа аллелүяа аз жаргалтайгаар"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Jubilate Deo omnis terra servite Domino in laetitia"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Alleluia alleluia in laetitia alleluia alleluia in laetitia"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      }
+    ],
+    "page": 902,
+    "source": {
+      "kind": "common",
+      "id": "hymn-29"
+    }
+  }
+}

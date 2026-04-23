@@ -1,0 +1,34 @@
+{
+  "hymnRich": {
+    "blocks": [
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "9 дүгээр 14-ний өдөр - Ариун Нандин"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Загалмайн алдаршуулал"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      }
+    ],
+    "page": 883,
+    "source": {
+      "kind": "common",
+      "id": "hymn-61"
+    }
+  }
+}

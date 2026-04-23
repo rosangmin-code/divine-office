@@ -1,0 +1,34 @@
+{
+  "hymnRich": {
+    "blocks": [
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Надтай хамт сэрээд"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Надтай хамт залбирцгаая /х2/"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      }
+    ],
+    "page": 929,
+    "source": {
+      "kind": "common",
+      "id": "hymn-68"
+    }
+  }
+}

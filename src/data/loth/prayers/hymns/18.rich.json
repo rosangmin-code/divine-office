@@ -1,0 +1,52 @@
+{
+  "hymnRich": {
+    "blocks": [
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ариун Сүнс ээ ирээч Ариун Сүнс ээ ирээч"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ариун Сүнс ээ ирээч Ариун Сүнс ээ ирээч"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Veni sancte Spiritu Veni sancte Spiritu"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Veni sancte Spiritu Veni sancte Spiritu"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      }
+    ],
+    "page": 896,
+    "source": {
+      "kind": "common",
+      "id": "hymn-18"
+    }
+  }
+}
