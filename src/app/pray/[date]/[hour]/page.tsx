@@ -12,18 +12,6 @@ import { formatDateMn, romanNumeral } from '@/lib/mappings'
 
 const VALID_HOURS: HourType[] = ['lauds', 'vespers', 'compline']
 
-const HOUR_ABBR_MN: Record<HourType, string> = {
-  lauds: 'Өглөө',
-  vespers: 'Орой',
-  compline: 'Шөнийн',
-}
-
-const HOUR_NAMES_MN: Record<HourType, string> = {
-  lauds: 'Өглөөний даатгал залбирал',
-  vespers: 'Оройн даатгал залбирал',
-  compline: 'Шөнийн даатгал залбирал',
-}
-
 export default async function PrayPage({
   params,
   searchParams,
@@ -48,9 +36,6 @@ export default async function PrayPage({
 
   const hourType = hourParam as HourType
   const assembled = await assembleHour(date, hourType, { celebrationId: celebration })
-  const celebrationSuffix = celebration && celebration !== 'default'
-    ? `?celebration=${encodeURIComponent(celebration)}`
-    : ''
 
   if (!assembled) {
     return (
@@ -61,11 +46,6 @@ export default async function PrayPage({
   }
 
   const { liturgicalDay } = assembled
-
-  // 이전/다음 기도시간 네비게이션
-  const currentIdx = VALID_HOURS.indexOf(hourType)
-  const prevHour = currentIdx > 0 ? VALID_HOURS[currentIdx - 1] : null
-  const nextHour = currentIdx < VALID_HOURS.length - 1 ? VALID_HOURS[currentIdx + 1] : null
 
   return (
     <div className="mx-auto max-w-2xl lg:max-w-3xl px-4 md:px-6 py-6">
@@ -116,36 +96,15 @@ export default async function PrayPage({
         <PrayerRenderer hour={assembled} />
       </article>
 
-      {/* Bottom navigation */}
-      <nav aria-label="Залбирлын навигаци" className="mt-6 flex items-center justify-between gap-4">
-        {prevHour ? (
-          <Link
-            href={`/pray/${date}/${prevHour}${celebrationSuffix}`}
-            className="flex items-center gap-2 rounded-lg px-4 py-3 text-sm text-stone-600 hover:bg-stone-200 dark:text-stone-400 dark:hover:bg-stone-700"
-          >
-            <span>←</span>
-            <span className="sm:hidden">{HOUR_ABBR_MN[prevHour]}</span>
-            <span className="hidden sm:inline">{HOUR_NAMES_MN[prevHour]}</span>
-          </Link>
-        ) : <div />}
-
+      {/* Back to home — prev/next hour navigation 제거됨 (사용자 피드백: 시간대 간
+          직접 이동 불필요). task #10 / CACHE_VERSION bump 필요 (링크 스키마 변경). */}
+      <nav aria-label="Залбирлын навигаци" className="mt-6 flex items-center justify-center">
         <Link
           href={`/?date=${date}${celebration && celebration !== 'default' ? `&celebration=${encodeURIComponent(celebration)}` : ''}`}
           className="rounded-lg bg-stone-200 px-6 py-2 text-sm font-medium text-stone-700 hover:bg-stone-300 dark:bg-stone-700 dark:text-stone-200 dark:hover:bg-stone-600"
         >
           Буцах
         </Link>
-
-        {nextHour ? (
-          <Link
-            href={`/pray/${date}/${nextHour}${celebrationSuffix}`}
-            className="flex items-center gap-2 rounded-lg px-4 py-3 text-sm text-stone-600 hover:bg-stone-200 dark:text-stone-400 dark:hover:bg-stone-700"
-          >
-            <span className="sm:hidden">{HOUR_ABBR_MN[nextHour]}</span>
-            <span className="hidden sm:inline">{HOUR_NAMES_MN[nextHour]}</span>
-            <span>→</span>
-          </Link>
-        ) : <div />}
       </nav>
 
       {/* Footer */}
