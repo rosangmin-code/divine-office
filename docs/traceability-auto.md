@@ -4,7 +4,7 @@
 > and FR/NFR IDs in test titles. **Do not edit by hand.**
 > The curated matrix lives in [`docs/traceability-matrix.md`](./traceability-matrix.md).
 
-Scan: 9 test files contributed 13 unique IDs.
+Scan: 10 test files contributed 14 unique IDs.
 
 | ID | Test file | Test title(s) |
 |---|---|---|
@@ -22,6 +22,7 @@ Scan: 9 test files contributed 13 unique IDs.
 | FR-153 | `e2e/prayer-short-reading.spec.ts` | Advent Sunday lauds renders rich overlay (RichContent wrapper, no legacy verses)<br>Ordinary Time weekday lauds falls back to psalter commons rich<br>Compline shortReading uses commons/compline rich overlay<br>rich shortReading reflows to single paragraph (no per-line splits) |
 | FR-153 | `src/lib/__tests__/loth-service.test.ts` | hymn rich wiring (central catalog) |
 | FR-153d | `e2e/prayer-responsory.spec.ts` | OT w1 SUN Lauds — psalter commons renders 5-block rich AST<br>OT weekday Lauds — psalter commons rich (weekday periodization)<br>Sunday Compline — ordinarium commons rich |
+| FR-153f | `e2e/prayer-psalm-stanzas-rich.spec.ts` | Psalter stanzasRich rendering (FR-153f)<br>renders psalm stanzas via rich AST (data-role markers present)<br>Daniel 3 refrain lines are tagged with role=refrain<br>refrain lines carry rubric red colour (§12.1) |
 | NFR-013 | `e2e/mobile.spec.ts` | prayer article inner width >= 320px for readability (NFR-013)<br>antiphon inner width >= 320px on mobile (NFR-013) |
 | NFR-014 | `e2e/mobile.spec.ts` | psalm has left padding on mobile (NFR-014)<br>psalm stanzas have visible spacing on mobile (NFR-014) |
 | NFR-016 | `e2e/settings.spec.ts` | active radio uses brass gold accent, not liturgical green (NFR-016) |
