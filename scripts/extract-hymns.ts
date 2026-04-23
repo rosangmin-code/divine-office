@@ -23,15 +23,24 @@ const OUTPUT = path.resolve(__dirname, '../src/data/loth/ordinarium/hymns.json')
 
 interface IndexEntry { number: number; title: string }
 interface ReaderEntry { title: string; titleMn?: string; content: string }
+interface ExistingOutputEntry { title?: string; text?: string; page?: number }
 
 function main() {
   const readerData: Record<string, ReaderEntry> = JSON.parse(fs.readFileSync(READER_HYMNS, 'utf-8'))
   const indexData: { hymns: IndexEntry[] } = JSON.parse(fs.readFileSync(HYMNS_INDEX, 'utf-8'))
+  const existingOutput: Record<string, ExistingOutputEntry> = fs.existsSync(OUTPUT)
+    ? JSON.parse(fs.readFileSync(OUTPUT, 'utf-8'))
+    : {}
 
-  const output: Record<string, { title: string; text: string }> = {}
+  const output: Record<string, { title: string; text: string; page?: number }> = {}
   const knownTitles = new Set<string>()
   for (const h of indexData.hymns) {
-    output[String(h.number)] = { title: h.title, text: '' }
+    const existing = existingOutput[String(h.number)]
+    output[String(h.number)] = {
+      title: h.title,
+      text: '',
+      page: typeof existing?.page === 'number' ? existing.page : undefined,
+    }
     knownTitles.add(h.title)
   }
 

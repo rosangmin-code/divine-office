@@ -1,4 +1,8 @@
 export const DATES = {
+  // Ordinary Time Week 1 Sunday — FR-153 pilot date. Romcal labels this
+  // 2nd Sunday of OT but weekOfSeason=1 (1st Sunday is Baptism of the Lord).
+  otWeek1Sunday: '2026-01-18',
+
   // Ordinary Time weekday (GREEN, WEEKDAY rank)
   ordinaryWeekday: '2026-02-04', // Wednesday, OT Week 4
 
