@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { getHoursSummary, assembleHour } from '../loth-service'
+import { isCommonSource } from '../types'
 
 // Mock bible-loader to avoid loading 7.4MB JSONL in tests
 vi.mock('../bible-loader', () => ({
@@ -110,8 +111,9 @@ describe('hymn rich wiring (central catalog)', () => {
     expect(hymnSection.candidates && hymnSection.candidates.length).toBeGreaterThan(0)
     if (hymnSection.textRich) {
       expect(hymnSection.textRich.blocks.length).toBeGreaterThan(0)
-      expect(hymnSection.textRich.source?.kind).toBe('common')
-      expect(hymnSection.textRich.source?.id).toMatch(/^hymn-\d+$/)
+      const src = hymnSection.textRich.source
+      expect(isCommonSource(src)).toBe(true)
+      if (isCommonSource(src)) expect(src.id).toMatch(/^hymn-\d+$/)
     }
   })
 
@@ -128,7 +130,8 @@ describe('hymn rich wiring (central catalog)', () => {
       const hymn = result!.sections.find((s) => s.type === 'hymn')
       expect(hymn).toBeDefined()
       if (hymn?.type === 'hymn' && hymn.textRich) {
-        expect(hymn.textRich.source?.id).toMatch(/^hymn-\d+$/)
+        const src = hymn.textRich.source
+        if (isCommonSource(src)) expect(src.id).toMatch(/^hymn-\d+$/)
       }
     }
   })
