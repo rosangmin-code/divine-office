@@ -1,0 +1,421 @@
+{
+  "hymnRich": {
+    "blocks": [
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "1. Есүс нялхыг харгалзагч"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Жавхлант Иосеф оо!"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Сүсэгтэн биднийг харгалзан"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Тэнгэрийн оронд гаргагтун!"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "2. Мариа ээжийг харгалзагч"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Жаргалант Иосеф оо!"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Сүсэгтэн биднийг харгалзан"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Тэнгэрийн оронд гаргагтун!"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "3. Ариун хурлыг харгалзагч"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Туйлын ариун Иосеф оо!"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Сүсэгтэн биднийг харгалзан"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Тэнгэрийн оронд гаргагтун!"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "4. Ариун гэр бүлийг хамаарагч"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Энэрэлт Иосеф оо!"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Нигүүлсэн биднийг харгалзан"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ариун хөлгөндөө оруулагтун!"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Магтуу"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "5. Үйлт хүмүүнийг харгалзагч"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Шударгуу Иосеф оо!"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Үйлт биднийг харгалзан"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Өршөөлийг олгогтун!"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "6. Санаа сайт Иосеф оо!"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Сайхан журмыг баригч аа!"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Самуун биднийг харгалзан"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Саруул тэнгэрт гаргагтун!"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "7. Гэр бүлийн журамт"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Гэгээн замыг эрхэмлэгч"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Гэрэлт Есүсийг бидэнд"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Гэрчилж хайрлагтун!"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "8. Сайн үхэлд туслагч"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Сахил цэвэр Иосеф оо!"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Самуун бидэнд гуйж"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Саруул оронд хандуулагтун!"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "9. Зовлонг хүлцэгч"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Зориг бат Иосеф оо!"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Зүдүү гачилт биднийг"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Зохистойгоор өмөглөгтүн!"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      }
+    ],
+    "page": 916,
+    "source": {
+      "kind": "common",
+      "id": "hymn-46"
+    }
+  }
+}

@@ -1,0 +1,325 @@
+{
+  "hymnRich": {
+    "blocks": [
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "1. Маш сайхан цэвэр"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Маш бат журамт"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Маш түвшин хичээлт"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Маш үнэн шударгуу"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Дахилт: Ариун Иосеф бидний төлөө"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Аврагчийг гуйж"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Аж сайхан төрүүлж"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Амар мөнхийг олгогтун!"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Эсвэл: Аж сайхан төрүүлж"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Амар мөнхийг олгогтун!"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Аж сайхан төрүүлж"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Амар мөнхийг олгогтун!"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "2. Аврагчийг тэжээж"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ариун Эхийг тэтгэж"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Аюулыг халхавчлан"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Анжэл элч мэт сахив."
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Магтуу"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "3. Хар шөнө Есүс нялхыг"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Харь хол нүүлгэн"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Харгис хааны хорлолоос"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Харгалзан гаргав."
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "4. Хэцүү хаан үхсэнд"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Гэртээ хариад"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Хэвийн үйлс бүгдийг"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Хичээн үйлдэв."
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "5. Эрдэм туйлын гавъяа дор"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Эзэн, Эх хоёрын"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Энэрэлт нөмөр дор"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Энх амар эцэслэв."
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      }
+    ],
+    "page": 921,
+    "source": {
+      "kind": "common",
+      "id": "hymn-50"
+    }
+  }
+}

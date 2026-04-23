@@ -1,0 +1,394 @@
+{
+  "hymnRich": {
+    "blocks": [
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "(Adeste fideles)"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "1. Сүсэгтнүүд баяртай цэнгэн цугларч"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Бетлехемд ирж мөргөсүгэй!"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Мандан буусан Эзэн хаан байна."
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ирж мөргөсүгэй, мөргөж сөгдсүгэй,"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Сөгдөж Эзэнийг тахисугай!"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Дахилт: Мандан буусан Эзэн хаан байна."
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ирж мөргөсүгэй, мөргөж сөгдсүгэй,"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Сөгдөж Эзэнийг тахисугай!"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "2. Сүргээ орхиод харанхуй агуйд"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Малчид ирж цугларав"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Мандан буусан Эзэн хаан байна."
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ирж мөргөсүгэй, мөргөж сөгдсүгэй,"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Сөгдөж Эзэнийг тахисугай!"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Дахилт: Мандан буусан Эзэн хаан байна."
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ирж мөргөсүгэй, мөргөж сөгдсүгэй,"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Сөгдөж Эзэнийг тахисугай!"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Магтуу"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "3. Мөнх тэнгэр Эцэгийн мөнх гялбалгаа буюу."
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Махбод дотор нь үзэгднэм"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Тэнгэр нялхыг манцуйлсан буй."
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ирж мөргөсүгэй, мөргөж сөгдсүгэй,"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Сөгдөж Эзэнийг тахисугай!"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Дахилт: Мандан буусан тэнгэр хаан байна."
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ирж мөргөсүгэй, мөргөж сөгдсүгэй,"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Сөгдөж Эзэнийг тахисугай!"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "4. Туйлын ядуугаар өлгийд манцуйлсан"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Тэнгэр нялхыг хүндэлсүгэй!"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ийм хайрыг хэрхэн ачил юу?"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ирж мөргөсүгэй, мөргөж сөгдсүгэй,"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Сөгдөж Эзэнийг ачилсугай!"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Дахилт: Мандан буусан тэнгэр нялх байна."
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ирж мөргөсүгэй, мөргөж сөгдсүгэй,"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Сөгдөж Эзэнийг тахисугай!"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      }
+    ],
+    "page": 937,
+    "source": {
+      "kind": "common",
+      "id": "hymn-82"
+    }
+  }
+}

@@ -1,0 +1,262 @@
+{
+  "hymnRich": {
+    "blocks": [
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "(Te Ioseph)"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "1. Иосеф та - тэнгэр элчийн өмөгт баяртай"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Та сүсэгтэн олонд их хүндлэлтэй"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Та сайхан гавьяаг эрдмээр байгуулан"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Эгнэгт бат цэвэр харгалзав."
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "2. Ариун, жирэмсэн бүсгүй юүгээн та"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Сэжиглэн, эмээн, уйтгарлан зовов."
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ариун Сүнсний төгс чадлаар заяасан"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Хүүхэд гэж тэнгэр элч хэлэв."
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "3. Мэндэлсэн Эзэнийг алагдахаас айн"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Египетэд дутаан явж зовов."
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Соломонд суусныг сураглан олоод"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Баярын нулимс цувуулав."
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "4. Насан эцэст сайн заяаг байгуулав."
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ялалт, гавьяаны жавхланг олов."
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ертөнцөд Есүстэй хамтад жаргав."
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Гайхамшиг заяагаар давав."
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "5. Ариун Гурвалаас нигүүлсэн биднийг сана!"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Иосефийн эрдэмд түшиглүүлж"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Эцсийн мөнхөд биднийг зөвшөөрөн"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ачлалаар дагуулсугай! Амэн."
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Магтуу"
+              }
+            ],
+            "indent": 0
+          }
+        ]
+      }
+    ],
+    "page": 941,
+    "source": {
+      "kind": "common",
+      "id": "hymn-89"
+    }
+  }
+}
