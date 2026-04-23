@@ -129,22 +129,6 @@ export async function assembleHour(
     }
   }
 
-  // Easter season fallback: when no sanctoral/season antiphon override is
-  // supplied, every psalm antiphon collapses to the triple Alleluia — the
-  // GILH-standard Easter practice and what the printed Mongolian book uses
-  // on days without a specific seasonal antiphon. Runs AFTER replacesPsalter
-  // so sanctoral-supplied psalms are also covered. More granular per-day
-  // antiphons can layer on top later via easter.json `antiphons` entries;
-  // those take precedence because they're merged earlier.
-  if (day.season === 'EASTER') {
-    const EASTER_TRIPLE_ALLELUIA = 'Аллэлуяа, аллэлуяа, аллэлуяа!'
-    for (const entry of psalmEntries) {
-      if (!antiphonOverrides[entry.antiphon_key]) {
-        antiphonOverrides[entry.antiphon_key] = EASTER_TRIPLE_ALLELUIA
-      }
-    }
-  }
-
   // 7. Resolve psalm texts — use allSettled so a single bad psalm (e.g. a
   // scripture reference that fails to parse or a missing Bible chapter)
   // does not collapse the whole hour into a 404. Failed entries render as

@@ -78,23 +78,6 @@ describe('assembleHour', () => {
     expect(result).not.toBeNull()
     expect(result!.hourType).toBe('vespers')
   })
-
-  it('Easter weekday psalms fall back to triple Alleluia antiphon', async () => {
-    // 2026-04-23 = Easter w3 THU. easter.json has no `antiphons` key, so
-    // without the fallback, psalm antiphons would default to the ordinary-time
-    // week-3-THU-lauds entries from psalter/week-3.json. With the fallback,
-    // every psalm antiphon should be the triple-alleluia Easter canonical form.
-    const result = await assembleHour('2026-04-23', 'lauds')
-    expect(result).not.toBeNull()
-    expect(result!.liturgicalDay.season).toBe('EASTER')
-    const psalmody = result!.sections.find((s) => s.type === 'psalmody')
-    expect(psalmody).toBeDefined()
-    if (psalmody?.type !== 'psalmody') throw new Error('psalmody expected')
-    expect(psalmody.psalms.length).toBeGreaterThan(0)
-    for (const p of psalmody.psalms) {
-      expect(p.antiphon).toBe('Аллэлуяа, аллэлуяа, аллэлуяа!')
-    }
-  })
 })
 
 describe('propers merge priority', () => {
