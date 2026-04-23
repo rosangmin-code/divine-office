@@ -25,6 +25,7 @@ import {
   resolvePsalm,
   mergeComplineDefaults,
 } from './hours'
+import { applySeasonalAntiphon } from './hours/seasonal-antiphon'
 import { warmBibleCache } from './bible-loader'
 import type { HourContext } from './hours'
 
@@ -134,7 +135,7 @@ export async function assembleHour(
   // does not collapse the whole hour into a 404. Failed entries render as
   // empty-verse placeholders with the antiphon we already know.
   const psalmResults = await Promise.allSettled(
-    psalmEntries.map((entry) => resolvePsalm(entry, antiphonOverrides)),
+    psalmEntries.map((entry) => resolvePsalm(entry, antiphonOverrides, day.season)),
   )
   const assembledPsalms: AssembledPsalm[] = psalmResults.map((result, i) => {
     if (result.status === 'fulfilled') return result.value
@@ -143,11 +144,12 @@ export async function assembleHour(
       `[loth-service] resolvePsalm failed for ${entry.ref} (${dateStr} ${hour}):`,
       result.reason,
     )
+    const fallbackAntiphon = antiphonOverrides[entry.antiphon_key] ?? entry.default_antiphon ?? ''
     return {
       psalmType: entry.type,
       reference: entry.ref,
       title: entry.title,
-      antiphon: antiphonOverrides[entry.antiphon_key] ?? entry.default_antiphon ?? '',
+      antiphon: applySeasonalAntiphon(fallbackAntiphon, day.season),
       verses: [],
       gloriaPatri: entry.gloria_patri,
       ...(entry.page != null ? { page: entry.page } : {}),
@@ -198,6 +200,16 @@ export async function assembleHour(
     psalterWeek: day.psalterWeek,
   })
   mergedPropers = { ...mergedPropers, ...richOverlay }
+
+  // Layer 5: seasonal antiphon augmentation (GILH §113 — Easter Alleluia).
+  // Applied last so it affects both seasonal and psalter-commons gospel
+  // canticle antiphons uniformly.
+  if (mergedPropers.gospelCanticleAntiphon) {
+    mergedPropers.gospelCanticleAntiphon = applySeasonalAntiphon(
+      mergedPropers.gospelCanticleAntiphon,
+      day.season,
+    )
+  }
 
   // 8b. For Compline, fill propers from compline.json when not overridden
   let complineData = null

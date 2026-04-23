@@ -1,19 +1,26 @@
-import type { AssembledPsalm, PsalmEntry } from '../../types'
+import type { AssembledPsalm, LiturgicalSeason, PsalmEntry } from '../../types'
 import { parseScriptureRef } from '../../scripture-ref-parser'
 import { lookupRef } from '../../bible-loader'
 import { loadPsalterTexts } from '../loaders'
 import { loadPsalterTextRich, loadPsalterTextPsalmPrayerRich } from '../../prayers/rich-overlay'
+import { applySeasonalAntiphon } from '../seasonal-antiphon'
 
 /**
  * Resolve a psalm entry into an AssembledPsalm with actual verse text.
  * Prefers psalter-texts.json (PDF source with stanza structure) over Bible JSONL.
+ *
+ * `season` controls seasonal antiphon post-processing (e.g. Easter appends
+ * Alleluia). Callers that don't know the season pass undefined, which
+ * preserves the raw psalter antiphon.
  */
 export async function resolvePsalm(
   entry: PsalmEntry,
   antiphonOverrides?: Record<string, string>,
+  season?: LiturgicalSeason,
 ): Promise<AssembledPsalm> {
-  const antiphon =
+  const rawAntiphon =
     antiphonOverrides?.[entry.antiphon_key] ?? entry.default_antiphon ?? ''
+  const antiphon = applySeasonalAntiphon(rawAntiphon, season)
 
   const psalterTexts = loadPsalterTexts()
   const psalmText = psalterTexts[entry.ref]

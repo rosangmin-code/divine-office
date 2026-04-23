@@ -44,6 +44,11 @@ export const DATES = {
   // exercises the Magnificat heading/antiphon page split here.
   easterW2Thursday: '2026-04-16',
 
+  // Easter weekday (mid-season, outside the Octave) — verifies psalm /
+  // canticle antiphons carry the Easter Alleluia ending even when the
+  // proper isn't a special day. 2026-04-23 is a Thursday in Easter week 3.
+  easterWeekday: '2026-04-23',
+
   // Solemnity: St. Joseph
   stJoseph: '2026-03-19',
 
