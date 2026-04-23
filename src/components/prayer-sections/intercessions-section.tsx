@@ -1,11 +1,23 @@
 import type { HourSection } from '@/lib/types'
 import { PageRef } from '../page-ref'
+import { RichContent } from './rich-content'
 
 export function IntercessionsSection({
   section,
 }: {
   section: Extract<HourSection, { type: 'intercessions' }>
 }) {
+  if (section.rich && section.rich.blocks.length > 0) {
+    return (
+      <section aria-label="Гуйлтын залбирал" className="mb-4">
+        <p className="text-sm font-semibold text-red-700 dark:text-red-400">
+          Гуйлтын залбирал <PageRef page={section.page} />
+        </p>
+        <RichContent content={section.rich} className="mt-2" />
+      </section>
+    )
+  }
+
   if (section.items.length === 0) {
     return (
       <section aria-label="Гуйлтын залбирал" className="mb-4">

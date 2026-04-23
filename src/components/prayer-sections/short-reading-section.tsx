@@ -1,5 +1,6 @@
 import type { HourSection } from '@/lib/types'
 import { PageRef } from '../page-ref'
+import { RichContent } from './rich-content'
 
 export function ShortReadingSection({
   section,
@@ -15,21 +16,25 @@ export function ShortReadingSection({
         {section.bookMn && `${section.bookMn} — `}
         {section.ref}
       </p>
-      <div className="mt-2 space-y-1">
-        {section.verses.map((v, i) => (
-          <p
-            key={i}
-            className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200"
-          >
-            {v.verse > 0 && (
-              <sup className="mr-1 text-xs text-stone-500 dark:text-stone-400">
-                {v.verse}
-              </sup>
-            )}
-            {v.text}
-          </p>
-        ))}
-      </div>
+      {section.textRich && section.textRich.blocks.length > 0 ? (
+        <RichContent content={section.textRich} className="mt-2" />
+      ) : (
+        <div className="mt-2 space-y-1">
+          {section.verses.map((v, i) => (
+            <p
+              key={i}
+              className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200"
+            >
+              {v.verse > 0 && (
+                <sup className="mr-1 text-xs text-stone-500 dark:text-stone-400">
+                  {v.verse}
+                </sup>
+              )}
+              {v.text}
+            </p>
+          ))}
+        </div>
+      )}
     </section>
   )
 }

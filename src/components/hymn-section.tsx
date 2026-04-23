@@ -3,6 +3,7 @@
 import { useId, useState } from 'react'
 import type { HourSection } from '@/lib/types'
 import { PageRef } from './page-ref'
+import { RichContent } from './prayer-sections/rich-content'
 
 type HymnSectionProps = {
   section: Extract<HourSection, { type: 'hymn' }>
@@ -17,8 +18,15 @@ export function HymnSection({ section }: HymnSectionProps) {
   const currentHymn = candidates?.[selectedIdx]
   const displayText = currentHymn?.text ?? section.text
   const displayPage = currentHymn?.page ?? section.page
+  // Rich overlay applies only to the default hymn (selectedIdx matches the
+  // rotation pick). When the user picks another candidate, candidates carry
+  // plain text only — fall back to the legacy render path.
+  const useRich =
+    !!section.textRich &&
+    section.textRich.blocks.length > 0 &&
+    (!candidates || selectedIdx === (section.selectedIndex ?? 0))
 
-  if (!displayText) {
+  if (!displayText && !useRich) {
     return (
       <section aria-label="Магтуу" className="mb-4">
         <p className="text-sm font-semibold text-red-700 dark:text-red-400">Магтуу</p>
@@ -34,9 +42,13 @@ export function HymnSection({ section }: HymnSectionProps) {
       <p className="text-sm font-semibold text-red-700 dark:text-red-400">
         Магтуу <PageRef page={displayPage} />
       </p>
-      <div className="mt-2 whitespace-pre-line font-serif text-stone-800 dark:text-stone-200">
-        {displayText}
-      </div>
+      {useRich ? (
+        <RichContent content={section.textRich!} className="mt-2" />
+      ) : (
+        <div className="mt-2 whitespace-pre-line font-serif text-stone-800 dark:text-stone-200">
+          {displayText}
+        </div>
+      )}
 
       {candidates && candidates.length > 1 && (
         <div className="mt-3">

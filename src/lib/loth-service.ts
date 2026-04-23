@@ -15,6 +15,7 @@ import { getLiturgicalDay, getToday } from './calendar'
 import { getPsalterPsalmody, getComplinePsalmody, getFullComplineData, getPsalterCommons } from './psalter-loader'
 import { getSeasonHourPropers, getSanctoralPropers, getHymnForHour, getHymnCandidatesForHour } from './propers-loader'
 import { resolveCelebration } from './celebrations'
+import { resolveRichOverlay } from './prayers/resolver'
 
 import {
   getAssembler,
@@ -185,6 +186,16 @@ export async function assembleHour(
   if (hourPropers) {
     mergedPropers = { ...mergedPropers, ...hourPropers }
   }
+
+  // Layer 4: Rich overlays (PDF 원형 마크업)
+  const richOverlay = resolveRichOverlay({
+    season: day.season,
+    weekKey: String(day.weekOfSeason),
+    day: dayOfWeek,
+    hour,
+    sanctoralKey: sanctoral ? dateKey : null,
+  })
+  mergedPropers = { ...mergedPropers, ...richOverlay }
 
   // 8b. For Compline, fill propers from compline.json when not overridden
   let complineData = null

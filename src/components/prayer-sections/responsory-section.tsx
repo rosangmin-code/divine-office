@@ -1,5 +1,6 @@
 import type { HourSection } from '@/lib/types'
 import { PageRef } from '../page-ref'
+import { RichContent } from './rich-content'
 
 const GLORY_BE = 'Эцэг, Хүү, Ариун Сүнсийг магтан дуулъя.'
 
@@ -11,6 +12,17 @@ export function ResponsorySection({
   const { fullResponse, versicle, shortResponse } = section
   // Triduum simplified form: only the antiphon (stored in `versicle`) is rendered.
   const simplified = !fullResponse && !shortResponse && !!versicle
+
+  if (section.rich && section.rich.blocks.length > 0) {
+    return (
+      <section aria-label="Хариу залбирал" className="mb-4" data-role="responsory">
+        <p className="text-sm font-semibold text-red-700 dark:text-red-400">
+          Хариу залбирал <PageRef page={section.page} />
+        </p>
+        <RichContent content={section.rich} className="mt-2" />
+      </section>
+    )
+  }
 
   return (
     <section aria-label="Хариу залбирал" className="mb-4" data-role="responsory">

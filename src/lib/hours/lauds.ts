@@ -29,7 +29,7 @@ export const assembleLauds: HourAssembler = (ctx) => {
   }
 
   // 2. Hymn
-  sections.push({ type: 'hymn', text: ctx.mergedPropers.hymn ?? '', page: ctx.mergedPropers.hymnPage, candidates: ctx.hymnCandidates, selectedIndex: ctx.hymnSelectedIndex })
+  sections.push({ type: 'hymn', text: ctx.mergedPropers.hymn ?? '', page: ctx.mergedPropers.hymnPage, candidates: ctx.hymnCandidates, selectedIndex: ctx.hymnSelectedIndex, textRich: ctx.mergedPropers.hymnRich })
 
   // 3. Psalmody
   if (ctx.assembledPsalms.length > 0) {
@@ -38,7 +38,13 @@ export const assembleLauds: HourAssembler = (ctx) => {
 
   // 4. Short Reading
   const reading = resolveShortReading(ctx.mergedPropers)
-  if (reading) sections.push(reading)
+  if (reading) {
+    if (ctx.mergedPropers.shortReadingRich) {
+      sections.push({ ...reading, textRich: ctx.mergedPropers.shortReadingRich })
+    } else {
+      sections.push(reading)
+    }
+  }
 
   // 5. Responsory
   if (ctx.mergedPropers.responsory) {
@@ -48,6 +54,7 @@ export const assembleLauds: HourAssembler = (ctx) => {
       versicle: ctx.mergedPropers.responsory.versicle,
       shortResponse: ctx.mergedPropers.responsory.shortResponse,
       page: ctx.mergedPropers.responsory.page,
+      rich: ctx.mergedPropers.responsoryRich,
     })
   }
 
@@ -72,6 +79,7 @@ export const assembleLauds: HourAssembler = (ctx) => {
       petitions: parsed.petitions,
       closing: parsed.closing,
       page: ctx.mergedPropers.intercessionsPage,
+      rich: ctx.mergedPropers.intercessionsRich,
     })
   }
 
@@ -79,12 +87,14 @@ export const assembleLauds: HourAssembler = (ctx) => {
   sections.push({ type: 'ourFather' })
 
   // 9. Concluding Prayer
-  if (ctx.mergedPropers.concludingPrayer) {
+  if (ctx.mergedPropers.concludingPrayer || ctx.mergedPropers.concludingPrayerRich) {
     sections.push({
       type: 'concludingPrayer',
-      text: ctx.mergedPropers.concludingPrayer,
+      text: ctx.mergedPropers.concludingPrayer ?? '',
       page: ctx.mergedPropers.concludingPrayerPage,
       alternateText: ctx.mergedPropers.alternativeConcludingPrayer,
+      textRich: ctx.mergedPropers.concludingPrayerRich,
+      alternateTextRich: ctx.mergedPropers.alternativeConcludingPrayerRich,
     })
   }
 

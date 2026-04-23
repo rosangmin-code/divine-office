@@ -4,7 +4,7 @@
 > and FR/NFR IDs in test titles. **Do not edit by hand.**
 > The curated matrix lives in [`docs/traceability-matrix.md`](./traceability-matrix.md).
 
-Scan: 4 test files contributed 10 unique IDs.
+Scan: 6 test files contributed 12 unique IDs.
 
 | ID | Test file | Test title(s) |
 |---|---|---|
@@ -16,6 +16,8 @@ Scan: 4 test files contributed 10 unique IDs.
 | FR-032 | `e2e/settings.spec.ts` | psalm-prayer switch persists to localStorage and survives reload (FR-032)<br>psalm-prayer switch uses gold when enabled (FR-032) |
 | FR-124 | `e2e/prayer-sections.spec.ts` | Psalm 119 sub-sections in psalter-texts have distinct content (FR-124) |
 | FR-132 | `e2e/prayer-sections.spec.ts` | psalm-concluding prayer renders when data is present (FR-132) |
+| FR-152 | `e2e/prayer-responsory.spec.ts` | ordinary weekday Lauds responsory renders all 6 paragraphs<br>final people response equals fullResponse (closes with repeated antiphon)<br>Glory Be precedes the final repeated full response<br>API exposes new 3-field responsory shape (fullResponse, versicle, shortResponse)<br>responsory section carries data-role marker for decoupled selectors |
+| FR-153 | `e2e/pdf-fidelity-pilot.spec.ts` | concluding prayer renders rich overlay without duplicating the section heading<br>responsory uses V./R. markers when rich overlay present<br>no silent regression on non-rich sections (core structure intact) |
 | NFR-013 | `e2e/mobile.spec.ts` | prayer article inner width >= 320px for readability (NFR-013)<br>antiphon inner width >= 320px on mobile (NFR-013) |
 | NFR-014 | `e2e/mobile.spec.ts` | psalm has left padding on mobile (NFR-014)<br>psalm stanzas have visible spacing on mobile (NFR-014) |
 | NFR-016 | `e2e/settings.spec.ts` | active radio uses brass gold accent, not liturgical green (NFR-016) |

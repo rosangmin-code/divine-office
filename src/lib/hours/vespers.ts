@@ -10,7 +10,7 @@ export const assembleVespers: HourAssembler = (ctx) => {
   sections.push(buildOpeningVersicle(ctx.ordinarium, ctx.liturgicalDay.season))
 
   // 2. Hymn
-  sections.push({ type: 'hymn', text: ctx.mergedPropers.hymn ?? '', page: ctx.mergedPropers.hymnPage, candidates: ctx.hymnCandidates, selectedIndex: ctx.hymnSelectedIndex })
+  sections.push({ type: 'hymn', text: ctx.mergedPropers.hymn ?? '', page: ctx.mergedPropers.hymnPage, candidates: ctx.hymnCandidates, selectedIndex: ctx.hymnSelectedIndex, textRich: ctx.mergedPropers.hymnRich })
 
   // 2. Psalmody
   if (ctx.assembledPsalms.length > 0) {
@@ -19,7 +19,13 @@ export const assembleVespers: HourAssembler = (ctx) => {
 
   // 3. Short Reading
   const reading = resolveShortReading(ctx.mergedPropers)
-  if (reading) sections.push(reading)
+  if (reading) {
+    if (ctx.mergedPropers.shortReadingRich) {
+      sections.push({ ...reading, textRich: ctx.mergedPropers.shortReadingRich })
+    } else {
+      sections.push(reading)
+    }
+  }
 
   // 4. Responsory
   if (ctx.mergedPropers.responsory) {
@@ -29,6 +35,7 @@ export const assembleVespers: HourAssembler = (ctx) => {
       versicle: ctx.mergedPropers.responsory.versicle,
       shortResponse: ctx.mergedPropers.responsory.shortResponse,
       page: ctx.mergedPropers.responsory.page,
+      rich: ctx.mergedPropers.responsoryRich,
     })
   }
 
@@ -53,6 +60,7 @@ export const assembleVespers: HourAssembler = (ctx) => {
       petitions: parsed.petitions,
       closing: parsed.closing,
       page: ctx.mergedPropers.intercessionsPage,
+      rich: ctx.mergedPropers.intercessionsRich,
     })
   }
 
@@ -60,12 +68,14 @@ export const assembleVespers: HourAssembler = (ctx) => {
   sections.push({ type: 'ourFather' })
 
   // 8. Concluding Prayer
-  if (ctx.mergedPropers.concludingPrayer) {
+  if (ctx.mergedPropers.concludingPrayer || ctx.mergedPropers.concludingPrayerRich) {
     sections.push({
       type: 'concludingPrayer',
-      text: ctx.mergedPropers.concludingPrayer,
+      text: ctx.mergedPropers.concludingPrayer ?? '',
       page: ctx.mergedPropers.concludingPrayerPage,
       alternateText: ctx.mergedPropers.alternativeConcludingPrayer,
+      textRich: ctx.mergedPropers.concludingPrayerRich,
+      alternateTextRich: ctx.mergedPropers.alternativeConcludingPrayerRich,
     })
   }
 

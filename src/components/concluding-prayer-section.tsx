@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import type { HourSection } from '@/lib/types'
 import { PageRef } from './page-ref'
+import { RichContent } from './prayer-sections/rich-content'
 
 type ConcludingPrayerSectionProps = {
   section: Extract<HourSection, { type: 'concludingPrayer' }>
@@ -12,15 +13,20 @@ export function ConcludingPrayerSection({ section }: ConcludingPrayerSectionProp
   const [showAlternate, setShowAlternate] = useState(false)
 
   const displayText = showAlternate && section.alternateText ? section.alternateText : section.text
+  const activeRich = showAlternate ? section.alternateTextRich : section.textRich
 
   return (
     <section aria-label="Төгсгөлийн даатгал залбирал" className="mb-4">
       <p className="text-sm font-semibold text-red-700 dark:text-red-400">
         Төгсгөлийн даатгал залбирал <PageRef page={section.page} />
       </p>
-      <p className="mt-2 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
-        {displayText}
-      </p>
+      {activeRich && activeRich.blocks.length > 0 ? (
+        <RichContent content={activeRich} className="mt-2" />
+      ) : (
+        <p className="mt-2 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
+          {displayText}
+        </p>
+      )}
 
       {section.alternateText && (
         <div className="mt-3">

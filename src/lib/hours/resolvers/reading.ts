@@ -7,7 +7,7 @@ import { lookupRef } from '../../bible-loader'
  */
 export function resolveShortReading(
   propers: HourPropers | null,
-): HourSection | null {
+): Extract<HourSection, { type: 'shortReading' }> | null {
   if (!propers?.shortReading) return null
 
   const readingRef = propers.shortReading.ref

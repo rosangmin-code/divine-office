@@ -1,0 +1,71 @@
+# pdfjs-dist PoC histogram
+PDF: public/psalter.pdf
+Physical pages sampled: 376, 377, 378
+Book-page range (2-up): 750..755
+
+## Font histogram (text items per fontName)
+     588  g_d0_f2
+     102  g_d0_f4
+      42  g_d0_f3
+       8  g_d0_f1
+
+## Fill-colour operator histogram
+(space|hex  -> number of fill-colour set operations encountered)
+      33  rgb|#ff0000
+      24  rgb|#2c2e35
+
+## Per-page colour runs (contiguous text-show ops under one fill)
+  page 376:
+        1 text-show ops  colour=rgb|#2c2e35
+        5 text-show ops  colour=rgb|#ff0000
+        6 text-show ops  colour=rgb|#2c2e35
+        1 text-show ops  colour=rgb|#ff0000
+        1 text-show ops  colour=rgb|#2c2e35
+        9 text-show ops  colour=rgb|#ff0000
+        4 text-show ops  colour=rgb|#2c2e35
+        9 text-show ops  colour=rgb|#ff0000
+        3 text-show ops  colour=rgb|#2c2e35
+       35 text-show ops  colour=rgb|#ff0000
+       22 text-show ops  colour=rgb|#2c2e35
+        9 text-show ops  colour=rgb|#ff0000
+        6 text-show ops  colour=rgb|#2c2e35
+    red-run sample (first 1200 chars of red-coloured showText args):
+      "      Эзэний баярЭзэний баяр                 Их баярМариагийнМагТаалШад  магтаалзахариагийнМагТаалШад магтаалТөгСгөлийнДааТгалзалбиралАяа,  Эцэг  минь,Таны  Хүү  Есүсийн  зүрхнээс хүлээн  авсан  хайрын  хишгийн  төлөөнөөбид  баясан  цэнгэж  байна.Түүний  амьдралыг хуваалцахын тулд бидний зүрх сэтгэлийг нээж,биднийг Түүний хайраар үргэлж адисалж өгнө үү.Тантай,  Ариун  Сүнсний  нэгдэлтэй,  үүрд  мөнх оршин  хаанчилдаг  Тэнгэрбурхан  Есүс  Христ бидний  Эзэн,  Таны  Хүүгээр  уламжлан  тийн болтугай.хаанчлалын амар амгаланг эдлэхэд бидэнд туслах болтугай.Тэнд Та Тэнгэр Эцэгтэй болон Ариун Сүнсний нэгдэлтэй,үүрд  мөнх  оршин  хаанчилдаг Тэнгэрбурхан билээ.Сонголтот залбиралМариагийнМагТаалШад магтаал"
+  page 377:
+        1 text-show ops  colour=rgb|#2c2e35
+        3 text-show ops  colour=rgb|#ff0000
+        2 text-show ops  colour=rgb|#2c2e35
+        3 text-show ops  colour=rgb|#ff0000
+        1 text-show ops  colour=rgb|#2c2e35
+       12 text-show ops  colour=rgb|#ff0000
+       17 text-show ops  colour=rgb|#2c2e35
+        1 text-show ops  colour=rgb|#ff0000
+        1 text-show ops  colour=rgb|#2c2e35
+        9 text-show ops  colour=rgb|#ff0000
+        4 text-show ops  colour=rgb|#2c2e35
+        9 text-show ops  colour=rgb|#ff0000
+        1 text-show ops  colour=rgb|#2c2e35
+        1 text-show ops  colour=rgb|#ff0000
+       23 text-show ops  colour=rgb|#2c2e35
+        9 text-show ops  colour=rgb|#ff0000
+        4 text-show ops  colour=rgb|#2c2e35
+    red-run sample (first 1200 chars of red-coloured showText args):
+      "      Эзэний баярЖИРИЙН ЦАГ УЛИРАЛДууллын залбирал: 1 дүгээр долоо хоногЖирийн цаг улирлын нэг дэх Ням гарагийн оронд Эзэний Ариун Угаал хэмээх баяр (х. ) байдаг.ТөгСгөлийнДааТгалзалбиралДууллын залбирал: 2 дугаар долоо хоногМариагийнМагТаалШад  магтаалзахариагийнМагТаалШад магтаалСонголтот залбиралМариагийнМагТаалШад магтаал"
+  page 378:
+        2 text-show ops  colour=rgb|#2c2e35
+        2 text-show ops  colour=rgb|#ff0000
+        3 text-show ops  colour=rgb|#2c2e35
+        1 text-show ops  colour=rgb|#ff0000
+        1 text-show ops  colour=rgb|#2c2e35
+        9 text-show ops  colour=rgb|#ff0000
+        4 text-show ops  colour=rgb|#2c2e35
+        9 text-show ops  colour=rgb|#ff0000
+        2 text-show ops  colour=rgb|#2c2e35
+       23 text-show ops  colour=rgb|#ff0000
+       10 text-show ops  colour=rgb|#2c2e35
+       23 text-show ops  colour=rgb|#ff0000
+       29 text-show ops  colour=rgb|#2c2e35
+        9 text-show ops  colour=rgb|#ff0000
+        2 text-show ops  colour=rgb|#2c2e35
+    red-run sample (first 1200 chars of red-coloured showText args):
+      "Жирийн цаг улиралЖирийн цаг улирал                     Дууллын залбирал: 3 дугаар долоо хоногМариагийнМагТаалШад магтаалзахариагийнМагТаалШад  магтаалТөгСгөлийнДааТгалзалбиралАяа, төгс хүчит мөнх амьд Тэнгэрбурхан минь,бидний  доторх  Өөрийн  хайрыг  удирдана  уу.Тиймээс Таны Хүүгийн нэр алдрын төлөө зүтгэх бидний зүтгэл хүн төрөлхтнийг амар амгалан, эв нэгдэл рүү чиглүүлэх болно.Тантай,  Ариун  Сүнсний  нэгдэлтэй,  үүрд  мөнх оршин  хаанчилдаг  Тэнгэрбурхан  Есүс  Христ бидний  Эзэн,  Таны  Хүүгээр  уламжлан  тийн болтугай.Сонголтот залбиралТөгСгөлийнДааТгалзалбиралАяа,  Тэнгэр  газрын  Эцэг  минь,Та  бидний даатгал залбирлыг сонсоод,энэ дэлхий дээр амар амгаланд хүрэх замыг бидэнд зааж өгнө үү.Тантай,  Ариун  Сүнсний  нэгдэлтэй,  үүрд  мөнх оршин  хаанчилдаг  Тэнгэрбурхан  Есүс  Христ бидний  Эзэн,  Таны  Хүүгээр  уламжлан  тийн болтугай.Сонголтот залбиралМариагийнМагТаалШад магтаал"

@@ -73,6 +73,44 @@ export const DAY_NAMES_MN: Record<DayOfWeek, string> = {
   SAT: 'Бямба',
 }
 
+// --- Rich Prayer Content AST ---
+// PDF 원형(루브릭 빨간색, italic, V./R., indent)을 JSON 에서 보존하기 위한
+// 구조. 기존 `string` 필드는 그대로 두고 *Rich 오버레이 필드를 함께 둔다
+// (dual-field 병행). 렌더는 rich 우선, 없으면 legacy string 경로 fallback.
+//
+// Stage 2 확산 단계에서 `src/lib/prayers/` 카탈로그가 `source` 태그를 실어
+// 반환하므로 "어느 경로(공통/시즌/축일)에서 선택된 기도문인지" 추적 가능.
+
+export type PrayerSpan =
+  | { kind: 'text'; text: string; emphasis?: ('italic' | 'bold')[] }
+  | { kind: 'rubric'; text: string }           // inline 루브릭(빨간 지시문)
+  | { kind: 'versicle'; text: string }         // V.
+  | { kind: 'response'; text: string }         // R.
+
+export type PrayerBlock =
+  | { kind: 'para'; spans: PrayerSpan[]; indent?: 0 | 1 | 2 }
+  | { kind: 'rubric-line'; text: string }      // 단독 루브릭 줄(섹션 제목 등)
+  | { kind: 'stanza'; lines: { spans: PrayerSpan[]; indent: 0 | 1 | 2 }[] }
+  | { kind: 'divider' }
+
+export type PrayerSourceRef =
+  | { kind: 'common'; id: string }
+  | {
+      kind: 'seasonal'
+      season: LiturgicalSeason
+      weekKey: string
+      dayKey: DayOfWeek
+      hour: HourType
+    }
+  | { kind: 'sanctoral'; celebrationId: string; hour: HourType }
+  | { kind: 'override'; note: string }
+
+export interface PrayerText {
+  blocks: PrayerBlock[]
+  page?: number
+  source?: PrayerSourceRef
+}
+
 // --- Psalter data structures ---
 
 export interface PsalmEntry {
@@ -129,6 +167,15 @@ export interface HourPropers {
   alternativeConcludingPrayerPage?: number  // Source PDF page number
   hymn?: string
   hymnPage?: number                     // Source PDF page number
+
+  // Rich overlays (dual-field 병행). 존재하면 렌더가 우선 사용, 없으면
+  // 기존 string 필드 경로 fallback.
+  shortReadingRich?: PrayerText
+  responsoryRich?: PrayerText
+  intercessionsRich?: PrayerText
+  concludingPrayerRich?: PrayerText
+  alternativeConcludingPrayerRich?: PrayerText
+  hymnRich?: PrayerText
 }
 
 export interface HymnCandidate {
@@ -232,11 +279,11 @@ export type HourSection =
       page?: number
     }
   | { type: 'openingVersicle'; versicle: string; response: string; gloryBe: string; alleluia?: string; pairedWithInvitatory?: boolean }
-  | { type: 'hymn'; text: string; page?: number; candidates?: HymnCandidate[]; selectedIndex?: number }
+  | { type: 'hymn'; text: string; page?: number; candidates?: HymnCandidate[]; selectedIndex?: number; textRich?: PrayerText }
   | { type: 'psalmody'; psalms: AssembledPsalm[] }
-  | { type: 'shortReading'; ref: string; bookMn: string; verses: { verse: number; text: string }[]; page?: number }
-  | { type: 'responsory'; fullResponse: string; versicle: string; shortResponse: string; page?: number }
-  | { type: 'gospelCanticle'; canticle: 'benedictus' | 'magnificat' | 'nuncDimittis'; antiphon: string; text: string; verses?: string[]; doxology?: string; page?: number }
+  | { type: 'shortReading'; ref: string; bookMn: string; verses: { verse: number; text: string }[]; page?: number; textRich?: PrayerText }
+  | { type: 'responsory'; fullResponse: string; versicle: string; shortResponse: string; page?: number; rich?: PrayerText }
+  | { type: 'gospelCanticle'; canticle: 'benedictus' | 'magnificat' | 'nuncDimittis'; antiphon: string; text: string; verses?: string[]; doxology?: string; page?: number; textRich?: PrayerText }
   | {
       type: 'intercessions'
       intro: string
@@ -246,9 +293,10 @@ export type HourSection =
       petitions?: { versicle: string; response?: string }[]
       closing?: string
       page?: number
+      rich?: PrayerText
     }
   | { type: 'ourFather' }
-  | { type: 'concludingPrayer'; text: string; page?: number; alternateText?: string }
+  | { type: 'concludingPrayer'; text: string; page?: number; alternateText?: string; textRich?: PrayerText; alternateTextRich?: PrayerText }
   | { type: 'dismissal'; priest: { greeting: { versicle: string; response: string }; blessing: { text: string; response: string }; dismissalVersicle: { versicle: string; response: string } }; individual: { versicle: string; response: string } }
   | { type: 'examen'; text: string; page?: number }
   | { type: 'blessing'; text: string; response: string; page?: number }
