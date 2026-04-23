@@ -52,5 +52,25 @@
       "kind": "common",
       "id": "psalter-w1-sat-lauds-responsory"
     }
+  },
+  "shortReadingRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Тиймээс ах дүү нар аа, дуудлага ба сонголтоо бататгахын тулд бүр ч илүү хичээнгүй бай. Учир нь та нар эдгээрийг үйлдэж л байвал хэзээ ч бүдрэхгүй. Ингэснээр бидний Эзэн бөгөөд Аврагч Есүс Христийн мөнх хаанчлалд хангалттай орох болно."
+          }
+        ]
+      }
+    ],
+    "page": 163,
+    "source": {
+      "kind": "psalter-commons",
+      "psalterWeek": "1",
+      "dayKey": "SAT",
+      "hour": "lauds"
+    }
   }
 }

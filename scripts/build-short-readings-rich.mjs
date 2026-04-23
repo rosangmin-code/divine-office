@@ -57,6 +57,15 @@ const PDF_CORRECTIONS_BY_PAGE = {
   553: [{ from: 'байна.Юунд', to: 'байна. Юунд' }],
   // p586 (continuation p587 도 무관): `Ааба,Аав` — comma 다음 공백 손실.
   586: [{ from: 'Ааба,Аав', to: 'Ааба, Аав' }],
+  // p630 LENT w1 TUE lauds (Иоел 2:12-13): `тасчигтун”` — reading 내
+  // 열린 인용 부호 없이 닫힌 curly quote(U+201D) 만 등장 (parsed_data/full_pdf.txt
+  // line 21818). 고아 닫힌 인용 부호 → 마침표로 정정. JSON canon 은 `.` 로 보존.
+  630: [{ from: 'тасчигтун”', to: 'тасчигтун.' }],
+  // p639 LENT w1 THU lauds (Хаадын дээд 8:51-53а): continuation p640 에서
+  // reading 이 `тусгаарласан шүү дээ,` 로 comma 종료 후 바로
+  // `Хариу залбирал` 섹션 헤딩 (parsed_data/full_pdf.txt line 22175~22176).
+  // 섹션 경계 직전 trailing comma 는 PDF typo — 마침표로 정정.
+  639: [{ from: 'тусгаарласан шүү дээ,', to: 'тусгаарласан шүү дээ.' }],
 }
 
 function mergeOverlay(overlayPath, fields) {

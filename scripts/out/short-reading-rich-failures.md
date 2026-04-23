@@ -1,12 +1,16 @@
 # shortReading Rich 확산 결과
 
-- 생성: 2026-04-23T08:18:20.910Z
-- 소요: 16.7s
-- 성공: 112
-- 실패: 14
+- 생성: 2026-04-23T08:12:44.723Z
+- 소요: 15.8s
+- 성공: 111
+- 실패: 15
 - 스킵 (page/text 없음): 0
 
 ## 실패 엔트리
+
+### ADVENT/w1/SUN/vespers (page 545)
+- reason: exception
+- error: [rich-builder] section heading /^[Уу]ншлага(?:[\s\t]|$)/u not found in book 545 (pdftotext)
 
 ### ADVENT/w1/MON/lauds (page 556)
 - reason: acceptance gate failed
@@ -14,35 +18,25 @@
 - orig:  `эстнийхээ эсрэг илд далайхгүй, Дахин хэзээ ч тэд дайтахад суралцахгүй.`
 - recon: `эстнийхээ эсрэг илд далайхгүй,`
 
-### CHRISTMAS/woctave/SUN/lauds (page 601)
-- reason: acceptance gate failed
-- first divergence at: 339
-- orig:  `өдгөөгөөс өнө мөнхөд тогтооно.`
-- recon: `өдгөөгөөс өнө мөнхөд тогтооно. Түг түмдийн ЭЗЭНий зүтгэл Түүнийг нь гүйцэлдүүлэх болно.`
+### EASTER/w1/SUN/lauds (page 689)
+- reason: exception
+- error: [rich-builder] section heading /^[Уу]ншлага(?:[\s\t]|$)/u not found in book 689 (pdftotext)
 
-### LENT/w1/TUE/lauds (page 630)
-- reason: acceptance gate failed
-- first divergence at: 137
-- orig:  `иш, харин зүрхээ урж тасчигтун. Тэнгэрбурхан ЭЗЭНдээ эргэгтүн. Учир нь Тэрээр нигүүлсэнгүй, өршөөнгүй, Уурлахд`
-- recon: `иш, харин зүрхээ урж тасчигтун" Тэнгэрбурхан ЭЗЭНдээ эргэгтүн. Учир нь Тэрээр нигүүлсэнгүй, өршөөнгүй, Уурлахд`
+### EASTER/w1/THU/lauds (page 501)
+- reason: exception
+- error: [rich-builder] section heading /^[Уу]ншлага(?:[\s\t]|$)/u not found in book 501 (pdftotext)
 
-### LENT/w1/THU/lauds (page 639)
-- reason: acceptance gate failed
-- first divergence at: 389
-- orig:  `д түмнээс тусгаарласан шүү дээ.`
-- recon: `д түмнээс тусгаарласан шүү дээ,`
+### EASTER/weasterSunday/SUN/lauds (page 689)
+- reason: exception
+- error: [rich-builder] section heading /^[Уу]ншлага(?:[\s\t]|$)/u not found in book 689 (pdftotext)
 
-### LENT/w1/FRI/lauds (page 644)
-- reason: acceptance gate failed
-- first divergence at: 23
-- orig:  `Зөвт Нэгэн, Миний Зарц олныг зөвтгөнө, хилэнцийг нь үүрнэ. Тиймээс Би Түүнд Ихэстэй хамт хувь ногдуулж,`
-- recon: `Зөвт Нэгэн, Миний Зарц Олныг зөвтгөнө, хилэнцийг нь үүрнэ. Тиймээс Би Түүнд Ихэстэй хамт хувь ногдуулж,`
+### LENT/w6/SUN/vespers (page 650)
+- reason: exception
+- error: [rich-builder] section heading /^[Уу]ншлага(?:[\s\t]|$)/u not found in book 650 (pdftotext)
 
-### PSALTER/w1/SAT/lauds (page 163)
-- reason: acceptance gate failed
-- first divergence at: 234
-- orig:  `анчлалд хангалттай орох болно. Бүх үндэстэн, ЭЗЭНийг магтагтун Бүх ард түмэн, Түүнийг өргөмжлөгтүн!`
-- recon: `анчлалд хангалттай орох болно.`
+### LENT/w6/SAT/vespers (page 650)
+- reason: exception
+- error: [rich-builder] section heading /^[Уу]ншлага(?:[\s\t]|$)/u not found in book 650 (pdftotext)
 
 ### PSALTER/w2/THU/lauds (page 251)
 - reason: exception
