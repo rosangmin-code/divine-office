@@ -141,6 +141,16 @@ export interface PsalmEntry {
   title?: string                 // Psalm title (Mongolian)
   gloria_patri: boolean          // Include Glory Be
   page?: number                  // Source PDF page number
+  // PDF 의 각 시편 엔트리는 default 후렴 아래 rubric 행으로 시즌별 variant
+  // (예: "Амилалтын улирал:" / "12 сарын 17-23:") 를 수록한다. Phase 2 에서
+  // 실제 PDF 텍스트를 주입하며, 본 필드가 존재하면 resolver 가 이를
+  // default_antiphon 보다 우선 선택한다 (sanctoral/seasonal overrides 다음).
+  seasonal_antiphons?: {
+    easter?: string
+    adventDec17_23?: string
+    lent?: string
+    christmas?: string
+  }
 }
 
 export interface HourPsalmody {

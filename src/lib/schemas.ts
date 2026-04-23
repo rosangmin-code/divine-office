@@ -41,6 +41,15 @@ const PsalmEntrySchema = z
     title: z.string().optional(),
     gloria_patri: z.boolean(),
     page: PageSchema,
+    seasonal_antiphons: z
+      .object({
+        easter: z.string().optional(),
+        adventDec17_23: z.string().optional(),
+        lent: z.string().optional(),
+        christmas: z.string().optional(),
+      })
+      .loose()
+      .optional(),
   })
   .loose()
 

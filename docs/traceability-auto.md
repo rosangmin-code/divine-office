@@ -4,10 +4,11 @@
 > and FR/NFR IDs in test titles. **Do not edit by hand.**
 > The curated matrix lives in [`docs/traceability-matrix.md`](./traceability-matrix.md).
 
-Scan: 11 test files contributed 15 unique IDs.
+Scan: 13 test files contributed 16 unique IDs.
 
 | ID | Test file | Test title(s) |
 |---|---|---|
+| FR-011 | `e2e/prayer-magnificat-pages.spec.ts` | Magnificat page references (Easter W2 THU vespers) |
 | FR-011 | `e2e/special-days.spec.ts` | Saturday vespers uses next Sunday propers (FR-011, 1st Vespers)<br>Saturday vespers differs from regular Saturday LAUDS (sanity: fallback is hour-scoped) |
 | FR-028 | `e2e/settings.spec.ts` | home header no longer renders a theme toggle (FR-028)<br>guide header no longer renders a theme toggle (FR-028) |
 | FR-029 | `e2e/settings.spec.ts` | back link navigates from /settings to home (FR-029) |
@@ -24,6 +25,7 @@ Scan: 11 test files contributed 15 unique IDs.
 | FR-153d | `e2e/prayer-responsory.spec.ts` | OT w1 SUN Lauds — psalter commons renders 5-block rich AST<br>OT weekday Lauds — psalter commons rich (weekday periodization)<br>Sunday Compline — ordinarium commons rich |
 | FR-153f | `e2e/prayer-psalm-stanzas-rich.spec.ts` | Psalter stanzasRich rendering (FR-153f)<br>renders psalm stanzas via rich AST (data-role markers present)<br>Daniel 3 refrain lines are tagged with role=refrain<br>refrain lines carry rubric red colour (§12.1) |
 | FR-153h | `e2e/prayer-psalm-prayer-rich.spec.ts` | Psalter psalmPrayerRich rendering (FR-153h)<br>psalm-prayer section renders with Mongolian rubric heading<br>Ps 63 psalmPrayer renders via rich AST (RichContent paragraph branch)<br>psalm-prayer heading carries red rubric class (§12.1) |
+| FR-155 | `e2e/easter-antiphon.spec.ts` | Easter season psalm / canticle antiphons (FR-155) |
 | NFR-013 | `e2e/mobile.spec.ts` | prayer article inner width >= 320px for readability (NFR-013)<br>antiphon inner width >= 320px on mobile (NFR-013) |
 | NFR-014 | `e2e/mobile.spec.ts` | psalm has left padding on mobile (NFR-014)<br>psalm stanzas have visible spacing on mobile (NFR-014) |
 | NFR-016 | `e2e/settings.spec.ts` | active radio uses brass gold accent, not liturgical green (NFR-016) |

@@ -3,24 +3,43 @@ import { parseScriptureRef } from '../../scripture-ref-parser'
 import { lookupRef } from '../../bible-loader'
 import { loadPsalterTexts } from '../loaders'
 import { loadPsalterTextRich, loadPsalterTextPsalmPrayerRich } from '../../prayers/rich-overlay'
-import { applySeasonalAntiphon } from '../seasonal-antiphon'
+import { applySeasonalAntiphon, pickSeasonalVariant } from '../seasonal-antiphon'
 
 /**
  * Resolve a psalm entry into an AssembledPsalm with actual verse text.
  * Prefers psalter-texts.json (PDF source with stanza structure) over Bible JSONL.
  *
- * `season` controls seasonal antiphon post-processing (e.g. Easter appends
- * Alleluia). Callers that don't know the season pass undefined, which
- * preserves the raw psalter antiphon.
+ * Antiphon selection priority:
+ *   1. `antiphonOverrides[antiphon_key]` — sanctoral + seasonal propers
+ *      overrides merged by the caller (loth-service).
+ *   2. `entry.seasonal_antiphons[<season>]` — PDF-sourced seasonal variant
+ *      (Phase 1 stub, populated in Phase 2 / task #14). When present, the
+ *      append-Alleluia fallback is SKIPPED because the PDF variant already
+ *      terminates with Alleluia in Easter and is authored per-season in
+ *      the other cases.
+ *   3. `entry.default_antiphon` — 4-week psalter default (Ordinary Time
+ *      authorship). Receives the append-Alleluia augmentation during Easter.
+ *
+ * `dateStr` (YYYY-MM-DD) is needed for the ADVENT Dec 17-23 gate on
+ * `seasonal_antiphons.adventDec17_23`; outside that window the
+ * Advent variant is ignored. Callers that don't pass `dateStr` simply
+ * skip the ADVENT-specific lookup.
  */
 export async function resolvePsalm(
   entry: PsalmEntry,
   antiphonOverrides?: Record<string, string>,
   season?: LiturgicalSeason,
+  dateStr?: string,
 ): Promise<AssembledPsalm> {
-  const rawAntiphon =
-    antiphonOverrides?.[entry.antiphon_key] ?? entry.default_antiphon ?? ''
-  const antiphon = applySeasonalAntiphon(rawAntiphon, season)
+  const override = antiphonOverrides?.[entry.antiphon_key]
+  const seasonalVariant = pickSeasonalVariant(entry, season, dateStr)
+  // override > seasonal_antiphons variant > default_antiphon.
+  const rawAntiphon = override ?? seasonalVariant ?? entry.default_antiphon ?? ''
+  // Skip append-Alleluia when the PDF-sourced variant is used — the PDF
+  // text already carries the proper seasonal ending. Overrides and defaults
+  // go through applySeasonalAntiphon as before.
+  const usedPdfVariant = override === undefined && seasonalVariant !== undefined
+  const antiphon = usedPdfVariant ? rawAntiphon : applySeasonalAntiphon(rawAntiphon, season)
 
   const psalterTexts = loadPsalterTexts()
   const psalmText = psalterTexts[entry.ref]

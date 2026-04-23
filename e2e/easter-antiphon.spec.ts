@@ -1,15 +1,12 @@
 import { test, expect } from '@playwright/test'
 import { DATES } from './fixtures/dates'
 
-/**
- * @fr FR-155
- *
- * During Easter season, every psalm / gospel-canticle antiphon must
- * terminate with "Alleluia" per GILH §113 (§272 in the Mongolian LOTH).
- * The 4-week psalter antiphons are authored for Ordinary Time weekdays;
- * when reused in Easter they must be augmented. See
- * src/lib/hours/seasonal-antiphon.ts.
- */
+// @fr FR-155
+// During Easter season, every psalm / gospel-canticle antiphon must
+// terminate with "Alleluia" per GILH §113 (§272 in the Mongolian LOTH).
+// The 4-week psalter antiphons are authored for Ordinary Time weekdays;
+// when reused in Easter they must be augmented. See
+// src/lib/hours/seasonal-antiphon.ts.
 test.describe('Easter season psalm / canticle antiphons (FR-155)', () => {
   test('Easter weekday Lauds psalm antiphons all carry Аллэлуяа', async ({ request }) => {
     const res = await request.get(`/api/loth/${DATES.easterWeekday}/lauds`)
