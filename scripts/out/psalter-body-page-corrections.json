@@ -1,6 +1,16 @@
 {
   "version": 1,
-  "generated": "2026-04-22T14:28:09.275Z",
+  "generated": "2026-04-23T08:30:00.000Z",
   "source": "parsed_data/full_pdf.txt",
-  "files": {}
+  "files": {
+    "src/data/loth/psalter/week-2.json": [
+      { "kind": "shortReading", "locator": "days.SAT.vespers.shortReading", "from": 172, "to": 191, "delta": 19 }
+    ],
+    "src/data/loth/psalter/week-4.json": [
+      { "kind": "shortReading", "locator": "days.FRI.lauds.shortReading", "from": 497, "to": 494, "delta": -3 },
+      { "kind": "shortReading", "locator": "days.FRI.vespers.shortReading", "from": 504, "to": 500, "delta": -4 },
+      { "kind": "shortReading", "locator": "days.SAT.lauds.shortReading", "from": 518, "to": 509, "delta": -9 },
+      { "kind": "shortReading", "locator": "days.SAT.vespers.shortReading", "from": 404, "to": 420, "delta": 16 }
+    ]
+  }
 }

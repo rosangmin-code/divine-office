@@ -52,5 +52,25 @@
       "kind": "common",
       "id": "psalter-w4-fri-vespers-responsory"
     }
+  },
+  "shortReadingRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Тэгэхээр одоо Христ Есүс дотор байгаа хүмүүст ямар ч ял үгүй. Учир нь Христ Есүс доторх амийн Сүнсний хууль нь чамайг нүглийн болон үхлийн хуулиас чөлөөлсөн ажээ."
+          }
+        ]
+      }
+    ],
+    "page": 500,
+    "source": {
+      "kind": "psalter-commons",
+      "psalterWeek": "4",
+      "dayKey": "FRI",
+      "hour": "vespers"
+    }
   }
 }
