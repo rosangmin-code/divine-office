@@ -93,17 +93,37 @@ export type PrayerBlock =
   | { kind: 'stanza'; lines: { spans: PrayerSpan[]; indent: 0 | 1 | 2; role?: 'refrain' | 'doxology' }[] }
   | { kind: 'divider' }
 
+export type CommonPrayerSource = { kind: 'common'; id: string }
+export type SeasonalPrayerSource = {
+  kind: 'seasonal'
+  season: LiturgicalSeason
+  weekKey: string
+  dayKey: DayOfWeek
+  hour: HourType
+}
+export type SanctoralPrayerSource = { kind: 'sanctoral'; celebrationId: string; hour: HourType }
+export type OverridePrayerSource = { kind: 'override'; note: string }
+
 export type PrayerSourceRef =
-  | { kind: 'common'; id: string }
-  | {
-      kind: 'seasonal'
-      season: LiturgicalSeason
-      weekKey: string
-      dayKey: DayOfWeek
-      hour: HourType
-    }
-  | { kind: 'sanctoral'; celebrationId: string; hour: HourType }
-  | { kind: 'override'; note: string }
+  | CommonPrayerSource
+  | SeasonalPrayerSource
+  | SanctoralPrayerSource
+  | OverridePrayerSource
+
+// Discriminated-union narrowing helpers. Only `common` carries `id`; only
+// `sanctoral` carries `celebrationId`. Call sites that need these fields
+// MUST narrow through one of these guards (TypeScript does not narrow from
+// `expect(...).toBe(kind)` assertions).
+export function isCommonSource(
+  source: PrayerSourceRef | null | undefined,
+): source is CommonPrayerSource {
+  return source?.kind === 'common'
+}
+export function isSanctoralSource(
+  source: PrayerSourceRef | null | undefined,
+): source is SanctoralPrayerSource {
+  return source?.kind === 'sanctoral'
+}
 
 export interface PrayerText {
   blocks: PrayerBlock[]
