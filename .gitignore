@@ -30,6 +30,13 @@ next-env.d.ts
 /.playwright-mcp/
 /.playwright-cli/
 
+# scripts/output — intermediate extraction artefacts (regenerable).
+# psalter seasonal_antiphons (task #14): run
+#   `node scripts/extract-psalter-seasonal-antiphons.js`
+# to reproduce. The injected JSONs under src/data/loth/psalter/ are the
+# committed source of truth; the extraction JSON itself is not tracked.
+/scripts/output/
+
 # local dev artifacts — source PDF, extraction outputs, Codex marker
 .codex
 /.claude/
