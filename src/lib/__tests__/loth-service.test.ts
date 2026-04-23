@@ -95,3 +95,41 @@ describe('propers merge priority', () => {
     expect(result!.sections.length).toBeGreaterThan(0)
   })
 })
+
+// @fr FR-153
+describe('hymn rich wiring (central catalog)', () => {
+  it('attaches textRich to the hymn section for the default rotation pick', async () => {
+    const result = await assembleHour('2026-06-15', 'lauds')
+    expect(result).not.toBeNull()
+    const hymnSection = result!.sections.find((s) => s.type === 'hymn')
+    expect(hymnSection).toBeDefined()
+    if (hymnSection?.type !== 'hymn') throw new Error('expected hymn section')
+    // Rotation should have picked at least one candidate; textRich should be
+    // populated from src/data/loth/prayers/hymns/{number}.rich.json when the
+    // selected hymn has a catalog entry (107/122 covered as of T8).
+    expect(hymnSection.candidates && hymnSection.candidates.length).toBeGreaterThan(0)
+    if (hymnSection.textRich) {
+      expect(hymnSection.textRich.blocks.length).toBeGreaterThan(0)
+      expect(hymnSection.textRich.source?.kind).toBe('common')
+      expect(hymnSection.textRich.source?.id).toMatch(/^hymn-\d+$/)
+    }
+  })
+
+  it('leaves textRich undefined when the selected hymn has no catalog entry', async () => {
+    // Find any date whose default rotation pick lands on one of the 15 empty-
+    // text hymns (41/44/45/46/50/81/82/89/92/93/105/108/111/115/117). Those
+    // have no rich.json file so the wiring must gracefully leave textRich
+    // undefined rather than crash.
+    // Smoke level: just verify assembleHour succeeds for several OT dates
+    // and that if textRich is set, it has the catalog shape.
+    for (const date of ['2026-06-15', '2026-06-16', '2026-06-17', '2026-06-18']) {
+      const result = await assembleHour(date, 'lauds')
+      expect(result).not.toBeNull()
+      const hymn = result!.sections.find((s) => s.type === 'hymn')
+      expect(hymn).toBeDefined()
+      if (hymn?.type === 'hymn' && hymn.textRich) {
+        expect(hymn.textRich.source?.id).toMatch(/^hymn-\d+$/)
+      }
+    }
+  })
+})

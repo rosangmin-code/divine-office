@@ -5,6 +5,7 @@ import type {
   LiturgicalSeason,
   DayOfWeek,
   HourType,
+  PrayerText,
 } from '../types'
 
 export type RichOverlay = Partial<Pick<HourPropers,
@@ -98,6 +99,23 @@ export function loadSanctoralRichOverlay(
     `${celebrationKey}-${hour}.rich.json`,
   )
   return readOverlayFile(filePath)
+}
+
+/**
+ * 중앙 hymn 카탈로그 조회.
+ * `src/data/loth/prayers/hymns/{number}.rich.json` 은 hymn number 로 공유되는
+ * 카탈로그 — 여러 (season, week, day, hour) 가 같은 rich 를 재사용한다.
+ * 반환 형태는 `{ hymnRich: PrayerText }` 이므로 RichOverlay 로 그대로 읽고
+ * 필드만 꺼낸다.
+ */
+export function loadHymnRichOverlay(hymnNumber: number | string): PrayerText | null {
+  const filePath = path.join(
+    process.cwd(),
+    'src/data/loth/prayers/hymns',
+    `${hymnNumber}.rich.json`,
+  )
+  const overlay = readOverlayFile(filePath)
+  return overlay?.hymnRich ?? null
 }
 
 export function __resetRichOverlayCache(): void {

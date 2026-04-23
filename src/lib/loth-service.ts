@@ -16,6 +16,7 @@ import { getPsalterPsalmody, getComplinePsalmody, getFullComplineData, getPsalte
 import { getSeasonHourPropers, getSanctoralPropers, getHymnForHour, getHymnCandidatesForHour } from './propers-loader'
 import { resolveCelebration } from './celebrations'
 import { resolveRichOverlay } from './prayers/resolver'
+import { loadHymnRichOverlay } from './prayers/rich-overlay'
 
 import {
   getAssembler,
@@ -219,6 +220,16 @@ export async function assembleHour(
     if (candidateData) {
       hymnCandidates = candidateData.candidates
       hymnSelectedIndex = candidateData.selectedIndex
+      // 기본 rotation 의 hymn 번호로 중앙 rich 카탈로그를 조회한다.
+      // seasonal/sanctoral overlay 의 hymnRich 가 이미 있으면 우선 유지 —
+      // 카탈로그는 override 가 없을 때의 기본 rich 소스다.
+      if (!mergedPropers.hymnRich) {
+        const selected = candidateData.candidates[candidateData.selectedIndex]
+        if (selected) {
+          const rich = loadHymnRichOverlay(selected.number)
+          if (rich) mergedPropers.hymnRich = rich
+        }
+      }
     }
   }
 

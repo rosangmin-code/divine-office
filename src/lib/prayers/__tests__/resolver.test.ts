@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import fs from 'node:fs'
 import type { PrayerText } from '../../types'
 import { resolveRichOverlay } from '../resolver'
-import { __resetRichOverlayCache } from '../rich-overlay'
+import { __resetRichOverlayCache, loadHymnRichOverlay } from '../rich-overlay'
 
 // File contents keyed by suffix — the resolver uses process.cwd()-prefixed
 // absolute paths, so we match by endsWith to stay cwd-agnostic.
@@ -125,5 +125,33 @@ describe('resolveRichOverlay', () => {
     expect(overlay.intercessionsRich?.blocks[0]).toMatchObject({
       spans: [{ kind: 'text', text: 'sanctoral intercessions only' }],
     })
+  })
+})
+
+describe('loadHymnRichOverlay', () => {
+  it('returns null when the hymn catalog file is missing', () => {
+    expect(loadHymnRichOverlay(42)).toBeNull()
+  })
+
+  it('reads hymnRich from the central hymn catalog by number', () => {
+    const hymnRich = makePrayer('hymn 1 stanza')
+    fileContents['prayers/hymns/1.rich.json'] = JSON.stringify({ hymnRich })
+
+    const result = loadHymnRichOverlay(1)
+    expect(result).toEqual(hymnRich)
+  })
+
+  it('accepts string hymn numbers (for map-style lookups)', () => {
+    const hymnRich = makePrayer('hymn 12 stanza')
+    fileContents['prayers/hymns/12.rich.json'] = JSON.stringify({ hymnRich })
+
+    expect(loadHymnRichOverlay('12')).toEqual(hymnRich)
+  })
+
+  it('returns null when the file exists but has no hymnRich field', () => {
+    fileContents['prayers/hymns/99.rich.json'] = JSON.stringify({
+      concludingPrayerRich: makePrayer('wrong field'),
+    })
+    expect(loadHymnRichOverlay(99)).toBeNull()
   })
 })
