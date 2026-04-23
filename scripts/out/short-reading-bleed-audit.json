@@ -1,0 +1,109 @@
+{
+  "generated": "2026-04-23T08:40:13.892Z",
+  "window": 30,
+  "total_short_readings": 126,
+  "psalm_corpus_size": 137,
+  "buckets": {
+    "suspect": 0,
+    "legitimate_overlap": 4,
+    "clean": 122,
+    "too_short": 0,
+    "verified_correction_historical": 3
+  },
+  "suspects": [],
+  "legitimate_overlaps": [
+    {
+      "id": "ADVENT/w1/MON/lauds",
+      "ref": "Isa 2:3-4",
+      "page": 556,
+      "source_file": "propers/advent.json",
+      "match_count": 1,
+      "matches": [
+        {
+          "psalm": "Isaiah 2:2-5",
+          "direction": "tail",
+          "window": "ээ ч тэд дайтахад суралцахгүй.",
+          "reason": "Isa 2:3-4 is a proper subset of the canticle Isaiah 2:2-5; identical Scripture text by design."
+        }
+      ]
+    },
+    {
+      "id": "PSALTER/w1/SUN/vespers",
+      "ref": "2 Коринт 1:3-7",
+      "page": 73,
+      "source_file": "psalter/week-1.json",
+      "match_count": 1,
+      "matches": [
+        {
+          "psalm": "Ephesians 1:3-10",
+          "direction": "head",
+          "window": "Бидний Эзэн Есүс Христийн Эцэг",
+          "reason": "Pauline blessing formula \"Бидний Эзэн Есүс Христийн Эцэг Тэнгэрбурхан ерөөлтэй еэ!\" opens both 2 Cor 1:3 (this shortReading) and Eph 1:3 (canticle in psalter-texts). Parallel doctrinal formula, not contamination."
+        }
+      ]
+    },
+    {
+      "id": "PSALTER/w1/SAT/vespers",
+      "ref": "2 Коринт 1:3-7",
+      "page": 73,
+      "source_file": "psalter/week-1.json",
+      "match_count": 1,
+      "matches": [
+        {
+          "psalm": "Ephesians 1:3-10",
+          "direction": "head",
+          "window": "Бидний Эзэн Есүс Христийн Эцэг",
+          "reason": "Saturday 1st-Vespers reuses Sunday 2nd-Vespers shortReading (liturgical pattern); same Pauline formula overlap as PSALTER/w1/SUN/vespers."
+        }
+      ]
+    },
+    {
+      "id": "PSALTER/w2/SUN/lauds",
+      "ref": "Езекиел 36:25-28",
+      "page": 182,
+      "source_file": "psalter/week-2.json",
+      "match_count": 1,
+      "matches": [
+        {
+          "psalm": "Ezekiel 36:24-28",
+          "direction": "tail",
+          "window": "ж, Би Тэнгэрбурхан чинь болно.",
+          "reason": "Ezek 36:25-28 (shortReading) is a proper subset of the canticle Ezekiel 36:24-28; identical Scripture text by design."
+        }
+      ]
+    }
+  ],
+  "too_short": [],
+  "verified_corrections": [
+    {
+      "id": "PSALTER/w1/SAT/lauds",
+      "direction": "shortReading<-psalm",
+      "page": 163,
+      "ref": "2 Петр 1:10-11",
+      "bled_from": "Psalm 117:1-2",
+      "commit": "deb4d2b",
+      "wi": "wi-004",
+      "note": "Psalm 117:1-2 tail (\"Бүх үндэстэн, ЭЗЭНийг магтагтун Бүх ард түмэн, Түүнийг өргөмжлөгтүн!\") had been appended to 2 Петр 1:10-11 text during transcription; removed. Rich builder acceptance gate now PASS."
+    },
+    {
+      "id": "psalter-texts.json → Psalm 33:1-9",
+      "direction": "psalm<-shortReading",
+      "page": 96,
+      "ref": "Psalm 33:1-9",
+      "bled_from": "Rom 13:14 (shortReading at ADVENT/w1/SUN/lauds p551)",
+      "commit": "TBD (this WI)",
+      "wi": "task-9",
+      "note": "Spurious stanza [\"Эзэн Есүс Христийг өөртөө өмс. Хүсэл тачаалыг нь хангах юугаар ч махбодыг бүү тэтгэ.\"] was inserted between legitimate stanzas[2] and stanzas[4] in Psalm 33:1-9 body. Content is Romans 13:14, unrelated to psalm. Removed. PDF p96-98 has no such line."
+    },
+    {
+      "id": "psalter-texts.json → Psalm 57:2-12",
+      "direction": "psalm<-antiphon+shortReading",
+      "page": 125,
+      "ref": "Psalm 57:2-12",
+      "bled_from": "Easter antiphon (\"Амилалтын цаг улирал…Аллэлуяа!\") + prophetic formula fragment (\"сайхнаар хангалуун байх болно гэж ЭЗЭН тунхаглаж байна.\")",
+      "commit": "TBD (this WI)",
+      "wi": "task-9",
+      "note": "Psalm body stanza[1] had two intruder elements: (a) a prophetic-formula tail grafted to legitimate line \"Үүрийн гэгээг би сэрээнэ.\" and (b) an Easter-season antiphon line. Both removed. Simultaneously, the psalm body was truncated (ended at Ps 57:8); Ps 57:9-12 (PDF p126 lines 4155-4163) restored verbatim."
+    }
+  ]
+}
