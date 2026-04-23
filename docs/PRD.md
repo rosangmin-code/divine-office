@@ -234,6 +234,43 @@ src/app/
 | `src/lib/__tests__/psalter-loader.test.ts` — Week 3 SUN lauds responsory page 302 vs 303 | psalter-texts / week-3.json 데이터 drift — page 값이 어느 한쪽에서 shift | FR-017 계열 page 감사 워크플로우 (NFR-009c/d) |
 | `e2e/prayer-sections.spec.ts` — hymn 선택 드롭다운 text 변화 2 브라우저 | Hymn dropdown 의 `.font-serif` selector 가 최근 hymn-section 리팩토링에서 변경됐거나 hymn 텍스트 비동기 로딩 타이밍 | FR-142 hymn 선택 e2e 유지보수 |
 
+### 12.2.2 Stage 6 Rich 확산 완료 (2026-04-23)
+
+FR-153 pilot (`f604835`) 이후 6개 하위 FR 로 분할 확산 완료. 병렬 세션(최대 3 concurrent)으로 진행됐고 공유 인프라(`rich-overlay.ts` / `resolver.ts` / `loth-service.ts` / `rich-builder.mjs`)는 `8a5e63f` megacommit 으로 흡수. 후속 세션은 그 위에 확산 변경만 쌓음.
+
+| FR | 영역 | 커버리지 | 커밋 | 비고 |
+|---|---|---|---|---|
+| FR-153a | concludingPrayer | 135/135 | `9fd51be` | 21건 실패 → `maxExtraPages` + `pdfCorrections` 로 전수 통과 |
+| FR-153b | intercessions | 56/56 | `503272c` | refrain/petition 구조 빌더 신설 |
+| FR-153c | alternativeConcludingPrayer | 58/58 | `503272c` | prose 빌더 재사용 |
+| FR-153d | responsory | 107/107 | `8a5e63f` / `ef66ce4` / `d1a3d3c` | 3-split: seasonal 50 + psalter commons 56 + compline commons 1×7. pilot `responsoryRich` 이관 |
+| FR-153e | shortReading | 106/126 | `f05456b` / `baa1f02` / `29c399e` | 84.1% PASS. 잔여 20건 별건 (#13 page 14, #14 canon 5, #15 layout 1) |
+| FR-153f | psalter stanzasRich | 137/137 | `9f25a29` / `aa26631` / `3329fba` / `048c9be` | fail-fast 빌더 + `role: 'refrain'` 플래그. PDF 실측(italic 0%, rubric body 3%) 기반 3A 확정 |
+| base | hymn 카탈로그 + wiring + 빈 text | 122/122 | `adc846f` / `f7c0d5d` / `e92fe93` | 중앙 카탈로그 `prayers/hymns/{N}.rich.json`, loader 와이어링, 15건 PDF 본문 추출 |
+
+**구조 결정 (전 FR 공통)**
+
+- **카탈로그 패턴**: 시즌 중립 공통문은 `src/data/loth/prayers/commons/{psalter,compline}/` 로 분리, 시즌 특이만 `prayers/seasonal/` 에. Hymn 은 `prayers/hymns/{N}.rich.json` 별도 카탈로그.
+- **resolver 우선순위**: `sanctoral > seasonal > psalter commons > compline commons`. 필드별 독립 resolve.
+- **수용 게이트**: 영역마다 다름 — prose 는 normalised byte-equal, responsory 는 3-field join vs 5-block flatten, psalter stanzas 는 byte-equal + 구조 동등성 (stanza 수·line 수·refrain 수) 2단계.
+- **pilot 이관**: `seasonal/ordinary-time/w1-SUN-lauds.rich.json` 의 `responsoryRich` 를 `commons/psalter/w1-SUN-lauds.rich.json` 으로 옮기고 seasonal 에서 필드 삭제 — 카탈로그가 공식 소스.
+
+**병렬 세션 교훈** (MEMORY 별도 기록)
+
+- 공유 인프라 파일 (loader·resolver·wiring) 을 여러 세션이 동시 수정 시 덮어쓰기 위험. 첫 커밋에 흡수되면 후속 세션은 `git diff <선행 커밋> HEAD` 로 자연 배제됨을 확인 후 커밋. T5 megacommit 이 실제로는 T5+T7+T9 인프라 전체를 포함했지만 내용 동일로 손실 0 — 메시지는 교정 amend 대신 git notes 로 갈음.
+
+**후속 (별건)**
+
+| 항목 | Task / FR | 설명 |
+|---|---|---|
+| shortReading page 오류 14건 | #13 | NFR-009d body-fingerprint 워크플로우 확장 |
+| shortReading canon truncation 5건 | #14 | PDF 원문 대조 후 JSON 패치 |
+| shortReading layout 특이 1건 | #15 | ADVENT w1 MON p556 중복 헤더 |
+| TS narrowing 2건 | #16 | `PrayerSourceRef.id` union narrowing (pre-existing) |
+| psalter-loader page drift 1건 | #17 | week-3 SUN lauds responsory 302 vs 303 (pre-existing) |
+| psalter pilot 규격 137 refs 재추출 | FR-153g | coarse refs (stanza≤2 · line≥20) 우선순위 |
+| psalmPrayer rich 화 | FR-153h | 88 refs, `buildProsePrayer` 재사용 |
+
 ### 12.3 구현 상세
 
 - **교송 라벨**: `src/components/prayer-renderer.tsx`의 `AntiphonBox`가 `label?: 'psalm' | 'canticle'` prop을 받음. `psalm-block.tsx`에서 `psalm.psalmType`에 따라 전달, gospel canticle 섹션에서는 `label="canticle"` 고정, invitatory에서는 기본값 `'psalm'` 사용.
