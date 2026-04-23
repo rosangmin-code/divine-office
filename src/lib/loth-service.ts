@@ -25,7 +25,7 @@ import {
   resolvePsalm,
   mergeComplineDefaults,
 } from './hours'
-import { applySeasonalAntiphon } from './hours/seasonal-antiphon'
+import { applySeasonalAntiphon, pickSeasonalVariant } from './hours/seasonal-antiphon'
 import { warmBibleCache } from './bible-loader'
 import type { HourContext } from './hours'
 
@@ -135,7 +135,16 @@ export async function assembleHour(
   // does not collapse the whole hour into a 404. Failed entries render as
   // empty-verse placeholders with the antiphon we already know.
   const psalmResults = await Promise.allSettled(
-    psalmEntries.map((entry) => resolvePsalm(entry, antiphonOverrides, day.season)),
+    psalmEntries.map((entry) =>
+      resolvePsalm(
+        entry,
+        antiphonOverrides,
+        day.season,
+        dateStr,
+        dayOfWeek,
+        day.weekOfSeason,
+      ),
+    ),
   )
   const assembledPsalms: AssembledPsalm[] = psalmResults.map((result, i) => {
     if (result.status === 'fulfilled') return result.value
@@ -144,12 +153,25 @@ export async function assembleHour(
       `[loth-service] resolvePsalm failed for ${entry.ref} (${dateStr} ${hour}):`,
       result.reason,
     )
-    const fallbackAntiphon = antiphonOverrides[entry.antiphon_key] ?? entry.default_antiphon ?? ''
+    // Mirror resolvePsalm's selection chain so the fallback placeholder
+    // still respects overrides > PDF seasonal variant > default_antiphon.
+    const override = antiphonOverrides[entry.antiphon_key]
+    const seasonalVariant = pickSeasonalVariant(
+      entry,
+      day.season,
+      dateStr,
+      dayOfWeek,
+      day.weekOfSeason,
+    )
+    const fallbackAntiphon = override ?? seasonalVariant ?? entry.default_antiphon ?? ''
+    const usedPdfVariant = override === undefined && seasonalVariant !== undefined
     return {
       psalmType: entry.type,
       reference: entry.ref,
       title: entry.title,
-      antiphon: applySeasonalAntiphon(fallbackAntiphon, day.season),
+      antiphon: usedPdfVariant
+        ? fallbackAntiphon
+        : applySeasonalAntiphon(fallbackAntiphon, day.season),
       verses: [],
       gloriaPatri: entry.gloria_patri,
       ...(entry.page != null ? { page: entry.page } : {}),

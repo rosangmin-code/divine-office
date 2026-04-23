@@ -141,6 +141,31 @@ export interface PsalmEntry {
   title?: string                 // Psalm title (Mongolian)
   gloria_patri: boolean          // Include Glory Be
   page?: number                  // Source PDF page number
+  // PDF 의 각 시편 엔트리는 default 후렴 아래 rubric 행으로 시즌/날짜/주차별
+  // variant 를 수록한다. Phase 2 (task #14) 에서 실제 PDF 텍스트를 주입하며,
+  // 본 필드가 존재하면 resolver 가 이를 default_antiphon 보다 우선 선택한다
+  // (sanctoral / seasonal propers overrides 다음).
+  //
+  // 필드 매핑 (divine-tester Phase 2 사전 조사 2026-04-23 실측):
+  //   easter          — "Амилалтын улирал:" (EASTER 시즌 전역, 99건)
+  //   advent          — "Ирэлтийн цаг улирал:" (ADVENT 주중 일반, 35건)
+  //   adventDec17_23  — "12 сарын 17-23:" (ADVENT 12/17-23, 63건)
+  //   adventDec24     — "12 сарын 24:" (ADVENT 12/24, 3건)
+  //   easterSunday[N] — "Амилалтын цаг улирлын N дэх/дахь Ням гараг:"
+  //                     (EASTER 주일 per-week override, N=3..7, 43건)
+  //   lentSunday[N]   — "Дөчин хоногийн цаг улирлын N дэх/дахь Ням гараг:"
+  //                     (LENT 주일 per-week only — PDF 에 시즌 전역 LENT
+  //                      후렴은 존재하지 않음, N=1..5, 41건)
+  //
+  // 주의: Christmas 시즌 전역 후렴은 PDF 에 마커 0건이라 필드 부재.
+  seasonal_antiphons?: {
+    easter?: string
+    advent?: string
+    adventDec17_23?: string
+    adventDec24?: string
+    easterSunday?: Record<number, string>
+    lentSunday?: Record<number, string>
+  }
 }
 
 export interface HourPsalmody {
