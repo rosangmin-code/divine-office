@@ -1,0 +1,56 @@
+{
+  "responsoryRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Аяа Эзэн минь, өглөө эрт би Таны тухай боддог."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "versicle",
+            "text": "Та үргэлж надад туслахаар тэнд байж байдаг."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Аяа Эзэн минь, өглөө эрт би Таны тухай боддог"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эцэг, Хүү, Ариун Сүнсийг магтан дуулъя."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Аяа Эзэн минь, өглөө эрт би Таны тухай боддог."
+          }
+        ]
+      }
+    ],
+    "page": 252,
+    "source": {
+      "kind": "common",
+      "id": "psalter-w2-thu-lauds-responsory"
+    }
+  }
+}

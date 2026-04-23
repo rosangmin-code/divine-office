@@ -230,5 +230,62 @@
       "dayKey": "FRI",
       "hour": "lauds"
     }
+  },
+  "responsoryRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Тэнгэрбурхан Өөрөө намайг анчны урхинаас чөлөөлөх болно."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "versicle",
+            "text": "Тэр намайг худал яриагаар залилан мэхлэх гэж буй хүмүүсээс,"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Мөн анчны урхинаас чөлөөлөх болно."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эцэг, Хүү, Ариун Сүнсийг магтан дуулъя."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Тэнгэрбурхан Өөрөө намайг анчны урхинаас чөлөөлөх болно."
+          }
+        ]
+      }
+    ],
+    "page": 626,
+    "source": {
+      "kind": "seasonal",
+      "season": "LENT",
+      "weekKey": "1",
+      "dayKey": "FRI",
+      "hour": "lauds"
+    }
   }
 }

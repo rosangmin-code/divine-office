@@ -182,5 +182,83 @@
       "dayKey": "SAT",
       "hour": "lauds"
     }
+  },
+  "responsoryRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Эзэн булшнаас амилсан. Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "versicle",
+            "text": "Тэр бидний төлөө загалмай дээр цовдлогдсон."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эцэг, Хүү, Ариун Сүнсийг магтан дуулъя."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Эзэн булшнаас амилсан. Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      }
+    ],
+    "page": 708,
+    "source": {
+      "kind": "seasonal",
+      "season": "EASTER",
+      "weekKey": "1",
+      "dayKey": "SAT",
+      "hour": "lauds"
+    }
+  },
+  "shortReadingRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Бидний хэн нь ч өөрийнхөө төлөө амьдардаггүй. Хэн нь ч өөрийнхөө төлөө үхдэггүй. Бид амьдарлаа ч Эзэний төлөө амьдардаг. Бид үхлээ ч Эзэний төлөө үхдэг. Тиймээс амьдарсан ч, үхсэн ч бид Эзэнийх. Учир нь үхсэн амьд аль алиных нь Эзэн байхын тулд, чухам үүний төлөө Христ үхээд амилсан билээ."
+          }
+        ]
+      }
+    ],
+    "page": 728,
+    "source": {
+      "kind": "seasonal",
+      "season": "EASTER",
+      "weekKey": "1",
+      "dayKey": "SAT",
+      "hour": "lauds"
+    }
   }
 }

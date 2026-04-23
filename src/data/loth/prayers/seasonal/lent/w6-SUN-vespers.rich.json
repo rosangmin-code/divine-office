@@ -317,5 +317,62 @@
       "dayKey": "SUN",
       "hour": "vespers"
     }
+  },
+  "responsoryRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Аяа, Христ минь, бид Таныг тахин шүтэж, бид Таныг магтъя."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "versicle",
+            "text": "Учир нь Та загалмайгаараа дэлхий ертөнцийг аварсан билээ."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Бид Таныг магтъя."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эцэг, Хүү, Ариун Сүнсийг магтан дуулъя."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Аяа, Христ минь, бид Таныг тахин шүтэж, бид Таныг магтъя."
+          }
+        ]
+      }
+    ],
+    "page": 651,
+    "source": {
+      "kind": "seasonal",
+      "season": "LENT",
+      "weekKey": "6",
+      "dayKey": "SUN",
+      "hour": "vespers"
+    }
   }
 }

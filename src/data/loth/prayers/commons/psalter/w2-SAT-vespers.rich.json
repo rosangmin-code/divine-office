@@ -1,0 +1,56 @@
+{
+  "responsoryRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Бидний Тэнгэрбурхан агуу, Түүний хүч чадал ер бусын."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "versicle",
+            "text": "Түүний мэргэн ухаан харьцуулшгүй."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Түүний хүч чадал ер бусын."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эцэг, Хүү, Ариун Сүнсийг магтан дуулъя."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Бидний Тэнгэрбурхан агуу, Түүний хүч чадал ер бусын."
+          }
+        ]
+      }
+    ],
+    "page": 172,
+    "source": {
+      "kind": "common",
+      "id": "psalter-w2-sat-vespers-responsory"
+    }
+  }
+}

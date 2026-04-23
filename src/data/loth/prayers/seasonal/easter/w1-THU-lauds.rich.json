@@ -194,5 +194,62 @@
       "dayKey": "THU",
       "hour": "lauds"
     }
+  },
+  "responsoryRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Эзэн булшнаас амилсан. Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "versicle",
+            "text": "Тэр бидний төлөө загалмай дээр цовдлогдсон."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эцэг, Хүү, Ариун Сүнсийг магтан дуулъя."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Эзэн булшнаас амилсан. Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      }
+    ],
+    "page": 708,
+    "source": {
+      "kind": "seasonal",
+      "season": "EASTER",
+      "weekKey": "1",
+      "dayKey": "THU",
+      "hour": "lauds"
+    }
   }
 }

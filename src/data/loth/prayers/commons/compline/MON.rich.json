@@ -1,0 +1,74 @@
+{
+  "shortReadingRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Тэнгэрбурхан биднийг уур хилэнд бус, харин бидний Эзэн Есүс Христээр аврал авахад зориулжээ. Бид сэрүүн ч бай, унтсан ч бай Өөртэй нь хамт амьд байхын тулд Тэр бидний өмнөөс үхсэн юм."
+          }
+        ]
+      }
+    ],
+    "page": 525,
+    "source": {
+      "kind": "compline-commons",
+      "dayKey": "MON"
+    }
+  },
+  "responsoryRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Эзэн минь, Таны гарт би сүнсээ даатгая."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "versicle",
+            "text": "Үнэний Тэнгэрбурхан Эзэн минь, Та биднийг зольсон."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Би сүнсээ даатгая."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эцэг, Хүү, Ариун Сүнсийг магтан дуулъя."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Эзэн минь, Таны гарт би сүнсээ даатгая."
+          }
+        ]
+      }
+    ],
+    "page": 515,
+    "source": {
+      "kind": "common",
+      "id": "compline-responsory"
+    }
+  }
+}

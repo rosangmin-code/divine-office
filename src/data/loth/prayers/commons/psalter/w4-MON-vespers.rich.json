@@ -1,0 +1,56 @@
+{
+  "responsoryRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Аяа Эзэн минь, Танд өргөж байгаа миний залбирлыг хүлээн авна уу."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "versicle",
+            "text": "Залбирал минь Таны мэлмийн өмнө"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Утлага адил тавигдаг."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эцэг, Хүү, Ариун Сүнсийг магтан дуулъя."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Аяа Эзэн минь, Танд өргөж байгаа миний залбирлыг хүлээн авна уу."
+          }
+        ]
+      }
+    ],
+    "page": 438,
+    "source": {
+      "kind": "common",
+      "id": "psalter-w4-mon-vespers-responsory"
+    }
+  }
+}

@@ -79,5 +79,83 @@
       "dayKey": "SUN",
       "hour": "vespers"
     }
+  },
+  "responsoryRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Үг нь махбод болсон. Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "versicle",
+            "text": "Тэрээр бидний дунд оршино."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эцэг, Хүү, Ариун Сүнсийг магтан дуулъя."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Үг нь махбод болсон. Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      }
+    ],
+    "page": 596,
+    "source": {
+      "kind": "seasonal",
+      "season": "CHRISTMAS",
+      "weekKey": "octave",
+      "dayKey": "SUN",
+      "hour": "vespers"
+    }
+  },
+  "shortReadingRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Алдар ба давуу чанараараа биднийг дуудсан Христийн жинхэнэ мэдлэгээр дамжин бурханлаг хүч нь бидэнд амь болоод итгэл сүсэгт хамаатай бүхнийг соёрхсон. Үүгээр Тэр бидэнд үнэтэй бөгөөд гайхамшигт амлалтуудаа соёрхов. Ингэснээр та нар энэ дэлхийд тачаалаар байх ялзралаас ангижирснаар бурханлаг чанарыг хуваалцагч болох юм."
+          }
+        ]
+      }
+    ],
+    "page": 604,
+    "source": {
+      "kind": "seasonal",
+      "season": "CHRISTMAS",
+      "weekKey": "octave",
+      "dayKey": "SUN",
+      "hour": "vespers"
+    }
   }
 }

@@ -230,5 +230,62 @@
       "dayKey": "SUN",
       "hour": "lauds"
     }
+  },
+  "responsoryRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Эзэн Өөрийн авралыг мэдүүлсэн. Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "versicle",
+            "text": "Авралынхаа хүчийг мэдүүлсэн,"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эцэг, Хүү, Ариун Сүнсийг магтан дуулъя."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Эзэн Өөрийн авралыг мэдүүлсэн. Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      }
+    ],
+    "page": 590,
+    "source": {
+      "kind": "seasonal",
+      "season": "CHRISTMAS",
+      "weekKey": "octave",
+      "dayKey": "SUN",
+      "hour": "lauds"
+    }
   }
 }

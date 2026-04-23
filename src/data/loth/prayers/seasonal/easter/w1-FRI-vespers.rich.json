@@ -218,5 +218,83 @@
       "dayKey": "FRI",
       "hour": "vespers"
     }
+  },
+  "responsoryRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Шавь нар нь баярлав. Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "versicle",
+            "text": "Эзэнийг амилсныг хараад ихэд баярлав."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эцэг, Хүү, Ариун Сүнсийг магтан дуулъя."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Шавь нар нь баярлав. Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      }
+    ],
+    "page": 701,
+    "source": {
+      "kind": "seasonal",
+      "season": "EASTER",
+      "weekKey": "1",
+      "dayKey": "FRI",
+      "hour": "vespers"
+    }
+  },
+  "shortReadingRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Тэрээр Хүү нь байсан хэр нь зовсон зүйлсээсээ дуулгавартай чанарт суралцсан. Тэр төгс болгогдсоноороо Өөрт нь дуулгавартай байдаг бүхэнд мөнх авралын эх үндэс нь болсон бөгөөд Тэнгэрбурханаар Мелхизедекийн хэргэмийн дагуух Тэргүүн тахилчаар өргөмжлөгдөв."
+          }
+        ]
+      }
+    ],
+    "page": 726,
+    "source": {
+      "kind": "seasonal",
+      "season": "EASTER",
+      "weekKey": "1",
+      "dayKey": "FRI",
+      "hour": "vespers"
+    }
   }
 }

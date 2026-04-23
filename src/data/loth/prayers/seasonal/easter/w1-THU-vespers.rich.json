@@ -214,5 +214,83 @@
       "dayKey": "THU",
       "hour": "vespers"
     }
+  },
+  "responsoryRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Шавь нар нь баярлав. Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "versicle",
+            "text": "Эзэнийг амилсныг хараад ихэд баярлав."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эцэг, Хүү, Ариун Сүнсийг магтан дуулъя."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Шавь нар нь баярлав. Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      }
+    ],
+    "page": 701,
+    "source": {
+      "kind": "seasonal",
+      "season": "EASTER",
+      "weekKey": "1",
+      "dayKey": "THU",
+      "hour": "vespers"
+    }
+  },
+  "shortReadingRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Христ ч нэг удаа нүглийн төлөөнөөс үхэж, биднийг Тэнгэрбурханд аваачихын тулд Зөвт нь зөвт бусыг орлосон. Ингэхдээ махбодод үхэж, сүнсэнд амилуулагдав. Тэрээр тэнгэрт очиж, Тэнгэрбурханы баруун талд байгаа бөгөөд тэнгэрэлч нар, эрх мэдлүүд болон хүчнүүд Түүнд захирагдаж байгаа билээ."
+          }
+        ]
+      }
+    ],
+    "page": 722,
+    "source": {
+      "kind": "seasonal",
+      "season": "EASTER",
+      "weekKey": "1",
+      "dayKey": "THU",
+      "hour": "vespers"
+    }
   }
 }

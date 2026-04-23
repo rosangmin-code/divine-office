@@ -238,5 +238,83 @@
       "dayKey": "TUE",
       "hour": "vespers"
     }
+  },
+  "responsoryRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Шавь нар нь баярлав. Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "versicle",
+            "text": "Эзэнийг амилсныг хараад ихэд баярлав."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эцэг, Хүү, Ариун Сүнсийг магтан дуулъя."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Шавь нар нь баярлав. Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      }
+    ],
+    "page": 701,
+    "source": {
+      "kind": "seasonal",
+      "season": "EASTER",
+      "weekKey": "1",
+      "dayKey": "TUE",
+      "hour": "vespers"
+    }
+  },
+  "shortReadingRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эзэнд ир. Тэр бол хүмүүст гологдсон боловч, харин Тэнгэрбурханы өмнө сонгогдсон, үнэт, амьд чулуу билээ. Иймд амьд чулуу мэт болсон та нар ч Есүс Христээр дамжуулан Тэнгэрбурханд тааламжит, сүнслэг тахилуудыг өргөх ариун тахилч болохын тулд сүнслэг байшин болон баригдагтун."
+          }
+        ]
+      }
+    ],
+    "page": 714,
+    "source": {
+      "kind": "seasonal",
+      "season": "EASTER",
+      "weekKey": "1",
+      "dayKey": "TUE",
+      "hour": "vespers"
+    }
   }
 }

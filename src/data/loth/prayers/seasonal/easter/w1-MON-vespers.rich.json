@@ -212,5 +212,83 @@
       "dayKey": "MON",
       "hour": "vespers"
     }
+  },
+  "responsoryRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Шавь нар нь баярлав. Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "versicle",
+            "text": "Эзэнийг амилсныг хараад ихэд баярлав."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эцэг, Хүү, Ариун Сүнсийг магтан дуулъя."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Шавь нар нь баярлав. Аллэлуяа, аллэлуяа!"
+          }
+        ]
+      }
+    ],
+    "page": 701,
+    "source": {
+      "kind": "seasonal",
+      "season": "EASTER",
+      "weekKey": "1",
+      "dayKey": "MON",
+      "hour": "vespers"
+    }
+  },
+  "shortReadingRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Тэнгэр дэх Сүр Жавхлантын сэнтийн баруун гарт заларсан тийм Тэргүүн тахилч бидэнд бий. Тэрээр ариун газрын хийгээд хүний бус харин Эзэний босгосон жинхэнэ асрын үйлчлэгч юм. Тэргүүн тахилч бүр бэлэг хийгээд тахил өргөхийн тулд томилогдсон байдаг."
+          }
+        ]
+      }
+    ],
+    "page": 710,
+    "source": {
+      "kind": "seasonal",
+      "season": "EASTER",
+      "weekKey": "1",
+      "dayKey": "MON",
+      "hour": "vespers"
+    }
   }
 }

@@ -15,8 +15,8 @@
  * B. 블록 빌더 (영역별):
  *    - `buildProseBlocks`  — 단락 prose 기도문 (concluding/alternative,
  *      shortReading 기본형). 여러 시각적 라인을 한 단락으로 reflow.
- *    - `buildResponsoryBlocks` (장래) — V./R. 마커 분리.
- *    - `buildIntercessionsBlocks` (장래) — refrain/petition 구조.
+ *    - `buildIntercessionsBlocks` — refrain/petition 구조.
+ *    - `buildResponsoryBlocks` — V1 / V2 / R2 / V3 Glory Be / R3 5-block.
  *
  * C. 수용 게이트 (`verifyPlainTextEquivalence`) — rich AST 를 plain text 로
  *    flatten 한 결과가 원본 문자열과 공백 정규화 기준 byte-equal 한지.
@@ -188,8 +188,13 @@ function findLineIndex(lines, regex, flatten = (l) => l) {
  */
 function isRunningHeaderLine(trimmed) {
   if (!trimmed) return false
-  if (/^\d{1,4}(?:\s|\t)+[^\d]/.test(trimmed)) return true
-  if (/[^\d\s](?:\s|\t)+\d{1,4}$/.test(trimmed)) return true
+  // 좌측 헤더: `{page} {label...}` — psalter 의 `74 1 дүгээр долоо хоног`
+  // 처럼 page 다음에 주차 숫자가 끼어드는 케이스도 포함하도록 optional
+  // `(\s+\d+)?` 를 허용.
+  if (/^\d{1,4}(?:\s+\d+)?(?:\s|\t)+[^\d]/.test(trimmed)) return true
+  // 우측 헤더: `{label...} {page}` — 동일 이유로 page 직전에 추가 숫자가
+  // 끼어드는 변형도 매치.
+  if (/[^\d\s](?:\s|\t)+\d+(?:\s+\d+)?$/.test(trimmed)) return true
   return false
 }
 
@@ -699,6 +704,122 @@ export function buildIntercessions({ items, bookPage, source }) {
   }
 }
 
+// ── Layer E: responsory 블록 빌더 ──────────────────────────────────────
+
+// 몽골어 LOTH 전례 전반에 걸쳐 Glory Be (Doxology) 단축형 고정 문구.
+// 6-part responsory 의 V3 위치에 항상 동일하게 삽입된다.
+const RESPONSORY_GLORY_BE = 'Эцэг, Хүү, Ариун Сүнсийг магтан дуулъя.'
+
+/**
+ * responsory 3-필드 소스 `{fullResponse, versicle, shortResponse}` 를
+ * 5-block rich AST 로 전개한다. 6-part 전례 순서 중 R1 (fullResponse 첫
+ * 반복) 은 convention 상 렌더러가 암묵 처리하므로 블록에서 생략, V1 / V2 /
+ * R2 / V3 (Glory Be 고정) / R3 (= V1 반복) 의 5 para 만 출력한다. 기존
+ * pilot `prayers/seasonal/ordinary-time/w1-SUN-lauds.rich.json` 의 스키마
+ * 와 동일.
+ *
+ * @param {object} params
+ * @param {string} params.fullResponse   — V1 / R1 / R3 본문
+ * @param {string} params.versicle       — V2 본문
+ * @param {string} params.shortResponse  — R2 본문
+ * @returns {PrayerBlock[]}
+ */
+export function buildResponsoryBlocks({ fullResponse, versicle, shortResponse }) {
+  const fr = (fullResponse ?? '').trim()
+  const vr = (versicle ?? '').trim()
+  const sr = (shortResponse ?? '').trim()
+  if (!fr || !vr || !sr) {
+    throw new Error(
+      `[rich-builder] buildResponsoryBlocks: missing field(s) (full=${fr ? 'Y' : 'N'} vers=${vr ? 'Y' : 'N'} short=${sr ? 'Y' : 'N'})`,
+    )
+  }
+  return [
+    { kind: 'para', spans: [{ kind: 'response', text: fr }] },
+    { kind: 'para', spans: [{ kind: 'versicle', text: vr }] },
+    { kind: 'para', spans: [{ kind: 'response', text: sr }] },
+    { kind: 'para', spans: [{ kind: 'text', text: RESPONSORY_GLORY_BE }] },
+    { kind: 'para', spans: [{ kind: 'response', text: fr }] },
+  ]
+}
+
+/**
+ * responsory 전용 수용 게이트. 소스 3필드를 공백으로 join 한 문자열과
+ * AST 의 core 3-block (V1 / V2 / R2) flatten 결과를 normaliseForGate 기준
+ * byte-equal 비교한다. Glory Be (V3) 와 R3 은 convention 삽입이므로 게이트
+ * 대상에서 제외.
+ */
+export function verifyResponsoryEquivalence(originalParts, blocks) {
+  const originalJoined = [
+    originalParts.fullResponse ?? '',
+    originalParts.versicle ?? '',
+    originalParts.shortResponse ?? '',
+  ]
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .join(' ')
+  const coreBlocks = blocks.slice(0, 3)
+  const astPlain = flattenBlocksToPlainText(coreBlocks)
+  const originalNorm = normaliseForGate(originalJoined)
+  const reconstructedNorm = normaliseForGate(astPlain)
+  const pass = originalNorm === reconstructedNorm
+  let firstDivergenceAt = -1
+  if (!pass) {
+    const limit = Math.min(originalNorm.length, reconstructedNorm.length)
+    for (let i = 0; i < limit; i++) {
+      if (originalNorm[i] !== reconstructedNorm[i]) {
+        firstDivergenceAt = i
+        break
+      }
+    }
+    if (firstDivergenceAt < 0) firstDivergenceAt = limit
+  }
+  return { pass, originalNorm, reconstructedNorm, firstDivergenceAt }
+}
+
+/**
+ * responsory 한 건을 소스 오브젝트 + book page 로부터 rich AST 로 빌드한다.
+ * PDF 직접 접근 없이 소스 3-필드 구조만으로 AST 를 만든다 (buildIntercessions
+ * 와 동일 계통).
+ *
+ * @param {object} params
+ * @param {{ fullResponse: string, versicle: string, shortResponse: string }} params.responsory
+ * @param {number} params.bookPage
+ * @param {object} [params.source]
+ * @returns {{
+ *   blocks: PrayerBlock[],
+ *   pass: boolean,
+ *   originalNorm: string,
+ *   reconstructedNorm: string,
+ *   firstDivergenceAt: number,
+ *   prayerText: { blocks: PrayerBlock[], page: number, source?: object },
+ * }}
+ */
+export function buildResponsory({ responsory, bookPage, source }) {
+  const blocks = buildResponsoryBlocks({
+    fullResponse: responsory.fullResponse,
+    versicle: responsory.versicle,
+    shortResponse: responsory.shortResponse,
+  })
+  const gate = verifyResponsoryEquivalence(
+    {
+      fullResponse: responsory.fullResponse,
+      versicle: responsory.versicle,
+      shortResponse: responsory.shortResponse,
+    },
+    blocks,
+  )
+  const prayerText = {
+    blocks,
+    page: bookPage,
+    ...(source ? { source } : {}),
+  }
+  return {
+    blocks,
+    ...gate,
+    prayerText,
+  }
+}
+
 // ── 영역별 고수준 API (concluding / shortReading) ──────────────────────
 
 /**
@@ -833,5 +954,343 @@ export async function buildProsePrayer({
     stylePage: region.stylePage,
     ...gate,
     prayerText,
+  }
+}
+
+// ── shortReading 전용 헬퍼 ──────────────────────────────────────────────
+
+/**
+ * shortReading 전용 게이트 정규화. `normaliseForGate` (whitespace +
+ * curly→ASCII + em→hyphen) 위에 추가로 dash 양쪽 공백 정규화를 한 번 더
+ * 한다. JSON 캐논은 inline em-dash `—` 를 ` — ` 형태(앞뒤 공백 포함)로
+ * 평탄화해 dialog 인용을 한 단락으로 표기하는 반면 PDF 는 줄머리 빨강
+ * `-` 를 사용하므로 (예: `\n-Энэ`), `\s+→ ` 정규화 후에도 dash 뒤 공백
+ * 유무가 어긋난다. `\s*-\s*` 를 ` - ` 로 통일해 동치 처리한다.
+ */
+export function normaliseForShortReadingGate(s) {
+  return normaliseForGate(s)
+    .replace(/\s*-\s*/g, ' - ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+function verifyShortReadingEquivalence(originalText, blocks) {
+  const originalNorm = normaliseForShortReadingGate(originalText)
+  const astPlain = flattenBlocksToPlainText(
+    blocks.filter((b) => b.kind !== 'rubric-line'),
+  )
+  const reconstructedNorm = normaliseForShortReadingGate(astPlain)
+  const pass = originalNorm === reconstructedNorm
+  let firstDivergenceAt = -1
+  if (!pass) {
+    const limit = Math.min(originalNorm.length, reconstructedNorm.length)
+    for (let i = 0; i < limit; i++) {
+      if (originalNorm[i] !== reconstructedNorm[i]) {
+        firstDivergenceAt = i
+        break
+      }
+    }
+    if (firstDivergenceAt < 0) firstDivergenceAt = limit
+  }
+  return { pass, originalNorm, reconstructedNorm, firstDivergenceAt }
+}
+
+/**
+ * shortReading 한 건을 book page 의 `Уншлага` 섹션에서 추출해 rich AST 로
+ * 빌드한다. `buildProsePrayer` 와 다른 지점:
+ *
+ * 1. PDF 본문 첫 비공백 라인이 scripture ref (예: `Ром 13:11-14`) 이고,
+ *    JSON 캐논의 `text` 필드에는 ref 가 포함되지 않으므로 pdftotext
+ *    bodyLines 와 pdfjs stylePageBody 양쪽에서 첫 라인을 동시에 떼어낸다.
+ *    두 소스가 1:1 라인 대응이라는 buildProseBlocks 가정을 유지하기 위해
+ *    동기 제거가 필수.
+ * 2. 게이트는 `verifyShortReadingEquivalence` (`-` 양쪽 공백 정규화 추가)
+ *    를 사용해 inline em-dash dialog 인용 케이스를 동치 처리한다.
+ *
+ * @param {object} params
+ * @param {string} params.pdfPath
+ * @param {number} params.bookPage
+ * @param {RegExp} [params.endOfBlockRegex]
+ * @param {string} [params.originalText]
+ * @param {object} [params.source]
+ * @param {number} [params.maxExtraPages=1] — Уншлага 가 페이지 하단에서
+ *   시작해 본문이 다음 페이지로 흘러가는 경우 (advent w1 WED p564→565 등)
+ *   를 위해 기본 1 로 설정.
+ * @param {Array<{from: string, to: string}>} [params.pdfCorrections]
+ * @returns {Promise<{
+ *   blocks: PrayerBlock[],
+ *   headingLine: string,
+ *   bodyLines: string[],
+ *   stylePage: object,
+ *   pass: boolean | null,
+ *   originalNorm?: string,
+ *   reconstructedNorm?: string,
+ *   firstDivergenceAt?: number,
+ *   prayerText: { blocks: PrayerBlock[], page: number, source?: object },
+ * }>}
+ */
+// pdftotext-column-splitter 가 PDF 의 heading + 우측 정렬 ref (e.g.
+// `Уншлага\t\t\t  Ром 13:11-14`) 를 한 라인으로 합쳐 내보낸다. 또한 pdfjs
+// style overlay 는 small-cap 글리프를 lowercase `уншлага` 로 펼쳐 낸다.
+// 두 소스 모두 매치되도록 케이스 비민감 + trailing 허용.
+const SHORT_READING_HEADING = /^[Уу]ншлага(?:[\s\t]|$)/u
+const SHORT_READING_END_OF_BLOCK = new RegExp(
+  [
+    // 가장 흔한 후속 섹션 — responsory.
+    /^[Хх]ариу\s+залбирал/u,
+    // Holy Week (LENT w6) 특수 마커: shortReading 끝, responsory 자리에
+    // 별도 shad-dulal 지시문이 들어가는 케이스.
+    /^[Хх]ариу\s+залбирлын\s+оронд/u,
+    // 그 외 후속 섹션 헤더들 (시즌 propers/psalter commons 양쪽 출현).
+    /^(?:Захариагийн|Мариагийн|Шад)\s+[Мм]агтаал/u,
+    /^Шад\s+дуулал/u,
+    /^[Гг]уйлтын\s+залбирал/u,
+    /^Төгсгөлийн\s+даатгал\s+залбирал/u,
+    /^(?:Уншлага|уншлага|Эсвэл|Сонголтот\s+залбирал)/u,
+    /^(?:Ням|Да|Мя|Лха|Пү|Ба|Бя)\s+гарагийн/u,
+    /^[А-ЯЁӨҮ][А-ЯЁӨҮ\s]{3,}$/u,
+  ].map((p) => `(?:${p.source})`).join('|'),
+  'u',
+)
+
+export async function buildShortReading({
+  pdfPath,
+  bookPage,
+  endOfBlockRegex = SHORT_READING_END_OF_BLOCK,
+  originalText,
+  source,
+  pdftotextCachePath,
+  maxExtraPages = 1,
+  pdfCorrections = [],
+}) {
+  const applyCorrectionsToLines = (lines) => {
+    if (!Array.isArray(pdfCorrections) || pdfCorrections.length === 0) return lines
+    return lines.map((line) => {
+      if (typeof line !== 'string') return line
+      let out = line
+      for (const { from, to } of pdfCorrections) {
+        if (typeof from === 'string' && typeof to === 'string') {
+          out = out.split(from).join(to)
+        }
+      }
+      return out
+    })
+  }
+  const applyCorrections = (blocks) => {
+    if (!Array.isArray(pdfCorrections) || pdfCorrections.length === 0) return
+    for (const block of blocks) {
+      if (block.kind !== 'para' || !Array.isArray(block.spans)) continue
+      for (const span of block.spans) {
+        if (typeof span.text !== 'string') continue
+        for (const { from, to } of pdfCorrections) {
+          if (typeof from === 'string' && typeof to === 'string') {
+            span.text = span.text.split(from).join(to)
+          }
+        }
+      }
+    }
+  }
+
+  // shortReading 은 캐논상 항상 단일 단락(prose). 그러나 PDF 일부 페이지는
+  // 줄 간 시각적 spacing 을 pdftext 가 빈 라인으로 출력해 (e.g. p462)
+  // buildProseBlocks 가 매 라인을 별도 단락으로 쪼갠다. 본문 단계에서 미리
+  // 빈 라인을 제거해 항상 1 단락으로 reflow 되게 한다. pdfjs stylePageBody
+  // 에는 빈 라인이 없으므로 그대로 둬도 1:1 라인 alignment 가 유지된다.
+  const collapseBodyBlanks = (lines) =>
+    lines.filter((l) => typeof l === 'string' && l.trim() !== '')
+
+  // Pass 1: single-page 추출. PDF 의 heading 라인은 `Уншлага\t<ref>` 형태로
+  // ref 가 같은 라인에 합쳐져 있으므로 (column splitter), bodyLines 의 첫
+  // 라인은 이미 본문이다. 별도 ref-skip 처리가 필요하지 않다.
+  let region = await extractSectionRegion({
+    pdfPath,
+    bookPage,
+    sectionHeadingRegex: SHORT_READING_HEADING,
+    endOfBlockRegex,
+    pdftotextCachePath,
+    maxExtraPages: 0,
+  })
+  let blocks = buildProseBlocks({
+    bodyLines: applyCorrectionsToLines(collapseBodyBlanks(region.bodyLines)),
+    stylePageBody: region.stylePageBody,
+  })
+  applyCorrections(blocks)
+
+  let gate = { pass: null }
+  if (typeof originalText === 'string' && originalText.length > 0) {
+    gate = verifyShortReadingEquivalence(originalText, blocks)
+  }
+
+  // Pass 2: 본문이 캐논보다 현저히 짧으면 page-spanning 의심 → continuation.
+  if (
+    !gate.pass &&
+    typeof originalText === 'string' &&
+    originalText.length > 0 &&
+    maxExtraPages > 0
+  ) {
+    const origLen = normaliseForShortReadingGate(originalText).length
+    const reconLen = gate.reconstructedNorm?.length ?? 0
+    const shortBy = origLen - reconLen
+    const threshold = Math.max(50, Math.floor(origLen * 0.1))
+    if (shortBy >= threshold) {
+      region = await extractSectionRegion({
+        pdfPath,
+        bookPage,
+        sectionHeadingRegex: SHORT_READING_HEADING,
+        endOfBlockRegex,
+        pdftotextCachePath,
+        maxExtraPages,
+      })
+      blocks = buildProseBlocks({
+        bodyLines: applyCorrectionsToLines(collapseBodyBlanks(region.bodyLines)),
+        stylePageBody: region.stylePageBody,
+      })
+      applyCorrections(blocks)
+      gate = verifyShortReadingEquivalence(originalText, blocks)
+    }
+  }
+
+  const prayerText = {
+    blocks,
+    page: bookPage,
+    ...(source ? { source } : {}),
+  }
+  return {
+    blocks,
+    headingLine: region.headingLine,
+    bodyLines: region.bodyLines,
+    stylePage: region.stylePage,
+    ...gate,
+    prayerText,
+  }
+}
+
+// ── Layer F: psalter stanzas 블록 빌더 (FR-153f) ───────────────────────
+//
+// 시편 본문(`psalter-texts.json`) 의 `stanzas: string[][]` 구조를 `stanza`
+// PrayerBlock 트리로 변환. **Source JSON only** 빌더 (PDF 재접근 없음).
+//
+// PDF 실측 결과 (2025 판 p58/60/64) — 시편 본문 내부 italic 0% / rubric 본문
+// hit ≈ 0% (~3% 오검 샘플 모두 heading/title). 따라서 스타일 재현 이득이 낮고,
+// 소스의 leading-space 를 indent 3-level 로 버킷팅 + 반복 라인을 refrain role
+// 로 tagging 하는 것으로 충분. FR-153g (pilot 규격 재추출) 는 별건.
+//
+// ── indent 버킷 ─────────────────────────────────────────────────────────
+// `0sp → 0` / `1-3sp → 1` / `≥4sp → 2`. main 은 0/2 만, pilot 은 0/2/3/5/6.
+//
+// ── refrain 검출 ────────────────────────────────────────────────────────
+// 한 ref 내에서 trimmed-line (말미 구두점·대시 제거) 이 ≥3 회 반복되는
+// 라인을 `role: 'refrain'` 으로 표기. Daniel 3 의 "Эзэнийг магтагтун" 류.
+//
+// ── 수용 게이트 2단계 ───────────────────────────────────────────────────
+// (a) 텍스트 byte-equal: `normaliseForGate(source joined)` == rich flatten
+// (b) 구조 동등성: stanza 수 + per-stanza line 수 + refrain 라인 수 일치
+
+export function bucketStanzaIndent(leadingCount) {
+  if (leadingCount <= 0) return 0
+  if (leadingCount <= 3) return 1
+  return 2
+}
+
+function stripStanzaLeadingSpaces(s) {
+  return s.replace(/^ +/, '')
+}
+
+function refrainKey(line) {
+  return stripStanzaLeadingSpaces(line).trim().replace(/[.,!–—-]+$/u, '')
+}
+
+export function detectRefrainLines(stanzas, { threshold = 3 } = {}) {
+  const counts = new Map()
+  for (const stanza of stanzas) {
+    for (const line of stanza) {
+      const key = refrainKey(line)
+      if (!key) continue
+      counts.set(key, (counts.get(key) || 0) + 1)
+    }
+  }
+  const out = new Set()
+  for (const [key, n] of counts) {
+    if (n >= threshold) out.add(key)
+  }
+  return out
+}
+
+export function buildStanzasFromSource(stanzas, { refrains } = {}) {
+  const refs = refrains || detectRefrainLines(stanzas)
+  const blocks = []
+  for (const stanza of stanzas) {
+    const lines = stanza.map((raw) => {
+      const leading = (raw.match(/^ */) || [''])[0].length
+      const indent = bucketStanzaIndent(leading)
+      const text = stripStanzaLeadingSpaces(raw)
+      const out = { spans: [{ kind: 'text', text }], indent }
+      if (refs.has(refrainKey(raw))) out.role = 'refrain'
+      return out
+    })
+    blocks.push({ kind: 'stanza', lines })
+  }
+  return blocks
+}
+
+export function verifyStanzasTextEquivalence(stanzas, blocks) {
+  const srcJoined = stanzas
+    .flatMap((st) => st.map(stripStanzaLeadingSpaces))
+    .join('\n')
+  const richJoined = blocks
+    .filter((b) => b.kind === 'stanza')
+    .flatMap((b) =>
+      (b.lines || []).map((ln) => (ln.spans || []).map((sp) => sp.text ?? '').join('')),
+    )
+    .join('\n')
+  const a = normaliseForGate(srcJoined)
+  const b = normaliseForGate(richJoined)
+  return { pass: a === b, sourceLen: a.length, richLen: b.length }
+}
+
+export function verifyStanzasStructuralEquivalence(stanzas, blocks, refrains) {
+  const stanzaBlocks = blocks.filter((b) => b.kind === 'stanza')
+  const stanzaCountMatch = stanzas.length === stanzaBlocks.length
+  const perStanza = []
+  const maxLen = Math.max(stanzas.length, stanzaBlocks.length)
+  for (let i = 0; i < maxLen; i++) {
+    const src = stanzas[i] || []
+    const blk = stanzaBlocks[i] || { lines: [] }
+    perStanza.push({
+      idx: i,
+      source: src.length,
+      rich: (blk.lines || []).length,
+      ok: src.length === (blk.lines || []).length,
+    })
+  }
+  const refs = refrains || detectRefrainLines(stanzas)
+  const sourceRefrainCount = stanzas.flat().filter((ln) => refs.has(refrainKey(ln))).length
+  const richRefrainCount = stanzaBlocks
+    .flatMap((b) => b.lines || [])
+    .filter((ln) => ln.role === 'refrain').length
+  return {
+    pass:
+      stanzaCountMatch && perStanza.every((p) => p.ok) && sourceRefrainCount === richRefrainCount,
+    stanzaCountMatch,
+    perStanza,
+    sourceRefrainCount,
+    richRefrainCount,
+  }
+}
+
+export function buildPsalterStanzasRich({ stanzas }) {
+  if (!Array.isArray(stanzas)) {
+    throw new Error('[rich-builder] buildPsalterStanzasRich: stanzas must be an array')
+  }
+  const refrains = detectRefrainLines(stanzas)
+  const blocks = buildStanzasFromSource(stanzas, { refrains })
+  const textGate = verifyStanzasTextEquivalence(stanzas, blocks)
+  const structGate = verifyStanzasStructuralEquivalence(stanzas, blocks, refrains)
+  return {
+    blocks,
+    refrains,
+    textGate,
+    structGate,
+    pass: textGate.pass && structGate.pass,
   }
 }

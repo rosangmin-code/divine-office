@@ -325,5 +325,83 @@
       "dayKey": "SUN",
       "hour": "lauds"
     }
+  },
+  "responsoryRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Энэ дэлхийн бүх хаад Түүний өмнө сөгдөж мөргөх болно."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "versicle",
+            "text": "Бүх үндэстнүүдийн эрэгтэйчүүд болон эмэгтэйчүүд Түүнд үйлчлэх болно."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Тэд сөгдөж мөргөх болно."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эцэг, Хүү, Ариун Сүнсийг магтан дуулъя."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Энэ дэлхийн бүх хаад Түүний өмнө сөгдөж мөргөх болно."
+          }
+        ]
+      }
+    ],
+    "page": 611,
+    "source": {
+      "kind": "seasonal",
+      "season": "CHRISTMAS",
+      "weekKey": "epiphany",
+      "dayKey": "SUN",
+      "hour": "lauds"
+    }
+  },
+  "shortReadingRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Тэр өдөр ЭЗЭНий Мөчир үзэсгэлэнтэй, сүр жавхлантай болж, газрын үр жимс Израилийн амьд үлдэгсдийн бахархал, чимэг нь болно. Энэ үед Сионд үлдэж, Йерусалимд хоцорсон хүмүүсийг ариун гэж дуудна. Тэд Йерусалимд амьд хэмээн тэмдэглэгдсэн хүмүүс юм."
+          }
+        ]
+      }
+    ],
+    "page": 611,
+    "source": {
+      "kind": "seasonal",
+      "season": "CHRISTMAS",
+      "weekKey": "epiphany",
+      "dayKey": "SUN",
+      "hour": "lauds"
+    }
   }
 }

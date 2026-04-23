@@ -365,5 +365,83 @@
       "dayKey": "SUN",
       "hour": "vespers"
     }
+  },
+  "responsoryRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Бүх үндэстний эрэгтэй, эмэгтэйчүүд болон бүх ард түмнийг Түүн дотор адислах болно."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "versicle",
+            "text": "Бүх үндэстний эрэгтэй, эмэгтэйчүүд"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Бүх үндэстнүүд Түүний сүр жавхланг алдаршуулах болно."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эцэг, Хүү, Ариун Сүнсийг магтан дуулъя."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Бүх үндэстний эрэгтэй, эмэгтэйчүүд болон бүх ард түмнийг Түүн дотор адислах болно."
+          }
+        ]
+      }
+    ],
+    "page": 613,
+    "source": {
+      "kind": "seasonal",
+      "season": "CHRISTMAS",
+      "weekKey": "epiphany",
+      "dayKey": "SUN",
+      "hour": "vespers"
+    }
+  },
+  "shortReadingRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Мөн төрөлх байдлаараа бусдын адил уур хилэнг нь хүртэх хүүхдүүд байсан ч биднийг хайрласан аугаа хайраараа өршөөлөөр баян Тэнгэрбурхан маань алдаа зөрчил дотроо үхсэн биднийг Христтэй хамт амьд болгосон юм. Та нар нигүүлслээр аврагдсан билээ."
+          }
+        ]
+      }
+    ],
+    "page": 613,
+    "source": {
+      "kind": "seasonal",
+      "season": "CHRISTMAS",
+      "weekKey": "epiphany",
+      "dayKey": "SUN",
+      "hour": "vespers"
+    }
   }
 }

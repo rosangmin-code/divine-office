@@ -347,5 +347,62 @@
       "dayKey": "SUN",
       "hour": "vespers"
     }
+  },
+  "responsoryRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Эзэн, Та Өөрийн хайр, өршөөлөө бидэнд үзүүлнэ үү."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "versicle",
+            "text": "Мөн бидэнд Өөрийн авралыг хайрлан соёрхно уу."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Өөрийн хайр, өршөөлөө бидэнд үзүүлнэ үү."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эцэг, Хүү, Ариун Сүнсийг магтан дуулъя."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Эзэн, Та Өөрийн хайр, өршөөлөө бидэнд үзүүлнэ үү."
+          }
+        ]
+      }
+    ],
+    "page": 549,
+    "source": {
+      "kind": "seasonal",
+      "season": "ADVENT",
+      "weekKey": "1",
+      "dayKey": "SUN",
+      "hour": "vespers"
+    }
   }
 }

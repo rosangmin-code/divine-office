@@ -1,0 +1,1419 @@
+{
+  "Psalm 63:2-9": {
+    "stanzasRich": {
+      "blocks": [
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Гэм нүглийн харанхуйгаас салсан хэнбугай ч"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Тэнгэрбурханыг хүсэн тэмүүлнэ."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Тэнгэрбурхан, Та миний Тэнгэрбурхан"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Би Таныг эртлэн хайх болой."
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Усгүй, хуурай, ангамал газарт"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Сэтгэл минь Танаар цангаж,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Бие махбод минь Таныг"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хүсэн тэмүүлж байна."
+                }
+              ],
+              "indent": 1
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Таныг би ариун газарт хайсан."
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Таны хүч, Таны алдрыг харсан."
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Учир нь хайр энэрэл тань"
+                }
+              ],
+              "indent": 1
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Амь амьдралаас илүү."
+                }
+              ],
+              "indent": 1
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Уруул минь Таныг магтана."
+                }
+              ],
+              "indent": 1
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Ийнхүү би амьддаа Таныг магтана."
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Таны нэрээр би гараа өргөх болно."
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Чөмөг, өөхөнд юм шиг"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Сэтгэл минь цатгалан бөгөөд"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Ам минь баясгалант уруулаар магтаалуудыг"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "өргөнө."
+                }
+              ],
+              "indent": 1
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Шөнөжин Таны тухай тунгаан бодохдоо"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Орондоо Таныг би дурсан санана,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Учир нь Та миний тусламж бөгөөд"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Таны жигүүрийн дор"
+                }
+              ],
+              "indent": 1
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Би баясгалантайгаар дуулна."
+                }
+              ],
+              "indent": 1
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Сэтгэл минь Танаас зуурчээ."
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Таны баруун мутар намайг түшиж байна."
+                }
+              ],
+              "indent": 1
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Daniel 3:57-88, 56": {
+    "stanzasRich": {
+      "blocks": [
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэний хамаг бүтээлүүд ээ,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Түүнийг магтаж,"
+                }
+              ],
+              "indent": 1,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "бүгдийн дээр үүрд мөнх өргөмжлөгтүн."
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэний хамаг тэнгэрэлч нар аа,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Түүнийг магтаж,"
+                }
+              ],
+              "indent": 1,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "бүгдийн дээр үүрд мөнх өргөмжлөгтүн."
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хамаг тэнгэрүүд ээ,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Огторгуйн дээрх хамаг усууд аа,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэний хамаг цэргүүд ээ,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Наран саран хоёр оо,"
+                }
+              ],
+              "indent": 1
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 1,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Тэнгэрийн од мичид ээ,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 1,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хамаг бороо болон шүүдэр ээ,"
+                }
+              ],
+              "indent": 0
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 1,
+              "role": "refrain"
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хамаг хий салхи аа,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 1,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Гал болон аагим халуун аа,"
+                }
+              ],
+              "indent": 0
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 1,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Тэсгэм жавар болон хүйтэн сэрүүн ээ,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 1,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Шүүдэр хяруу хоёр оо,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 1,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Цан хүүрэг болон жавар аа,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 1,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Мөс болон цас аа,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 1,
+              "role": "refrain"
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Өдөр шөнө хоёр оо,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 1,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Гэрэл харанхуй хоёр оо,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 1,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Аянга цахилгаан болон үүлс ээ,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 1,
+              "role": "refrain"
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Газар дэлхий,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 1,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Түүнийг магтаж,"
+                }
+              ],
+              "indent": 0,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "бүгдийн дээр үүрд мөнх өргөмжлөгтүн."
+                }
+              ],
+              "indent": 1,
+              "role": "refrain"
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Уулс болон толгод оо, –"
+                }
+              ],
+              "indent": 0
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Байгаль дэлхийн хамаг ургамалууд аа,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хамаг эх булаг аа,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Ус далай, гол мөрнүүд ээ,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Халим болон усны амьтад аа,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Огторгуйн хамаг шувууд аа,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хамаг араатан, мал амьтад аа,"
+                }
+              ],
+              "indent": 1
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун,"
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Түүнийг магтаж,"
+                }
+              ],
+              "indent": 1,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "бүгдийн дээр үүрд мөнх өргөмжлөгтүн."
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хүмүүний охид хөвгүүд ээ,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Түүнийг магтаж,"
+                }
+              ],
+              "indent": 1,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "бүгдийн дээр үүрд мөнх өргөмжлөгтүн."
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Израил аа,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэний тайлгачид аа,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэний зардас нар аа,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Зөв шударгатны амь сүнснүүд ээ,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Даруу зантан хийгээд гэгээнтнүүд ээ,"
+                }
+              ],
+              "indent": 1
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун."
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хананиа, Азариа, Мишаел ээ,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтагтун,"
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Түүнийг магтаж,"
+                }
+              ],
+              "indent": 1,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "бүгдийн дээр үүрд мөнх өргөмжлөгтүн."
+                }
+              ],
+              "indent": 2,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эцэг, Хүү, Ариун Сүнсийг магтацгаая."
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэнийг магтаж,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "бүгдийн дээр үүрд мөнх өргөмжлөцгөөе."
+                }
+              ],
+              "indent": 2
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Тэнгэрийн уудам дахь Эзэн,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Та ерөөлтэй еэ!"
+                }
+              ],
+              "indent": 2
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Таныг магтаж,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "бүгдийн дээр үүрд мөнх өргөмжлөх"
+                }
+              ],
+              "indent": 2
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "болтугай."
+                }
+              ],
+              "indent": 2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Psalm 149:1-9": {
+    "stanzasRich": {
+      "blocks": [
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "ЭЗЭНийг магтагтун!"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "ЭЗЭНд шинэ дууг,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Бишрэлтнүүдийн цуглаанд"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Түүний магтаалыг дуулагтун!"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Израиль, Бүтээгчдээ баярлагтун!"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Сионы хөвгүүд Хаандаа баярлагтун!"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Бүжиглүүлэн тэднээр нэрийг нь магтуул."
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хэнгэрэг болон ятга хөгжмөөр, тэднээр"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Түүнийг магтуул."
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Учир нь ЭЗЭН ард түмнээрээ бахархдаг."
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Дордсыг Тэрээр авралаар үзэсгэлэнтэй"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "болгодог."
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Бишрэлтнүүдийг алдар дотор баясуул."
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Орон дотор нь ч тэднийг баясгалантайгаар"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "дуулуул."
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хоолойд нь Тэнгэрбурханы дээд магтаалуудыг,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хос ирт илдийг гарт нь байлга."
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Энэ нь үндэстнүүд дээр өшөө авалтыг,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Ард түмнүүд дээр ялыг гүйцэлдүүлэхийн тулд,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хаадыг нь гинжээр,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Ноёдыг нь төмөр дөнгөөр хүлэхийн тулд,"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Бичигдсэн шүүлтийг тэдэнд"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "гүйцэтгэхийн тулд болой."
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Бишрэлт бүгдэд нь хүндэтгэл энэ билээ."
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "ЭЗЭНийг магтагтун!"
+                }
+              ],
+              "indent": 1
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

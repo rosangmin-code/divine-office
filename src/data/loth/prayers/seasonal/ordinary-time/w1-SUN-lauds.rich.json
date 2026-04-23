@@ -19,59 +19,5 @@
       "dayKey": "SUN",
       "hour": "lauds"
     }
-  },
-  "responsoryRich": {
-    "blocks": [
-      {
-        "kind": "para",
-        "spans": [
-          {
-            "kind": "response",
-            "text": "Амьд Тэнгэрбурханы Хүү Христ минь, биднийг өршөөнө үү."
-          }
-        ]
-      },
-      {
-        "kind": "para",
-        "spans": [
-          {
-            "kind": "versicle",
-            "text": "Та Эцэгийнхээ баруун гар талд заларч байдаг."
-          }
-        ]
-      },
-      {
-        "kind": "para",
-        "spans": [
-          {
-            "kind": "response",
-            "text": "Биднийг өршөөнө үү."
-          }
-        ]
-      },
-      {
-        "kind": "para",
-        "spans": [
-          {
-            "kind": "text",
-            "text": "Эцэг, Хүү, Ариун Сүнсийг магтан дуулъя."
-          }
-        ]
-      },
-      {
-        "kind": "para",
-        "spans": [
-          {
-            "kind": "response",
-            "text": "Амьд Тэнгэрбурханы Хүү Христ минь, биднийг өршөөнө үү."
-          }
-        ]
-      }
-    ],
-    "page": 66,
-    "source": {
-      "kind": "common",
-      "id": "week-1-sun-lauds-responsory"
-    }
   }
 }

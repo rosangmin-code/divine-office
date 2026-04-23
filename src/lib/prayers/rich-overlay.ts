@@ -102,6 +102,42 @@ export function loadSanctoralRichOverlay(
 }
 
 /**
+ * Psalter commons rich overlay — 시즌 중립 4주 시편 주간 공통문 영역.
+ * `getPsalterCommons(psalterWeek, day, hour)` 가 내려주는 shortReading /
+ * responsory / intercessions / concludingPrayer / gospelCanticleAntiphon
+ * 의 PDF 원형 마크업이 여기에 들어간다. 우선순위는 seasonal 보다 낮음 —
+ * 시즌 propers 가 같은 필드를 갖고 있으면 seasonal 이 이긴다.
+ */
+export function loadPsalterCommonsRichOverlay(
+  psalterWeek: number | string,
+  day: DayOfWeek,
+  hour: HourType,
+): RichOverlay | null {
+  const filePath = path.join(
+    process.cwd(),
+    'src/data/loth/prayers/commons/psalter',
+    `w${psalterWeek}-${day}-${hour}.rich.json`,
+  )
+  return readOverlayFile(filePath)
+}
+
+/**
+ * Compline commons rich overlay — `ordinarium/compline.json` 의 7일치
+ * shortReading / responsory / concludingPrayer 등 nested 구조의 PDF 원형
+ * 마크업. 시즌·주간 무관하게 요일로만 키.
+ */
+export function loadComplineCommonsRichOverlay(
+  day: DayOfWeek,
+): RichOverlay | null {
+  const filePath = path.join(
+    process.cwd(),
+    'src/data/loth/prayers/commons/compline',
+    `${day}.rich.json`,
+  )
+  return readOverlayFile(filePath)
+}
+
+/**
  * 중앙 hymn 카탈로그 조회.
  * `src/data/loth/prayers/hymns/{number}.rich.json` 은 hymn number 로 공유되는
  * 카탈로그 — 여러 (season, week, day, hour) 가 같은 rich 를 재사용한다.
@@ -118,6 +154,63 @@ export function loadHymnRichOverlay(hymnNumber: number | string): PrayerText | n
   return overlay?.hymnRich ?? null
 }
 
+// ── psalter-texts 카탈로그 로더 (FR-153f) ─────────────────────────────
+//
+// 137 refs 의 stanzasRich 가 한 파일 `prayers/commons/psalter-texts.rich.json`
+// 에 있다. per-ref 파일이 아니므로 기존 loader 들과 달리 **카탈로그 전체를
+// mtime 키로 메모이즈** 하고 ref 조회는 O(1) 맵 lookup.
+
+type PsalterTextsCatalog = Record<string, { stanzasRich?: PrayerText }>
+type PsalterTextsCacheEntry = { mtimeMs: number; catalog: PsalterTextsCatalog | null }
+const psalterTextsCache = new Map<string, PsalterTextsCacheEntry>()
+
+function loadPsalterTextsCatalog(): PsalterTextsCatalog | null {
+  const filePath = path.join(
+    process.cwd(),
+    'src/data/loth/prayers/commons/psalter-texts.rich.json',
+  )
+  let mtimeMs = 0
+  try {
+    mtimeMs = fs.statSync(filePath).mtimeMs
+  } catch (error) {
+    if (isEnoent(error)) {
+      psalterTextsCache.set(filePath, { mtimeMs: 0, catalog: null })
+      return null
+    }
+    console.error(`[rich-overlay] stat failed for ${filePath}:`, error)
+    return null
+  }
+  const cached = psalterTextsCache.get(filePath)
+  if (cached && cached.mtimeMs === mtimeMs) return cached.catalog
+  try {
+    const raw = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
+    if (raw == null || typeof raw !== 'object' || Array.isArray(raw)) {
+      console.error(`[rich-overlay] ${filePath} is not a JSON object`)
+      psalterTextsCache.set(filePath, { mtimeMs, catalog: null })
+      return null
+    }
+    const catalog = raw as PsalterTextsCatalog
+    psalterTextsCache.set(filePath, { mtimeMs, catalog })
+    return catalog
+  } catch (error) {
+    console.error(`[rich-overlay] failed to load ${filePath}:`, error)
+    return null
+  }
+}
+
+/**
+ * 시편/찬가 본문의 rich stanzasRich 오버레이 조회. ref (예: "Psalm 63:2-9")
+ * 를 키로 카탈로그에서 `stanzasRich` PrayerText 를 반환한다. 없으면 null →
+ * 호출자는 legacy `stanzas: string[][]` 경로로 fallback 한다.
+ */
+export function loadPsalterTextRich(ref: string): PrayerText | null {
+  const catalog = loadPsalterTextsCatalog()
+  if (!catalog) return null
+  const entry = catalog[ref]
+  return entry?.stanzasRich ?? null
+}
+
 export function __resetRichOverlayCache(): void {
   overlayCache.clear()
+  psalterTextsCache.clear()
 }

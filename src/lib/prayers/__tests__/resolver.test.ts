@@ -126,6 +126,86 @@ describe('resolveRichOverlay', () => {
       spans: [{ kind: 'text', text: 'sanctoral intercessions only' }],
     })
   })
+
+  it('falls back to psalter commons when seasonal lacks the field', () => {
+    fileContents['commons/psalter/w2-WED-lauds.rich.json'] = JSON.stringify({
+      shortReadingRich: makePrayer('psalter commons reading'),
+    })
+
+    const overlay = resolveRichOverlay({
+      season: 'ORDINARY_TIME',
+      weekKey: '15',
+      day: 'WED',
+      hour: 'lauds',
+      psalterWeek: '2',
+    })
+
+    expect(overlay.shortReadingRich?.blocks[0]).toMatchObject({
+      spans: [{ kind: 'text', text: 'psalter commons reading' }],
+    })
+  })
+
+  it('seasonal overrides psalter commons for the same field', () => {
+    fileContents['commons/psalter/w1-SUN-lauds.rich.json'] = JSON.stringify({
+      shortReadingRich: makePrayer('psalter commons reading'),
+    })
+    fileContents['seasonal/advent/w1-SUN-lauds.rich.json'] = JSON.stringify({
+      shortReadingRich: makePrayer('advent seasonal reading'),
+    })
+
+    const overlay = resolveRichOverlay({
+      season: 'ADVENT',
+      weekKey: '1',
+      day: 'SUN',
+      hour: 'lauds',
+      psalterWeek: '1',
+    })
+
+    expect(overlay.shortReadingRich?.blocks[0]).toMatchObject({
+      spans: [{ kind: 'text', text: 'advent seasonal reading' }],
+    })
+  })
+
+  it('loads compline commons only for hour=compline', () => {
+    fileContents['commons/compline/MON.rich.json'] = JSON.stringify({
+      shortReadingRich: makePrayer('compline mon reading'),
+    })
+
+    const complineOverlay = resolveRichOverlay({
+      season: 'ORDINARY_TIME',
+      weekKey: '1',
+      day: 'MON',
+      hour: 'compline',
+    })
+    expect(complineOverlay.shortReadingRich?.blocks[0]).toMatchObject({
+      spans: [{ kind: 'text', text: 'compline mon reading' }],
+    })
+
+    // Same path is NOT consulted for non-compline hours.
+    const laudsOverlay = resolveRichOverlay({
+      season: 'ORDINARY_TIME',
+      weekKey: '1',
+      day: 'MON',
+      hour: 'lauds',
+    })
+    expect(laudsOverlay.shortReadingRich).toBeUndefined()
+  })
+
+  it('skips psalter commons when hour=compline (compline commons takes that slot)', () => {
+    fileContents['commons/psalter/w1-MON-compline.rich.json'] = JSON.stringify({
+      shortReadingRich: makePrayer('should not be loaded'),
+    })
+
+    const overlay = resolveRichOverlay({
+      season: 'ORDINARY_TIME',
+      weekKey: '1',
+      day: 'MON',
+      hour: 'compline',
+      psalterWeek: '1',
+    })
+
+    expect(overlay.shortReadingRich).toBeUndefined()
+  })
 })
 
 describe('loadHymnRichOverlay', () => {

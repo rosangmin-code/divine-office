@@ -1,0 +1,56 @@
+{
+  "responsoryRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Тэнгэрбурхан минь, Танд магтаалын дуу дуулах нь миний баяр баясгалан юм."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "versicle",
+            "text": "Таны сайн сайхныг тунгаан бодохдоо би дуулж байна,"
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Танд магтаалын дуу дуулж байна."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эцэг, Хүү, Ариун Сүнсийг магтан дуулъя."
+          }
+        ]
+      },
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "response",
+            "text": "Тэнгэрбурхан минь, Танд магтаалын дуу дуулах нь миний баяр баясгалан юм."
+          }
+        ]
+      }
+    ],
+    "page": 519,
+    "source": {
+      "kind": "common",
+      "id": "psalter-w4-sat-lauds-responsory"
+    }
+  }
+}
