@@ -160,7 +160,10 @@ export function loadHymnRichOverlay(hymnNumber: number | string): PrayerText | n
 // 에 있다. per-ref 파일이 아니므로 기존 loader 들과 달리 **카탈로그 전체를
 // mtime 키로 메모이즈** 하고 ref 조회는 O(1) 맵 lookup.
 
-type PsalterTextsCatalog = Record<string, { stanzasRich?: PrayerText }>
+type PsalterTextsCatalog = Record<
+  string,
+  { stanzasRich?: PrayerText; psalmPrayerRich?: PrayerText }
+>
 type PsalterTextsCacheEntry = { mtimeMs: number; catalog: PsalterTextsCatalog | null }
 const psalterTextsCache = new Map<string, PsalterTextsCacheEntry>()
 
@@ -208,6 +211,19 @@ export function loadPsalterTextRich(ref: string): PrayerText | null {
   if (!catalog) return null
   const entry = catalog[ref]
   return entry?.stanzasRich ?? null
+}
+
+/**
+ * 시편 본문 말미에 붙는 `psalmPrayer` 의 rich 오버레이 조회. ref (예:
+ * "Psalm 63:2-9") 로 카탈로그에서 `psalmPrayerRich` PrayerText 를 반환한다.
+ * 없으면 null → 호출자는 legacy plain `psalmPrayer: string` 경로로 fallback.
+ * FR-153h.
+ */
+export function loadPsalterTextPsalmPrayerRich(ref: string): PrayerText | null {
+  const catalog = loadPsalterTextsCatalog()
+  if (!catalog) return null
+  const entry = catalog[ref]
+  return entry?.psalmPrayerRich ?? null
 }
 
 export function __resetRichOverlayCache(): void {
