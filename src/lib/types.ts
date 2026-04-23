@@ -305,7 +305,26 @@ export type HourSection =
   | { type: 'psalmody'; psalms: AssembledPsalm[] }
   | { type: 'shortReading'; ref: string; bookMn: string; verses: { verse: number; text: string }[]; page?: number; textRich?: PrayerText }
   | { type: 'responsory'; fullResponse: string; versicle: string; shortResponse: string; page?: number; rich?: PrayerText }
-  | { type: 'gospelCanticle'; canticle: 'benedictus' | 'magnificat' | 'nuncDimittis'; antiphon: string; text: string; verses?: string[]; doxology?: string; page?: number; textRich?: PrayerText }
+  | {
+      type: 'gospelCanticle'
+      canticle: 'benedictus' | 'magnificat' | 'nuncDimittis'
+      antiphon: string
+      text: string
+      verses?: string[]
+      doxology?: string
+      // `page` is the SEASONAL ANTIPHON page (daily propers). Carried on the
+      // HourSection for backward compatibility with existing consumers; the UI
+      // now renders it alongside the antiphon box rather than next to the
+      // canticle heading to avoid implying the fixed Magnificat/Benedictus
+      // body is printed on that page (it isn't — see bodyPage).
+      page?: number
+      // `bodyPage` is the FIXED ORDINARIUM page where the canticle verses are
+      // printed (Benedictus p34 / Magnificat p40 / Nunc Dimittis p515). Same
+      // for every day of the year. Surfaced next to the heading so the reader
+      // knows where to find the body text in the printed book.
+      bodyPage?: number
+      textRich?: PrayerText
+    }
   | {
       type: 'intercessions'
       intro: string

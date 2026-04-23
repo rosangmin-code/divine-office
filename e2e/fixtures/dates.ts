@@ -39,6 +39,11 @@ export const DATES = {
   // Easter 3rd Sunday (normal psalterWeek=3)
   easter3rdSunday: '2026-04-19',
 
+  // Easter Week 2 Thursday — the day whose vespers propers carry
+  // `gospelCanticleAntiphonPage: 722` (easter.json line 298). Task #11
+  // exercises the Magnificat heading/antiphon page split here.
+  easterW2Thursday: '2026-04-16',
+
   // Solemnity: St. Joseph
   stJoseph: '2026-03-19',
 

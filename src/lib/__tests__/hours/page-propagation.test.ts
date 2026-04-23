@@ -38,7 +38,7 @@ function makeContext(overrides: Partial<HourContext> = {}): HourContext {
         advent: { default: 'Advent' }, christmas: { default: 'Christmas' },
         lent: { default: 'Lent ant' }, easter: { default: 'Easter' }, feasts: {},
       },
-      canticles: { benedictus: { ref: 'Luke 1:68-79', titleMn: 'Benedictus', verses: ['Verse 1', 'Verse 2'], doxology: 'Glory Be.' } },
+      canticles: { benedictus: { ref: 'Luke 1:68-79', titleMn: 'Benedictus', verses: ['Verse 1', 'Verse 2'], doxology: 'Glory Be.', page: 34 } },
       commonPrayers: {
         openingVersicle: { versicle: 'V: God', response: 'R: Help', gloryBe: 'Glory', alleluia: 'Alleluia' },
         dismissal: { priest: { greeting: { versicle: 'V', response: 'R' }, blessing: { text: 'B', response: 'A' }, dismissalVersicle: { versicle: 'V', response: 'R' } }, individual: { versicle: 'V', response: 'R' } },
@@ -86,6 +86,23 @@ describe('page number propagation', () => {
       const reading = sections.find(s => s.type === 'shortReading')
       expect(reading).toBeDefined()
       if (reading?.type === 'shortReading') expect(reading.page).toBe(65)
+    })
+
+    // Task #11: split antiphon page (daily propers) from body page (fixed).
+    // `page` = antiphon page, `bodyPage` = fixed Benedictus/Magnificat/Nunc
+    // Dimittis body location in the ordinarium section of the book.
+    it('gospelCanticle.page carries ANTIPHON page (daily propers)', () => {
+      const sections = assembleLauds(makeContext())
+      const canticle = sections.find(s => s.type === 'gospelCanticle')
+      expect(canticle).toBeDefined()
+      if (canticle?.type === 'gospelCanticle') expect(canticle.page).toBe(70)
+    })
+
+    it('gospelCanticle.bodyPage carries FIXED ordinarium body page', () => {
+      const sections = assembleLauds(makeContext())
+      const canticle = sections.find(s => s.type === 'gospelCanticle')
+      expect(canticle).toBeDefined()
+      if (canticle?.type === 'gospelCanticle') expect(canticle.bodyPage).toBe(34)
     })
 
     it('psalm pages are carried via assembledPsalms', () => {
