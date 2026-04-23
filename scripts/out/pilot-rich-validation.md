@@ -3,7 +3,7 @@
 - Book page: 753
 - Season/Week/Day/Hour: ORDINARY_TIME / w1 / SUN / lauds
 - Source JSON: src/data/loth/propers/ordinary-time.json
-- Generated: 2026-04-22T23:33:08.172Z
+- Generated: 2026-04-23T00:40:51.248Z
 
 ## Plain-text acceptance gate
 
