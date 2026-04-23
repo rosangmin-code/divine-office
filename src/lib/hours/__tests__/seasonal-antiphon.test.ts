@@ -62,7 +62,7 @@ describe('pickSeasonalVariant', () => {
 
   it('returns undefined when entry has no seasonal_antiphons block', () => {
     expect(pickSeasonalVariant(baseEntry, 'EASTER')).toBeUndefined()
-    expect(pickSeasonalVariant(baseEntry, 'LENT')).toBeUndefined()
+    expect(pickSeasonalVariant(baseEntry, 'ADVENT', '2025-12-20')).toBeUndefined()
   })
 
   it('returns undefined when season is undefined', () => {
@@ -73,84 +73,130 @@ describe('pickSeasonalVariant', () => {
     expect(pickSeasonalVariant(entry, undefined)).toBeUndefined()
   })
 
-  it('picks the easter variant during EASTER', () => {
+  it('picks the easter (season general) variant on a weekday in EASTER', () => {
     const entry: PsalmEntry = {
       ...baseEntry,
-      seasonal_antiphons: {
-        easter: 'Амилсан Эзэн бидний хүч. Аллэлуяа!',
-        lent: 'Загалмайд өргөгдсөн Эзэнийг тахин мөргөе.',
-      },
+      seasonal_antiphons: { easter: 'Амилсан Эзэн бидний хүч. Аллэлуяа!' },
     }
-    expect(pickSeasonalVariant(entry, 'EASTER')).toBe(
+    expect(pickSeasonalVariant(entry, 'EASTER', '2026-04-23', 'THU', 3)).toBe(
       'Амилсан Эзэн бидний хүч. Аллэлуяа!',
     )
   })
 
-  it('picks the lent variant during LENT', () => {
+  it('picks the advent (weekday general) variant for ADVENT outside 12/17+', () => {
     const entry: PsalmEntry = {
       ...baseEntry,
-      seasonal_antiphons: {
-        easter: 'Амилсан Эзэн. Аллэлуяа!',
-        lent: 'Загалмайд өргөгдсөн Эзэнийг тахин мөргөе.',
-      },
+      seasonal_antiphons: { advent: 'Эзэн ирж байна. Залбирцгаая.' },
     }
-    expect(pickSeasonalVariant(entry, 'LENT')).toBe(
-      'Загалмайд өргөгдсөн Эзэнийг тахин мөргөе.',
+    expect(pickSeasonalVariant(entry, 'ADVENT', '2025-12-04', 'THU', 1)).toBe(
+      'Эзэн ирж байна. Залбирцгаая.',
     )
   })
 
-  it('picks the christmas variant during CHRISTMAS', () => {
-    const entry: PsalmEntry = {
-      ...baseEntry,
-      seasonal_antiphons: { christmas: 'Мессиа өнөөдөр төржээ.' },
-    }
-    expect(pickSeasonalVariant(entry, 'CHRISTMAS')).toBe(
-      'Мессиа өнөөдөр төржээ.',
-    )
-  })
-
-  it('returns undefined during EASTER when only lent variant is authored', () => {
-    const entry: PsalmEntry = {
-      ...baseEntry,
-      seasonal_antiphons: { lent: 'Л...' },
-    }
-    expect(pickSeasonalVariant(entry, 'EASTER')).toBeUndefined()
-  })
-
-  it('applies adventDec17_23 only within the Dec 17-23 window', () => {
+  it('picks adventDec17_23 only within the Dec 17-23 window and only when season==ADVENT', () => {
     const entry: PsalmEntry = {
       ...baseEntry,
       seasonal_antiphons: { adventDec17_23: 'О Эмманвел, биднийг чөлөөл.' },
     }
-    // inside window
-    expect(pickSeasonalVariant(entry, 'ADVENT', '2025-12-17')).toBe(
+    // Inside window — all three boundary dates
+    expect(pickSeasonalVariant(entry, 'ADVENT', '2025-12-17', 'WED', 3)).toBe(
       'О Эмманвел, биднийг чөлөөл.',
     )
-    expect(pickSeasonalVariant(entry, 'ADVENT', '2025-12-20')).toBe(
+    expect(pickSeasonalVariant(entry, 'ADVENT', '2025-12-20', 'SAT', 3)).toBe(
       'О Эмманвел, биднийг чөлөөл.',
     )
-    expect(pickSeasonalVariant(entry, 'ADVENT', '2025-12-23')).toBe(
+    expect(pickSeasonalVariant(entry, 'ADVENT', '2025-12-23', 'TUE', 4)).toBe(
       'О Эмманвел, биднийг чөлөөл.',
     )
-    // outside window — must return undefined even though season is ADVENT
-    expect(pickSeasonalVariant(entry, 'ADVENT', '2025-12-16')).toBeUndefined()
-    expect(pickSeasonalVariant(entry, 'ADVENT', '2025-12-24')).toBeUndefined()
-    expect(pickSeasonalVariant(entry, 'ADVENT', '2025-12-04')).toBeUndefined()
+    // Outside window — returns undefined even though season is ADVENT.
+    expect(pickSeasonalVariant(entry, 'ADVENT', '2025-12-16', 'TUE', 3)).toBeUndefined()
+    expect(pickSeasonalVariant(entry, 'ADVENT', '2025-12-25', 'THU', 1)).toBeUndefined()
+    // Season mismatch (e.g. CHRISTMAS on 12/20 after Dec 25 shift) — also undefined.
+    expect(pickSeasonalVariant(entry, 'CHRISTMAS', '2025-12-20', 'SAT', 1)).toBeUndefined()
   })
 
-  it('returns undefined during ADVENT when dateStr is missing (defensive)', () => {
+  it('picks adventDec24 on Dec 24 when authored', () => {
     const entry: PsalmEntry = {
       ...baseEntry,
-      seasonal_antiphons: { adventDec17_23: 'О...' },
+      seasonal_antiphons: { adventDec24: 'Өнөөдөр Эзэний ирэлтийн босгон дээр.' },
     }
-    expect(pickSeasonalVariant(entry, 'ADVENT', undefined)).toBeUndefined()
+    expect(pickSeasonalVariant(entry, 'ADVENT', '2025-12-24', 'WED', 4)).toBe(
+      'Өнөөдөр Эзэний ирэлтийн босгон дээр.',
+    )
+    // Dec 24 outside ADVENT (shouldn't happen but defensive) → undefined.
+    expect(pickSeasonalVariant(entry, 'CHRISTMAS', '2025-12-24', 'WED', 1)).toBeUndefined()
   })
 
-  it('returns undefined for ORDINARY_TIME even if a variant exists', () => {
+  it('per-Sunday override easterSunday[weekOfSeason] wins over season general', () => {
     const entry: PsalmEntry = {
       ...baseEntry,
-      seasonal_antiphons: { easter: 'А...' },
+      seasonal_antiphons: {
+        easter: 'Амилсан Эзэн. Аллэлуяа!',
+        easterSunday: {
+          3: '3 дахь Ням гарагийн Pascha онцгой. Аллэлуяа!',
+          5: '5 дэх Ням гарагийн онцгой. Аллэлуяа!',
+        },
+      },
     }
-    expect(pickSeasonalVariant(entry, 'ORDINARY_TIME')).toBeUndefined()
+    // Sunday + matching week → per-Sunday picked
+    expect(pickSeasonalVariant(entry, 'EASTER', '2026-04-19', 'SUN', 3)).toBe(
+      '3 дахь Ням гарагийн Pascha онцгой. Аллэлуяа!',
+    )
+    // Sunday + unmatched week → falls back to season general
+    expect(pickSeasonalVariant(entry, 'EASTER', '2026-04-26', 'SUN', 4)).toBe(
+      'Амилсан Эзэн. Аллэлуяа!',
+    )
+    // Weekday → per-Sunday ignored, season general picked
+    expect(pickSeasonalVariant(entry, 'EASTER', '2026-04-23', 'THU', 3)).toBe(
+      'Амилсан Эзэн. Аллэлуяа!',
+    )
+  })
+
+  it('per-Sunday override lentSunday[weekOfSeason] works on LENT Sunday; weekday falls through (no season-wide LENT marker)', () => {
+    const entry: PsalmEntry = {
+      ...baseEntry,
+      seasonal_antiphons: {
+        lentSunday: {
+          1: '1 дэх Ням гарагийн Lent онцгой.',
+          4: '4 дэх Ням гарагийн Laetare онцгой.',
+        },
+      },
+    }
+    // Matching Sunday + week
+    expect(pickSeasonalVariant(entry, 'LENT', '2026-02-22', 'SUN', 1)).toBe(
+      '1 дэх Ням гарагийн Lent онцгой.',
+    )
+    expect(pickSeasonalVariant(entry, 'LENT', '2026-03-15', 'SUN', 4)).toBe(
+      '4 дэх Ням гарагийн Laetare онцгой.',
+    )
+    // Weekday in LENT — no season-wide marker, no variant → undefined
+    expect(pickSeasonalVariant(entry, 'LENT', '2026-03-04', 'WED', 1)).toBeUndefined()
+    // Sunday but unmatched week → undefined
+    expect(pickSeasonalVariant(entry, 'LENT', '2026-03-22', 'SUN', 5)).toBeUndefined()
+  })
+
+  it('returns undefined for ORDINARY_TIME and CHRISTMAS (no PDF markers)', () => {
+    const entry: PsalmEntry = {
+      ...baseEntry,
+      seasonal_antiphons: {
+        easter: 'А...',
+        advent: 'B...',
+      },
+    }
+    expect(pickSeasonalVariant(entry, 'ORDINARY_TIME', '2026-06-15', 'MON', 11)).toBeUndefined()
+    expect(pickSeasonalVariant(entry, 'CHRISTMAS', '2025-12-28', 'SUN', 1)).toBeUndefined()
+  })
+
+  it('empty per-Sunday variant string falls through to season general', () => {
+    const entry: PsalmEntry = {
+      ...baseEntry,
+      seasonal_antiphons: {
+        easter: 'Амилсан Эзэн. Аллэлуяа!',
+        easterSunday: { 3: '' }, // intentionally empty — skip to fallback
+      },
+    }
+    expect(pickSeasonalVariant(entry, 'EASTER', '2026-04-19', 'SUN', 3)).toBe(
+      'Амилсан Эзэн. Аллэлуяа!',
+    )
   })
 })

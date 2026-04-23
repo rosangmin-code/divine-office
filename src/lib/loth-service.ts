@@ -136,7 +136,14 @@ export async function assembleHour(
   // empty-verse placeholders with the antiphon we already know.
   const psalmResults = await Promise.allSettled(
     psalmEntries.map((entry) =>
-      resolvePsalm(entry, antiphonOverrides, day.season, dateStr),
+      resolvePsalm(
+        entry,
+        antiphonOverrides,
+        day.season,
+        dateStr,
+        dayOfWeek,
+        day.weekOfSeason,
+      ),
     ),
   )
   const assembledPsalms: AssembledPsalm[] = psalmResults.map((result, i) => {
@@ -149,7 +156,13 @@ export async function assembleHour(
     // Mirror resolvePsalm's selection chain so the fallback placeholder
     // still respects overrides > PDF seasonal variant > default_antiphon.
     const override = antiphonOverrides[entry.antiphon_key]
-    const seasonalVariant = pickSeasonalVariant(entry, day.season, dateStr)
+    const seasonalVariant = pickSeasonalVariant(
+      entry,
+      day.season,
+      dateStr,
+      dayOfWeek,
+      day.weekOfSeason,
+    )
     const fallbackAntiphon = override ?? seasonalVariant ?? entry.default_antiphon ?? ''
     const usedPdfVariant = override === undefined && seasonalVariant !== undefined
     return {

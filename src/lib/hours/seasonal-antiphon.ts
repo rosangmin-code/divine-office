@@ -1,4 +1,4 @@
-import type { LiturgicalSeason, PsalmEntry } from '../types'
+import type { DayOfWeek, LiturgicalSeason, PsalmEntry } from '../types'
 
 /**
  * Apply season-specific modifications to a psalm or canticle antiphon.
@@ -37,16 +37,24 @@ export function applySeasonalAntiphon(
 
 /**
  * Pick a PDF-sourced seasonal antiphon variant from a PsalmEntry for the
- * given season/date, or undefined when no matching variant exists.
+ * given season/date/week, or undefined when no matching variant exists.
  *
- * Season key mapping:
- *   EASTER     → `easter`
- *   LENT       → `lent`
- *   CHRISTMAS  → `christmas`
- *   ADVENT     → `adventDec17_23` **only** when `dateStr` falls within
- *                Dec 17-23 (late Advent "O antiphons" window). Outside
- *                that window, ADVENT returns undefined so the default
- *                antiphon is used.
+ * Selection order (first match wins):
+ *   1. Per-Sunday override — `dayOfWeek === 'SUN'` + matching
+ *      `weekOfSeason`:
+ *        EASTER → `easterSunday[weekOfSeason]`
+ *        LENT   → `lentSunday[weekOfSeason]`
+ *   2. Date-specific (ADVENT only):
+ *        12/17-23 → `adventDec17_23`
+ *        12/24    → `adventDec24`
+ *   3. Season general:
+ *        EASTER → `easter`
+ *        ADVENT (not 12/17+) → `advent`
+ *
+ * Christmas has no PDF markers so CHRISTMAS is not listed — its entries
+ * fall through to `default_antiphon`. LENT has no season-wide marker
+ * either; weekday LENT entries fall through. ORDINARY_TIME always
+ * returns undefined.
  *
  * Phase 1 scope (task #13): schema + selection logic only. Data files
  * remain unpopulated until Phase 2 (task #14) so this function returns
@@ -57,31 +65,66 @@ export function pickSeasonalVariant(
   entry: PsalmEntry,
   season: LiturgicalSeason | undefined,
   dateStr?: string,
+  dayOfWeek?: DayOfWeek,
+  weekOfSeason?: number,
 ): string | undefined {
   const sa = entry.seasonal_antiphons
   if (!sa) return undefined
   if (!season) return undefined
-  switch (season) {
-    case 'EASTER':
-      return sa.easter
-    case 'LENT':
-      return sa.lent
-    case 'CHRISTMAS':
-      return sa.christmas
-    case 'ADVENT':
-      return isLateAdventDate(dateStr) ? sa.adventDec17_23 : undefined
-    default:
-      return undefined
+
+  // 1. Per-Sunday override — highest priority within seasonal_antiphons.
+  if (dayOfWeek === 'SUN' && typeof weekOfSeason === 'number') {
+    if (season === 'EASTER' && sa.easterSunday) {
+      const v = sa.easterSunday[weekOfSeason]
+      if (typeof v === 'string' && v.length > 0) return v
+    }
+    if (season === 'LENT' && sa.lentSunday) {
+      const v = sa.lentSunday[weekOfSeason]
+      if (typeof v === 'string' && v.length > 0) return v
+    }
   }
+
+  // 2. Date-specific (ADVENT only, requires calendar season match).
+  if (season === 'ADVENT') {
+    if (isAdventDec24(dateStr)) {
+      if (sa.adventDec24) return sa.adventDec24
+      // Dec 24 PDF marker missing for this entry — fall through to
+      // general advent variant if authored (rare but keeps coverage).
+    }
+    if (isLateAdventDate(dateStr)) {
+      if (sa.adventDec17_23) return sa.adventDec17_23
+    }
+  }
+
+  // 3. Season general.
+  if (season === 'EASTER') return sa.easter
+  if (season === 'ADVENT') return sa.advent
+
+  return undefined
 }
 
 /** true when dateStr (YYYY-MM-DD) is within Dec 17-23 inclusive. */
 function isLateAdventDate(dateStr: string | undefined): boolean {
-  if (!dateStr) return false
+  const md = parseMonthDay(dateStr)
+  if (!md) return false
+  return md.month === 12 && md.day >= 17 && md.day <= 23
+}
+
+/** true when dateStr (YYYY-MM-DD) is Dec 24 (Christmas Eve). */
+function isAdventDec24(dateStr: string | undefined): boolean {
+  const md = parseMonthDay(dateStr)
+  if (!md) return false
+  return md.month === 12 && md.day === 24
+}
+
+function parseMonthDay(
+  dateStr: string | undefined,
+): { month: number; day: number } | null {
+  if (!dateStr) return null
   const parts = dateStr.split('-')
-  if (parts.length !== 3) return false
+  if (parts.length !== 3) return null
   const month = Number(parts[1])
   const day = Number(parts[2])
-  if (!Number.isFinite(month) || !Number.isFinite(day)) return false
-  return month === 12 && day >= 17 && day <= 23
+  if (!Number.isFinite(month) || !Number.isFinite(day)) return null
+  return { month, day }
 }

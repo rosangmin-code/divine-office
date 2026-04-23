@@ -1,4 +1,4 @@
-import type { AssembledPsalm, LiturgicalSeason, PsalmEntry } from '../../types'
+import type { AssembledPsalm, DayOfWeek, LiturgicalSeason, PsalmEntry } from '../../types'
 import { parseScriptureRef } from '../../scripture-ref-parser'
 import { lookupRef } from '../../bible-loader'
 import { loadPsalterTexts } from '../loaders'
@@ -12,27 +12,34 @@ import { applySeasonalAntiphon, pickSeasonalVariant } from '../seasonal-antiphon
  * Antiphon selection priority:
  *   1. `antiphonOverrides[antiphon_key]` — sanctoral + seasonal propers
  *      overrides merged by the caller (loth-service).
- *   2. `entry.seasonal_antiphons[<season>]` — PDF-sourced seasonal variant
- *      (Phase 1 stub, populated in Phase 2 / task #14). When present, the
- *      append-Alleluia fallback is SKIPPED because the PDF variant already
- *      terminates with Alleluia in Easter and is authored per-season in
- *      the other cases.
+ *   2. `entry.seasonal_antiphons` — PDF-sourced seasonal variant
+ *      resolved by `pickSeasonalVariant` (per-Sunday > date-specific >
+ *      season general). Phase 1 stub, populated in Phase 2 (task #14).
+ *      When present, the append-Alleluia fallback is SKIPPED because
+ *      the PDF variant already carries the proper seasonal ending.
  *   3. `entry.default_antiphon` — 4-week psalter default (Ordinary Time
  *      authorship). Receives the append-Alleluia augmentation during Easter.
  *
- * `dateStr` (YYYY-MM-DD) is needed for the ADVENT Dec 17-23 gate on
- * `seasonal_antiphons.adventDec17_23`; outside that window the
- * Advent variant is ignored. Callers that don't pass `dateStr` simply
- * skip the ADVENT-specific lookup.
+ * `dateStr` / `dayOfWeek` / `weekOfSeason` drive the date and per-Sunday
+ * gates in `pickSeasonalVariant`. Callers that don't pass them simply
+ * skip the gated lookups.
  */
 export async function resolvePsalm(
   entry: PsalmEntry,
   antiphonOverrides?: Record<string, string>,
   season?: LiturgicalSeason,
   dateStr?: string,
+  dayOfWeek?: DayOfWeek,
+  weekOfSeason?: number,
 ): Promise<AssembledPsalm> {
   const override = antiphonOverrides?.[entry.antiphon_key]
-  const seasonalVariant = pickSeasonalVariant(entry, season, dateStr)
+  const seasonalVariant = pickSeasonalVariant(
+    entry,
+    season,
+    dateStr,
+    dayOfWeek,
+    weekOfSeason,
+  )
   // override > seasonal_antiphons variant > default_antiphon.
   const rawAntiphon = override ?? seasonalVariant ?? entry.default_antiphon ?? ''
   // Skip append-Alleluia when the PDF-sourced variant is used — the PDF

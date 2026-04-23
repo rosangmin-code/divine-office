@@ -44,9 +44,15 @@ const PsalmEntrySchema = z
     seasonal_antiphons: z
       .object({
         easter: z.string().optional(),
+        advent: z.string().optional(),
         adventDec17_23: z.string().optional(),
-        lent: z.string().optional(),
-        christmas: z.string().optional(),
+        adventDec24: z.string().optional(),
+        // Per-Sunday override maps. Keys are `weekOfSeason` numbers (3..7
+        // for easter, 1..5 for lent) but z.record enforces only string
+        // keys at runtime — JavaScript object keys stringify numeric
+        // values automatically, so callers can write { 3: "…", 4: "…" }.
+        easterSunday: z.record(z.string(), z.string()).optional(),
+        lentSunday: z.record(z.string(), z.string()).optional(),
       })
       .loose()
       .optional(),
