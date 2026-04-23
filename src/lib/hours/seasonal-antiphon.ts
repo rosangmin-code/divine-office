@@ -42,24 +42,29 @@ export function applySeasonalAntiphon(
  * Selection order (first match wins):
  *   1. Per-Sunday override — `dayOfWeek === 'SUN'` + matching
  *      `weekOfSeason`:
- *        EASTER → `easterSunday[weekOfSeason]`
- *        LENT   → `lentSunday[weekOfSeason]`
+ *        LENT  SUN w5 → `lentPassionSunday` (Passion Sunday, more
+ *                       specific than `lentSunday[5]`)
+ *        EASTER       → `easterSunday[weekOfSeason]`
+ *        LENT         → `lentSunday[weekOfSeason]`
  *   2. Date-specific (ADVENT only):
  *        12/17-23 → `adventDec17_23`
  *        12/24    → `adventDec24`
  *   3. Season general:
- *        EASTER → `easter`
+ *        EASTER → `easter`, then `easterAlt` (fallback when the
+ *                 primary variant is not authored for this entry)
  *        ADVENT (not 12/17+) → `advent`
  *
  * Christmas has no PDF markers so CHRISTMAS is not listed — its entries
- * fall through to `default_antiphon`. LENT has no season-wide marker
- * either; weekday LENT entries fall through. ORDINARY_TIME always
- * returns undefined.
+ * fall through to `default_antiphon`. LENT has no season-wide weekday
+ * marker either; weekday LENT entries fall through. ORDINARY_TIME
+ * always returns undefined.
  *
- * Phase 1 scope (task #13): schema + selection logic only. Data files
- * remain unpopulated until Phase 2 (task #14) so this function returns
- * undefined for all current production data — the legacy
- * applySeasonalAntiphon fallback path continues to run.
+ * Phase 3 scope (task #15): adds `lentPassionSunday` (Passion Sunday,
+ * GILH §5e rubric — the Sunday before Palm Sunday) and `easterAlt`
+ * (Easter season alternate antiphon, fallback semantic) on top of the
+ * Phase 1 chain. `easterAlt` is authored only for a handful of entries
+ * lacking a primary `easter` variant; when both fields are present
+ * (which should not occur in production data) `easter` wins.
  */
 export function pickSeasonalVariant(
   entry: PsalmEntry,
@@ -74,6 +79,11 @@ export function pickSeasonalVariant(
 
   // 1. Per-Sunday override — highest priority within seasonal_antiphons.
   if (dayOfWeek === 'SUN' && typeof weekOfSeason === 'number') {
+    // Passion Sunday (Lent 5th Sunday) takes precedence over the generic
+    // lentSunday[5] because the PDF authors it as a more-specific rubric.
+    if (season === 'LENT' && weekOfSeason === 5 && sa.lentPassionSunday) {
+      if (sa.lentPassionSunday.length > 0) return sa.lentPassionSunday
+    }
     if (season === 'EASTER' && sa.easterSunday) {
       const v = sa.easterSunday[weekOfSeason]
       if (typeof v === 'string' && v.length > 0) return v
@@ -97,7 +107,11 @@ export function pickSeasonalVariant(
   }
 
   // 3. Season general.
-  if (season === 'EASTER') return sa.easter
+  if (season === 'EASTER') {
+    if (sa.easter && sa.easter.length > 0) return sa.easter
+    if (sa.easterAlt && sa.easterAlt.length > 0) return sa.easterAlt
+    return undefined
+  }
   if (season === 'ADVENT') return sa.advent
 
   return undefined

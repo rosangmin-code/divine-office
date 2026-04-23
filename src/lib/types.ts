@@ -147,24 +147,32 @@ export interface PsalmEntry {
   // (sanctoral / seasonal propers overrides 다음).
   //
   // 필드 매핑 (divine-tester Phase 2 사전 조사 2026-04-23 실측):
-  //   easter          — "Амилалтын улирал:" (EASTER 시즌 전역, 99건)
-  //   advent          — "Ирэлтийн цаг улирал:" (ADVENT 주중 일반, 35건)
-  //   adventDec17_23  — "12 сарын 17-23:" (ADVENT 12/17-23, 63건)
-  //   adventDec24     — "12 сарын 24:" (ADVENT 12/24, 3건)
-  //   easterSunday[N] — "Амилалтын цаг улирлын N дэх/дахь Ням гараг:"
-  //                     (EASTER 주일 per-week override, N=3..7, 43건)
-  //   lentSunday[N]   — "Дөчин хоногийн цаг улирлын N дэх/дахь Ням гараг:"
-  //                     (LENT 주일 per-week only — PDF 에 시즌 전역 LENT
-  //                      후렴은 존재하지 않음, N=1..5, 41건)
+  //   easter            — "Амилалтын улирал:" (EASTER 시즌 전역, 99건)
+  //   easterAlt         — "Эсвэл, амилалтын цаг улирлын үед:" (EASTER
+  //                       대체 후렴, 3건. Phase 3 semantic = fallback —
+  //                       `easter` 가 없는 엔트리에서만 채택.)
+  //   advent            — "Ирэлтийн цаг улирал:" (ADVENT 주중 일반, 35건)
+  //   adventDec17_23    — "12 сарын 17-23:" (ADVENT 12/17-23, 63건)
+  //   adventDec24       — "12 сарын 24:" (ADVENT 12/24, 3건)
+  //   easterSunday[N]   — "Амилалтын цаг улирлын N дэх/дахь Ням гараг:"
+  //                       (EASTER 주일 per-week override, N=3..7, 43건)
+  //   lentSunday[N]     — "Дөчин хоногийн цаг улирлын N дэх/дахь Ням гараг:"
+  //                       (LENT 주일 per-week, N=1..5, 41건)
+  //   lentPassionSunday — "тарчлалтын Ням гараг:" (Passion Sunday, 전례상
+  //                       Lent 5th Sunday = Palm Sunday 전주. 3건. `lentSunday[5]`
+  //                       보다 우선 — 더 specific.)
   //
   // 주의: Christmas 시즌 전역 후렴은 PDF 에 마커 0건이라 필드 부재.
+  // LENT 시즌 전역 weekday 후렴도 0건 (LENT 는 주일만 존재).
   seasonal_antiphons?: {
     easter?: string
+    easterAlt?: string
     advent?: string
     adventDec17_23?: string
     adventDec24?: string
     easterSunday?: Record<number, string>
     lentSunday?: Record<number, string>
+    lentPassionSunday?: string
   }
 }
 
