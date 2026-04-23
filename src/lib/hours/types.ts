@@ -39,7 +39,7 @@ export interface Ordinarium {
     rubric?: string
   }
   invitatoryAntiphons: InvitatoryAntiphons
-  canticles: Record<string, { ref: string; titleMn: string; title?: string; subtitle?: string; verses?: string[]; doxology?: string }>
+  canticles: Record<string, { ref: string; titleMn: string; title?: string; subtitle?: string; verses?: string[]; doxology?: string; page?: number }>
   commonPrayers: {
     openingVersicle: { versicle: string; response: string; gloryBe: string; alleluia: string }
     [key: string]: unknown
