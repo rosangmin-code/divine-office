@@ -49,10 +49,23 @@ const END_OF_BLOCK_PATTERNS = [
   /^Дууллын\s+залбирал/,
   /^Дууллыг\s+төгсгөх\s+залбирал/,
   /^(?:Гуйлтын|Төгсгөлийн|Уншлага|Хариу)\s+(?:даатгал\s+)?залбирал/,
-  // 소문자 "уншлага" (short reading 본문 시작 마커) — 대문자 섹션 헤더가 아니라
-  // 문단 중간에서 책(Bible) 제목으로 흘러들어가는 경우가 있음. \b 는 ASCII-word
-  // 기준이라 Cyrillic 경계에서 오동작하므로 대신 뒤에 whitespace 를 요구.
-  /^уншлага(?:\s|$)/u,
+  // short reading 본문 시작 마커 — 대소문자 + tab boundary + optional
+  // trailing `а` 누락 (task #35 pdftotext 컬럼 분할 artifact 및 p437 PDF glyph
+  // 절단) 까지 커버. \b 는 ASCII-word 기준이라 Cyrillic 경계에서 오동작하므로
+  // explicit `(?:[\s\t]|$)` boundary 사용. task #33/#35 에서 shortReading
+  // HEADING 용으로 검증된 패턴을 END_OF_BLOCK 검출에도 동일 적용해 pdftotext
+  // 본문(대문자 헤딩) 과 pdfjs styled(soft-small-cap 소문자) 양쪽 정지점을
+  // 일치시킨다. 이 비대칭이 과거 FR-153h 잔여 22건의 alignment 실패
+  // (`pdftotext body has more non-blank lines` 예외) 근본 원인.
+  /^[Уу]ншлаг[аА]?(?:[\s\t]|$)/u,
+  // pdftotext 컬럼 분할이 `Уншлага` 헤더의 **앞부분 문자를 잘라먹은** 케이스
+  // (task #35 / task #38 p251 "лага", p371 "шлага"). 실제 헤더 line 은
+  // `<truncated-prefix>\t<scripture-ref>` 구조로 출력되므로 뒤에 tab 경계를
+  // 요구해 body 의 일반 Mongolian 단어와 충돌 방지. task #35 shortReading
+  // 빌더는 pdfjs fallback 으로 해결했지만 psalmPrayer 빌더는 heading 이 정상
+  // 검출된 뒤의 END_OF_BLOCK 단계에서 이 artifact 를 만나므로 여기서 직접
+  // 매치해 body 조기 종료.
+  /^(?:шлага|лага)\t/u,
   /^(?:\d+\s+(?:дугаар|дэх|дахь|дүгээр)\s+)?(?:Оройн|Өглөөний|Өдрийн|Шөнийн)\s+даатгал\s+залбирал/,
   /^(?:Мариагийн|Захариагийн|Шад)\s+магтаал/,
   // "Шад дуулал 2" 등 차기 canticle 블록 헤더 (магтаал 외에 дуулал 표기 혼용).

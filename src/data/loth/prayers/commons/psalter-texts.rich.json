@@ -1358,6 +1358,24 @@
         "kind": "common",
         "id": "psalter-text-Psalm 149:1-9"
       }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Эзэн минь, Израиль Тандаа баярлан, Таныг бүтээгч болон Аврагчаа хэмээн хүлээн зөвшөөрөх болтугай. Бид өөрсдийн итгэл үнэмшлийг Таны үнэнч байдалд даатгаж, авралын гайхамшигт үнэнийг тунхагладаг. Таны хайр энэрэл биднийг одоо болон үүрд мөнхөд хүрээлэх болтугай."
+            }
+          ]
+        }
+      ],
+      "page": 65,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-149-1-9-psalm-prayer"
+      }
     }
   },
   "Psalm 110:1-5, 7": {
@@ -2906,6 +2924,24 @@
         "kind": "common",
         "id": "psalter-text-Psalm 29:1-10"
       }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Эзэн болон Хаан минь, Та мөнхөд амьдардаг. Энэ дэлхийн бүх зүйлс Таны суу алдар болон нэр хүндийг зөв зохистой дуулдаг. Та Өөрийн хүмүүсээ хорон муу бүхний эсрэг хүчтэй байлгана уу. Ингэвэл бид Таны бидэнд амласан мөнхийн амлалтад итгэлтэй байж, Таны амар амгалангаар баясах болно."
+            }
+          ]
+        }
+      ],
+      "page": 81,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-29-1-10-psalm-prayer"
+      }
     }
   },
   "Psalm 19:8-11": {
@@ -3065,6 +3101,48 @@
         "kind": "common",
         "id": "psalter-text-Psalm 19:8-11"
       }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Эцэг минь, Та энэ ертөнцийг гэрэлтүүлэхийн"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "тулд хүн төрөлхтний дээр мандаж гийдэг"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "шударга ёс ба үнэний нар болсон Өөрийн Үгийг бидэнд илгээсэн ажээ. Таны гараар бүтээсэн олон олон ажлын дундаас цог жавхланг Тань таньж мэдүүлэхийн тулд Та бидний нүдийг нээж өгнө үү."
+            }
+          ]
+        }
+      ],
+      "page": 200,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-19-8-11-psalm-prayer"
+      }
     }
   },
   "Psalm 19:12-15": {
@@ -3223,6 +3301,48 @@
       "source": {
         "kind": "common",
         "id": "psalter-text-Psalm 19:12-15"
+      }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Эцэг минь, Та энэ ертөнцийг гэрэлтүүлэхийн"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "тулд хүн төрөлхтний дээр мандаж гийдэг"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "шударга ёс ба үнэний нар болсон Өөрийн Үгийг бидэнд илгээсэн ажээ. Таны гараар бүтээсэн олон олон ажлын дундаас цог жавхланг Тань таньж мэдүүлэхийн тулд Та бидний нүдийг нээж өгнө үү."
+            }
+          ]
+        }
+      ],
+      "page": 200,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-19-12-15-psalm-prayer"
       }
     }
   },
@@ -4995,6 +5115,24 @@
       "source": {
         "kind": "common",
         "id": "psalter-text-Psalm 33:1-9"
+      }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Эзэн, бид Таны үгээр өлсөж байгаа тул Та Өөрийн ард түмнээ тэжээнэ үү. Гэм нүглийн үхлээс биднийг аварч, Өөрийн өршөөл нигүүлслээр биднийг дүүргэнэ үү. Ингэснээр бид Таны оршихуй болон бүх гэгээнтнүүдийн баяр хөөрийг эдлэх болно."
+            }
+          ]
+        }
+      ],
+      "page": 98,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-33-1-9-psalm-prayer"
       }
     }
   },
@@ -6943,6 +7081,24 @@
       "source": {
         "kind": "common",
         "id": "psalter-text-Psalm 47:2-10"
+      }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Бүх ард түмэн, бүх үеийнхний Хаан, Тэнгэрбурхан минь, бид яруу сайхан дууллаар Таны ялалтыг тэмдэглэж байна. Таны ялалтын төлөө үүрд мөнхөд баярлахын тулд мууг сайнаар ялахад бидэнд цаг ямагт тусална уу."
+            }
+          ]
+        }
+      ],
+      "page": 113,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-47-2-10-psalm-prayer"
       }
     }
   },
@@ -9174,6 +9330,72 @@
         "kind": "common",
         "id": "psalter-text-Psalm 48:2-12"
       }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Эцэг минь, Таны амилсан Хүүгийн бие бол шинэ Йерусалимын хүний гараар хийгдээгүй"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "сүм хийд бөгөөд хамгаалалтын хана юм. Амьд"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "чулуугаар баригдсан энэ ариун хот сүнслэг"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "туяагаар гэрэлтэж, бүх үндэстнүүдийн нүдний"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "өмнө Таны сүр жавхланг гэрчлэх болтугай."
+            }
+          ]
+        }
+      ],
+      "page": 130,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-48-2-12-psalm-prayer"
+      }
     }
   },
   "Psalm 30:2-13": {
@@ -11346,6 +11568,24 @@
         "kind": "common",
         "id": "psalter-text-Psalm 100:1-5"
       }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Эзэн, баяр баясгалангаар бид Таныг дуудаж байгаа төдийгүй Таны магтаалыг дуулж, Таны сайн сайхан, Таны үнэнийг тунхаглахын тулд Та бидний зүрх сэтгэлийг нээнэ үү хэмээн гуйж байна."
+            }
+          ]
+        }
+      ],
+      "page": 148,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-100-1-5-psalm-prayer"
+      }
     }
   },
   "Psalm 41:2-14": {
@@ -13272,6 +13512,72 @@
         "kind": "common",
         "id": "psalter-text-Exodus 15:1-4a, 8-13, 17-18"
       }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Тэнгэрбурхан, Эцэг минь, бүх үндэстэн болон"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "бүх ард түмэн Таныг магтах болтугай. Тантай"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "үүрд мөнхөд хамт амьдардаг, мөн итгэмжит"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "бөгөөд үнэнч гэж нэрлэгддэг Есүс хүмүүн бидний"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "зүрх сэтгэлийг үүрд эзэмших болтугай."
+            }
+          ]
+        }
+      ],
+      "page": 163,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-exodus-15-1-4a-8-13-17-18-psalm-prayer"
+      }
     }
   },
   "Psalm 117:1-2": {
@@ -14644,6 +14950,60 @@
       "source": {
         "kind": "common",
         "id": "psalter-text-Psalm 8:1-10"
+      }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Төгс хүчит Эзэн, Таны нэр алдар юутай суу"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "алдартай вэ. Та бүх зүйлийг Өөртөө хамааралтай"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "болгосон тул биднийг Өөртөө үйлчлэх зохистой"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "хүмүүс болгоно уу."
+            }
+          ]
+        }
+      ],
+      "page": 284,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-8-1-10-psalm-prayer"
       }
     }
   },
@@ -17254,6 +17614,48 @@
         "kind": "common",
         "id": "psalter-text-Psalm 19:2-7"
       }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Эцэг минь, Та энэ ертөнцийг гэрэлтүүлэхийн"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "тулд хүн төрөлхтний дээр мандаж гийдэг"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "шударга ёс ба үнэний нар болсон Өөрийн Үгийг бидэнд илгээсэн ажээ. Таны гараар бүтээсэн олон олон ажлын дундаас цог жавхланг Тань таньж мэдүүлэхийн тулд Та бидний нүдийг нээж өгнө үү."
+            }
+          ]
+        }
+      ],
+      "page": 200,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-19-2-7-psalm-prayer"
+      }
     }
   },
   "Psalm 45:2-10": {
@@ -18914,6 +19316,60 @@
       "source": {
         "kind": "common",
         "id": "psalter-text-Psalm 65:2-9"
+      }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Тэнгэрбурхан Эзэн минь, бүх дэлхийн найдвар минь, биднийг Таны магтаалыг дуулж байхад охид хөвгүүдийнхээ эгэл даруухан"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "залбирлыг сонсоно уу. Бидний амьдрал элбэг"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "дэлбэг үр жимсийг ургуулахад туслахын тулд Та"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "бидэн дээр Өөрийн Сүнсээ илгээнэ үү."
+            }
+          ]
+        }
+      ],
+      "page": 216,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-65-2-9-psalm-prayer"
       }
     }
   },
@@ -20726,6 +21182,48 @@
         "kind": "common",
         "id": "psalter-text-Psalm 97:1-12"
       }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Эцэг минь, Та тэнгэрийг гэгээн гэрлээр,"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "далайн гүнийг харанхуйгаар хувцасладаг. Хүний"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "хөвгүүдийн дунд Та гайхамшгийг бүтээдэг бөгөөд дайснуудыг нь айдаст оруулдаг. Та Өөрийн зардас нараа таалан болгоно уу. Та биднийг галаар битгий туршиж шалгаарай. Харин Та Өөрөө байх гэртээ баясалтайгаар биднийг аваачна уу."
+            }
+          ]
+        }
+      ],
+      "page": 233,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-97-1-12-psalm-prayer"
+      }
     }
   },
   "Psalm 62:2-9": {
@@ -22400,6 +22898,48 @@
         "kind": "common",
         "id": "psalter-text-Psalm 81:2-11"
       }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Эзэн Тэнгэрбурхан минь ээ, Та сүр жавхлангаа"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "тунхаглуулахаар бидний амыг нээнэ үү. Гэм"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "нүглээ орхиод, Таны нэр алдрыг тунхагласандаа баярлахад Та бидэнд тусална уу."
+            }
+          ]
+        }
+      ],
+      "page": 251,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-81-2-11-psalm-prayer"
+      }
     }
   },
   "Psalm 72:1-11": {
@@ -23491,6 +24031,36 @@
       "source": {
         "kind": "common",
         "id": "psalter-text-Psalm 147:1-11"
+      }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Тэнгэрлэг Йерусалимын агуу барилгачин,"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Тэнгэрбурхан Эцэг минь, Та оддын тоог мэддэг бөгөөд тэднийг нэг бүрчлэн нэрээр нь нэрлэн дууддаг. Та эмтэрсэн зүрхтэй хүмүүсийг анагааж, бутарсан хүмүүсийг цуглуулж, бид бүгдийг мөнхийн төгс билиг ухаанаараа баяжуулна уу."
+            }
+          ]
+        }
+      ],
+      "page": 477,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-147-1-11-psalm-prayer"
       }
     }
   },
@@ -25158,6 +25728,60 @@
         "kind": "common",
         "id": "psalter-text-Psalm 8:2-10"
       }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Төгс хүчит Эзэн, Таны нэр алдар юутай суу"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "алдартай вэ. Та бүх зүйлийг Өөртөө хамааралтай"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "болгосон тул биднийг Өөртөө үйлчлэх зохистой"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "хүмүүс болгоно уу."
+            }
+          ]
+        }
+      ],
+      "page": 284,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-8-2-10-psalm-prayer"
+      }
     }
   },
   "Psalm 145:1-13": {
@@ -26049,6 +26673,36 @@
         "kind": "common",
         "id": "psalter-text-Psalm 146:1-10"
       }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Сүр жавхлант, төгс хүчит Тэнгэрбурхан минь, Танд итгэсэн хүмүүс үнэхээр аз жаргалтай байдаг"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "юм. Та бидний дээрээс Өөрийн гэрэлт туяагаа гийгүүлнэ үү. Ингэснээр бид Таныг үргэлж цэвэр ариун зүрх сэтгэлээрээ хайрлах болно."
+            }
+          ]
+        }
+      ],
+      "page": 461,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-146-1-10-psalm-prayer"
+      }
     }
   },
   "Psalm 93:1-5": {
@@ -26527,6 +27181,36 @@
       "source": {
         "kind": "common",
         "id": "psalter-text-Psalm 148:1-14"
+      }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Эзэн Та, тэнгэрэлч нарын эрх мэдлээр өндөрт өргөмжлөгдөн, дэлхийн бүх бүтээлүүдээр өөрсдийн замаар нь магтан алдаршуулагддаг. Та тэнгэрлэг магтаалын сүр жавхлангаар дүүрэн боловч дэлхийн Танд үзүүлсэн бодит хайранд"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "баясдаг. Тэнгэр газар хамтдаа Таныг Хаан хэмээн алдаршуулах болтугай. Тэнгэрт дуулсан магтаал нь дэлхий дээрх бүх бүтээлүүдийн сэтгэл зүрхэнд цуурайтах болтугай."
+            }
+          ]
+        }
+      ],
+      "page": 301,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-148-1-14-psalm-prayer"
       }
     }
   },
@@ -27618,6 +28302,84 @@
       "source": {
         "kind": "common",
         "id": "psalter-text-Psalm 96:1-13"
+      }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Эзэн, Та газрын өнгө төрхийг шинэчилсэн билээ. Танай Шашин дэлхий даяар Танд шинэ дуу дуулж, Таны гайхамшгуудыг хамаг"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "хүмүүст тунхаглаж байна. Цэвэр ариун нэгэн"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "охиноор дамжуулан Та манай дэлхий ертөнцөд"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "шинэ төрөлтийг, мөн гайхамшгуудаараа шинэ"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "хүч чадлыг, зовлон шаналлаараа шинэ тэсвэр"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "тэвчээрийг, амилалтаараа шинэ горьдол найдварыг, тэнгэрт заларснаараа шинэ сүр жавхланг авчирсан билээ."
+            }
+          ]
+        }
+      ],
+      "page": 319,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-96-1-13-psalm-prayer"
       }
     }
   },
@@ -29667,6 +30429,72 @@
       "source": {
         "kind": "common",
         "id": "psalter-text-Psalm 98:1-9"
+      }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Эзэн Есүс Та бүх үндэстэнд Өөрийн шударга ёсыг илчилсэн. Биднийг шийтгэгдэж"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "байхад, Та бидний оронд шүүгдэхээр ирсэн. Та"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "авралынхаа хүчийг бидэнд илгээнэ үү. Түүнчлэн"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "нүгэлт этгээдийн төлөө шийтгэгдсэн Та цог"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "жавхлантайгаар ирэхдээ тэднийг өршөөнө үү."
+            }
+          ]
+        }
+      ],
+      "page": 349,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-98-1-9-psalm-prayer"
       }
     }
   },
@@ -36560,6 +37388,96 @@
         "kind": "common",
         "id": "psalter-text-Psalm 144:1-10"
       }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Эзэн, хүч чадлын Тэнгэрбурхан минь, Та үхэл"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "дээр байгуулсан ялалтыг Хүүдээ өгсөн билээ. Та"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Өөрийн Шашныг энэ дэлхийн хорон муугийн"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "эсрэг тэмцэхэд удирдан чиглүүлнэ үү. Та"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "биднийг Өөрийн гэрлээрээ зэвсэглэн, биднийг,"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "хайрын далбаан доор нэгтгэнэ үү. Ингэснээр бид"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "дэлхий дэх амьдралын төлөөх тулалдааны дараа мөнхийн шагналаа хүртэх болно."
+            }
+          ]
+        }
+      ],
+      "page": 446,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-144-1-10-psalm-prayer"
+      }
     }
   },
   "Psalm 137:1-6": {
@@ -38585,6 +39503,60 @@
       "source": {
         "kind": "common",
         "id": "psalter-text-Psalm 147:12-20"
+      }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Эзэн, Та Йерусалимын хил хязгаарт амар тайвныг тогтоосон. Та одоо итгэгч нараа амар амгаланг хайрлан соёрхоно уу. Амар амгалан энэ амьдралд биднийг удирдан залахаар зогсохгүй мөнхийн амьдралд биднийг бялхаах болтугай. Та биднийг хамгийн сайхан улаан буудайгаар"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "дүүргэх гэж байгаа тул одоо толинд бүдэг бадаг"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "харагддаг зүйлийг бид Таны үнэний гэрэл дотор"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "тод харахыг Та хайрлан соёрхоно уу."
+            }
+          ]
+        }
+      ],
+      "page": 268,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-147-12-20-psalm-prayer"
       }
     }
   },

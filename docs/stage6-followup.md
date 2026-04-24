@@ -30,17 +30,18 @@
 
 ### 🟢 빠른 승리 (반일~일일)
 
-#### FR-153h — psalmPrayer rich 확산 (88 refs)
+#### FR-153h — psalmPrayer rich 확산 (eligible 90 refs) ✅ 완료
 
-- **목적**: `psalter-texts.json` 의 `psalmPrayer: string` 필드(88 refs 보유) 를 `psalmPrayerRich: PrayerText` 로 확장. Stage 6 Rich 확산의 자연스러운 마지막 타일.
-- **입력**: `src/data/loth/psalter-texts.json` 의 각 ref 별 `psalmPrayer` + `psalmPrayerPage`.
-- **접근**: `scripts/parsers/rich-builder.mjs` 의 `buildProsePrayer` 를 그대로 재사용 (FR-153a/c 와 동일 prose 계통). 신규 스크립트 `scripts/build-psalter-prayers-rich.mjs`.
-- **출력 위치**: `src/data/loth/prayers/commons/psalter-texts.rich.json` 의 각 ref 엔트리에 `psalmPrayerRich` 필드 추가 (dual-field, 기존 `stanzasRich` 와 동일 파일 내 공존).
-- **수용 게이트**: `buildProsePrayer` 의 normalised byte-equal. FAIL 발생 시 `scripts/out/psalter-prayers-rich-failures.md` 큐잉.
-- **렌더 연결**: `src/components/psalm-block.tsx` 가 concluding prayer 영역에서 `psalmPrayerRich` 있으면 `<RichContent>`, 없으면 legacy. `src/lib/hours/resolvers/psalm.ts` 에서 `stanzasRich` 전파 경로에 `psalmPrayerRich` 동반 전파.
-- **기대 커버리지**: ≥ 85% (다른 prose 영역 경험치). FAIL 은 PDF 원문 오탈자 / canon 정오표 패턴과 유사할 것.
-- **예상 공수**: 반나절. 스크립트 0.5h + 실행 + 검증 + e2e 1~2 케이스 + 문서.
-- **주의**: `psalmPrayer` 는 모든 ref 에 있는 게 아님 — 88/137 만. 없는 ref 는 자연 skip.
+- **상태**: ✅ **완료** (task #38, 2026-04-24, 100%)
+- **목적**: `psalter-texts.json` 의 `psalmPrayer: string` 필드(실측 90 eligible refs) 를 `psalmPrayerRich: PrayerText` 로 확장. Stage 6 Rich 확산의 자연스러운 마지막 타일.
+- **pilot 시점 (2026-04-23, wi-002)**: 68/90 (75.6%) PASS — AC 목표 85% 미달. 잔여 22건은 모두 `pdftotext body has more non-blank lines than pdfjs styled body` 예외.
+- **실측 원인 (task #38)**: `build-psalter-prayers-rich.mjs` 의 `END_OF_BLOCK_PATTERNS` union 이 `/^уншлага(?:\s|$)/u` **소문자만** 포함. pdftotext 는 PDF 헤딩을 대문자 `Уншлага\t<scripture-ref>` 로 출력 (small-cap 글리프 유지), pdfjs 는 small-cap 을 펼쳐 `уншлага` 소문자로 출력. 이 비대칭으로 pdfjs 는 shortReading 헤딩에서 정상 종료하지만 pdftotext 는 종료 못 하고 body 를 shortReading 섹션까지 확장 → `buildProseBlocks` 의 1:1 line alignment 가정 위반 → 예외.
+- **수정 (A+B 혼합)**:
+  1. **A — 대소문자 + trailing `а` 선택 pattern** 추가: `/^[Уу]ншлаг[аА]?(?:[\s\t]|$)/u` (task #33/#35 shortReading HEADING 에서 검증된 relaxed 패턴). boundary `(?:[\s\t]|$)` 로 inflected 형태 (`Уншлагатай`, `Уншлагдаж`) false match 배제.
+  2. **B — pdftotext 컬럼 분할 artifact 대응**: `/^(?:шлага|лага)\t/u` 추가. task #35 에서 확인된 p251 `"лага\t\t..."` / p371 `"шлага\t\t..."` (앞부분 문자 유실) 패턴을 직접 매치. 뒤 tab 경계 요구로 일반 body 단어와 충돌 방지.
+- **결과**: **90/90 eligible refs = 100% PASS**, failures.md 실패 0. 47 refs 는 skipped (psalmPrayer 또는 psalmPrayerPage 부재 — scope 밖, 정상).
+- **regression guard**: 기존 68 baseline vs 90 current entries JSON stringify 비교 — `added=22 / removed=0 / changed=0` (기존 68 entry 100% byte-wise 보존).
+- **검증**: `npx tsc --noEmit` 0 / `npx vitest run` 273 PASS / 0 FAIL.
 
 ---
 
