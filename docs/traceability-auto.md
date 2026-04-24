@@ -4,7 +4,7 @@
 > and FR/NFR IDs in test titles. **Do not edit by hand.**
 > The curated matrix lives in [`docs/traceability-matrix.md`](./traceability-matrix.md).
 
-Scan: 15 test files contributed 16 unique IDs.
+Scan: 16 test files contributed 16 unique IDs.
 
 | ID | Test file | Test title(s) |
 |---|---|---|
@@ -26,6 +26,7 @@ Scan: 15 test files contributed 16 unique IDs.
 | FR-153f | `e2e/prayer-psalm-stanzas-rich.spec.ts` | Psalter stanzasRich rendering (FR-153f)<br>renders psalm stanzas via rich AST (data-role markers present)<br>Daniel 3 refrain lines are tagged with role=refrain<br>refrain lines carry rubric red colour (§12.1) |
 | FR-153h | `e2e/prayer-psalm-prayer-rich.spec.ts` | Psalter psalmPrayerRich rendering (FR-153h)<br>psalm-prayer section renders with Mongolian rubric heading<br>Ps 63 psalmPrayer renders via rich AST (RichContent paragraph branch)<br>psalm-prayer heading carries red rubric class (§12.1) |
 | FR-155 | `e2e/easter-antiphon.spec.ts` | Easter season psalm / canticle antiphons (FR-155) |
+| FR-155 | `src/lib/__tests__/data/psalter-seasonal-antiphons.test.ts` | psalter seasonal_antiphons — post-body variants (task #16) |
 | FR-155 | `src/lib/hours/__tests__/seasonal-antiphon.test.ts` | lentPassionSunday wins over lentSunday[5] on Lent 5th Sunday (Passion Sunday)<br>easterAlt is a fallback — used only when easter is absent/empty |
 | FR-155 | `src/lib/hours/resolvers/__tests__/psalm.test.ts` | Passion Sunday (LENT SUN week 5) picks lentPassionSunday over lentSunday[5]<br>easterAlt fallback fires only when easter is absent/empty |
 | NFR-013 | `e2e/mobile.spec.ts` | prayer article inner width >= 320px for readability (NFR-013)<br>antiphon inner width >= 320px on mobile (NFR-013) |
