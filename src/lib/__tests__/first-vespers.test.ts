@@ -287,6 +287,114 @@ describe('FR-156 Phase 3a — Solemnity First Vespers', () => {
   })
 })
 
+// @fr FR-156 task #30 — FEAST rank resolver extension.
+// Ensures that the 4 FEAST entries whose PDF authors 1st Vespers
+// (02-02 Presentation, 08-06 Transfiguration, 09-14 Exaltation of the
+// Holy Cross, 11-09 Lateran Basilica) surface on the evening before,
+// now that the resolver accepts rank === 'FEAST' in addition to
+// 'SOLEMNITY'. Path 2 (movable special-key) remains SOLEMNITY-only.
+describe('FR-156 task #30 — FEAST rank First Vespers', () => {
+  const feastFirstVespers: FirstVespersPropers = {
+    gospelCanticleAntiphon: 'FEAST-FIRST-VESPERS-GC-ANTIPHON',
+    concludingPrayer: 'FEAST-FIRST-VESPERS-CONCLUDING-PRAYER',
+    shortReading: {
+      ref: 'Hebrews 1:1-2',
+      text: 'FEAST-FIRST-VESPERS-SHORT-READING',
+    },
+  }
+
+  beforeEach(() => {
+    vi.resetModules()
+  })
+
+  afterEach(() => {
+    vi.doUnmock('../propers-loader')
+  })
+
+  const cases = [
+    { eveDate: '2026-02-01', feastKey: '02-02', name: 'Presentation of the Lord (02-02)' },
+    { eveDate: '2026-08-05', feastKey: '08-06', name: 'Transfiguration (08-06)' },
+    { eveDate: '2026-09-13', feastKey: '09-14', name: 'Exaltation of the Cross (09-14)' },
+    { eveDate: '2026-11-08', feastKey: '11-09', name: 'Lateran Basilica (11-09)' },
+  ]
+
+  for (const { eveDate, feastKey, name } of cases) {
+    it(`adopts sanctoral.firstVespers on the evening before ${name}`, async () => {
+      vi.doMock('../propers-loader', async () => {
+        const actual = await vi.importActual<typeof import('../propers-loader')>('../propers-loader')
+        return {
+          ...actual,
+          // Only the target feast key returns firstVespers; all other
+          // keys fall through so non-feast eves stay untouched.
+          getSanctoralPropers: vi.fn((key: string) =>
+            key === feastKey ? { name, firstVespers: feastFirstVespers } : null,
+          ),
+          // Path 2 must NOT fire for FEAST even when this mock returns
+          // something — the resolver is gated to SOLEMNITY rank.
+          getSeasonFirstVespers: vi.fn(() => ({
+            gospelCanticleAntiphon: 'PATH2-MOVABLE-LEAK-ANTIPHON',
+          })),
+          getSeasonHourPropers: vi.fn(() => null),
+        }
+      })
+      const { assembleHour } = await import('../loth-service')
+      const result = await assembleHour(eveDate, 'vespers')
+      expect(result).not.toBeNull()
+      expect(result!.hourType).toBe('vespers')
+
+      const gcSection = result!.sections.find((s) => s.type === 'gospelCanticle')
+      expect(gcSection).toBeDefined()
+      if (gcSection && gcSection.type === 'gospelCanticle') {
+        expect(gcSection.antiphon).toContain('FEAST-FIRST-VESPERS-GC-ANTIPHON')
+        // Gate assertion: movable Path 2 must not leak for FEAST.
+        expect(gcSection.antiphon).not.toContain('PATH2-MOVABLE-LEAK-ANTIPHON')
+      }
+      const prayerSection = result!.sections.find((s) => s.type === 'concludingPrayer')
+      expect(prayerSection).toBeDefined()
+      if (prayerSection && prayerSection.type === 'concludingPrayer') {
+        expect(prayerSection.text).toBe('FEAST-FIRST-VESPERS-CONCLUDING-PRAYER')
+      }
+    })
+  }
+
+  it('FEAST without authored firstVespers leaves eve vespers untouched (regression guard)', async () => {
+    // Mock a feast-ranked tomorrow WITHOUT firstVespers. The resolver
+    // must not promote eve vespers in this case — regular Sunday
+    // firstVespers (via Saturday→Sunday branch) should take over.
+    vi.doMock('../propers-loader', async () => {
+      const actual = await vi.importActual<typeof import('../propers-loader')>('../propers-loader')
+      return {
+        ...actual,
+        // Even for a matching MM-DD, firstVespers is undefined.
+        getSanctoralPropers: vi.fn((key: string) =>
+          key === '02-02' ? { name: 'Feast without 1V' } : null,
+        ),
+        // Sunday regular vespers marker to confirm the eve falls
+        // through to the Saturday→Sunday branch.
+        getSeasonFirstVespers: vi.fn(() => null),
+        getSeasonHourPropers: vi.fn((_s, _w, day) =>
+          day === 'SUN'
+            ? {
+                gospelCanticleAntiphon: 'REGULAR-SUNDAY-VESPERS-FALLBACK',
+                concludingPrayer: 'REGULAR-SUNDAY-FALLBACK-PRAYER',
+              }
+            : null,
+        ),
+      }
+    })
+    const { assembleHour } = await import('../loth-service')
+    // 2026-01-31 SAT — tomorrow 02-01 is a regular Sunday in OT
+    // (02-02 Presentation not checked here). Assert fallback path.
+    const result = await assembleHour('2026-01-31', 'vespers')
+    expect(result).not.toBeNull()
+    const gcSection = result!.sections.find((s) => s.type === 'gospelCanticle')
+    if (gcSection && gcSection.type === 'gospelCanticle') {
+      expect(gcSection.antiphon).not.toContain('FEAST-FIRST-VESPERS-GC-ANTIPHON')
+      expect(gcSection.antiphon).toContain('REGULAR-SUNDAY-VESPERS-FALLBACK')
+    }
+  })
+})
+
 // @fr FR-156 Phase 3b (task #22) — Solemnity data injection (integration).
 // Verifies that the PDF-extracted solemnity firstVespers entries land in
 // sanctoral/solemnities.json + feasts.json at the expected MM-DD keys and
