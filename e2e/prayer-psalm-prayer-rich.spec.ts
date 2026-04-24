@@ -4,10 +4,10 @@ import { DATES } from './fixtures/dates'
 // @fr FR-153h
 test.describe('Psalter psalmPrayerRich rendering (FR-153h)', () => {
   test.beforeEach(async ({ page }) => {
-    // Ordinary Time Week 1 Sunday Lauds — Ps 63:2-9, Dan 3:57-88, Ps 149:1-9
-    // 세 psalm 각각의 psalmPrayer 가 주간 공통 카탈로그에 존재한다. Ps 63 은 p59,
-    // Dan 3 은 p65(FAIL 영역 — fallback 확인용), Ps 149 는 p65(FAIL — fallback).
-    // stanzasRich 가 이미 rich AST 로 렌더된 상태에서 psalmPrayer 영역만 검증.
+    // 2026-01-18 은 romcal 기준 '2nd Sunday of OT' 이고 psalter cycle 상 week-2
+    // 를 사용한다 (week-1 Sunday 는 Baptism 이후 건너뜀). week-2 SUN Lauds 의
+    // 첫 psalm 은 Ps 118:1-16 — psalmPrayer 가 "Тэнгэрбурхан Эзэн минь, Та
+    // бидэнд Есүс Христ барилгачдын голсон чулуу..." 로 시작.
     await page.goto(`/pray/${DATES.otWeek1Sunday}/lauds`)
   })
 
@@ -22,14 +22,12 @@ test.describe('Psalter psalmPrayerRich rendering (FR-153h)', () => {
   })
 
   // @fr FR-153h
-  test('Ps 63 psalmPrayer renders via rich AST (RichContent paragraph branch)', async ({ page }) => {
-    // Ps 63 (p59) 은 PASS 영역 — 카탈로그에 psalmPrayerRich 존재, 렌더는
-    // RichContent <p> 경로를 탄다. 역돌려 렌더 구분: rich 경로는
-    // 한 psalm-prayer 섹션 내 font-serif <p> 의 클래스 / 구조.
+  test('first psalm psalmPrayer renders via rich AST (RichContent paragraph branch)', async ({ page }) => {
+    // week-2 SUN Lauds 의 첫 psalm Ps 118:1-16 psalmPrayer 가 rich 카탈로그에
+    // 존재하므로 RichContent <p> 경로로 렌더. 캐논 incipit 으로 정체 검증.
     const psalmPrayer = page.locator('[data-role="psalm-prayer"]').first()
     await expect(psalmPrayer).toBeVisible()
-    // 본문의 첫 의미 단위가 "Эцэг минь," 로 시작 (Ps 63 psalmPrayer canonical text).
-    await expect(psalmPrayer).toContainText('Эцэг минь')
+    await expect(psalmPrayer).toContainText('Есүс Христ барилгачдын голсон чулуу')
   })
 
   // @fr FR-153h

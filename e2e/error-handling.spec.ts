@@ -11,9 +11,11 @@ test.describe('Error handling', () => {
     await expect(page.getByText('Өгөгдөл олдсонгүй: abc')).toBeVisible()
   })
 
-  test('invalid date on prayer page shows error', async ({ page }) => {
+  test('invalid date on prayer page shows 404', async ({ page }) => {
+    // 날짜가 `isValidDateStr` 를 통과하지 못하면 page.tsx 가 `notFound()` 를
+    // 호출 → Next.js 404 라우트 (`app/not-found.tsx`) 가 렌더된다.
     await page.goto('/pray/invalid/lauds')
-    await expect(page.getByText('Өгөгдөл олдсонгүй: invalid')).toBeVisible()
+    await expect(page.getByText('Хуудас олдсонгүй')).toBeVisible()
   })
 
   test('far future date does not crash (no 500 error)', async ({ page }) => {
