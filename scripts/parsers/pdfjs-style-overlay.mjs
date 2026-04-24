@@ -57,29 +57,74 @@
  */
 
 import { readFile } from 'node:fs/promises'
+import { createRequire } from 'node:module'
 import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { bookPageToPhysical } from './book-page-mapper.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = resolve(HERE, '..', '..')
 
 // ── pdfjs-dist bootstrap (legacy ESM build) ─────────────────────────────
+//
+// task #44: worker/standard-fonts 경로를 Node 의 module resolution
+// (`require.resolve`) 으로 찾고 `pathToFileURL` 로 file:// URL 에 인코딩해서
+// 두 가지 문제를 한 번에 해결:
+//   1) **worktree 에 독립 node_modules 없음** — 기존 코드는 `REPO_ROOT/
+//      node_modules/...` 에 pdfjs 가 있다고 가정. worktree 경로에선 그 위치
+//      node_modules 미존재 → `Setting up fake worker failed: Cannot find
+//      module` 로 실패. `createRequire(import.meta.url).resolve(...)` 는 Node
+//      의 표준 resolution 체인 (현 디렉 → 상위 → ... ) 으로 올라가 상위 repo
+//      의 node_modules 를 찾아낸다.
+//   2) **path 공백 인코딩** — 'divine office' 처럼 공백 포함 경로는 pdfjs 가
+//      file URL 로 해석할 때 %20 으로 인코딩되어 있어야 한다. `pathToFileURL`
+//      이 OS path → `file://...` 로 변환하며 공백/비-ASCII 문자를 정확히
+//      인코딩한다 (수동 `encodeURI` 보다 견고).
+const _require = createRequire(import.meta.url)
+
+function resolvePdfjsFileUrl(relativeModuleId) {
+  // pdfjs-dist 는 ESM `.mjs` 파일을 Node 의 CJS require 로 resolve 할 수 없어
+  // package.json `exports` 매핑이 제한적이다. 첫 시도에서 실패하면 package
+  // root 를 찾은 뒤 파일시스템 join 으로 우회한다.
+  try {
+    const abs = _require.resolve(relativeModuleId)
+    return pathToFileURL(abs).href
+  } catch {
+    const pkgJsonPath = _require.resolve('pdfjs-dist/package.json')
+    const pkgDir = dirname(pkgJsonPath)
+    // relativeModuleId = 'pdfjs-dist/<rest>' → strip prefix
+    const rest = relativeModuleId.replace(/^pdfjs-dist\//, '')
+    const abs = resolve(pkgDir, rest)
+    return pathToFileURL(abs).href
+  }
+}
 
 let _pdfjs = null
+let _standardFontDataUrl = null
 async function loadPdfjs() {
   if (_pdfjs) return _pdfjs
   const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs')
-  pdfjs.GlobalWorkerOptions.workerSrc = resolve(
-    REPO_ROOT,
-    'node_modules',
-    'pdfjs-dist',
-    'legacy',
-    'build',
-    'pdf.worker.mjs',
+  pdfjs.GlobalWorkerOptions.workerSrc = resolvePdfjsFileUrl(
+    'pdfjs-dist/legacy/build/pdf.worker.mjs',
   )
+  // standardFontDataUrl 은 디렉토리 URL (trailing `/` 필요) — `getDocument`
+  // 가 각 font 파일 이름을 append 해서 fetch 한다.
+  try {
+    const fontDirFileUrl = resolvePdfjsFileUrl('pdfjs-dist/standard_fonts/FoxitSerif.pfb')
+    // 파일 URL 에서 파일명을 잘라 디렉토리 URL 만 남긴다.
+    _standardFontDataUrl = fontDirFileUrl.replace(/[^/]+$/, '')
+  } catch {
+    // fallback: 기존 방식 (REPO_ROOT 기준) 을 URL 로 인코딩.
+    _standardFontDataUrl = pathToFileURL(
+      resolve(REPO_ROOT, 'node_modules', 'pdfjs-dist', 'standard_fonts') + '/',
+    ).href
+  }
   _pdfjs = pdfjs
   return pdfjs
+}
+
+function getStandardFontDataUrl() {
+  return _standardFontDataUrl
 }
 
 // ── Colour helpers ──────────────────────────────────────────────────────
@@ -378,8 +423,10 @@ export async function extractStyleOverlay({ pdfPath, bookPages }) {
     data,
     disableWorker: true,
     isEvalSupported: false,
-    standardFontDataUrl:
-      resolve(REPO_ROOT, 'node_modules', 'pdfjs-dist', 'standard_fonts') + '/',
+    // task #44: 기존 하드코드 `REPO_ROOT/node_modules/...` 대신 loadPdfjs 가
+    // createRequire + pathToFileURL 로 resolve 한 디렉토리 URL 재사용 (worktree
+    // fallback + 공백 인코딩 동시 해결).
+    standardFontDataUrl: getStandardFontDataUrl(),
   })
   const doc = await loadingTask.promise
   const OPS = pdfjs.OPS
