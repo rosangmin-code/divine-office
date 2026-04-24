@@ -75,4 +75,31 @@ describe('psalter seasonal_antiphons — post-body variants (task #16)', () => {
       )
     }
   })
+
+  // @fr FR-155 Phase 3c (task #18)
+  it('w2-sun-lauds entries have lentPassionSunday (Week 1 compound form promoted)', () => {
+    // PDF lines 5851/5978/6047 ship the Passion Sunday variant for Week 2
+    // Sunday Lauds entries in the compound-wrap label form "Дөчин хоногийн
+    // цаг улирал, Эзэний тарчлалтын Ням гараг:". Pre-task-#18 this form
+    // was SKIP'd; task #18 promoted it to a lentPassionSunday MARKER so
+    // the 3 psalter-resident occurrences now land in data.
+    //
+    // Scope note: the other 3 PDF occurrences (lines 5554/5618/5693) sit
+    // under anchors in the "1 дүгээр Оройн даатгал залбирал" (First
+    // Vespers of Sunday) proper-style section whose default_antiphons do
+    // not match any entry in psalter/week-*.json. They remain out of
+    // psalter scope and are not expected in this file.
+    for (const key of ['w2-sun-lauds-ps1', 'w2-sun-lauds-cant', 'w2-sun-lauds-ps3']) {
+      const entry = findEntry(week2 as PsalterFile, 'SUN', 'lauds', key)
+      expect(entry, `${key} should exist`).toBeDefined()
+      expect(
+        typeof entry?.seasonal_antiphons?.lentPassionSunday,
+        `${key}.lentPassionSunday must be string`,
+      ).toBe('string')
+      expect(
+        entry?.seasonal_antiphons?.lentPassionSunday?.length ?? 0,
+        `${key}.lentPassionSunday must be non-empty`,
+      ).toBeGreaterThan(0)
+    }
+  })
 })
