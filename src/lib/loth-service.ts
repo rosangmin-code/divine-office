@@ -13,7 +13,7 @@ import type {
 import { HOUR_NAMES_MN as hourNamesMn } from './types'
 import { getLiturgicalDay, getToday } from './calendar'
 import { getPsalterPsalmody, getComplinePsalmody, getFullComplineData, getPsalterCommons } from './psalter-loader'
-import { getSeasonHourPropers, getSanctoralPropers, getHymnForHour, getHymnCandidatesForHour } from './propers-loader'
+import { getSeasonHourPropers, getSeasonFirstVespers, getSanctoralPropers, getHymnForHour, getHymnCandidatesForHour } from './propers-loader'
 import { resolveCelebration } from './celebrations'
 import { resolveRichOverlay } from './prayers/resolver'
 import { loadHymnRichOverlay } from './prayers/rich-overlay'
@@ -93,10 +93,30 @@ export async function assembleHour(
   )
 
   if (!seasonPropers && dayOfWeek === 'SAT' && hour === 'vespers') {
-    // Next day is Sunday — use Sunday's vespers (1st Vespers) propers
+    // Next day is Sunday. FR-156: prefer the Sunday's dedicated
+    // firstVespers propers when authored. Phase 1 ships the lookup path
+    // only — propers JSON won't carry `firstVespers` until Phase 2
+    // (task #20), so this branch currently returns null for every
+    // season and the existing regular-vespers fallback below runs as
+    // before. Once Phase 2 lands the injected data, Saturday vespers
+    // begins rendering the 1st-Vespers antiphons/readings/prayers.
     const nextWeek = day.weekOfSeason + 1
-    seasonPropers = getSeasonHourPropers(day.season, nextWeek, 'SUN', 'vespers', dateStr, day.name)
-      ?? getSeasonHourPropers(day.season, day.weekOfSeason, 'SUN', 'vespers', dateStr, day.name)
+    const firstVespers = getSeasonFirstVespers(day.season, nextWeek, dateStr, day.name)
+      ?? getSeasonFirstVespers(day.season, day.weekOfSeason, dateStr, day.name)
+    if (firstVespers) {
+      seasonPropers = firstVespers
+      // First Vespers may carry its own psalm array (distinct from the
+      // 4-week psalter Saturday). Override so the resolver downstream
+      // resolves 1st-Vespers psalm antiphons + seasonal variants.
+      if (firstVespers.psalms && firstVespers.psalms.length > 0) {
+        psalmEntries = firstVespers.psalms
+      }
+    } else {
+      // Existing fallback — reuse the upcoming Sunday's regular
+      // (2nd) Vespers propers.
+      seasonPropers = getSeasonHourPropers(day.season, nextWeek, 'SUN', 'vespers', dateStr, day.name)
+        ?? getSeasonHourPropers(day.season, day.weekOfSeason, 'SUN', 'vespers', dateStr, day.name)
+    }
   }
 
   // 4. Get sanctoral propers (if applicable)
