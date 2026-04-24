@@ -64,14 +64,22 @@
 - **접근**: PDF 원문 대조 후 JSON 수기 패치. FR-153a 의 `PDF_CORRECTIONS_BY_PAGE` 패턴 참고 — 정답 방향 결정 필요 (JSON 이 정오표 / PDF 가 원본).
 - **수용 기준**: 5 entry 전부 rich builder normalised byte-equal PASS.
 
-#### Task #15 — ADVENT w1 MON lauds (p556) 중복 헤더 특이 케이스
+#### Task #15 — ADVENT w1 MON lauds (p556) 본문 tail 누락 (완료, task #33)
 
-- **상태**: pending · 1건
-- **증상**: PDF 동일 페이지에 `Уншлага` 섹션 헤더가 두 번 등장. `extractPdftextSection` 이 first match 만 잡아 본문 일부 누락.
-- **접근 옵션**:
-  - (A) rich-builder 에 occurrence index 옵션 추가 (`sectionHeadingOccurrence: 2`) 후 해당 entry 만 특정 매치 선택.
-  - (B) 해당 overlay 만 수기 작성 후 빌더 skip 리스트에 등록.
-- **추천**: (A) — 향후 유사 케이스 재사용 가능.
+- **상태**: ✅ 완료 (task #33, 2026-04-24)
+- **실측 원인 정정**: 초기 trial 가설은 "`Уншлага` 헤더가 두 번 등장" 이었으나 실측 결과 book 556 좌측 컬럼에서 `Уншлага` 는 **딱 한 번만** 등장 (pdftotext + pdfjs + raw 3중 확인). 실제 근본 원인은 `buildShortReading` 의 **pass-2 continuation threshold** 가 너무 엄격한 것:
+  ```
+  p556 diagnostic:
+    origLen   = 419
+    reconLen  = 379   (body 가 "...далайхгүй," 에서 끊김)
+    shortBy   = 40
+    old threshold = max(50, floor(origLen*0.1)) = 50
+    40 < 50 → pass 2 NOT triggered ✗
+  ```
+  누락된 tail `" Дахин хэзээ ч тэд дайтахад суралцахгүй."` (38 chars) 는 book 557 우측 컬럼 top 라인에 이어져 있고 `Хариу залбирал` 이 정상 end-of-block 로 작동한다. continuation 이 트리거만 되면 자연 합류한다.
+- **해결**: `buildShortReading` pass-2 threshold 를 `max(50, 10%)` → `max(30, 7.5%)` 로 완화. pass 1 에서 이미 PASS 한 122 entry 는 threshold 와 무관하게 pass-2 에 진입하지 않으므로 회귀 불가. 재실행 결과 122 → **123 PASS** (p556 신규 PASS), 3 FAIL (나머지 3건은 별도 `section heading not found` 예외 — 본 task 범위 외).
+- **회귀 가드**: 변경 전 baseline 스냅샷 (122 entries) 대비 변경 후 현재 (123 entries) diff — `added: 1 (p556)`, `removed: 0`, `changed: 0`.
+- **원 dispatch scope 변경 기록**: Option A (`sectionHeadingOccurrence` 추가) 는 실제 원인과 맞지 않아 미채택. 조사 단계에서 team-lead 에게 course-correction 승인받고 Option C (threshold 완화) 로 진행.
 
 #### Task #17 — psalter-loader.test page drift (pre-existing, vitest 빨간불) ✅ 완료
 

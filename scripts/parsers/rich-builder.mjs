@@ -1131,7 +1131,13 @@ export async function buildShortReading({
     const origLen = normaliseForShortReadingGate(originalText).length
     const reconLen = gate.reconstructedNorm?.length ?? 0
     const shortBy = origLen - reconLen
-    const threshold = Math.max(50, Math.floor(origLen * 0.1))
+    // task #33 / ADVENT w1 MON lauds (p556): 이전 threshold `max(50, 10%)` 는
+    // body tail 이 다음 book page 의 우측 컬럼으로 1~2줄 (~40 chars) 흘러가는
+    // 케이스를 pass-2 continuation 에서 배제했다. `max(30, 7.5%)` 로 완화해
+    // 작은 꼬리를 포착하면서도 "본문 내 다른 이유의 divergence" 는 여전히
+    // 거른다 (pass 1 이 이미 PASS 한 122 entry 는 threshold 와 무관하게 pass-2
+    // 에 진입하지 않으므로 회귀 불가).
+    const threshold = Math.max(30, Math.floor(origLen * 0.075))
     if (shortBy >= threshold) {
       region = await extractSectionRegion({
         pdfPath,
