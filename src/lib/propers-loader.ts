@@ -95,7 +95,22 @@ export function getSeasonHourPropers(
   const dayPropers = weeks[weekKey]?.[day] ?? weeks['1']?.[day]
   if (!dayPropers) return null
 
-  return (dayPropers[hour as keyof DayPropers] as HourPropers) ?? null
+  const hourData = (dayPropers[hour as keyof DayPropers] as HourPropers | undefined) ?? null
+  if (hourData) return hourData
+
+  // Per-hour fallback — FR-156 Phase 2 may create `weeks[N].SUN` entries
+  // that carry only `firstVespers` (no regular vespers/lauds/vespers2).
+  // Without this extra fallback, a missing hour on an existing day entry
+  // masks the weeks['1'] fallback above, breaking regular Sunday
+  // rendering for weeks>1 in seasons where only weeks['1'] previously
+  // existed (Advent, Lent). Safe no-op for seasons that already populate
+  // weeks[N] fully (Ordinary Time).
+  if (weekKey !== '1') {
+    const week1Day = weeks['1']?.[day] as DayPropers | undefined
+    const week1Hour = week1Day?.[hour as keyof DayPropers] as HourPropers | undefined
+    return week1Hour ?? null
+  }
+  return null
 }
 
 /**
@@ -154,7 +169,16 @@ export function getSeasonFirstVespers(
   const weekKey = String(sundayWeekOfSeason)
   const dayPropers = weeks[weekKey]?.['SUN'] ?? weeks['1']?.['SUN']
   if (!dayPropers) return null
-  return (dayPropers as DayPropers).firstVespers ?? null
+  const fv = (dayPropers as DayPropers).firstVespers
+  if (fv) return fv
+  // Parallel per-hour fallback — if weeks[weekKey].SUN exists but is
+  // missing firstVespers, try weeks['1'].SUN.firstVespers. Mirrors the
+  // fallback added to getSeasonHourPropers (FR-156 Phase 2).
+  if (weekKey !== '1') {
+    const week1FV = (weeks['1']?.['SUN'] as DayPropers | undefined)?.firstVespers
+    return week1FV ?? null
+  }
+  return null
 }
 
 // Cache for sanctoral propers

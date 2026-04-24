@@ -6,30 +6,48 @@ import type { FirstVespersPropers } from '../types'
 // Cache module state is owned by propers-loader; reset per test so a
 // mock from one test doesn't leak. We use vi.doMock so each test gets a
 // fresh module with our spy applied.
-describe('FR-156 Phase 1 — getSeasonFirstVespers default behaviour', () => {
+describe('FR-156 Phase 2 — getSeasonFirstVespers returns injected data', () => {
   beforeEach(() => {
     vi.resetModules()
   })
 
-  it('returns null when no propers JSON carries a firstVespers slot (current production state)', async () => {
+  it('returns a firstVespers object for every regular Sunday week in Advent/Lent/Easter/OT (task #20 injection)', async () => {
     const { getSeasonFirstVespers } = await import('../propers-loader')
-    // Every season file currently has no `firstVespers` — Phase 2 (task
-    // #20) will inject data. Until then every lookup must resolve null,
-    // so the Saturday-vespers fallback keeps running.
-    for (const season of [
-      'ADVENT',
-      'CHRISTMAS',
-      'LENT',
-      'EASTER',
-      'ORDINARY_TIME',
-    ] as const) {
-      for (const week of [1, 2, 3, 4, 5, 6]) {
-        expect(
-          getSeasonFirstVespers(season, week),
-          `${season} week ${week} should have no firstVespers yet`,
-        ).toBeNull()
-      }
+    // After Phase 2 injection, each season has per-week firstVespers
+    // data. Only CHRISTMAS is allowed to leave most week slots null
+    // (sanctoral-dominant season; only holyFamily/baptism Sundays get
+    // Phase 2 injection via name-based lookup, which this test does
+    // not exercise).
+    const cases: Array<[string, number]> = [
+      ['ADVENT', 1], ['ADVENT', 2], ['ADVENT', 3], ['ADVENT', 4],
+      ['LENT', 1], ['LENT', 2], ['LENT', 3], ['LENT', 4], ['LENT', 5], ['LENT', 6],
+      ['EASTER', 2], ['EASTER', 3], ['EASTER', 4], ['EASTER', 5], ['EASTER', 6], ['EASTER', 7],
+      ['ORDINARY_TIME', 1], ['ORDINARY_TIME', 5], ['ORDINARY_TIME', 17], ['ORDINARY_TIME', 34],
+    ]
+    for (const [season, week] of cases) {
+      const fv = getSeasonFirstVespers(season as never, week)
+      expect(fv, `${season} week ${week} should have firstVespers after Phase 2`).not.toBeNull()
+      expect(fv!.psalms, `${season} week ${week} firstVespers.psalms`).toBeDefined()
+      expect(fv!.psalms!.length, `${season} week ${week} firstVespers.psalms length`).toBe(3)
     }
+  })
+
+  it('firstVespers psalms carry seasonal_antiphons for their psalter week (regression guard)', async () => {
+    const { getSeasonFirstVespers } = await import('../propers-loader')
+    // Lent week 5 → psalter W1 (lentSunday[5] lives there).
+    const fvLent5 = getSeasonFirstVespers('LENT' as never, 5)
+    expect(fvLent5).not.toBeNull()
+    const ps1 = fvLent5!.psalms![0]
+    const lentSunday = (ps1.seasonal_antiphons as Record<string, Record<number, string>> | undefined)?.lentSunday
+    expect(lentSunday, 'Lent W5 ps1 must carry lentSunday variants from PDF_W1').toBeDefined()
+    expect(lentSunday![5], 'lentSunday[5] variant for Lent W5 Sunday').toBeTruthy()
+
+    // Lent week 6 (Passion/Palm Sunday) → psalter W2 (lentPassionSunday lives there).
+    const fvLent6 = getSeasonFirstVespers('LENT' as never, 6)
+    expect(fvLent6).not.toBeNull()
+    const ps1W6 = fvLent6!.psalms![0]
+    const sa = ps1W6.seasonal_antiphons as Record<string, unknown> | undefined
+    expect(sa?.lentPassionSunday, 'Palm Sunday ps1 must carry lentPassionSunday variant from PDF_W2').toBeTruthy()
   })
 })
 

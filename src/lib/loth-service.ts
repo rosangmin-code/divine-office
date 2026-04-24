@@ -1,4 +1,5 @@
 import type {
+  DayOfWeek,
   HourType,
   LiturgicalDayInfo,
   AssembledHour,
@@ -92,30 +93,50 @@ export async function assembleHour(
     day.name,
   )
 
+  // Track whether the Saturday→Sunday first-vespers branch applies so the
+  // downstream psalm resolver sees Sunday's identity (for pickSeasonalVariant
+  // to hit lentSunday[N] / easterSunday[N] / lentPassionSunday). Without
+  // this, Saturday evening renders with its own weekday variants and the
+  // injected firstVespers seasonal antiphons never surface.
+  let effectiveDayOfWeek: DayOfWeek = dayOfWeek
+  let effectiveWeekOfSeason: number = day.weekOfSeason
   if (!seasonPropers && dayOfWeek === 'SAT' && hour === 'vespers') {
     // Next day is Sunday. FR-156: prefer the Sunday's dedicated
-    // firstVespers propers when authored. Phase 1 ships the lookup path
-    // only — propers JSON won't carry `firstVespers` until Phase 2
-    // (task #20), so this branch currently returns null for every
-    // season and the existing regular-vespers fallback below runs as
-    // before. Once Phase 2 lands the injected data, Saturday vespers
-    // begins rendering the 1st-Vespers antiphons/readings/prayers.
+    // firstVespers propers when authored (Phase 2, task #20). Falls
+    // back to the upcoming Sunday's regular vespers propers otherwise.
     const nextWeek = day.weekOfSeason + 1
     const firstVespers = getSeasonFirstVespers(day.season, nextWeek, dateStr, day.name)
       ?? getSeasonFirstVespers(day.season, day.weekOfSeason, dateStr, day.name)
+    // Always compute the upcoming Sunday's regular vespers propers —
+    // used as standalone fallback when firstVespers is absent, AND as a
+    // per-field backstop underneath firstVespers (FR-156 Phase 2).
+    // Rationale: the PDF's psalter First Vespers blocks reference the
+    // seasonal Sunday propers for gospelCanticleAntiphon and
+    // concludingPrayer ("Шад магтаал: үүнийг «Цаг улирлын Онцлог шинж»
+    // гэсэн хэсгээс татаж авна"). Rather than duplicate those fields
+    // in firstVespers, the extractor omits them and the resolver
+    // composes the final HourPropers as firstVespers ⟩ SundayRegular.
+    const sundayRegular = getSeasonHourPropers(day.season, nextWeek, 'SUN', 'vespers', dateStr, day.name)
+      ?? getSeasonHourPropers(day.season, day.weekOfSeason, 'SUN', 'vespers', dateStr, day.name)
     if (firstVespers) {
-      seasonPropers = firstVespers
+      seasonPropers = {
+        ...(sundayRegular ?? {}),
+        ...firstVespers,
+      }
       // First Vespers may carry its own psalm array (distinct from the
       // 4-week psalter Saturday). Override so the resolver downstream
       // resolves 1st-Vespers psalm antiphons + seasonal variants.
       if (firstVespers.psalms && firstVespers.psalms.length > 0) {
         psalmEntries = firstVespers.psalms
       }
+      // The liturgical identity of Saturday 1st Vespers IS Sunday —
+      // promote dayOfWeek/weekOfSeason so pickSeasonalVariant fires the
+      // per-Sunday branches (lentSunday, easterSunday, lentPassionSunday).
+      effectiveDayOfWeek = 'SUN'
+      effectiveWeekOfSeason = nextWeek
     } else {
-      // Existing fallback — reuse the upcoming Sunday's regular
-      // (2nd) Vespers propers.
-      seasonPropers = getSeasonHourPropers(day.season, nextWeek, 'SUN', 'vespers', dateStr, day.name)
-        ?? getSeasonHourPropers(day.season, day.weekOfSeason, 'SUN', 'vespers', dateStr, day.name)
+      // Pre-Phase-2 path: reuse the upcoming Sunday's regular (2nd) Vespers propers.
+      seasonPropers = sundayRegular
     }
   }
 
@@ -161,8 +182,8 @@ export async function assembleHour(
         antiphonOverrides,
         day.season,
         dateStr,
-        dayOfWeek,
-        day.weekOfSeason,
+        effectiveDayOfWeek,
+        effectiveWeekOfSeason,
       ),
     ),
   )
@@ -180,8 +201,8 @@ export async function assembleHour(
       entry,
       day.season,
       dateStr,
-      dayOfWeek,
-      day.weekOfSeason,
+      effectiveDayOfWeek,
+      effectiveWeekOfSeason,
     )
     const fallbackAntiphon = override ?? seasonalVariant ?? entry.default_antiphon ?? ''
     const usedPdfVariant = override === undefined && seasonalVariant !== undefined

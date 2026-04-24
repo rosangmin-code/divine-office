@@ -79,9 +79,19 @@ export function pickSeasonalVariant(
 
   // 1. Per-Sunday override — highest priority within seasonal_antiphons.
   if (dayOfWeek === 'SUN' && typeof weekOfSeason === 'number') {
-    // Passion Sunday (Lent 5th Sunday) takes precedence over the generic
-    // lentSunday[5] because the PDF authors it as a more-specific rubric.
-    if (season === 'LENT' && weekOfSeason === 5 && sa.lentPassionSunday) {
+    // Passion Sunday / Palm Sunday — take precedence over the generic
+    // lentSunday[N] because the PDF authors them as a more-specific rubric.
+    // Week 5 ("5th Sunday of Lent", older "Passion Sunday" name) and
+    // Week 6 ("Palm Sunday of the Passion of the Lord", modern rite)
+    // both carry the Passion theme; both fire lentPassionSunday when the
+    // entry authors it. FR-156 Phase 2 (task #20) extends the original
+    // W5-only match so First Vespers of Palm Sunday (Sat preceding
+    // romcal's weekOfSeason=6) also surfaces the Passion antiphon.
+    if (
+      season === 'LENT' &&
+      (weekOfSeason === 5 || weekOfSeason === 6) &&
+      sa.lentPassionSunday
+    ) {
       if (sa.lentPassionSunday.length > 0) return sa.lentPassionSunday
     }
     if (season === 'EASTER' && sa.easterSunday) {
