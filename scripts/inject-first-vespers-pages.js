@@ -25,18 +25,25 @@
 
 const fs = require('fs')
 const path = require('path')
-const { buildPageIndex, annotatePagesInPlace } = require('./lib/first-vespers-page-annotator')
+const {
+  buildPageIndex,
+  annotatePagesInPlace,
+  getPsalterWeekFromMapping,
+} = require('./lib/first-vespers-page-annotator')
 
 const ROOT = path.resolve(__dirname, '..')
 
+// Season slug per target file — used to look up psalter-week mapping
+// for Sunday propers. `null` disables the psalter override (sanctoral
+// firstVespers use fingerprint only).
 const TARGET_FILES = [
-  'src/data/loth/propers/advent.json',
-  'src/data/loth/propers/christmas.json',
-  'src/data/loth/propers/lent.json',
-  'src/data/loth/propers/easter.json',
-  'src/data/loth/propers/ordinary-time.json',
-  'src/data/loth/sanctoral/solemnities.json',
-  'src/data/loth/sanctoral/feasts.json',
+  { rel: 'src/data/loth/propers/advent.json',       season: 'advent' },
+  { rel: 'src/data/loth/propers/christmas.json',    season: 'christmas' },
+  { rel: 'src/data/loth/propers/lent.json',         season: 'lent' },
+  { rel: 'src/data/loth/propers/easter.json',       season: 'easter' },
+  { rel: 'src/data/loth/propers/ordinary-time.json', season: 'ordinary-time' },
+  { rel: 'src/data/loth/sanctoral/solemnities.json', season: null },
+  { rel: 'src/data/loth/sanctoral/feasts.json',     season: null },
 ]
 
 function snapshotPages(fv) {
@@ -54,26 +61,51 @@ function snapshotPages(fv) {
   return snap
 }
 
-function walk(node, idx, stats) {
-  if (Array.isArray(node)) {
-    for (const item of node) walk(item, idx, stats)
-    return
+// Walk a propers-shaped tree, tracking the current weekKey so we can
+// resolve the psalter-week context when we encounter a firstVespers
+// node. For sanctoral (season=null), no psalter context is applied.
+function walkPropers(data, idx, stats, season) {
+  const weeks = data && data.weeks
+  if (!weeks || typeof weeks !== 'object') return
+  for (const weekKey of Object.keys(weeks)) {
+    const weekNode = weeks[weekKey]
+    if (!weekNode || typeof weekNode !== 'object') continue
+    const sun = weekNode.SUN
+    if (!sun || typeof sun !== 'object') continue
+    const fv = sun.firstVespers
+    if (!fv || typeof fv !== 'object') continue
+    const psalterWeek = season ? getPsalterWeekFromMapping(season, weekKey) : null
+    const before = snapshotPages(fv)
+    annotatePagesInPlace(fv, idx, psalterWeek)
+    const after = snapshotPages(fv)
+    stats.fvBlocks++
+    stats.psalterContext.push({ season, weekKey, psalterWeek })
+    for (const k of Object.keys(after)) {
+      if (!(k in before)) stats.added++
+      else if (before[k] !== after[k]) stats.changed++
+      else stats.unchanged++
+    }
   }
-  if (!node || typeof node !== 'object') return
-  for (const key of Object.keys(node)) {
-    const v = node[key]
-    if (key === 'firstVespers' && v && typeof v === 'object' && !Array.isArray(v)) {
-      const before = snapshotPages(v)
-      annotatePagesInPlace(v, idx)
-      const after = snapshotPages(v)
-      stats.fvBlocks++
-      for (const k of Object.keys(after)) {
-        if (!(k in before)) stats.added++
-        else if (before[k] !== after[k]) stats.changed++
-        else stats.unchanged++
-      }
-    } else if (v && typeof v === 'object') {
-      walk(v, idx, stats)
+}
+
+function walkSanctoral(data, idx, stats) {
+  // Sanctoral files are keyed by MM-DD (or movable slug). No psalter
+  // context — annotator uses fingerprint for all fields.
+  if (!data || typeof data !== 'object') return
+  for (const key of Object.keys(data)) {
+    const entry = data[key]
+    if (!entry || typeof entry !== 'object') continue
+    const fv = entry.firstVespers
+    if (!fv || typeof fv !== 'object') continue
+    const before = snapshotPages(fv)
+    annotatePagesInPlace(fv, idx, null)
+    const after = snapshotPages(fv)
+    stats.fvBlocks++
+    stats.psalterContext.push({ sanctoralKey: key, psalterWeek: null })
+    for (const k of Object.keys(after)) {
+      if (!(k in before)) stats.added++
+      else if (before[k] !== after[k]) stats.changed++
+      else stats.unchanged++
     }
   }
 }
@@ -86,7 +118,7 @@ function main() {
 
   const grandTotals = { added: 0, changed: 0, unchanged: 0, fvBlocks: 0 }
 
-  for (const rel of TARGET_FILES) {
+  for (const { rel, season } of TARGET_FILES) {
     const abs = path.join(ROOT, rel)
     if (!fs.existsSync(abs)) {
       console.log(`\n[skip] ${rel} (not found)`)
@@ -101,8 +133,12 @@ function main() {
       continue
     }
 
-    const stats = { added: 0, changed: 0, unchanged: 0, fvBlocks: 0 }
-    walk(data, idx, stats)
+    const stats = { added: 0, changed: 0, unchanged: 0, fvBlocks: 0, psalterContext: [] }
+    if (season) {
+      walkPropers(data, idx, stats, season)
+    } else {
+      walkSanctoral(data, idx, stats)
+    }
 
     if (stats.fvBlocks === 0) {
       console.log(`\n[skip] ${rel} — no firstVespers subtrees`)
@@ -114,6 +150,14 @@ function main() {
     console.log(`\n[ok] ${rel}`)
     console.log(`  firstVespers blocks: ${stats.fvBlocks}`)
     console.log(`  added: ${stats.added}, changed: ${stats.changed}, unchanged: ${stats.unchanged}`)
+    if (season) {
+      const byPsalter = {}
+      for (const c of stats.psalterContext) {
+        const k = c.psalterWeek ?? 'fingerprint'
+        byPsalter[k] = (byPsalter[k] || 0) + 1
+      }
+      console.log(`  psalter-week coverage: ${JSON.stringify(byPsalter)}`)
+    }
 
     grandTotals.added += stats.added
     grandTotals.changed += stats.changed
