@@ -52,6 +52,17 @@ export const DATES = {
   // PDF was "Баяр" but the solemnities.json already carried the entry).
   assumptionEve2026: '2026-08-14',
 
+  // FR-156 Phase 4b (task #24) — movable solemnity First Vespers
+  // evening-before dates. Phase 4a resolver already wires the special-
+  // key lookups in propers/{easter,ordinary-time}.json; Phase 4b
+  // populates the data. All six eves drop a SOLEMNITY on the NEXT day,
+  // so the `assembleHour` resolver's tomorrow-check adopts
+  // `weeks['<specialKey>'].SUN.firstVespers`.
+  ascensionEve2026: '2026-05-13',       // Wed eve — Ascension Thu May 14
+  pentecostEve2026: '2026-05-23',       // Sat eve — Pentecost Sun May 24
+  trinitySundayEve2026: '2026-05-30',   // Sat eve — Trinity Sun May 31
+  christTheKingEve2026: '2026-11-21',   // Sat eve — Christ the King Sun Nov 22
+
   // Easter Sunday (WHITE)
   easterSunday: '2026-04-05',
 
