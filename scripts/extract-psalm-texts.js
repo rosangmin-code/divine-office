@@ -10,6 +10,22 @@
  *   "Psalm 5:2-10, 12-13": { "stanzas": [["line1","line2",...], ["line3",...]] },
  *   ...
  * }
+ *
+ * KNOWN LIMITATION (task #42 audit) — the weekN_final.txt column-split
+ * output can shift a previous psalm's Gloria/prayer tail INTO the next
+ * psalm's entry (D1 entry-shift pattern), or shuffle stanza order
+ * across PDF page breaks. 4 entries were identified and repaired with
+ * `scripts/repair-d1-psalter-entries.js` (canonical full_pdf.txt
+ * source). If those 4 entries regress on a future regenerate, re-apply
+ * the repair script — don't re-run this extractor as a full overwrite.
+ *
+ * Affected refs (see docs/task-40-psalter-texts-reconciliation.md):
+ *   Psalm 116:1-9  (prayer was swallowed by Psalm 121)
+ *   Psalm 121:1-8  (body picked up Psalm 116 tail)
+ *   Psalm 97:1-12  (stanza order shuffled by column split)
+ *   Psalm 51:3-19  (stanza order shuffled + declared page wrong)
+ *   Psalm 139:23-24 (body confused by Part I/II split)
+ *   Psalm 139:1-18 (psalm-prayer missing, shared with 23-24)
  */
 
 const fs = require('fs')

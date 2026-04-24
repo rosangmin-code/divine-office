@@ -2,9 +2,66 @@
 
 **Source**: task #39 audit, `verify-psalter-pages.js` manual-review 13건 (D1/D2/D3/C subtype).
 
-**Stage 1 (이번 dispatch, commit)**: D3 1건 완료 + 전체 12건 per-entry 분석 문서화.
+**Stage 1 (commit feb6420)**: D3 1건 완료 + 전체 12건 per-entry 분석 문서화.
+**Stage 3 (commit 1d24f65)**: D2 canticle 5건 전부 RESOLVED.
+**Stage 2 (task #42 commit)**: D1 entry-shift 4건 복구 + upstream chain 2건 bonus.
 
-**Stage 2/3 (후속 dispatch)**: 나머지 12건 데이터 교정 (subtype 별 배치).
+---
+
+## Stage 2 완료 (task #42, 2026-04-24)
+
+### D1 entry-shift 4건 + chain 2건 전부 RESOLVED
+
+**근본 원인**: `extract-psalm-texts.js` 가 `parsed_data/weekN_final.txt`
+(column-split output) 를 소스로 쓴다. PDF 의 2-column 레이아웃이
+컬럼 순서대로 기록되면서 (a) 앞 psalm 의 Gloria/prayer tail 이
+다음 psalm 의 header 와 body 사이에 끼어들거나 (D1-1 Psalm 121),
+(b) page-break 를 stanza break 으로 오인해 column 순서에 따라 verse
+순서가 섞인다 (D1-2/3 Psalm 97/51). Part I/II 분리 블록은 추가로
+Part II verse slice 를 정확히 잘라내지 못한다 (D1-4 Psalm 139:23-24).
+
+**해결**: `parsed_data/full_pdf.txt` (canonical verse-ordered single
+column) 을 소스로 하는 **targeted repair script** `scripts/repair-d1-
+psalter-entries.js` 작성. 스크립트는 per-ref anchor (PDF line 번호)
+로 header 를 찾고, `extract-psalm-texts.js` 와 동일 semantics 로
+title/epigraph skip → body collect → stanza split → prayer extract 를
+실행한다. `Psalm 139:23-24` 는 combined 블록 ("Дуулал 139:1-18, 23-24")
+안에서 "II" marker 이후의 verse 23 앵커 ("Аяа Тэнгэрбурхан,") 를
+찾아 거기부터 body 를 슬라이스한다. Part I/II 공통 prayer 는 양쪽
+sub-ref (Psalm 139:1-18 + Psalm 139:23-24) 에 모두 주입.
+
+**scope 확장 (chain repair)**:
+- **Psalm 116:1-9** — body 는 정상이었으나 `psalmPrayer` 가 빠져
+  있었음 (D1-1 shift 가 Psalm 121 entry 로 prayer 를 빼갔었다).
+  Psalm 121 fix 와 동시에 복구.
+- **Psalm 139:1-18** — `psalmPrayer` 부재. combined 블록이라 Psalm
+  139:23-24 와 동일 prayer 공유 → 동시 주입.
+
+**부수 page 교정**:
+- **Psalm 51:3-19** `psalter/week-4.json` declared page 491 → 488
+  (PDF body-start 기준). 491 은 Tobit canticle 페이지라 명확한 오류.
+
+**결과**:
+- `verify-psalter-pages.js`: agree **148 → 155** (+7 vs Stage 1 기준),
+  verified-correction **0 → 2** (Stage 4 대상), manual-review **6 → 3**
+  (남은 3건 모두 Stage 4 / Stage 3 잔여). *본 Stage 의 수정으로 직접
+  agree 승급한 건: Psalm 97/121/116/51/139 계열 (+5)*
+- `audit-psalter-ref-consistency.js` suspects **7 → 4** (D1 4건 해결,
+  남은 4건 전부 Stage 3/4 외건)
+- `build-psalter-texts-rich.mjs` **137/137 PASS** (stanzasRich 구조
+  유지 — 6건 entry 만 내용 갱신, byte-equal 127건 보존)
+- `npx vitest run` 273 PASS 0 FAIL
+- `npx tsc --noEmit` 0 errors
+- FR-156 e2e 38 PASS 유지
+
+**repair script 사용**:
+```bash
+node scripts/repair-d1-psalter-entries.js
+```
+idempotent — 이미 교정된 상태에서 다시 실행해도 no-op (동일 결과
+재주입). `extract-psalm-texts.js` full regenerate 로 인해 D1 entry 가
+다시 shift 되면 이 스크립트를 한 번 더 돌리면 된다. 스크립트 자체는
+extractor 를 고치지 않고 문제 entry 만 canonical source 에서 교체한다.
 
 ---
 
