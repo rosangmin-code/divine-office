@@ -155,3 +155,134 @@ describe('FR-156 Phase 1 — Saturday vespers uses firstVespers when authored', 
     }
   })
 })
+
+// @fr FR-156 Phase 3a — Solemnity First Vespers (evening-before-solemnity).
+describe('FR-156 Phase 3a — Solemnity First Vespers', () => {
+  const solemnityFirstVespers: FirstVespersPropers = {
+    gospelCanticleAntiphon: 'SOLEMNITY-FIRST-VESPERS-GC-ANTIPHON',
+    concludingPrayer: 'SOLEMNITY-FIRST-VESPERS-CONCLUDING-PRAYER',
+    shortReading: {
+      ref: 'Isaiah 9:6',
+      text: 'SOLEMNITY-FIRST-VESPERS-SHORT-READING',
+    },
+    psalms: [
+      {
+        type: 'psalm',
+        ref: 'Psalm 113',
+        antiphon_key: 'christmas-fv-ps1',
+        default_antiphon: 'SOLEMNITY-FIRST-VESPERS-PSALM-1-ANTIPHON',
+        gloria_patri: true,
+      },
+    ],
+  }
+
+  beforeEach(() => {
+    vi.resetModules()
+  })
+
+  afterEach(() => {
+    vi.doUnmock('../propers-loader')
+  })
+
+  it('adopts sanctoral.firstVespers on the evening before a Solemnity (Christmas Eve)', async () => {
+    vi.doMock('../propers-loader', async () => {
+      const actual = await vi.importActual<typeof import('../propers-loader')>('../propers-loader')
+      return {
+        ...actual,
+        // Dec 25 carries the solemnity firstVespers fake; all other keys
+        // return null so the solemnity branch fires for 12-25 only.
+        getSanctoralPropers: vi.fn((key: string) =>
+          key === '12-25' ? { name: 'Christmas', firstVespers: solemnityFirstVespers } : null,
+        ),
+        getSeasonFirstVespers: vi.fn(() => null),
+        getSeasonHourPropers: vi.fn(() => null),
+      }
+    })
+    const { assembleHour } = await import('../loth-service')
+    // 2026-12-24 Thursday evening → tomorrow (12-25) is Christmas SOLEMNITY.
+    const result = await assembleHour('2026-12-24', 'vespers')
+    expect(result).not.toBeNull()
+    expect(result!.hourType).toBe('vespers')
+
+    const gcSection = result!.sections.find((s) => s.type === 'gospelCanticle')
+    expect(gcSection).toBeDefined()
+    if (gcSection && gcSection.type === 'gospelCanticle') {
+      // Solemnity firstVespers antiphon wins over any ADVENT date-key
+      // vigil propers (which 12-24 normally carries).
+      expect(gcSection.antiphon).toContain('SOLEMNITY-FIRST-VESPERS-GC-ANTIPHON')
+    }
+    const prayerSection = result!.sections.find((s) => s.type === 'concludingPrayer')
+    expect(prayerSection).toBeDefined()
+    if (prayerSection && prayerSection.type === 'concludingPrayer') {
+      expect(prayerSection.text).toBe('SOLEMNITY-FIRST-VESPERS-CONCLUDING-PRAYER')
+    }
+  })
+
+  it('leaves the evening alone when tomorrow is NOT a Solemnity (regression guard)', async () => {
+    vi.doMock('../propers-loader', async () => {
+      const actual = await vi.importActual<typeof import('../propers-loader')>('../propers-loader')
+      return {
+        ...actual,
+        // No sanctoral returns firstVespers — even if a key matches,
+        // firstVespers is absent.
+        getSanctoralPropers: vi.fn(() => null),
+        getSeasonFirstVespers: vi.fn(() => null),
+        // Sunday regular vespers marker so we can assert the solemnity
+        // branch did NOT claim seasonPropers; Saturday→Sunday fallback did.
+        getSeasonHourPropers: vi.fn((_s, _w, day) =>
+          day === 'SUN'
+            ? {
+                gospelCanticleAntiphon: 'REGULAR-SUNDAY-VESPERS-GC-ANTIPHON',
+                concludingPrayer: 'REGULAR-SUNDAY-CONCLUDING-PRAYER',
+              }
+            : null,
+        ),
+      }
+    })
+    const { assembleHour } = await import('../loth-service')
+    // 2026-06-13 Saturday in OT — tomorrow (6-14) is a regular Sunday, not SOLEMNITY.
+    const result = await assembleHour('2026-06-13', 'vespers')
+    expect(result).not.toBeNull()
+    const gcSection = result!.sections.find((s) => s.type === 'gospelCanticle')
+    if (gcSection && gcSection.type === 'gospelCanticle') {
+      expect(gcSection.antiphon).not.toContain('SOLEMNITY-FIRST-VESPERS-GC-ANTIPHON')
+      expect(gcSection.antiphon).toContain('REGULAR-SUNDAY-VESPERS-GC-ANTIPHON')
+    }
+  })
+
+  it('Solemnity First Vespers precedence: wins over Sunday First Vespers when both apply', async () => {
+    // Simulate Sunday that is ALSO a Solemnity (e.g. Christ the King).
+    // The solemnity firstVespers must win over the Sunday firstVespers.
+    const sundayFirstVespers: FirstVespersPropers = {
+      gospelCanticleAntiphon: 'SUNDAY-FIRST-VESPERS-GC-ANTIPHON',
+      concludingPrayer: 'SUNDAY-FIRST-VESPERS-CONCLUDING-PRAYER',
+    }
+    vi.doMock('../propers-loader', async () => {
+      const actual = await vi.importActual<typeof import('../propers-loader')>('../propers-loader')
+      return {
+        ...actual,
+        // 12-25 returns solemnity firstVespers (takes precedence)
+        getSanctoralPropers: vi.fn((key: string) =>
+          key === '12-25' ? { name: 'Christmas', firstVespers: solemnityFirstVespers } : null,
+        ),
+        // Sunday firstVespers would also match but must be ignored when
+        // solemnity branch has already claimed seasonPropers.
+        getSeasonFirstVespers: vi.fn(() => sundayFirstVespers),
+        getSeasonHourPropers: vi.fn(() => null),
+      }
+    })
+    const { assembleHour } = await import('../loth-service')
+    // 2026-12-24 evening — tomorrow is Christmas SOLEMNITY.
+    const result = await assembleHour('2026-12-24', 'vespers')
+    expect(result).not.toBeNull()
+    const gcSection = result!.sections.find((s) => s.type === 'gospelCanticle')
+    if (gcSection && gcSection.type === 'gospelCanticle') {
+      expect(gcSection.antiphon).toContain('SOLEMNITY-FIRST-VESPERS-GC-ANTIPHON')
+      expect(gcSection.antiphon).not.toContain('SUNDAY-FIRST-VESPERS-GC-ANTIPHON')
+    }
+    const prayerSection = result!.sections.find((s) => s.type === 'concludingPrayer')
+    if (prayerSection && prayerSection.type === 'concludingPrayer') {
+      expect(prayerSection.text).toBe('SOLEMNITY-FIRST-VESPERS-CONCLUDING-PRAYER')
+    }
+  })
+})
