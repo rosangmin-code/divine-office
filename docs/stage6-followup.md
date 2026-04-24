@@ -46,23 +46,37 @@
 
 ### 🟡 중간 (1~2일)
 
-#### Task #13 — shortReading 14건 page 오류 (NFR-009d body-fingerprint)
+#### Task #13 — shortReading 14건 page 오류 (NFR-009d body-fingerprint) ✅ 완료
 
-- **상태**: pending · 등록 2026-04-23 · 소스 T7 보고
-- **증상**: `src/data/loth/propers/*.json` 의 `shortReading.page` 필드가 PDF 실제 페이지와 불일치 14건. FR-153e shortReading rich 확산 시 섹션 헤더 위치를 page 값으로 찾는데 drift 로 추출 실패.
-- **접근**:
-  1. `scripts/lib/page-fingerprint.js` 에 body-fingerprint 매칭 로직 확장 (현재는 제목/첫 라인 기반 — 본문 중간 라인 지문으로 강화).
-  2. `scripts/verify-propers-pages.js` 에 shortReading 전용 bucket 추가.
-  3. `scripts/patch-propers-pages.js` 로 JSON patch 후 `node scripts/build-short-readings-rich.mjs` 재실행 → 106 → 120+ 으로 개선.
-- **영향 파일**: `src/data/loth/propers/{advent,christmas,lent,easter,ordinary-time}.json` 의 shortReading 필드. FR-153e 이후 신규 page drift 없음 확인.
-- **수용 기준**: 14 entry 전부 `verify-propers-pages.js` bucket 0. 재실행 시 rich 확산 failures 수 감소 확인.
+- **상태**: ✅ **완료** (task #37 audit 2026-04-24 확인)
+- **등록 근거**: T7 (2026-04-23) 시점의 shortReading rich 확산 20 실패 중 "page 오류" 로 분류된 14건.
+- **해소 경로** (복수 commit 으로 분산 해결):
+  1. **6건 true page drift** — commit `5c1eabe` (2026-04-23 16:18, 'wi-003 propers shortReading page drift 6건'):
+     - advent w1/SUN/vespers 545 → 548
+     - easter w1/SUN/lauds 689 → 703
+     - easter w1/THU/lauds 501 → 720
+     - easter easterSunday/SUN/lauds 689 → 703
+     - lent w6/SUN/vespers 650 → 651
+     - lent w6/SAT/vespers 650 → 651
+  2. **3건 pdftotext column-split** (실제로는 page drift 가 아닌 extractor bug) — commit `4a533e3` (2026-04-24, task #35): p251/p371 의 `Уншлага` 헤더 첫 문자가 pdftotext 컬럼 분할에서 잘림 + p437 source glyph 누락. 해결: regex 완화 (`[Уу]ншлаг[аА]?`) + pdfjs fallback.
+  3. **1건 layout** — task #15 / #33 commit `29ce2da` (2026-04-24): ADVENT w1 MON lauds p556 의 body tail 이 threshold 엄격으로 cut — 원 가정 "중복 헤더" 는 오진, 실제 `buildShortReading` pass-2 threshold 완화 (`max(50, 10%)` → `max(30, 7.5%)`).
+- **T7 원래 14 건 기준 재분류**: 초기 T7 에서는 모두 "page 오류" 로 분류됐으나 실측 결과 (a) 6 true page drift + (b) 3 pdftotext column bug + (c) 1 threshold too-strict + (d) 4 canon truncation (Task #14 로 분리) 로 세분화. 수정 경로가 섞여 있으나 전체 14 entry 는 rich 확산 PASS 로 해소됨.
+- **현 상태**:
+  - `scripts/build-short-readings-rich.mjs` 재실행 → **126/126 PASS, 0 FAIL** (2026-04-24T12:30:54 기준)
+  - `scripts/verify-propers-pages.js` → shortReading bucket `agree=63, changed=0, review=0` (drift 0)
+- **교훈**: pre-extractor era 의 failure 분류가 실측 근거 없이 추정으로 attached 되면 실제 원인과 괴리 발생. 분류 라벨은 fix 전 검증이 중요 — 예컨대 "page 오류" 라 명명된 14건 중 6건만 진짜 page drift, 나머지 8건은 extractor 레벨 문제였음.
 
-#### Task #14 — shortReading 5건 canon truncation/typo 교정
+#### Task #14 — shortReading 5건 canon truncation/typo 교정 ✅ 완료
 
-- **상태**: pending · 소스 T7 보고
-- **증상**: JSON canon 이 PDF 원본과 미세 차이 — capitalization, 마침표 vs 쉼표, 뒷부분 truncation.
-- **접근**: PDF 원문 대조 후 JSON 수기 패치. FR-153a 의 `PDF_CORRECTIONS_BY_PAGE` 패턴 참고 — 정답 방향 결정 필요 (JSON 이 정오표 / PDF 가 원본).
-- **수용 기준**: 5 entry 전부 rich builder normalised byte-equal PASS.
+- **상태**: ✅ **완료** (task #37 audit 2026-04-24 확인)
+- **해소 경로**: commit `0a0b15c` (2026-04-23 16:14, 'shortReading 5건 canon typo 교정 (PDF 기준 byte-equal PASS)'). 5 entry 중:
+  1. **CHRISTMAS/octave/SUN/lauds** (p601, Isa 9:6-7) — JSON truncation 복원. "…тогтооно." 에서 종료 → PDF continuation `Түг түмдийн ЭЗЭНий зүтгэл Түүнийг нь гүйцэлдүүлэх болно.` 추가.
+  2. **LENT/w1/TUE/lauds** (p630, Иоел 2:12-13) — PDF_CORRECTIONS_BY_PAGE 에 `тасчигтун"` → `тасчигтун.` (고아 닫힌 인용 부호 정정).
+  3. **LENT/w1/THU/lauds** (p639, Хаадын дээд 8:51-53а) — PDF_CORRECTIONS 에 trailing comma → 마침표.
+  4. **LENT/w1/FRI/lauds** — JSON canon 미세 차이 정정.
+  5. **PSALTER w1/SAT/lauds** — overlay rich.json 수동 작성.
+- **정답 방향**: 5건 모두 JSON canon 편이 정답이거나, PDF typo 를 PDF_CORRECTIONS_BY_PAGE 로 정규화. 즉 최종 rendered output 은 JSON 측 canon 에 맞춤.
+- **현 상태**: rich 확산 126/126 PASS — 5 canon fix 가 accepted 상태.
 
 #### Task #15 — ADVENT w1 MON lauds (p556) 본문 tail 누락 (완료, task #33)
 
