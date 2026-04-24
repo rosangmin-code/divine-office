@@ -21,6 +21,7 @@
 const fs = require('fs')
 const path = require('path')
 const { spawnSync } = require('child_process')
+const { buildPageIndex, annotatePagesInPlace } = require('./lib/first-vespers-page-annotator')
 
 const ROOT = path.resolve(__dirname, '..')
 const EXTRACTOR_PATH = path.join(ROOT, 'scripts', 'extract-solemnity-first-vespers.js')
@@ -119,6 +120,11 @@ function main() {
   const easter = JSON.parse(fs.readFileSync(EASTER_PATH, 'utf8'))
   const ot = JSON.parse(fs.readFileSync(OT_PATH, 'utf8'))
 
+  // Task #36 / NFR-009d — enrich expected with fingerprinted pages so
+  // the diff detects page drift on firstVespers fields.
+  console.log('[verify-movable-fv] building page index…')
+  const pageIdx = buildPageIndex(ROOT)
+
   let mismatchCount = 0
   let missingCount = 0
   let unexpectedCount = 0
@@ -133,6 +139,7 @@ function main() {
     }
     const { _meta, ...data } = block
     const expected = buildExpectedFirstVespers(data, `movable-${slug}`)
+    annotatePagesInPlace(expected, pageIdx)
     const seasonObj = file === 'easter' ? easter : ot
     const actual = seasonObj.weeks?.[slug]?.SUN?.firstVespers
     if (!actual) {

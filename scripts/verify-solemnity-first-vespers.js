@@ -10,6 +10,7 @@
 const fs = require('fs')
 const path = require('path')
 const { spawnSync } = require('child_process')
+const { buildPageIndex, annotatePagesInPlace } = require('./lib/first-vespers-page-annotator')
 
 const ROOT = path.resolve(__dirname, '..')
 const EXTRACTOR_PATH = path.join(ROOT, 'scripts', 'extract-solemnity-first-vespers.js')
@@ -97,6 +98,11 @@ function main() {
   const solemnities = JSON.parse(fs.readFileSync(path.join(SANCTORAL_DIR, 'solemnities.json'), 'utf8'))
   const feasts = JSON.parse(fs.readFileSync(path.join(SANCTORAL_DIR, 'feasts.json'), 'utf8'))
 
+  // Task #36 / NFR-009d — enrich expected with fingerprinted pages so
+  // the diff detects page drift on firstVespers fields.
+  console.log('[verify-solemnity-fv] building page index…')
+  const pageIdx = buildPageIndex(ROOT)
+
   let mismatchCount = 0
   let missingCount = 0
   let unexpectedCount = 0
@@ -107,6 +113,7 @@ function main() {
     const rank = _meta?.rank ?? 'SOLEMNITY'
     const prefix = `${rank === 'FEAST' ? 'feast' : 'solemnity'}-${key}`
     const expected = buildExpectedFirstVespers(data, prefix)
+    annotatePagesInPlace(expected, pageIdx)
 
     // Find actual in either sanctoral file.
     const sEntry = solemnities[key]
