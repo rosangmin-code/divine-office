@@ -73,15 +73,16 @@
   - (B) 해당 overlay 만 수기 작성 후 빌더 skip 리스트에 등록.
 - **추천**: (A) — 향후 유사 케이스 재사용 가능.
 
-#### Task #17 — psalter-loader.test page drift (pre-existing, vitest 빨간불)
+#### Task #17 — psalter-loader.test page drift (pre-existing, vitest 빨간불) ✅ 완료
 
-- **상태**: pending · `933b062` 시점부터 존재
+- **상태**: **완료** (commit `974cfcd` 2026-04-23 16:00, task #31 dispatch 2026-04-24 확인)
 - **증상**: `src/lib/__tests__/psalter-loader.test.ts:30` — week-3.json SUN lauds responsory.page 가 302, 테스트 기대 303.
-- **접근**:
-  1. PDF `public/psalter.pdf` 의 week-3 SUN Lauds responsory 실제 book page 확인 (pdftotext + 수기 검수).
-  2. 정답 기준 JSON (302) 또는 테스트 (303) 중 맞는 쪽 유지.
-  3. `node scripts/verify-psalter-pages.js` 전체 돌려 다른 주차 drift 있는지 확인.
-- **주의**: e2e 무관, 단순 데이터 정합. 고치면 vitest 205/205 PASS.
+- **해결**: PDF 실측 결과 JSON 값 302 가 정답. `parsed_data/full_pdf.txt` line 10294 에 page-marker "302", line 10303 "Уншлага" (shortReading), line 10316 "Хариу залбирал" (responsory), line 10331 에 page-marker "303" (intercessions 시작). 즉 responsory 는 page 302 에 위치하고 intercessions 부터 303 으로 넘어감. `intercessionsPage: 303` 필드가 이미 별도 노출. 테스트 어서션을 303→302 로 교정한 것이 정답.
+- **검증** (task #31, 2026-04-24):
+  - `npx vitest run` 270 PASS 0 FAIL — psalter-loader.test.ts 8/8 PASS 확인
+  - `node scripts/verify-psalter-pages.js` verified-correction bucket = 2 (week-1 MON vespers, week-2 기존 baseline — 별건), 신규 drift 없음
+  - `npx tsc --noEmit` 0 errors
+- **교훈**: stage6-followup.md 의 pending 항목이 실제 repo 상태와 lag 가능. dispatch 전 `git log` 로 최근 commit history 의 related fix 선검토 필요.
 
 ---
 
