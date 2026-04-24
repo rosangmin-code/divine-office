@@ -1,38 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-04-24T13:48:58.277Z",
+  "generated": "2026-04-24T14:38:39.358Z",
   "source": "parsed_data/full_pdf.txt",
-  "files": {
-    "src/data/loth/psalter/week-3.json": [
-      {
-        "ref": "Revelation 4:11; 5:9-10, 12",
-        "locator": "days.TUE.vespers.psalms[2]",
-        "from": 340,
-        "to": 339,
-        "evidence": {
-          "header": {
-            "page": 339
-          },
-          "stanza": {
-            "tokens": [
-              "бидний",
-              "эзэн",
-              "бөгөөд",
-              "тэнгэрбурхан",
-              "минь"
-            ],
-            "page": 339
-          },
-          "antiphon": {
-            "tokens": [
-              "шад",
-              "дуулал",
-              "3"
-            ],
-            "foundAt": []
-          }
-        }
-      }
-    ]
-  }
+  "files": {}
 }
