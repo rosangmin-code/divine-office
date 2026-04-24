@@ -38,6 +38,20 @@ export const DATES = {
   // vespers render surfaces lentPassionSunday.
   palmSundayEve: '2026-03-28',
 
+  // Christmas Eve — FR-156 Phase 3b (task #22) e2e target.
+  // 2026-12-24 Thursday evening (4th Thursday of Advent) → tomorrow is
+  // 2026-12-25 Christmas (SOLEMNITY). Phase 3a resolver adopts the
+  // sanctoral/solemnities.json 12-25 firstVespers (Phase 3b injection)
+  // and surfaces the Christmas Magnificat antiphon + Ps 113 + Ps 147.
+  // Overrides the ADVENT date-key (dec24) vigil propers that would
+  // otherwise render.
+  christmasEve2026: '2026-12-24',
+  // Saturday evening before Assumption — 2026-08-14 Friday. Tomorrow
+  // 2026-08-15 = Assumption (SOLEMNITY per romcal). Currently injected
+  // as feasts.json key 08-15 via the sanctoral merge path (rank from
+  // PDF was "Баяр" but the solemnities.json already carried the entry).
+  assumptionEve2026: '2026-08-14',
+
   // Easter Sunday (WHITE)
   easterSunday: '2026-04-05',
 
