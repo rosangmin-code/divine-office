@@ -11,6 +11,7 @@
 const fs = require('fs')
 const path = require('path')
 const { spawnSync } = require('child_process')
+const { buildPageIndex, annotatePagesInPlace } = require('./lib/first-vespers-page-annotator')
 
 const ROOT = path.resolve(__dirname, '..')
 const EXTRACTED_PATH = path.join(ROOT, 'scripts', 'output', 'first-vespers-extracted.json')
@@ -106,6 +107,12 @@ function main() {
   }
   const extracted = JSON.parse(fs.readFileSync(EXTRACTED_PATH, 'utf8'))
 
+  // Task #36 / NFR-009d — build the shared page-fingerprint index so
+  // the expected block carries `*Page` fields alongside text, letting
+  // the existing diff loop detect page drift in firstVespers subtrees.
+  console.log('[verify-fv] building page index…')
+  const pageIdx = buildPageIndex(ROOT)
+
   let mismatchCount = 0
   let missingCount = 0
   let unexpectedCount = 0
@@ -119,6 +126,7 @@ function main() {
       const block = extracted[String(psalterWeek)]
       if (!block) continue
       const expected = buildExpectedFirstVespers(block, psalterWeek)
+      annotatePagesInPlace(expected, pageIdx)
       const actual = json.weeks?.[weekKey]?.SUN?.firstVespers
       if (!actual) {
         missingCount++
