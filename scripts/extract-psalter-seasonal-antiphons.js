@@ -149,23 +149,16 @@ const BODY_ENTRY_MARKERS = [
 // next real marker or terminator. This prevents bleed-through into the
 // preceding legitimate variant.
 //
-// Phase 3 (task #15) promoted bare `тарчлалтын Ням гараг:` to
-// lentPassionSunday (see MARKERS below). Task #16 additionally promotes
-// the Week-2 compound wrap form (`Ням гараг Дөчин хоногийн цаг улирал,
-// Эзэний тарчлалтын Ням гараг:`) because it carries the same Passion
-// Sunday semantic and its prior SKIP behaviour was masking a real
-// per-entry rubric (w2-sun-vesp-cant line 6411). The Week-1 compound
-// form (`Дөчин хоногийн цаг улирал, Эзэний тарчлалтын ...`) is left in
-// SKIP because it appears in contexts where accepting it would change
-// capture counts for other Week-1 entries — a deliberate scope line;
-// promoting it is a separate follow-up.
+// Passion Sunday rubric label evolution:
+//   Phase 3 (task #15) — bare `тарчлалтын Ням гараг:` → lentPassionSunday
+//   Phase 3b (task #16) — Week-2 compound wrap (`Ням гараг Дөчин …`)
+//     promoted to lentPassionSunday after walker+joiner redesign
+//   Phase 3c (task #18) — Week-1 compound wrap (`Дөчин хоногийн цаг
+//     улирал, Эзэний тарчлалтын …`) promoted to lentPassionSunday.
+//     All three label forms now land in the same field.
 const SKIP_MARKERS = [
   /^Ариун\s+долоо\s+хоног:/,
   /^Хэрэв\s+энэ\s+Ням\s+гараг/,
-  // Wrapped / compound Passion Sunday form — Week 1 wrap ("Дөчин
-  // хоногийн цаг улирал, Эзэний тарчлалтын ..."). Kept as SKIP pending
-  // a dedicated scope decision.
-  /^Дөчин хоногийн цаг улирал,\s+Эзэний тарчлалтын\s+Ням\s+гараг:/,
 ]
 
 // -------------------- markers --------------------
@@ -184,17 +177,22 @@ const MARKERS = [
     re: /^Амилалтын цаг улирлын\s+([\d,\s]+)\s+(?:дэх|дахь)\s+Ням\s+гараг:\s*(.*)$/,
     isPerSunday: true,
   },
-  // Passion Sunday (Phase 3 task #15 + Phase 3b task #16). Three label
-  // forms in the PDF — list longer compound first so prefix-overlap
-  // doesn't let the bare form shadow the compound label's lead-in.
-  //   form B (Week 2 compound wrap, promoted in task #16): "Ням гараг
-  //     Дөчин хоногийн цаг улирал, Эзэний тарчлалтын Ням гараг:"
-  //   form 0 (bare, Phase 3): "тарчлалтын Ням гараг:"
-  //
-  // Form A (Week 1 compound wrap) remains in SKIP_MARKERS (see note).
+  // Passion Sunday (Phase 3 task #15 + Phase 3b task #16 + Phase 3c
+  // task #18). Three label forms in the PDF — list longer compounds
+  // first so prefix overlap doesn't let the bare form shadow a
+  // compound's lead-in.
+  //   form B (Week 2 compound, task #16): "Ням гараг Дөчин хоногийн
+  //     цаг улирал, Эзэний тарчлалтын Ням гараг:"
+  //   form A (Week 1 compound, task #18): "Дөчин хоногийн цаг
+  //     улирал, Эзэний тарчлалтын Ням гараг:"
+  //   form 0 (bare, Phase 3 task #15): "тарчлалтын Ням гараг:"
   {
     season: 'lentPassionSunday',
     re: /^Ням\s+гараг\s+Дөчин хоногийн цаг улирал,\s+Эзэний\s+тарчлалтын\s+Ням\s+гараг:\s*(.*)$/,
+  },
+  {
+    season: 'lentPassionSunday',
+    re: /^Дөчин хоногийн цаг улирал,\s+Эзэний\s+тарчлалтын\s+Ням\s+гараг:\s*(.*)$/,
   },
   {
     season: 'lentPassionSunday',
