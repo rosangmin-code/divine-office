@@ -121,6 +121,32 @@
 
 ---
 
+#### Task #39 — verify-psalter-pages manual-review 17건 audit (divine-tester emergent) ✅ 일부 완료
+
+- **상태**: **일부 완료** (task #39 verifier tuning 2026-04-24, 13 data issues 신규 task 분리 예정)
+- **배경**: task #34 병렬 시기 `verify-psalter-pages.js` manual-review=17 버킷이 leader 시야에 들어와 audit dispatch.
+- **분류 결과** (17 entries, audit helper script `scripts/audit-psalter-manual-review.js` 기반):
+  - **(A) multi-HS tiebreaker** 2건 — `declared` 가 `hsMatches` 에 포함되는 multi-HS 케이스. 기존 verifier 는 항상 manual-review 로 내려보내지만 실제로 pending straddle 은 정상. Psalm 100:1-5 (declared 147, hsMatches [146,147]) + Psalm 67:2-8 (declared 239, hsMatches [238,239]).
+  - **(E/F) stanza fingerprint noise** 2건 — stanza[0] 이 Roman numeral "I" 로 시작 (Psalm 137:1-6 doxology, Psalm 144:1-10 short stanza) 이라 tokenize 후 4 token 미달로 fingerprint null.
+  - **(C) Part II split 후보** 3건 — stanza[0] 이 Roman "I" 로 시작 + 실제 PDF 에 Part I/II split 존재 (Psalm 136:10-26 / Psalm 144:11-15 / Revelation 4:11). 단, psalter-texts.json 에 Part I body 가 Part II key 아래 저장되는 data bug 로 확인됨 — verifier 로 skip 하면 안 되고 data 교정 필요.
+  - **(D) ref/body data mismatch** 9건 — psalter-texts.json 에서 해당 ref 의 stanza body 가 PDF 의 declared 페이지 내용과 불일치. 예: Psalm 121:1-8 stanza[0] 이 실제 Psalm 116 내용 ("Сэтгэл минь ээ..."); 1 Samuel 2:1-10 / Isaiah 33:13-16 / Wisdom 9:1-6 / Tobit 13:8-11 등 canticle 의 stanza body 가 PDF 에 없음 (ref 시작 토큰이 PDF 에 없어 매칭 실패).
+- **verifier tuning 적용** (commit `<task-39>`, `scripts/verify-psalter-pages.js`):
+  1. `stanzaFingerprint` 확장: stanza[0] 이 Roman numeral (`/^(I{1,3}|IV|V|VI{0,3}|IX|X|XI{0,3})\.?$/`) 또는 doxology (`Тантай, Ариун Сүнсний` / `Эцэг, Хүү, Ариун Сүнсэнд`) 로 시작하는 leading line 을 skip 하고 tokenize. stanza[0] 이 여전히 <4 token 이면 stanza[1] fallback 시도.
+  2. `classify` multi-HS tiebreaker: `hsMatches.includes(declared)` 일 때 `declared` 를 pStar 로 채택하여 `agree` promotion (이전 무조건 manual-review).
+  3. `classify` body-start alternate acceptance: `pStar` 가 header-anchor 페이지 (p_h) 일 때 stanza 는 p_h+1 에 있을 수 있는데, declared 가 `stanzaPageForStar` 와 일치해도 agree 로 promote (기존 엄격한 `pStar === declared` 만 허용).
+- **결과**:
+  - `npx vitest run` 273 PASS 0 FAIL
+  - `npx tsc --noEmit` 0 errors
+  - `node scripts/verify-psalter-pages.js` — agree **143 → 147** (+4), verified-correction 0, manual-review **17 → 13** (−4). 자동 승격 4건 (A 2 + E/F 2).
+- **잔여 13건 → 신규 task 분리 제안** (category D): 전부 psalter-texts.json 의 `stanzas` 필드 data mismatch. 유형:
+  - (D1) 4건 wrong-body: psalter-texts entry 의 stanza body 가 ref 와 다른 psalm (예: Psalm 121:1-8 에 Psalm 116:7 body). ref↔body reconciliation 필요.
+  - (D2) 5건 stanza-not-in-PDF: canticle stanza body 가 PDF 에 전혀 없음 (Isaiah 33:13-16, Wisdom 9:1-6, Tobit 13:8-11, 1 Samuel 2:1-10, Exodus 15:1-4a 등). 원인: canticle text 가 legacy stub / 재추출 대상.
+  - (D3) 4건 split-psalm data bug: Part II ref key 아래 Part I content 저장됨 (Psalm 136:10-26 / Psalm 144:11-15 / Revelation 4:11 / Psalm 97:1-12 계열). psalter 재추출로 Part II body 로 교체 필요.
+  - **권장 접근**: `scripts/extract-psalm-texts.js` (또는 유사 추출기) 의 ref↔stanza mapping 로직 감사 + PDF body fingerprint 로 재검증. FR-153g (coarse refs pilot 규격 재추출) 와 시너지 가능.
+- **교훈**: verifier 의 `manual-review` 버킷은 (a) verifier 가 너무 보수적인 경우 + (b) 진짜 data issue 가 섞여 있음. 주기적으로 분류 + 조치하지 않으면 실제 drift 가 노이즈에 묻힘. task #39 처럼 audit dispatch 가 valuable — 4 auto-promote + 13 data issue 정식 분리.
+
+---
+
 ### 🟡🟡 중간 (별 PR 단발)
 
 #### Task #16 — pre-existing TS 2건 PrayerSourceRef.id narrowing

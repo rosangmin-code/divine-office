@@ -112,13 +112,41 @@ function parseRef(ref) {
   return { kind: 'unparseable' }
 }
 
+// Patterns that should NOT contribute to the stanza fingerprint:
+// - Roman-numeral Part markers ("I", "II", ...) that indicate a split psalm
+//   Part header rather than a body line.
+// - Doxology markers ("Тантай, Ариун Сүнсний нэгдэлтэй..." etc.) that leak
+//   into some stanzas[0] from adjacent liturgical prayers.
+const STANZA_ROMAN_RE = /^(I{1,3}|IV|V|VI{0,3}|IX|X|XI{0,3})\.?$/
+const STANZA_DOXOLOGY_RE = /^(Тантай,\s*Ариун\s+Сүнсний|Эцэг,\s*Хүү,?\s*Ариун\s+Сүнсэнд)/
+
+function isNoisePrefix(line) {
+  const t = (line || '').trim()
+  if (!t) return true
+  if (STANZA_ROMAN_RE.test(t)) return true
+  if (STANZA_DOXOLOGY_RE.test(t)) return true
+  return false
+}
+
 function stanzaFingerprint(ref, psalmTexts, tokenCount = 6) {
   const entry = psalmTexts[ref]
   if (!entry) return null
-  const stanza = entry.stanzas?.[0]
-  if (!Array.isArray(stanza) || stanza.length === 0) return null
-  const toks = tokenize(stanza.join(' ')).slice(0, tokenCount)
-  return toks.length >= 4 ? toks : null
+  const stanzas = entry.stanzas || []
+  // Try stanza[0], then stanza[1] as fallback. Skip noise prefixes
+  // (Roman numerals, doxology) at the head of each stanza when computing
+  // the fingerprint — these do not appear at the PDF's declared page
+  // body location for split psalms / post-stanza doxology data leaks.
+  for (let si = 0; si < Math.min(2, stanzas.length); si++) {
+    const stanza = stanzas[si]
+    if (!Array.isArray(stanza) || stanza.length === 0) continue
+    // Drop leading noise lines before joining.
+    let startLine = 0
+    while (startLine < stanza.length && isNoisePrefix(stanza[startLine])) startLine++
+    if (startLine >= stanza.length) continue
+    const toks = tokenize(stanza.slice(startLine).join(' ')).slice(0, tokenCount)
+    if (toks.length >= 4) return toks
+  }
+  return null
 }
 
 function pagesMatching(needleTokens, srcTokens, firstTokenIndex) {
@@ -171,6 +199,24 @@ function classify(entry, psalmIndex, ctx) {
     }
   }
   if (hsMatches.length > 1) {
+    // Multi-HS tiebreaker: when the declared page itself appears in
+    // hsMatches, the book's printing agrees with the declaration AND an
+    // adjacent page also matches (typical page-straddle of long psalms
+    // where header+body start on p_d and overflow to p_d+1). Promoting
+    // to `agree` is safe because `declared` is a valid (H∧S) anchor; the
+    // ambiguity is merely an artifact of the ±1 spread semantics, not a
+    // real drift. If declared is NOT in hsMatches, keep manual-review.
+    if (hsMatches.includes(declared)) {
+      const pStar = declared
+      const stanzaPageForStar = stanzaPages.has(pStar) ? pStar : pStar + 1
+      const evidence = {
+        header: { tokens: parsed.headerTokens, page: pStar },
+        stanza: { tokens: stanzaToks, page: stanzaPageForStar },
+        antiphon: { tokens: ['шад', 'дуулал', String(psalmIndex + 1)], foundAt: [...antiphonPages].sort((a, b) => a - b) },
+        multi_hs_tiebreaker: { hsMatches, chose: declared },
+      }
+      return { status: 'agree', pStar, evidence }
+    }
     return {
       status: 'manual-review',
       reason: 'multiple-HS-in-window',
@@ -184,7 +230,16 @@ function classify(entry, psalmIndex, ctx) {
     stanza: { tokens: stanzaToks, page: stanzaPageForStar },
     antiphon: { tokens: ['шад', 'дуулал', String(psalmIndex + 1)], foundAt: [...antiphonPages].sort((a, b) => a - b) },
   }
-  if (pStar === declared) return { status: 'agree', pStar, evidence }
+  // Accept declared if it matches either the header-anchor page (pStar)
+  // OR the body-start page (stanzaPageForStar). The Mongolian book's
+  // declaration convention is "page where the psalm body begins"; when
+  // the header prints on p_h-1 and body on p_h (common at page-break
+  // straddles), declared == stanzaPageForStar is also valid. Previously
+  // the verifier required declared == pStar, flagging legitimate
+  // body-start declarations as verified-corrections.
+  if (pStar === declared || stanzaPageForStar === declared) {
+    return { status: 'agree', pStar, evidence }
+  }
   return { status: 'verified-correction', pStar, evidence }
 }
 
