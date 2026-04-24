@@ -160,10 +160,29 @@ export async function assembleHour(
         if (solemnityFirstVespers.psalms && solemnityFirstVespers.psalms.length > 0) {
           psalmEntries = solemnityFirstVespers.psalms
         }
-        // Do NOT promote effectiveDayOfWeek/weekOfSeason — solemnity
-        // propers ship full antiphons (no reliance on seasonal variant
-        // resolver per-Sunday buckets). Keeping today's day-of-week
-        // preserves date-specific rendering elsewhere.
+        // Promote effectiveDayOfWeek/weekOfSeason to tomorrow's
+        // identity — the liturgical identity of this evening IS the
+        // Solemnity's 1st Vespers, so downstream `pickSeasonalVariant`
+        // must see tomorrow's (dayOfWeek, weekOfSeason) to resolve
+        // per-Sunday / per-week seasonal_antiphons correctly.
+        //
+        // REQUIRED for movable solemnities whose firstVespers falls
+        // through `getSeasonFirstVespers` → `weeks[<specialKey or weekN>].SUN`,
+        // reusing per-week Phase 2 data that carries seasonal_antiphons.
+        // Example: Palm Sunday Eve (SAT Lent W5 → SUN Lent W6 SOLEMNITY).
+        // Without promotion, pickSeasonalVariant sees (SAT, W5) and
+        // fails the `dayOfWeek === 'SUN'` gate for lentPassionSunday,
+        // falling back to default_antiphon (Easter alleluia variant).
+        // With promotion (SUN, W6), lentPassionSunday fires as authored.
+        //
+        // NO-OP for fixed sanctoral solemnities (Christmas, Assumption,
+        // Sts. Peter & Paul, etc.) whose psalms carry no
+        // seasonal_antiphons — promotion affects variant lookup only.
+        //
+        // Mirrors the Saturday→Sunday firstVespers branch (L197-204)
+        // which applies the same promotion for regular Sunday eves.
+        effectiveDayOfWeek = dateToDayOfWeek(tomorrowStr)
+        effectiveWeekOfSeason = tomorrowDay.weekOfSeason
       }
     }
   }

@@ -612,6 +612,31 @@ describe('FR-156 Phase 4b — movable solemnity firstVespers data (real loader)'
     expect(longName).toStrictEqual(shortName)
   })
 
+  it('Palm Sunday Eve (2026-03-28) surfaces lentPassionSunday variant via effectiveDay promotion', async () => {
+    // @fr FR-156 Phase 4c (task #25) regression guard.
+    // Palm Sunday is rank=SOLEMNITY in romcal, so the Phase 3a/4a
+    // evening-before-solemnity branch fires on Saturday 2026-03-28. The
+    // sanctoral path is null (movable), so path 2 resolves to
+    // weeks['6'].SUN.firstVespers (Phase 2 injected per-week data
+    // carrying `seasonal_antiphons.lentPassionSunday` on psalms[0]).
+    //
+    // Bug: the solemnity branch originally did NOT promote
+    // effectiveDayOfWeek/weekOfSeason, so pickSeasonalVariant saw
+    // (SAT, LENT W5) — failed the `dayOfWeek === 'SUN'` gate — fell
+    // back to default_antiphon (Easter alleluia variant). Fix: promote
+    // to tomorrow's (SUN, LENT W6) identity so lentPassionSunday fires.
+    const { assembleHour } = await import('../loth-service')
+    const result = await assembleHour('2026-03-28', 'vespers')
+    expect(result).not.toBeNull()
+    const psalmody = result!.sections.find((s) => s.type === 'psalmody')
+    expect(psalmody).toBeTruthy()
+    if (psalmody && psalmody.type === 'psalmody') {
+      const ps1 = psalmody.psalms.find((p) => p.reference === 'Psalm 119:105-112')
+      expect(ps1).toBeTruthy()
+      expect(ps1!.antiphon).toContain('Сүмд өдөр бүр та нартай хамт байж')
+    }
+  })
+
   it('OT weekly lookup without movable celebrationName is unaffected by special-key injection (regression guard)', async () => {
     const { getSeasonFirstVespers } = await import('../propers-loader')
     // Calling with a regular OT Sunday name should return the
