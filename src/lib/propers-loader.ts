@@ -49,6 +49,49 @@ function loadSeasonPropers(season: LiturgicalSeason): Record<string, Record<stri
   }
 }
 
+/**
+ * Resolve a romcal `celebrationName` to a season-propers special-key
+ * bucket name, when the (season, name) pair identifies a movable
+ * observance with its own propers block outside the per-week 1..N cycle.
+ *
+ * Returns null for celebrations that should fall through to the normal
+ * `weeks[weekOfSeason]` lookup.
+ *
+ * Covered observances:
+ *   EASTER         → easterSunday · ascension · pentecost
+ *   ORDINARY_TIME  → trinitySunday · corpusChristi · sacredHeart · christTheKing
+ *
+ * Name matching is permissive (`lower.includes(fragment)`) so romcal
+ * localisation drift ("Sacred Heart of Jesus" vs "The Most Sacred
+ * Heart of Jesus" etc.) does not silently bypass the lookup.
+ *
+ * FR-156 Phase 4a (task #23): adds OT keys so movable OT solemnities
+ * (Trinity Sunday, Corpus Christi, Sacred Heart, Christ the King) can
+ * resolve to their own First Vespers / Hour Propers blocks. Data
+ * injection lands in Phase 4b (task #24) — Phase 4a is resolver-only.
+ */
+function resolveSpecialKey(
+  season: LiturgicalSeason,
+  celebrationName: string | undefined,
+): string | null {
+  if (!celebrationName) return null
+  const lower = celebrationName.toLowerCase()
+  if (season === 'EASTER') {
+    if (lower.includes('easter sunday')) return 'easterSunday'
+    if (lower.includes('ascension')) return 'ascension'
+    if (lower.includes('pentecost')) return 'pentecost'
+    return null
+  }
+  if (season === 'ORDINARY_TIME') {
+    if (lower.includes('trinity')) return 'trinitySunday'
+    if (lower.includes('corpus christi') || lower.includes('body and blood')) return 'corpusChristi'
+    if (lower.includes('sacred heart')) return 'sacredHeart'
+    if (lower.includes('christ the king') || lower.includes('king of the universe')) return 'christTheKing'
+    return null
+  }
+  return null
+}
+
 export function getSeasonHourPropers(
   season: LiturgicalSeason,
   weekOfSeason: number,
@@ -73,19 +116,15 @@ export function getSeasonHourPropers(
     }
   }
 
-  // Check Easter special keys (easterSunday, ascension, pentecost)
-  if (season === 'EASTER' && celebrationName) {
-    const lower = celebrationName.toLowerCase()
-    let specialKey: string | null = null
-    if (lower.includes('easter sunday') || lower === 'easter sunday') specialKey = 'easterSunday'
-    else if (lower.includes('ascension')) specialKey = 'ascension'
-    else if (lower.includes('pentecost')) specialKey = 'pentecost'
-
-    if (specialKey) {
-      const specialDayPropers = weeks[specialKey]?.[day] ?? weeks[specialKey]?.['SUN']
-      if (specialDayPropers) {
-        return (specialDayPropers[hour as keyof DayPropers] as HourPropers) ?? null
-      }
+  // Check movable-observance special keys (Easter: easterSunday /
+  // ascension / pentecost; OT: trinitySunday / corpusChristi /
+  // sacredHeart / christTheKing). See `resolveSpecialKey` for the
+  // season/name matrix.
+  const specialKey = resolveSpecialKey(season, celebrationName)
+  if (specialKey) {
+    const specialDayPropers = weeks[specialKey]?.[day] ?? weeks[specialKey]?.['SUN']
+    if (specialDayPropers) {
+      return (specialDayPropers[hour as keyof DayPropers] as HourPropers) ?? null
     }
   }
 
@@ -152,18 +191,20 @@ export function getSeasonFirstVespers(
     }
   }
 
-  // Easter special keys — same pattern.
-  if (season === 'EASTER' && celebrationName) {
-    const lower = celebrationName.toLowerCase()
-    let specialKey: string | null = null
-    if (lower.includes('easter sunday') || lower === 'easter sunday') specialKey = 'easterSunday'
-    else if (lower.includes('ascension')) specialKey = 'ascension'
-    else if (lower.includes('pentecost')) specialKey = 'pentecost'
-    if (specialKey) {
-      const specialDayPropers = weeks[specialKey]?.['SUN']
-      const fv = (specialDayPropers as DayPropers | undefined)?.firstVespers
-      if (fv) return fv
-    }
+  // Movable-observance special keys — same pattern as
+  // `getSeasonHourPropers`, delegated to `resolveSpecialKey`. Covers
+  // both Easter movables (ascension / pentecost) and OT movables
+  // (trinitySunday / corpusChristi / sacredHeart / christTheKing)
+  // added in FR-156 Phase 4a.
+  //
+  // Phase 4b data-injection hook: once an OT movable carries a
+  // `firstVespers` entry under `weeks['<specialKey>'].SUN.firstVespers`,
+  // this lookup returns it unchanged. No caller changes needed.
+  const specialKey = resolveSpecialKey(season, celebrationName)
+  if (specialKey) {
+    const specialDayPropers = weeks[specialKey]?.['SUN']
+    const fv = (specialDayPropers as DayPropers | undefined)?.firstVespers
+    if (fv) return fv
   }
 
   const weekKey = String(sundayWeekOfSeason)

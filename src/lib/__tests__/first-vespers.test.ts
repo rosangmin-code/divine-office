@@ -331,3 +331,166 @@ describe('FR-156 Phase 3b — Solemnity firstVespers data injection', () => {
     expect(entry!.firstVespers!.gospelCanticleAntiphon).toContain('Харагтун, энэ цагаас хойш')
   })
 })
+
+// @fr FR-156 Phase 4a — movable solemnity resolver (Easter ascension/pentecost + OT trinity/corpusChristi/sacredHeart/christTheKing).
+describe('FR-156 Phase 4a — movable solemnity First Vespers', () => {
+  const ascensionFake: FirstVespersPropers = {
+    gospelCanticleAntiphon: 'ASCENSION-FV-GC-ANTIPHON',
+    concludingPrayer: 'ASCENSION-FV-CONCLUDING-PRAYER',
+  }
+  const pentecostFake: FirstVespersPropers = {
+    gospelCanticleAntiphon: 'PENTECOST-FV-GC-ANTIPHON',
+    concludingPrayer: 'PENTECOST-FV-CONCLUDING-PRAYER',
+  }
+  const trinityFake: FirstVespersPropers = {
+    gospelCanticleAntiphon: 'TRINITY-FV-GC-ANTIPHON',
+    concludingPrayer: 'TRINITY-FV-CONCLUDING-PRAYER',
+  }
+  const christTheKingFake: FirstVespersPropers = {
+    gospelCanticleAntiphon: 'CHRIST-THE-KING-FV-GC-ANTIPHON',
+    concludingPrayer: 'CHRIST-THE-KING-FV-CONCLUDING-PRAYER',
+  }
+
+  beforeEach(() => {
+    vi.resetModules()
+  })
+  afterEach(() => {
+    vi.doUnmock('../propers-loader')
+  })
+
+  // Helper: build a propers-loader mock that returns the right fake
+  // firstVespers based on the celebrationName passed in by the resolver
+  // wiring. Movable solemnities live on season JSON (weeks['<specialKey>'])
+  // rather than sanctoral MM-DD, so getSanctoralPropers returns null.
+  function mockMovableSolemnityLoader() {
+    return async () => {
+      const actual = await vi.importActual<typeof import('../propers-loader')>('../propers-loader')
+      return {
+        ...actual,
+        getSanctoralPropers: vi.fn(() => null),
+        getSeasonHourPropers: vi.fn(() => null),
+        getSeasonFirstVespers: vi.fn(
+          (season: string, _week: number, _date?: string, name?: string) => {
+            const n = name?.toLowerCase() ?? ''
+            if (season === 'EASTER' && n.includes('ascension')) return ascensionFake
+            if (season === 'EASTER' && n.includes('pentecost')) return pentecostFake
+            if (season === 'ORDINARY_TIME' && n.includes('trinity')) return trinityFake
+            if (season === 'ORDINARY_TIME' && n.includes('christ the king')) return christTheKingFake
+            return null
+          },
+        ),
+      }
+    }
+  }
+
+  it('Wednesday evening before Ascension Thursday adopts Easter ascension firstVespers (2026-05-13)', async () => {
+    vi.doMock('../propers-loader', mockMovableSolemnityLoader())
+    const { assembleHour } = await import('../loth-service')
+    // Ascension 2026 = Thu May 14. Wed May 13 evening is the First
+    // Vespers. Weekday (not Saturday) evening eve.
+    const result = await assembleHour('2026-05-13', 'vespers')
+    expect(result).not.toBeNull()
+    expect(result!.hourType).toBe('vespers')
+    const gc = result!.sections.find((s) => s.type === 'gospelCanticle')
+    if (gc && gc.type === 'gospelCanticle') {
+      expect(gc.antiphon).toContain('ASCENSION-FV-GC-ANTIPHON')
+    }
+    const prayer = result!.sections.find((s) => s.type === 'concludingPrayer')
+    if (prayer && prayer.type === 'concludingPrayer') {
+      expect(prayer.text).toBe('ASCENSION-FV-CONCLUDING-PRAYER')
+    }
+  })
+
+  it('Saturday evening before Pentecost Sunday adopts Easter pentecost firstVespers (2026-05-23)', async () => {
+    vi.doMock('../propers-loader', mockMovableSolemnityLoader())
+    const { assembleHour } = await import('../loth-service')
+    // Pentecost 2026 = Sun May 24. Sat May 23 evening.
+    const result = await assembleHour('2026-05-23', 'vespers')
+    expect(result).not.toBeNull()
+    const gc = result!.sections.find((s) => s.type === 'gospelCanticle')
+    if (gc && gc.type === 'gospelCanticle') {
+      expect(gc.antiphon).toContain('PENTECOST-FV-GC-ANTIPHON')
+      expect(gc.antiphon).not.toContain('ASCENSION-FV-GC-ANTIPHON')
+    }
+  })
+
+  it('Saturday evening before Trinity Sunday adopts OT trinitySunday firstVespers (2026-05-30)', async () => {
+    vi.doMock('../propers-loader', mockMovableSolemnityLoader())
+    const { assembleHour } = await import('../loth-service')
+    // Trinity Sunday 2026 = Sun May 31. Sat May 30 evening. This is
+    // the first OT special-key exercise (new in Phase 4a).
+    const result = await assembleHour('2026-05-30', 'vespers')
+    expect(result).not.toBeNull()
+    const gc = result!.sections.find((s) => s.type === 'gospelCanticle')
+    if (gc && gc.type === 'gospelCanticle') {
+      expect(gc.antiphon).toContain('TRINITY-FV-GC-ANTIPHON')
+    }
+    const prayer = result!.sections.find((s) => s.type === 'concludingPrayer')
+    if (prayer && prayer.type === 'concludingPrayer') {
+      expect(prayer.text).toBe('TRINITY-FV-CONCLUDING-PRAYER')
+    }
+  })
+
+  it('Saturday evening before Christ the King adopts OT christTheKing firstVespers (2026-11-21)', async () => {
+    vi.doMock('../propers-loader', mockMovableSolemnityLoader())
+    const { assembleHour } = await import('../loth-service')
+    // Christ the King 2026 = Sun Nov 22. Sat Nov 21 evening.
+    const result = await assembleHour('2026-11-21', 'vespers')
+    expect(result).not.toBeNull()
+    const gc = result!.sections.find((s) => s.type === 'gospelCanticle')
+    if (gc && gc.type === 'gospelCanticle') {
+      expect(gc.antiphon).toContain('CHRIST-THE-KING-FV-GC-ANTIPHON')
+    }
+  })
+})
+
+// @fr FR-156 Phase 4a — `resolveSpecialKey` flow coverage via the real
+// propers-loader (no mock). Purpose: verify the OT-movable names reach
+// the special-key lookup without throwing and don't mutate the regular
+// weekly-fallback output until Phase 4b data lands.
+describe('FR-156 Phase 4a — OT special-key lookup flow', () => {
+  beforeEach(() => {
+    vi.resetModules()
+  })
+
+  it('getSeasonFirstVespers handles every OT movable celebrationName without throwing (Phase 4b data pending)', async () => {
+    const { getSeasonFirstVespers } = await import('../propers-loader')
+    // Phase 4a wires the lookup path; Phase 4b (task #24) populates
+    // `weeks['<specialKey>'].SUN.firstVespers` in `ordinary-time.json`.
+    // Until then every call falls through to the regular per-week
+    // firstVespers (which exists for OT weeks via Phase 2 injection),
+    // so the result is either the special-key value (future) or the
+    // weekly value (now) — both non-null, neither throw.
+    for (const name of [
+      'Trinity Sunday',
+      'Corpus Christi',
+      'The Most Holy Body and Blood of Christ',
+      'Sacred Heart of Jesus',
+      'Christ the King',
+      'Our Lord Jesus Christ, King of the Universe',
+    ]) {
+      expect(() =>
+        getSeasonFirstVespers('ORDINARY_TIME' as never, 17, undefined, name),
+      ).not.toThrow()
+    }
+  })
+
+  it('non-movable OT celebration names fall through to the regular per-week lookup (regression guard)', async () => {
+    const { getSeasonFirstVespers } = await import('../propers-loader')
+    // A celebration name that does not match any OT movable fragment
+    // must behave identically to calling without celebrationName — i.e.
+    // the regular `weeks[weekKey].SUN.firstVespers` path (or its
+    // weeks['1'] fallback) runs unchanged.
+    const baseline = getSeasonFirstVespers('ORDINARY_TIME' as never, 17)
+    const withUnrelatedName = getSeasonFirstVespers(
+      'ORDINARY_TIME' as never,
+      17,
+      undefined,
+      'Some Unrelated Weekday',
+    )
+    // Regardless of whether the week has data or not, the outcome must
+    // be equivalent between the two calls — special-key path does not
+    // divert non-matching names.
+    expect(withUnrelatedName).toStrictEqual(baseline)
+  })
+})
