@@ -30,6 +30,14 @@ export const DATES = {
   // responsory format (FR-152 Triduum fallback branch).
   holyThursday: '2026-04-02',
 
+  // Saturday evening before Palm Sunday — FR-156 Phase 2 (task #20)
+  // regression guard. Lent W5 Saturday vespers = 1st Vespers of Palm
+  // Sunday (Lent W6 per romcal). PDF authors the Passion/Palm Sunday
+  // antiphon variants inside the PDF_W2 First Vespers block; the
+  // injector maps weeks['6'].SUN.firstVespers → PDF_W2 so the Saturday
+  // vespers render surfaces lentPassionSunday.
+  palmSundayEve: '2026-03-28',
+
   // Easter Sunday (WHITE)
   easterSunday: '2026-04-05',
 

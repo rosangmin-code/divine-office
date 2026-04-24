@@ -51,7 +51,14 @@ function walkPropers(node: unknown, cov: Cover) {
   if (r && (r.fullResponse || r.versicle)) {
     bump(cov, 'propersResponsory', typeof r.page === 'number')
   }
-  for (const v of Object.values(n)) walkPropers(v, cov)
+  // FR-156 Phase 2: First Vespers data is injected without page
+  // annotations in Phase 2 (page extraction deferred to a follow-up).
+  // Skip the `firstVespers` subtree so its pageless entries don't drag
+  // the propersX thresholds below the existing (regular-hours) baseline.
+  for (const [k, v] of Object.entries(n)) {
+    if (k === 'firstVespers') continue
+    walkPropers(v, cov)
+  }
 }
 
 function collect(): Cover {
