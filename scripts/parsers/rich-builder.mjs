@@ -378,10 +378,26 @@ export async function extractSectionRegion({
   maxExtraPages = 0,
 }) {
   const stream = loadBookPageStream({ pdfPath, bookPage, pdftotextCachePath })
-  const { headingLine, bodyLines, endOfBlockMatched: pdfEnd0 } = extractPdftextSection(stream, {
-    sectionHeadingRegex,
-    endOfBlockRegex,
-  })
+  let headingLine = ''
+  let bodyLines = []
+  let pdfEnd0 = false
+  let pdftotextHeadingMissing = false
+  try {
+    const r = extractPdftextSection(stream, { sectionHeadingRegex, endOfBlockRegex })
+    headingLine = r.headingLine
+    bodyLines = r.bodyLines
+    pdfEnd0 = r.endOfBlockMatched
+  } catch (e) {
+    // task #35: pdftotext 컬럼 분할이 heading 의 문자 일부를 잘라먹어
+    // (p251 "лага" / p371 "шлага") regex 가 miss 하는 경우, pdfjs 쪽 heading
+    // 을 source-of-truth 로 fallback. 다른 예외 (internal error 등) 는 그대로
+    // 전파한다.
+    const msg = e && e.message ? e.message : String(e)
+    if (!/^\[rich-builder\] section heading .* not found in book \d+ \(pdftotext\)$/.test(msg)) {
+      throw e
+    }
+    pdftotextHeadingMissing = true
+  }
   const stylePage = await loadStylePage({ pdfPath, bookPage })
   const {
     heading: stylePageHeading,
@@ -398,7 +414,9 @@ export async function extractSectionRegion({
   for (let step = 1; step <= maxExtraPages && (!pdfEnd || !styleEnd); step++) {
     const nextBookPage = bookPage + step
     spannedPages.push(nextBookPage)
-    if (!pdfEnd) {
+    // fallback 활성 시 pdftotext continuation 도 pdfjs 로 일관 유지 — source-
+    // of-truth 스왑 후 line alignment 가 깨지지 않도록.
+    if (!pdfEnd && !pdftotextHeadingMissing) {
       const nextStream = loadBookPageStream({ pdfPath, bookPage: nextBookPage })
       const cont = extractPdftextContinuation(nextStream, { endOfBlockRegex })
       if (pdfBody.length > 0 && cont.bodyLines.length > 0) pdfBody.push('')
@@ -411,6 +429,18 @@ export async function extractSectionRegion({
       styleBody = styleBody.concat(cont.body)
       styleEnd = cont.endOfBlockMatched
     }
+  }
+
+  // pdfjs fallback 확정 (task #35): pdftotext 가 heading 을 놓친 경우 styleBody
+  // 를 flatten 해서 bodyLines 를 재구성한다. styleBody 에는 blank 라인이 없으므로
+  // buildProseBlocks 가 결과적으로 single-paragraph 로 reflow — shortReading 의
+  // 의도된 구조와 일치. buildProseBlocks 의 `1:1 라인 alignment` 가정은 두 source
+  // 가 같으므로 trivially 만족.
+  if (pdftotextHeadingMissing) {
+    const flattenStyleLine = (ln) => ln.spans.map((s) => s.text).join('')
+    headingLine = flattenStyleLine(stylePageHeading).trim()
+    pdfBody = styleBody.map(flattenStyleLine)
+    pdfEnd = styleEnd
   }
 
   if (pdfBody.length === 0) {
@@ -1033,7 +1063,12 @@ function verifyShortReadingEquivalence(originalText, blocks) {
 // `Уншлага\t\t\t  Ром 13:11-14`) 를 한 라인으로 합쳐 내보낸다. 또한 pdfjs
 // style overlay 는 small-cap 글리프를 lowercase `уншлага` 로 펼쳐 낸다.
 // 두 소스 모두 매치되도록 케이스 비민감 + trailing 허용.
-const SHORT_READING_HEADING = /^[Уу]ншлага(?:[\s\t]|$)/u
+//
+// task #35: p437 은 PDF 원본 자체가 heading 을 `Уншлаг` 로 글리프 누락 (pdftotext
+// 와 pdfjs 양쪽에서 동일 절단) — 마지막 `а` 를 optional 로 허용해 흡수.
+// "Уншлагатай" / "Уншлагдаж" 같은 inflected 형태는 뒤따라오는 boundary 조건
+// `(?:[\s\t]|$)` 으로 배제.
+const SHORT_READING_HEADING = /^[Уу]ншлаг[аА]?(?:[\s\t]|$)/u
 const SHORT_READING_END_OF_BLOCK = new RegExp(
   [
     // 가장 흔한 후속 섹션 — responsory.
