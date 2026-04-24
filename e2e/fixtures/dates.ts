@@ -63,6 +63,15 @@ export const DATES = {
   trinitySundayEve2026: '2026-05-30',   // Sat eve — Trinity Sun May 31
   christTheKingEve2026: '2026-11-21',   // Sat eve — Christ the King Sun Nov 22
 
+  // FR-156 task #30 — FEAST rank First Vespers eves.
+  // Resolver now accepts rank === 'FEAST' so the 4 feast entries whose
+  // PDF authors 1st Vespers (02-02, 08-06, 09-14, 11-09) surface on
+  // the evening before.
+  presentationEve2026: '2026-02-01',       // Sun eve — Presentation Mon Feb 2
+  transfigurationEve2026: '2026-08-05',    // Wed eve — Transfiguration Thu Aug 6
+  holyCrossEve2026: '2026-09-13',          // Sun eve — Exaltation Mon Sep 14
+  lateranBasilicaEve2026: '2026-11-08',    // Sun eve — Lateran Basilica Mon Nov 9
+
   // Easter Sunday (WHITE)
   easterSunday: '2026-04-05',
 
