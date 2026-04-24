@@ -81,7 +81,19 @@
 - **회귀 가드**: 변경 전 baseline 스냅샷 (122 entries) 대비 변경 후 현재 (123 entries) diff — `added: 1 (p556)`, `removed: 0`, `changed: 0`.
 - **원 dispatch scope 변경 기록**: Option A (`sectionHeadingOccurrence` 추가) 는 실제 원인과 맞지 않아 미채택. 조사 단계에서 team-lead 에게 course-correction 승인받고 Option C (threshold 완화) 로 진행.
 
-#### Task #17 — psalter-loader.test page drift (pre-existing, vitest 빨간불) ✅ 완료
+#### Task #35 — pdftotext section heading exception 3건 (p251/p371/p437) ✅ 완료
+
+- **상태**: ✅ 완료 (task #35, 2026-04-24)
+- **증상**: `scripts/build-short-readings-rich.mjs` 실행 시 3건 `section heading not found (pdftotext)` 예외. p251/p371/p437 모두 `Уншлага` 헤더가 pdftotext 에서 매치 실패.
+- **실측 원인** (실제로 2종 혼합):
+  1. **p251 / p371**: pdftotext 컬럼 분할이 heading 의 **앞부분 문자를 잘라먹음** — p251 `"лага\t\t..."` (Унш 손실), p371 `"шлага\t\t..."` (Ун 손실). pdfjs styled 에서는 `уншлага` 정상 출력.
+  2. **p437**: PDF 원본 자체가 glyph 누락 — pdftotext `"Уншлаг 1 Тесалоник..."` / pdfjs `"уншлаг 1 Тесалоник..."` 양쪽 모두 끝 `а` 가 잘림. source-level typesetter 오류.
+- **해결** (approach A + B 혼합):
+  1. **Regex 완화 (A)**: `SHORT_READING_HEADING` 를 `/^[Уу]ншлага(?:[\s\t]|$)/u` → `/^[Уу]ншлаг[аА]?(?:[\s\t]|$)/u` 로 수정. trailing `а` 를 optional 로 허용해 p437 의 `Уншлаг` 원본 typo 를 흡수. inflected 형태 (`Уншлагатай` / `Уншлагдаж`) 는 뒤의 `(?:[\s\t]|$)` boundary 로 여전히 배제.
+  2. **pdfjs fallback (B)**: `extractSectionRegion` 에 pdftotext heading not-found 예외 catch 후 pdfjs styled body 를 source-of-truth 로 swap 하는 fallback 로직 추가. fallback 활성 시 continuation 도 pdfjs 일관 유지해 1:1 line alignment 보존.
+- **결과**: 123 → **126 PASS**, **0 FAIL**. 수정 전 3 exception entries (p251/p371/p437) 전원 신규 PASS.
+- **회귀 가드**: 기존 123 baseline 대비 현재 126 entries diff — `added: 3`, `removed: 0`, `changed: 0` (기존 123 entry 100% byte-wise 보존).
+- **회귀 리스크**: 없음. fallback 은 pdftotext heading miss 예외에서만 활성 (기존 PASS 엔트리는 예외 발생 없으므로 fallback 경로 미진입). regex 완화는 `[аА]?` boundary 조건으로 false positive 최소화 (확인 후 기존 123 entries 모두 byte-equal).
 
 - **상태**: **완료** (commit `974cfcd` 2026-04-23 16:00, task #31 dispatch 2026-04-24 확인)
 - **증상**: `src/lib/__tests__/psalter-loader.test.ts:30` — week-3.json SUN lauds responsory.page 가 302, 테스트 기대 303.
