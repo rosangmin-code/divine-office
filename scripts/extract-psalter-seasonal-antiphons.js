@@ -102,18 +102,44 @@ function isNoise(line) {
   return false
 }
 
-// A line that ends the seasonal-variants block for the current entry.
-const TERMINATORS = [
-  /^Шад\s+(дуулал|магтаал)\b/,
-  /^Дуулал\s+\d/,
-  /^Магтаал\s*$/,
-  /^Магтаал\s+\d/,
-  /^Дууллын\s+залбирал/,
-  /^Магтууллын\s+залбирал/,
-  /^Шад\s+магтуу\b/,
+// Terminators come in two tiers:
+//   HARD_TERMINATORS — absolute end of this anchor's variant block.
+//   Seeing one ends scanning. Covers next-anchor and post-body prayer
+//   headings.
+//
+//   BODY_ENTRY_MARKERS — the line starts the canticle/psalm body text.
+//   The variant walker enters an `inBody` state here: no text is
+//   accumulated into any variant while scrolling through the body.
+//   Scanning RESUMES when a real MARKER (or SKIP_MARKER) appears after
+//   the body (see task #16 — w2-sun-vesp-cant's Passion Sunday marker
+//   at PDF line 6411 lives past the body heading at 6367).
+const HARD_TERMINATORS = [
+  // `\b` does not behave on Cyrillic in JS regex (Cyrillic letters are
+  // not "word chars" by the ASCII-era definition), so use explicit
+  // whitespace/end-of-line boundaries instead. Without this, the
+  // terminator silently fails on lines like "Шад дуулал 2 Тэнгэрбурхан
+  // …" and the walker over-runs past the next anchor.
+  /^Шад\s+(дуулал|магтаал)(?:\s|$)/,
+  /^Шад\s+магтуу(?:\s|$)/,
+  // Psalm/canticle prayer heading, in both case forms that appear in
+  // the PDF (genitive "Дууллын ... залбирал" and accusative "Дууллыг
+  // төгсгөх залбирал"). Both mark the end of the current entry's
+  // variant block — any markers past this point belong elsewhere.
+  /^Дууллы[нг]\s+(?:төгсгөх\s+)?залбирал/,
+  /^Магтууллы[нг]\s+(?:төгсгөх\s+)?залбирал/,
   // Rubric instruction that appears after some psalms
   //   "Дуулал 67" нь урих дуудлагын дуулал болсон тохиолдолд ...
   /^["“][Дд]уулал\s+\d+["”]\s+нь/,
+]
+const BODY_ENTRY_MARKERS = [
+  /^Дуулал\s+\d/,
+  /^Магтаал\s*$/,
+  /^Магтаал\s+\d/,
+  // Roman-numeral section markers ("I", "II", "III", "IV", "V") mark
+  // the start of a psalm part's body text (e.g. Psalm 45 Part II at
+  // PDF line 6898). Walker must enter body-skip here — otherwise the
+  // body verse lines get appended to the last-captured variant.
+  /^(I|II|III|IV|V|VI|VII|VIII|IX|X)\s*$/,
 ]
 
 // SKIP markers: these introduce antiphon variants that the schema does
@@ -123,18 +149,23 @@ const TERMINATORS = [
 // next real marker or terminator. This prevents bleed-through into the
 // preceding legitimate variant.
 //
-// Phase 3 (task #15) promoted `тарчлалтын Ням гараг:` to lentPassionSunday
-// (see MARKERS below). The wrapped compound forms are still listed as
-// SKIP because their label prefix overlaps other markers ambiguously —
-// they occur as standalone variant labels in the PDF and the extractor
-// cannot safely commit them to a single field without more layout work.
+// Phase 3 (task #15) promoted bare `тарчлалтын Ням гараг:` to
+// lentPassionSunday (see MARKERS below). Task #16 additionally promotes
+// the Week-2 compound wrap form (`Ням гараг Дөчин хоногийн цаг улирал,
+// Эзэний тарчлалтын Ням гараг:`) because it carries the same Passion
+// Sunday semantic and its prior SKIP behaviour was masking a real
+// per-entry rubric (w2-sun-vesp-cant line 6411). The Week-1 compound
+// form (`Дөчин хоногийн цаг улирал, Эзэний тарчлалтын ...`) is left in
+// SKIP because it appears in contexts where accepting it would change
+// capture counts for other Week-1 entries — a deliberate scope line;
+// promoting it is a separate follow-up.
 const SKIP_MARKERS = [
   /^Ариун\s+долоо\s+хоног:/,
   /^Хэрэв\s+энэ\s+Ням\s+гараг/,
-  // Wrapped / compound forms of Passion Sunday marker (standalone forms
-  // outside the per-entry Passion Sunday rubric — kept as SKIP).
+  // Wrapped / compound Passion Sunday form — Week 1 wrap ("Дөчин
+  // хоногийн цаг улирал, Эзэний тарчлалтын ..."). Kept as SKIP pending
+  // a dedicated scope decision.
   /^Дөчин хоногийн цаг улирал,\s+Эзэний тарчлалтын\s+Ням\s+гараг:/,
-  /^Ням\s+гараг\s+Дөчин хоногийн цаг улирал,\s+Эзэний\s+тарчлалтын\s+Ням\s+гараг:/,
 ]
 
 // -------------------- markers --------------------
@@ -153,10 +184,18 @@ const MARKERS = [
     re: /^Амилалтын цаг улирлын\s+([\d,\s]+)\s+(?:дэх|дахь)\s+Ням\s+гараг:\s*(.*)$/,
     isPerSunday: true,
   },
-  // Passion Sunday (Phase 3, task #15). Matches only the bare per-entry
-  // label "тарчлалтын Ням гараг:" — the wrapped compound forms
-  // ("Дөчин хоногийн цаг улирал, Эзэний тарчлалтын...") remain SKIP
-  // markers because they introduce different content in the PDF.
+  // Passion Sunday (Phase 3 task #15 + Phase 3b task #16). Three label
+  // forms in the PDF — list longer compound first so prefix-overlap
+  // doesn't let the bare form shadow the compound label's lead-in.
+  //   form B (Week 2 compound wrap, promoted in task #16): "Ням гараг
+  //     Дөчин хоногийн цаг улирал, Эзэний тарчлалтын Ням гараг:"
+  //   form 0 (bare, Phase 3): "тарчлалтын Ням гараг:"
+  //
+  // Form A (Week 1 compound wrap) remains in SKIP_MARKERS (see note).
+  {
+    season: 'lentPassionSunday',
+    re: /^Ням\s+гараг\s+Дөчин хоногийн цаг улирал,\s+Эзэний\s+тарчлалтын\s+Ням\s+гараг:\s*(.*)$/,
+  },
   {
     season: 'lentPassionSunday',
     re: /^тарчлалтын\s+Ням\s+гараг:\s*(.*)$/,
@@ -270,7 +309,8 @@ function collectAnchors(lines) {
         }
         // Stop at terminator or marker (another anchor / marker / body heading).
         if (parseAnchor(nxt)) break
-        if (TERMINATORS.some(re => re.test(nxt))) break
+        if (HARD_TERMINATORS.some(re => re.test(nxt))) break
+        if (BODY_ENTRY_MARKERS.some(re => re.test(nxt))) break
         if (MARKERS.some(m => m.re.test(nxt))) break
         extra += (extra ? ' ' : '') + nxt.trim()
         if (a.preview.length + extra.length >= 30) break
@@ -301,7 +341,8 @@ function readDefaultAntiphon(lines, startIdx) {
       sawBlank = true
       continue
     }
-    if (TERMINATORS.some(re => re.test(line))) break
+    if (HARD_TERMINATORS.some(re => re.test(line))) break
+    if (BODY_ENTRY_MARKERS.some(re => re.test(line))) break
     if (MARKERS.some(m2 => m2.re.test(line))) break
     if (isNoise(line)) continue
     parts.push(line.trim())
@@ -319,12 +360,16 @@ function maybeJoinMarker(lines, i) {
   const curr = lines[i]
   // Current line ends with a marker-prefix fragment that suggests the
   // next line completes it. Covered cases:
-  //   "... Ням\nгараг: ..."                 (main per-Sunday marker wrap)
-  //   "... Ариун долоо\nхоног: ..."          (Holy Week skip marker wrap)
-  //   "... Эзэний тарчлалтын\nНям гараг: ..." (Passion Sunday wrap)
-  //   "... Хэрэв энэ Ням\nгараг ..."          (rubric wrap)
+  //   "... Ням\nгараг: ..."                  (main per-Sunday marker wrap)
+  //   "... Ариун долоо\nхоног: ..."           (Holy Week skip marker wrap)
+  //   "... Эзэний тарчлалтын\nНям гараг: ..." (Passion Sunday wrap form A,
+  //                                             Week 1 — ends with "тарчлалтын")
+  //   "... Эзэний\nтарчлалтын Ням гараг: ..." (Passion Sunday wrap form B,
+  //                                             Week 2 — ends with "Эзэний",
+  //                                             task #16)
+  //   "... Хэрэв энэ Ням\nгараг ..."           (rubric wrap)
   if (
-    !/(Ням\s*$)|(Ням\s+хоног\s*$)|(Ариун\s+долоо\s*$)|(тарчлалтын\s*$)|(энэ\s+Ням\s*$)/.test(
+    !/(Ням\s*$)|(Ням\s+хоног\s*$)|(Ариун\s+долоо\s*$)|(тарчлалтын\s*$)|(Эзэний\s*$)|(энэ\s+Ням\s*$)/.test(
       curr,
     )
   ) {
@@ -333,7 +378,12 @@ function maybeJoinMarker(lines, i) {
   for (let j = i + 1; j < lines.length && j < i + 4; j++) {
     const nxt = lines[j]
     if (/^\s*$/.test(nxt) || isNoise(nxt)) continue
-    if (/^гараг:/.test(nxt) || /^хоног:/.test(nxt) || /^Ням\s+гараг:/.test(nxt)) {
+    if (
+      /^гараг:/.test(nxt) ||
+      /^хоног:/.test(nxt) ||
+      /^Ням\s+гараг:/.test(nxt) ||
+      /^тарчлалтын\s+Ням\s+гараг:/.test(nxt)
+    ) {
       return { joined: curr + ' ' + nxt, consumed: j - i }
     }
     break
@@ -341,11 +391,23 @@ function maybeJoinMarker(lines, i) {
   return null
 }
 
-// From startIdx, collect variant blocks until terminator.
+// From startIdx, collect variant blocks until a HARD_TERMINATOR.
+//
+// State machine:
+//   `current`    — accumulating the text of the latest marker-tagged variant
+//   `discarding` — we just flushed a SKIP_MARKER; drop non-marker lines
+//                  until the next real marker (or terminator) arrives
+//   `inBody`     — we crossed a BODY_ENTRY_MARKER (`Магтаал`, `Дуулал N`,
+//                  …); drop body text until a real marker arrives. This
+//                  lets the walker reach per-entry rubrics that live past
+//                  the body heading (task #16 — w2-sun-vesp-cant Passion
+//                  Sunday at PDF line 6411). Exits immediately when the
+//                  next MARKER/SKIP_MARKER fires.
 function readVariantBlocks(lines, startIdx) {
   const variants = []
   let current = null
-  let discarding = false // true while consuming a SKIP_MARKER's text
+  let discarding = false
+  let inBody = false
   let i = startIdx
   for (; i < lines.length; i++) {
     let line = lines[i]
@@ -358,22 +420,25 @@ function readVariantBlocks(lines, startIdx) {
       extraConsumed = join.consumed
     }
 
-    if (TERMINATORS.some(re => re.test(line))) break
-    // Blank lines and noise are transparent.
+    if (HARD_TERMINATORS.some(re => re.test(line))) break
+    // Blank lines and noise are transparent in all states.
     if (/^\s*$/.test(line) || isNoise(line)) continue
 
-    // SKIP marker: flush current variant, enter discard mode.
+    // SKIP marker: flush current variant, enter discard mode. Also
+    // exits the body-skip state so post-body SKIP labels don't leak
+    // back into body.
     if (SKIP_MARKERS.some(re => re.test(line))) {
       if (current) {
         variants.push(current)
         current = null
       }
       discarding = true
+      inBody = false
       i += extraConsumed
       continue
     }
 
-    // Real marker match.
+    // Real marker match. Any marker pulls us out of inBody/discarding.
     let matched = false
     for (const mk of MARKERS) {
       const mm = line.match(mk.re)
@@ -391,12 +456,26 @@ function readVariantBlocks(lines, startIdx) {
           text: mm[mk.isPerSunday ? 2 : 1].trim(),
         }
         discarding = false
+        inBody = false
         matched = true
         i += extraConsumed
         break
       }
     }
     if (!matched) {
+      // Body-entry heading (canticle `Магтаал`, numbered `Дуулал N`) —
+      // flush the in-progress variant and enter body-skip. Further
+      // text will be dropped until the next MARKER re-enters the
+      // variant scan.
+      if (BODY_ENTRY_MARKERS.some(re => re.test(line))) {
+        if (current) {
+          variants.push(current)
+          current = null
+        }
+        inBody = true
+        continue
+      }
+      if (inBody) continue
       if (discarding) continue
       if (current) {
         current.text = (current.text + ' ' + line.trim())
