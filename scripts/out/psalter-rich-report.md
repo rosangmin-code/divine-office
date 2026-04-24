@@ -8,16 +8,16 @@
 ## stanza 수 분포
 
 - min = 1, median = 2, max = 15
-- 1-stanza refs: 39건 (Ps 149 류 flat)
+- 1-stanza refs: 38건 (Ps 149 류 flat)
 
 | stanza 수 | refs |
 |---:|---:|
-| 1 | 39 |
-| 2 | 52 |
-| 3 | 8 |
+| 1 | 38 |
+| 2 | 54 |
+| 3 | 9 |
 | 4 | 13 |
-| 5 | 5 |
-| 6 | 5 |
+| 5 | 4 |
+| 6 | 4 |
 | 7 | 4 |
 | 8 | 2 |
 | 9 | 1 |
@@ -27,7 +27,7 @@
 
 ## 라인 수 분포
 
-- min = 5, median = 26, max = 84, sum = 3849
+- min = 4, median = 26, max = 84, sum = 3908
 
 ## refrain 검출 요약
 
@@ -36,11 +36,11 @@
 | ref | refrain keys | refrain 라인 |
 |:---|---:|---:|
 | `Daniel 3:57-88, 56` | 3 | 44 |
+| `Psalm 136:10-26` | 3 | 29 |
 | `Daniel 3:52-57` | 3 | 19 |
 | `Revelation 19:1-7` | 3 | 12 |
 | `Psalm 80:2-8, 15-20` | 3 | 9 |
 | `Psalm 136:1-9` | 1 | 9 |
-| `Psalm 136:10-26` | 1 | 9 |
 | `Psalm 46:2-12` | 2 | 6 |
 | `Psalm 150:1-6` | 1 | 6 |
 | `Psalm 29:1-10` | 1 | 3 |
@@ -58,7 +58,7 @@ pilot (`psalter-texts.pilot.json`) 대비 main 이 stanza 분할이 coarse 한 r
 - stanza 수 ≤ 2 이면서 라인 수 ≥ 20 → PDF 원형 대비 심히 coarse
 - canticle (ref 가 Psalm 이외 book) → refrain 구조 풍부 예상
 
-- coarse refs (stanza≤2, line≥20): **56건**
+- coarse refs (stanza≤2, line≥20): **59건**
   - `Psalm 63:2-9` — stanza 2, line 25
   - `Psalm 149:1-9` — stanza 1, line 22
   - `Psalm 110:1-5, 7` — stanza 2, line 20
@@ -89,7 +89,7 @@ pilot (`psalter-texts.pilot.json`) 대비 main 이 stanza 분할이 coarse 한 r
   - `Psalm 45:11-18` — stanza 2, line 27
   - `Psalm 43:1-5` — stanza 1, line 22
   - `Psalm 49:1-13` — stanza 2, line 29
-  - … (26 건 생략)
+  - … (29 건 생략)
 - non-Psalm canticles: **33건**
   - `Daniel 3:57-88, 56` — stanza 15, line 84, refrain 44
   - `Revelation 19:1-7` — stanza 4, line 24, refrain 12

@@ -78,6 +78,13 @@ const PART_II_SKIPS = new Set([
   'week-3|FRI|vespers|Psalm 135:13-21',
   'week-4|FRI|vespers|Psalm 145:14-21',
   'week-4|SAT|lauds|Ezekiel 36:24-28',
+  // Added task #40 Stage 4: Psalm Part II entries whose header-anchor
+  // page is 2+ pages before the body page (Part I body + "II" marker
+  // sits between header and Part II body — beyond the verifier's ±1
+  // window). Body text content verified manually against PDF.
+  'week-4|MON|vespers|Psalm 136:10-26',     // header on 432, body on 434 (Part II)
+  'week-4|WED|vespers|Psalm 139:23-24',     // header on 464, body on 466 (tail verses of split Psalm 139)
+  'week-4|THU|vespers|Psalm 144:11-15',     // header on 480, body on 481-482 (Part II)
 ])
 
 function weekKey(weekNum, day, hour, ref) {

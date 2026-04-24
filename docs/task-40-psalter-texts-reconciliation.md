@@ -8,6 +8,67 @@
 
 ---
 
+## Stage 4 완료 (task #43, 2026-04-24) ✅ — task #40 최종 완료
+
+### 3 manual-review + 2 verified-correction 전부 RESOLVED
+
+**verified-correction 2건** (`scripts/patch-psalter-pages.js` 자동 적용):
+- Psalm 97:1-12 (week-2 WED lauds psalms[2]) page **232 → 231**
+- Revelation 4:11; 5:9-10, 12 (week-3 TUE vespers psalms[2]) page **340 → 339**
+
+**manual-review 3건** (all C Part II patterns):
+- **Psalm 136:10-26 Part II body 재구성** — psalter-texts.json stanzas 에
+  Part I body 가 저장되어 있던 것을 PDF line 14999-15026 (page 434) +
+  15034-15052 (page 435) 의 Part II body ("Египетчүүдийн ууган хүүхдүүдийг
+  цохисон...") 로 교체. psalmPrayer 추가 (page 435, "Төгс хүчит Тэнгэрбурхан
+  минь...").
+- **Psalm 144:11-15 Part II body 재구성** — 동일 pattern. PDF line 16671-
+  16677 (page 481) + 16685-16702 (page 482) 의 Part II body ("Аяа Тэнгэрбурхан,
+  би Танд шинэ дуу дуулна...") 로 교체. psalmPrayer 추가 (page 482).
+- **Psalm 139:23-24** — week-4 WED vespers psalms[1] page **467 → 466** (body
+  straddle 순치 fix, task #34/#40 Stage 1 pattern). Stage 2 에서 body content
+  는 correct 으로 복구됐으나 declared page 가 body-start (466) 가 아닌
+  continuation (467) 을 가리키고 있어 ±1 window 내 stanza match 실패.
+
+**verifier PART_II_SKIPS 확장** (3건 추가):
+3 Part II entries 의 header 가 declared page 보다 2+ 페이지 앞에 있음 —
+verifier 의 ±1 window 를 넘어섬. 기존 8건 + 3건 = **11건** PART_II_SKIPS 로
+이동. 이들은 manual-review 가 아닌 semantic-split-psalm 으로 분류.
+- week-4|MON|vespers|Psalm 136:10-26 (header on 432, body on 434)
+- week-4|WED|vespers|Psalm 139:23-24 (header on 464, body on 466)
+- week-4|THU|vespers|Psalm 144:11-15 (header on 480, body on 481-482)
+
+**Psalm 121:1-8 psalmPrayerPage 보정** (bonus):
+Stage 2 에서 psalmPrayer content 는 정답으로 교정됐으나 `psalmPrayerPage`
+가 stale 272 (Psalm 116 prayer page) 로 남아 `build-psalter-prayers-rich.mjs`
+gate FAIL. 274 (Psalm 121 prayer 실제 위치) 로 교정.
+
+**결과**:
+- `verify-psalter-pages.js`: agree **155→157** (+2), verified-correction **2→0**,
+  manual-review **3→0** ✅, part-II-skipped **8→11** (+3 reclassified)
+- `build-psalter-prayers-rich.mjs`: **90→92 PASS** (136:10-26 + 144:11-15 신규
+  eligible entry + Psalm 121:1-8 page 보정)
+- `build-psalter-texts-rich.mjs`: 137/137 PASS (stanzasRich 재생성 정상)
+- `build-short-readings-rich.mjs`: 126/126 PASS (회귀 없음)
+- `audit-psalter-ref-consistency.js`: suspects **4→3** (부수 개선)
+- `npx vitest run`: 273 PASS 0 FAIL
+- `npx tsc --noEmit`: 0 errors
+
+---
+
+## task #40 최종 상태 (13/13 RESOLVED ✅)
+
+| Stage | Scope | Count | Status | Commit |
+|-------|-------|-------|--------|--------|
+| 1 | D3 page 교정 | 1 | ✅ | feb6420 |
+| 2 | D1 entry-shift (solver) | 4 + 2 chain bonus | ✅ | 4ebb3a9 (task #42) |
+| 3 | D2 canticle typo + verifier fingerprint tuning | 5 | ✅ | 1d24f65 |
+| 4 | C Part II + Revelation + Psalm 97 page | 3 manual-review + 2 verified-correction | ✅ | <commit> (task #43) |
+
+verify-psalter-pages 최종: **agree 157 / verified-correction 0 / manual-review 0 / part-II-skipped 11**. task #39 에서 시작한 "17 manual-review" 가 **0 manual-review** + **11 reclassified as semantic-split** + **146 clean agree** (초기 143 기준 +14) 로 완주.
+
+---
+
 ## Stage 2 완료 (task #42, 2026-04-24)
 
 ### D1 entry-shift 4건 + chain 2건 전부 RESOLVED
