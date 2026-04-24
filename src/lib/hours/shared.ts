@@ -2,6 +2,7 @@
 // re-exports from here. Existing imports of `./shared` keep working.
 export { loadOrdinarium, loadPsalterTexts } from './loaders'
 export { dateToDayOfWeek } from './date-utils'
+export { promoteToFirstVespersIdentity } from './first-vespers-identity'
 export { resolvePsalm } from './resolvers/psalm'
 export { resolveGospelCanticle } from './resolvers/canticle'
 export { resolveShortReading } from './resolvers/reading'

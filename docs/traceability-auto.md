@@ -4,7 +4,7 @@
 > and FR/NFR IDs in test titles. **Do not edit by hand.**
 > The curated matrix lives in [`docs/traceability-matrix.md`](./traceability-matrix.md).
 
-Scan: 21 test files contributed 17 unique IDs.
+Scan: 22 test files contributed 17 unique IDs.
 
 | ID | Test file | Test title(s) |
 |---|---|---|
@@ -34,6 +34,7 @@ Scan: 21 test files contributed 17 unique IDs.
 | FR-156 | `e2e/movable-first-vespers.spec.ts` | (tagged, title unknown) |
 | FR-156 | `e2e/solemnity-first-vespers.spec.ts` | (tagged, title unknown) |
 | FR-156 | `src/lib/__tests__/first-vespers.test.ts` | FR-156 Phase 2 — getSeasonFirstVespers returns injected data<br>FR-156 Phase 3a — Solemnity First Vespers<br>FR-156 task #30 — FEAST rank First Vespers<br>FR-156 Phase 3b — Solemnity firstVespers data injection<br>FR-156 Phase 4a — movable solemnity First Vespers<br>FR-156 Phase 4a — OT special-key lookup flow<br>FR-156 Phase 4b — movable solemnity firstVespers data (real loader)<br>(tagged, title unknown) |
+| FR-156 | `src/lib/hours/__tests__/first-vespers-identity.test.ts` | promoteToFirstVespersIdentity (FR-156 task #32 helper) |
 | NFR-013 | `e2e/mobile.spec.ts` | prayer article inner width >= 320px for readability (NFR-013)<br>antiphon inner width >= 320px on mobile (NFR-013) |
 | NFR-014 | `e2e/mobile.spec.ts` | psalm has left padding on mobile (NFR-014)<br>psalm stanzas have visible spacing on mobile (NFR-014) |
 | NFR-016 | `e2e/settings.spec.ts` | active radio uses brass gold accent, not liturgical green (NFR-016) |
