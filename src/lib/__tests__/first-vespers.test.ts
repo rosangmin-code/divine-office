@@ -494,3 +494,142 @@ describe('FR-156 Phase 4a — OT special-key lookup flow', () => {
     expect(withUnrelatedName).toStrictEqual(baseline)
   })
 })
+
+// @fr FR-156 Phase 4b — movable solemnity firstVespers data injection.
+// Confirms the 6 injected entries surface through the real
+// propers-loader (no mock) via `getSeasonFirstVespers` keyed by the
+// special-key slugs. Byte-equal textual checks against the PDF source
+// are handled by `scripts/verify-movable-first-vespers.js` — this suite
+// only asserts the lookup plumbing carries the injected payload end-to-end.
+describe('FR-156 Phase 4b — movable solemnity firstVespers data (real loader)', () => {
+  beforeEach(() => {
+    vi.resetModules()
+  })
+
+  it('Ascension — getSeasonFirstVespers(EASTER, _, _, "Ascension of the Lord") returns injected firstVespers', async () => {
+    const { getSeasonFirstVespers } = await import('../propers-loader')
+    const fv = getSeasonFirstVespers(
+      'EASTER' as never,
+      6,
+      '2026-05-13',
+      'Ascension of the Lord',
+    )
+    expect(fv).not.toBeNull()
+    expect(fv!.gospelCanticleAntiphon).toContain('Аав аа, Таны Надад өгсөн хүмүүст')
+    expect(fv!.concludingPrayer).toContain('Хүүгийнхээ тэнгэрт заларснаар')
+    expect(fv!.alternativeConcludingPrayer).toContain('Христийг бидний нүдний өмнөөс')
+  })
+
+  it('Pentecost — getSeasonFirstVespers(EASTER, _, _, "Pentecost Sunday") returns full psalter + reading', async () => {
+    const { getSeasonFirstVespers } = await import('../propers-loader')
+    const fv = getSeasonFirstVespers(
+      'EASTER' as never,
+      7,
+      '2026-05-23',
+      'Pentecost Sunday',
+    )
+    expect(fv).not.toBeNull()
+    expect(fv!.psalms).toBeDefined()
+    expect(fv!.psalms!.length).toBe(3)
+    expect(fv!.psalms![0].ref).toBe('Psalm 113')
+    expect(fv!.psalms![1].ref).toBe('Psalm 147:1-11')
+    expect(fv!.psalms![2].ref).toBe('Revelation 15:3-4')
+    expect(fv!.shortReading).toBeTruthy()
+    expect(fv!.shortReading!.ref).toBe('Romans 8:9-11')
+    expect(fv!.intercessions).toBeDefined()
+    expect(fv!.intercessions!.length).toBe(6)
+    expect(fv!.gospelCanticleAntiphon).toContain('Ариун Сүнс бууж')
+  })
+
+  it('Trinity Sunday — getSeasonFirstVespers(ORDINARY_TIME, _, _, "Trinity Sunday") returns injected firstVespers', async () => {
+    const { getSeasonFirstVespers } = await import('../propers-loader')
+    const fv = getSeasonFirstVespers(
+      'ORDINARY_TIME' as never,
+      9,
+      '2026-05-30',
+      'Trinity Sunday',
+    )
+    expect(fv).not.toBeNull()
+    // Injected antiphon must surface (not the regular weekly antiphon
+    // that would otherwise come from weeks['9'].SUN.firstVespers).
+    expect(fv!.gospelCanticleAntiphon).toContain('Танд бид талархлаа өргөе')
+    expect(fv!.gospelCanticleAntiphon).toContain('Ганц бөгөөд үнэн Ариун Гурвал')
+    expect(fv!.concludingPrayer).toContain('Өөрийн Үгийг илгээсэн')
+  })
+
+  it('Corpus Christi — getSeasonFirstVespers matches "Corpus Christi" and "Body and Blood"', async () => {
+    const { getSeasonFirstVespers } = await import('../propers-loader')
+    const fromCorpusChristi = getSeasonFirstVespers(
+      'ORDINARY_TIME' as never,
+      9,
+      undefined,
+      'Corpus Christi',
+    )
+    const fromBodyAndBlood = getSeasonFirstVespers(
+      'ORDINARY_TIME' as never,
+      9,
+      undefined,
+      'The Most Holy Body and Blood of Christ',
+    )
+    expect(fromCorpusChristi).not.toBeNull()
+    expect(fromBodyAndBlood).not.toBeNull()
+    expect(fromCorpusChristi!.gospelCanticleAntiphon).toContain('Та тэнгэрээс талхыг хайрласнаараа')
+    // Both name fragments must resolve to the same injected entry.
+    expect(fromBodyAndBlood).toStrictEqual(fromCorpusChristi)
+  })
+
+  it('Sacred Heart — getSeasonFirstVespers matches "Sacred Heart"', async () => {
+    const { getSeasonFirstVespers } = await import('../propers-loader')
+    const fv = getSeasonFirstVespers(
+      'ORDINARY_TIME' as never,
+      10,
+      undefined,
+      'The Most Sacred Heart of Jesus',
+    )
+    expect(fv).not.toBeNull()
+    expect(fv!.gospelCanticleAntiphon).toContain('Би газар дээр гал хаяхаар ирсэн')
+    expect(fv!.concludingPrayer).toContain('Таны Хүү Есүсийн зүрхнээс')
+  })
+
+  it('Christ the King — getSeasonFirstVespers matches both name variants', async () => {
+    const { getSeasonFirstVespers } = await import('../propers-loader')
+    const shortName = getSeasonFirstVespers(
+      'ORDINARY_TIME' as never,
+      34,
+      undefined,
+      'Christ the King',
+    )
+    const longName = getSeasonFirstVespers(
+      'ORDINARY_TIME' as never,
+      34,
+      undefined,
+      'Our Lord Jesus Christ, King of the Universe',
+    )
+    expect(shortName).not.toBeNull()
+    expect(longName).not.toBeNull()
+    expect(shortName!.gospelCanticleAntiphon).toContain('өвөг Давидынх нь хаан ширээг')
+    expect(shortName!.concludingPrayer).toContain('Хүү Есүс Христээр')
+    expect(longName).toStrictEqual(shortName)
+  })
+
+  it('OT weekly lookup without movable celebrationName is unaffected by special-key injection (regression guard)', async () => {
+    const { getSeasonFirstVespers } = await import('../propers-loader')
+    // Calling with a regular OT Sunday name should return the
+    // per-week Phase 2 data, NOT the Phase 4b special-key payload.
+    const fv = getSeasonFirstVespers(
+      'ORDINARY_TIME' as never,
+      17,
+      undefined,
+      '17th Sunday in Ordinary Time',
+    )
+    expect(fv).not.toBeNull()
+    expect(fv!.psalms).toBeDefined()
+    expect(fv!.psalms!.length).toBe(3)
+    // Must NOT surface the trinity/corpusChristi/sacredHeart/christTheKing antiphons.
+    const ant = fv!.gospelCanticleAntiphon ?? ''
+    expect(ant).not.toContain('Танд бид талархлаа өргөе')
+    expect(ant).not.toContain('Та тэнгэрээс талхыг хайрласнаараа')
+    expect(ant).not.toContain('Би газар дээр гал хаяхаар ирсэн')
+    expect(ant).not.toContain('өвөг Давидынх нь хаан ширээг')
+  })
+})
