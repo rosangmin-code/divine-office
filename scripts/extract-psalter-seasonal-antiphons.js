@@ -131,6 +131,19 @@ const HARD_TERMINATORS = [
   //   "Дуулал 67" нь урих дуудлагын дуулал болсон тохиолдолд ...
   /^["“][Дд]уулал\s+\d+["”]\s+нь/,
 ]
+
+// Rubric instruction lines that close the current variant WITHOUT ending
+// the walker. Unlike HARD_TERMINATORS these don't break the outer loop —
+// they behave like SKIP_MARKERS (flush current + enter discard state),
+// allowing lentSunday markers that live past the body heading (see
+// task #16) to still be captured after the rubric.
+//
+// PDF lines where this pollution occurred (SUN-vespers easterSunday[5]
+// variants bleeding into the following rubric text):
+//   2262, 6362, 10526, 14445, 24107.
+const RUBRIC_INSTRUCTION_TERMINATORS = [
+  /^Оройн\s+даатгал\s+залбирлыг/,
+]
 const BODY_ENTRY_MARKERS = [
   /^Дуулал\s+\d/,
   /^Магтаал\s*$/,
@@ -433,6 +446,18 @@ function readVariantBlocks(lines, startIdx) {
       discarding = true
       inBody = false
       i += extraConsumed
+      continue
+    }
+
+    // Rubric instruction terminator: same behaviour as SKIP — flushes the
+    // current variant and enters discard state. Keeps the walker alive so
+    // post-body MARKER lines are still captured.
+    if (RUBRIC_INSTRUCTION_TERMINATORS.some(re => re.test(line))) {
+      if (current) {
+        variants.push(current)
+        current = null
+      }
+      discarding = true
       continue
     }
 
