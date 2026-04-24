@@ -10,6 +10,7 @@ import type {
   HOUR_NAMES_MN,
   SanctoralEntry,
   CelebrationOption,
+  FirstVespersPropers,
 } from './types'
 import { HOUR_NAMES_MN as hourNamesMn } from './types'
 import { getLiturgicalDay, getToday } from './calendar'
@@ -101,21 +102,31 @@ export async function assembleHour(
   let effectiveDayOfWeek: DayOfWeek = dayOfWeek
   let effectiveWeekOfSeason: number = day.weekOfSeason
 
-  // FR-156 Phase 3a: Solemnity First Vespers (highest-priority vespers
-  // override). Any vespers evening — not just Saturday — consults the
-  // NEXT day's liturgical identity; if tomorrow is a SOLEMNITY carrying
-  // `sanctoral.firstVespers`, adopt those propers (and psalms) in full.
+  // FR-156 Phase 3a/4a: Solemnity First Vespers (highest-priority
+  // vespers override). Any vespers evening — not just Saturday —
+  // consults the NEXT day's liturgical identity; if tomorrow is a
+  // SOLEMNITY carrying `firstVespers` (either via sanctoral MM-DD
+  // or via season-propers special key for movables), adopt those
+  // propers (and psalms) in full.
+  //
   // This runs BEFORE the Saturday→Sunday Sunday-firstVespers branch so
   // a Solemnity that lands on a Sunday is rendered as the Solemnity's
   // 1st Vespers rather than the Sunday's. It also overrides any existing
   // `seasonPropers` (e.g. ADVENT 12/24 date-key propers displaced when
   // 12/25 carries Christmas firstVespers).
   //
-  // Phase 3a (task #21): wiring only — no solemnity file yet carries a
-  // `firstVespers` entry, so every `getSanctoralPropers(tomorrow)?.
-  // firstVespers` returns undefined in production and this branch is a
-  // no-op. Phase 3b (task #22) populates the 27 PDF solemnity entries,
-  // at which point this branch activates automatically.
+  // Two lookup paths:
+  //   1. Fixed-date solemnities (Dec 25 Christmas, Aug 15 Assumption,
+  //      etc.) — `getSanctoralPropers(MM-DD)` returns a SanctoralEntry
+  //      whose `firstVespers` is populated by Phase 3b (task #22).
+  //   2. Movable solemnities (Ascension, Pentecost, Trinity Sunday,
+  //      Corpus Christi, Sacred Heart, Christ the King) — no MM-DD
+  //      sanctoral entry; instead, `getSeasonFirstVespers` resolves
+  //      the celebration name to a season-propers special key
+  //      (`weeks['ascension'].SUN.firstVespers`, etc.) via
+  //      `resolveSpecialKey`. Data injection lands in Phase 4b (task
+  //      #24); Phase 4a (task #23) is resolver-only so this branch
+  //      returns null for all movables in production until then.
   if (hour === 'vespers') {
     const tomorrowDate = new Date(dateStr + 'T00:00:00Z')
     tomorrowDate.setUTCDate(tomorrowDate.getUTCDate() + 1)
@@ -124,8 +135,23 @@ export async function assembleHour(
     const tomorrowStr = `${tomorrowDate.getUTCFullYear()}-${tMM}-${tDD}`
     const tomorrowDay = getLiturgicalDay(tomorrowStr)
     if (tomorrowDay && tomorrowDay.rank === 'SOLEMNITY') {
+      // Path 1 — fixed-date solemnity via sanctoral entry.
       const tomorrowSanctoral = getSanctoralPropers(`${tMM}-${tDD}`)
-      const solemnityFirstVespers = tomorrowSanctoral?.firstVespers
+      let solemnityFirstVespers: FirstVespersPropers | null | undefined =
+        tomorrowSanctoral?.firstVespers
+      // Path 2 — movable solemnity via season-propers special key.
+      // Feed tomorrow's own season + week + name to the resolver so
+      // `resolveSpecialKey` picks the right bucket (ascension /
+      // pentecost / trinitySunday / corpusChristi / sacredHeart /
+      // christTheKing).
+      if (!solemnityFirstVespers) {
+        solemnityFirstVespers = getSeasonFirstVespers(
+          tomorrowDay.season,
+          tomorrowDay.weekOfSeason,
+          tomorrowStr,
+          tomorrowDay.name,
+        )
+      }
       if (solemnityFirstVespers) {
         // Solemnity First Vespers is self-contained — no per-field
         // backstop to the regular seasonal vespers. The PDF prints the
