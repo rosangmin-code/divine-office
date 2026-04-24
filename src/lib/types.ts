@@ -296,6 +296,18 @@ export interface SanctoralEntry {
   lauds?: HourPropers
   vespers?: HourPropers
   vespers2?: HourPropers
+  /**
+   * First Vespers of a Solemnity (FR-156 Phase 3a) — sung the evening
+   * BEFORE the solemnity's calendar date. Mirrors `DayPropers.firstVespers`
+   * for the psalter/season path but lives on the sanctoral entry so the
+   * resolver can look up tomorrow's entry from today's evening and adopt
+   * it when tomorrow carries rank=SOLEMNITY. Sibling to `vespers2` (which
+   * is Second Vespers on the solemnity itself).
+   *
+   * Phase 3a (task #21): schema + resolver wiring. Phase 3b (task #22)
+   * will populate data via PDF extraction into `sanctoral/solemnities.json`.
+   */
+  firstVespers?: FirstVespersPropers
   replacesPsalter?: boolean
   properPsalmody?: {
     lauds?: HourPsalmody

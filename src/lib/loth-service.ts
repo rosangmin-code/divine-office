@@ -100,6 +100,48 @@ export async function assembleHour(
   // injected firstVespers seasonal antiphons never surface.
   let effectiveDayOfWeek: DayOfWeek = dayOfWeek
   let effectiveWeekOfSeason: number = day.weekOfSeason
+
+  // FR-156 Phase 3a: Solemnity First Vespers (highest-priority vespers
+  // override). Any vespers evening — not just Saturday — consults the
+  // NEXT day's liturgical identity; if tomorrow is a SOLEMNITY carrying
+  // `sanctoral.firstVespers`, adopt those propers (and psalms) in full.
+  // This runs BEFORE the Saturday→Sunday Sunday-firstVespers branch so
+  // a Solemnity that lands on a Sunday is rendered as the Solemnity's
+  // 1st Vespers rather than the Sunday's. It also overrides any existing
+  // `seasonPropers` (e.g. ADVENT 12/24 date-key propers displaced when
+  // 12/25 carries Christmas firstVespers).
+  //
+  // Phase 3a (task #21): wiring only — no solemnity file yet carries a
+  // `firstVespers` entry, so every `getSanctoralPropers(tomorrow)?.
+  // firstVespers` returns undefined in production and this branch is a
+  // no-op. Phase 3b (task #22) populates the 27 PDF solemnity entries,
+  // at which point this branch activates automatically.
+  if (hour === 'vespers') {
+    const tomorrowDate = new Date(dateStr + 'T00:00:00Z')
+    tomorrowDate.setUTCDate(tomorrowDate.getUTCDate() + 1)
+    const tMM = String(tomorrowDate.getUTCMonth() + 1).padStart(2, '0')
+    const tDD = String(tomorrowDate.getUTCDate()).padStart(2, '0')
+    const tomorrowStr = `${tomorrowDate.getUTCFullYear()}-${tMM}-${tDD}`
+    const tomorrowDay = getLiturgicalDay(tomorrowStr)
+    if (tomorrowDay && tomorrowDay.rank === 'SOLEMNITY') {
+      const tomorrowSanctoral = getSanctoralPropers(`${tMM}-${tDD}`)
+      const solemnityFirstVespers = tomorrowSanctoral?.firstVespers
+      if (solemnityFirstVespers) {
+        // Solemnity First Vespers is self-contained — no per-field
+        // backstop to the regular seasonal vespers. The PDF prints the
+        // entire 1st Vespers ordinary on the solemnity's own section.
+        seasonPropers = solemnityFirstVespers as HourPropers
+        if (solemnityFirstVespers.psalms && solemnityFirstVespers.psalms.length > 0) {
+          psalmEntries = solemnityFirstVespers.psalms
+        }
+        // Do NOT promote effectiveDayOfWeek/weekOfSeason — solemnity
+        // propers ship full antiphons (no reliance on seasonal variant
+        // resolver per-Sunday buckets). Keeping today's day-of-week
+        // preserves date-specific rendering elsewhere.
+      }
+    }
+  }
+
   if (!seasonPropers && dayOfWeek === 'SAT' && hour === 'vespers') {
     // Next day is Sunday. FR-156: prefer the Sunday's dedicated
     // firstVespers propers when authored (Phase 2, task #20). Falls
