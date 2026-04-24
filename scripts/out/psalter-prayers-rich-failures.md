@@ -1,6 +1,6 @@
 # psalmPrayer Rich 확산 결과 (FR-153h)
 
-- 생성: 2026-04-24T13:11:07.503Z
+- 생성: 2026-04-24T13:51:10.722Z
 - 소요: 11.0s
 - refs total: 137
 - eligible (psalmPrayer + page): 90

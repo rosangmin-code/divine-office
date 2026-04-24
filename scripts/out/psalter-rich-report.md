@@ -15,8 +15,8 @@
 | 1 | 39 |
 | 2 | 52 |
 | 3 | 8 |
-| 4 | 12 |
-| 5 | 6 |
+| 4 | 13 |
+| 5 | 5 |
 | 6 | 5 |
 | 7 | 4 |
 | 8 | 2 |
@@ -27,7 +27,7 @@
 
 ## 라인 수 분포
 
-- min = 5, median = 26, max = 84, sum = 3842
+- min = 5, median = 26, max = 84, sum = 3849
 
 ## refrain 검출 요약
 
@@ -73,7 +73,7 @@ pilot (`psalter-texts.pilot.json`) 대비 main 이 stanza 분할이 coarse 한 r
   - `Judith 16:2-3a, 13-15` — stanza 1, line 21
   - `Psalm 119:145-152` — stanza 1, line 20
   - `Psalm 27:1-6` — stanza 2, line 29
-  - `Psalm 57:2-12` — stanza 2, line 30
+  - `Psalm 57:2-12` — stanza 2, line 38
   - `Psalm 48:2-12` — stanza 2, line 34
   - `Psalm 32:1-11` — stanza 2, line 33
   - `Revelation 11:17-18; 12:10b-12a` — stanza 2, line 24
