@@ -286,3 +286,48 @@ describe('FR-156 Phase 3a — Solemnity First Vespers', () => {
     }
   })
 })
+
+// @fr FR-156 Phase 3b (task #22) — Solemnity data injection (integration).
+// Verifies that the PDF-extracted solemnity firstVespers entries land in
+// sanctoral/solemnities.json + feasts.json at the expected MM-DD keys and
+// that key fields are populated. Byte-equal diffing is owned by
+// scripts/verify-solemnity-first-vespers.js; this test is a quick check
+// that the injection actually happened.
+describe('FR-156 Phase 3b — Solemnity firstVespers data injection', () => {
+  it('Christmas (12-25) carries full firstVespers psalter + readings + intercessions', async () => {
+    const { getSanctoralPropers } = await import('../propers-loader')
+    const entry = getSanctoralPropers('12-25')
+    expect(entry).not.toBeNull()
+    expect(entry!.firstVespers).toBeDefined()
+    const fv = entry!.firstVespers!
+    expect(fv.psalms, 'Christmas firstVespers psalms').toBeDefined()
+    expect(fv.psalms!.length).toBe(3)
+    expect(fv.psalms![0].ref).toBe('Psalm 113')
+    expect(fv.psalms![1].ref).toBe('Psalm 147')
+    expect(fv.psalms![2].ref).toBe('Philippians 2:6-11')
+    expect(fv.shortReading?.ref).toBe('Galatians 4:3-7')
+    expect(fv.gospelCanticleAntiphon).toContain('Нар өглөө тэнгэрт мандахад')
+    expect(fv.intercessions?.length ?? 0).toBeGreaterThan(0)
+    expect(fv.concludingPrayer).toContain('жил бүр Та энэхүү авралын баяраар')
+  })
+
+  it('Motherhood of Mary (01-01) carries Magnificat antiphon + concluding prayer (no own psalms)', async () => {
+    const { getSanctoralPropers } = await import('../propers-loader')
+    const entry = getSanctoralPropers('01-01')
+    expect(entry).not.toBeNull()
+    expect(entry!.firstVespers).toBeDefined()
+    const fv = entry!.firstVespers!
+    // Short solemnity: antiphon + prayer, no own psalms
+    expect(fv.gospelCanticleAntiphon).toContain('Бидний төлөө гэсэн агуу хайраар')
+    expect(fv.concludingPrayer).toBeTruthy()
+    expect(fv.alternativeConcludingPrayer).toBeTruthy()
+  })
+
+  it('Assumption (08-15) firstVespers data present in sanctoral file', async () => {
+    const { getSanctoralPropers } = await import('../propers-loader')
+    const entry = getSanctoralPropers('08-15')
+    expect(entry).not.toBeNull()
+    expect(entry!.firstVespers).toBeDefined()
+    expect(entry!.firstVespers!.gospelCanticleAntiphon).toContain('Харагтун, энэ цагаас хойш')
+  })
+})
