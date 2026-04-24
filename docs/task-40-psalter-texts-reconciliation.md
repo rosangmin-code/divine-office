@@ -8,7 +8,56 @@
 
 ---
 
-## Stage 1 완료
+## Stage 3 완료 (commit <stage-3>, 2026-04-24)
+
+### D2 canticle 5건 전부 RESOLVED
+
+모든 5건 D2 canticle entry 가 verifier manual-review 에서 agree 로 promotion.
+접근: (a) verifier fingerprint tuning (2건 자동 승격) + (b) JSON typo fix per
+PDF canon authoritative 정책 (3건 수기 교정).
+
+**verifier 추가 tuning** (`scripts/verify-psalter-pages.js`):
+- `stanzaFingerprint` 에서 single-line fingerprint 우선 사용 로직 추가. stanza[0]
+  의 첫 non-noise line 이 ≥4 token 을 yield 하면 그것만 fingerprint 로 사용 —
+  multi-line join 은 PDF page-break 에서 running-header 노이즈 ("N дугаар долоо
+  хоног", 요일 header) 에 걸려 매칭 실패 유발. Single-line 은 page-break 에
+  resilient.
+- 효과: 2건 자동 승격 (1 Samuel 2:1-10 stanza[0][0] "ЭЗЭН тандаа зүрх минь
+  баярлана. –" 5-token fingerprint 이 page 229 매칭, Wisdom 9:1-6, 9-11 도
+  동일 패턴). 이전에는 stanza[0] 2-line join 이 page 229↔230 straddle 로
+  매칭 실패.
+
+**JSON typo fix 3건**:
+1. **Exodus 15:1-4a, 8-13, 17-18** stanza[0][1] "Хүлэг **моригийг** унаачтай..."
+   → "Хүлэг **морийг** унаачтай..." (extra `и` 제거). PDF line 5358 기준.
+2. **Isaiah 33:13-16** stanza[0][1] "Юу **хийсний** минь **сонсогтун**,"
+   → "Юу **хийснийг** минь **сонсож**," (PDF line 11906). 2-word 교정.
+3. **Tobit 13:8-11, 13-15** stanza[0][0] "Эзэний **агуу** хүн бүхэн **магтаг**
+   болтугай." → "Эзэний **агууг** хүн бүхэн **магтах** болтугай." (PDF line
+   17001). 2-word 교정.
+
+모두 PDF canon 이 정답 — parsed_data/week*/*.txt 소스 파일들도 PDF 와 일치
+확인. JSON 의 transcription typo 가 단독 오차.
+
+**bonus 발견**: verifier single-line fingerprint tuning 으로 **Revelation
+4:11; 5:9-10, 12** (week-3 TUE vespers psalms[2]) 가 verified-correction 으로
+surface (declared 340 → PDF body-start 339). task #39 분류 기준 C subtype
+이며 Stage 4 dispatch 대상. page 교정 권장 (task #34/#40 Stage 1 Psalm 15/117
+/ Psalm 144:1-10 와 동일 off-by-1 pattern).
+
+**결과**:
+- `verify-psalter-pages.js`: agree **148 → 153** (+5 Stage 3), manual-review
+  **12 → 6** (−6), verified-correction **0 → 1** (Revelation 4:11 Stage 4 대상)
+- `audit-psalter-ref-consistency.js` suspects **7 → 4** (부수 효과)
+- `build-psalter-texts-rich.mjs` 137/137 PASS
+- `build-psalter-prayers-rich.mjs` 90/90 PASS
+- `build-short-readings-rich.mjs` 126/126 PASS
+- `npx vitest run` 273 PASS 0 FAIL
+- `npx tsc --noEmit` 0 errors
+
+---
+
+## Stage 1 완료 (commit feb6420, 2026-04-24)
 
 ### D3 Psalm 144:1-10 at week-4 TUE lauds page 446 → 445 ✅
 

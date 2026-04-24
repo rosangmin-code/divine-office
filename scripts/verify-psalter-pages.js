@@ -136,13 +136,24 @@ function stanzaFingerprint(ref, psalmTexts, tokenCount = 6) {
   // (Roman numerals, doxology) at the head of each stanza when computing
   // the fingerprint — these do not appear at the PDF's declared page
   // body location for split psalms / post-stanza doxology data leaks.
+  //
+  // Within each stanza, prefer a SINGLE-LINE fingerprint when it already
+  // yields ≥ 4 tokens. Multi-line joining produces fingerprints that
+  // span PDF page-breaks, which are polluted by running headers ("2
+  // дугаар долоо хоног", day-of-week) that `buildSourceIndex` does NOT
+  // filter out (only pure-numeric page-marker lines are skipped).
+  // Single-line fingerprints are resilient to that noise.
   for (let si = 0; si < Math.min(2, stanzas.length); si++) {
     const stanza = stanzas[si]
     if (!Array.isArray(stanza) || stanza.length === 0) continue
-    // Drop leading noise lines before joining.
+    // Drop leading noise lines before picking fingerprint source.
     let startLine = 0
     while (startLine < stanza.length && isNoisePrefix(stanza[startLine])) startLine++
     if (startLine >= stanza.length) continue
+    // First try the single leading non-noise line (most resilient).
+    const firstLineToks = tokenize(stanza[startLine]).slice(0, tokenCount)
+    if (firstLineToks.length >= 4) return firstLineToks
+    // Fall back to joining multiple lines of this stanza.
     const toks = tokenize(stanza.slice(startLine).join(' ')).slice(0, tokenCount)
     if (toks.length >= 4) return toks
   }
