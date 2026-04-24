@@ -126,7 +126,10 @@ function main() {
       const block = extracted[String(psalterWeek)]
       if (!block) continue
       const expected = buildExpectedFirstVespers(block, psalterWeek)
-      annotatePagesInPlace(expected, pageIdx)
+      // Pass psalterWeek so the annotator applies the authoritative
+      // PSALTER_WEEK_PAGES map to psalm[0..2] / shortReading /
+      // responsory — matching what the injector writes (task #41).
+      annotatePagesInPlace(expected, pageIdx, psalterWeek)
       const actual = json.weeks?.[weekKey]?.SUN?.firstVespers
       if (!actual) {
         missingCount++

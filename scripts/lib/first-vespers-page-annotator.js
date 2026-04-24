@@ -5,9 +5,18 @@
  *     verify-movable-first-vespers.js (enriches the expected block so
  *     the byte-equal diff covers page fields too — task #36 / NFR-009d)
  *
- * Uses the same fingerprint strategy as `extract-propers-pages.js`:
- * primary source index first, fallback to `full_pdf.txt` with a tighter
- * safeAmbiguousMin.
+ * Strategy per entry:
+ *   1. If `psalterWeek` context is passed (1..4), use the static
+ *      PSALTER_WEEK_PAGES map — the 52 Sunday First Vespers propers
+ *      all delegate to the 4 psalter-week base blocks so their pages
+ *      are identical across sibling entries. Fingerprint matching on
+ *      shared texts like "Нар мандахаас жаргах хүртэл…" picks up
+ *      false positives from unrelated PDF sections (task #36 injected
+ *      15 psalter-1 shortReading pages as 571 and 12 psalter-3
+ *      responsory pages as 541 — wrong; task #41 replaces with map).
+ *   2. Otherwise (sanctoral / movable / non-psalter blocks) fall back
+ *      to the fingerprint path (propers_full.txt + hymns_full.txt,
+ *      then full_pdf.txt with safeAmbiguousMin=15).
  */
 
 const path = require('path')
@@ -47,13 +56,48 @@ function lookupWithFallback(text, idx) {
 }
 
 /**
- * Mutate a firstVespers block in-place, adding page fields for every
- * text field that resolves to a page via fingerprint. Leaves missed
- * fields alone (no page key inserted). Existing page values are
- * overwritten when a match is found.
+ * Static page map for the 4-week psalter First Vespers cycle. Derived
+ * from `parsed_data/full_pdf.txt` by walking the "Хариу залбирал" /
+ * "Шад дуулал" / "Уншлага" markers within each psalter-week block
+ * (task #41 audit — see PRD FR-156). These pages are authoritative
+ * for every propers/*.json Sunday firstVespers that maps to the
+ * corresponding psalter week via the season → week mapping:
+ *
+ *   advent: 1→1, 2→2, 3→3, 4→4
+ *   lent: 1→1, 2→2, 3→3, 4→4, 5→1, 6→2
+ *   easter: 2→2, 3→3, 4→4, 5→1, 6→2, 7→3
+ *   christmas: holyFamily→1, baptism→1
+ *   ordinary-time: week i → ((i-1) % 4) + 1
+ *
+ * NOT applied to sanctoral/*.json entries (solemnities/feasts) nor to
+ * movable keys (ascension/pentecost/trinitySunday/corpusChristi/
+ * sacredHeart/christTheKing) — those have PDF-specific page sections
+ * and fingerprint matching works correctly for them.
  */
-function annotatePagesInPlace(fv, idx) {
+const PSALTER_WEEK_PAGES = {
+  1: { psalm0: 49, psalm1: 51, psalm2: 53, shortReading: 55, responsory: 55 },
+  2: { psalm0: 166, psalm1: 168, psalm2: 170, shortReading: 171, responsory: 172 },
+  3: { psalm0: 287, psalm1: 289, psalm2: 290, shortReading: 292, responsory: 292 },
+  4: { psalm0: 398, psalm1: 400, psalm2: 401, shortReading: 402, responsory: 403 },
+}
+
+/**
+ * Mutate a firstVespers block in-place, adding page fields.
+ *
+ * When `psalterWeek` (1..4) is provided, the psalm[0..2] / shortReading /
+ * responsory pages come from PSALTER_WEEK_PAGES (authoritative) —
+ * other fields (concludingPrayer / GC antiphon / alt prayer /
+ * intercessions) still use the fingerprint path because they're
+ * per-Sunday-distinct and not delegated to the psalter block.
+ *
+ * Without `psalterWeek`, every field uses the fingerprint path.
+ *
+ * Existing page values are overwritten when a new page is resolved —
+ * callers that want to preserve prior values should skip this call.
+ */
+function annotatePagesInPlace(fv, idx, psalterWeek = null) {
   if (!fv || typeof fv !== 'object') return
+  const psalterMap = psalterWeek && PSALTER_WEEK_PAGES[psalterWeek]
 
   const PROSE_PAIRS = [
     ['concludingPrayer', 'concludingPrayerPage'],
@@ -77,35 +121,53 @@ function annotatePagesInPlace(fv, idx) {
 
   if (fv.shortReading && typeof fv.shortReading === 'object' && !Array.isArray(fv.shortReading)) {
     const sr = fv.shortReading
-    const candidate = typeof sr.text === 'string' && sr.text.trim() ? sr.text : sr.ref
-    if (typeof candidate === 'string' && candidate.trim()) {
-      const page = lookupWithFallback(candidate, idx)
-      if (page !== null) sr.page = page
+    if (psalterMap) {
+      sr.page = psalterMap.shortReading
+    } else {
+      const candidate = typeof sr.text === 'string' && sr.text.trim() ? sr.text : sr.ref
+      if (typeof candidate === 'string' && candidate.trim()) {
+        const page = lookupWithFallback(candidate, idx)
+        if (page !== null) sr.page = page
+      }
     }
   }
 
   if (fv.responsory && typeof fv.responsory === 'object' && !Array.isArray(fv.responsory)) {
     const r = fv.responsory
-    const full = typeof r.fullResponse === 'string' ? r.fullResponse.trim() : ''
-    const v = typeof r.versicle === 'string' ? r.versicle.trim() : ''
-    const short = typeof r.shortResponse === 'string' ? r.shortResponse.trim() : ''
-    const tries = []
-    if (full && v) tries.push(`${full} ${v}`)
-    if (full) tries.push(full)
-    if (v && short) tries.push(`${v} ${short}`)
-    if (v) tries.push(v)
-    if (short) tries.push(short)
-    let page = null
-    for (const t of tries) {
-      page = lookupWithFallback(t, idx)
-      if (page !== null) break
+    if (psalterMap) {
+      r.page = psalterMap.responsory
+    } else {
+      const full = typeof r.fullResponse === 'string' ? r.fullResponse.trim() : ''
+      const v = typeof r.versicle === 'string' ? r.versicle.trim() : ''
+      const short = typeof r.shortResponse === 'string' ? r.shortResponse.trim() : ''
+      const tries = []
+      if (full && v) tries.push(`${full} ${v}`)
+      if (full) tries.push(full)
+      if (v && short) tries.push(`${v} ${short}`)
+      if (v) tries.push(v)
+      if (short) tries.push(short)
+      let page = null
+      for (const t of tries) {
+        page = lookupWithFallback(t, idx)
+        if (page !== null) break
+      }
+      if (page !== null) r.page = page
     }
-    if (page !== null) r.page = page
   }
 
   if (Array.isArray(fv.psalms)) {
-    for (const p of fv.psalms) {
+    for (let i = 0; i < fv.psalms.length; i++) {
+      const p = fv.psalms[i]
       if (!p || typeof p !== 'object') continue
+      if (psalterMap) {
+        // Map index 0/1/2 → psalm0/psalm1/psalm2. Skip higher indices
+        // (shouldn't occur in psalter blocks which always have 3 slots).
+        const key = `psalm${i}`
+        if (psalterMap[key] !== undefined) {
+          p.page = psalterMap[key]
+          continue
+        }
+      }
       const candidate = typeof p.default_antiphon === 'string' && p.default_antiphon.trim()
         ? p.default_antiphon
         : p.ref
@@ -116,8 +178,38 @@ function annotatePagesInPlace(fv, idx) {
   }
 }
 
+/**
+ * Season → weekKey → psalterWeek. Mirror of the MAPPINGS constant in
+ * scripts/verify-first-vespers.js. Used by the injector and the
+ * verifier to map a propers/*.json Sunday entry back to its psalter
+ * cycle number so `annotatePagesInPlace(fv, idx, psalterWeek)` can
+ * apply PSALTER_WEEK_PAGES.
+ *
+ * Sanctoral files (solemnities/feasts) and movable special keys
+ * (ascension/pentecost/trinitySunday/corpusChristi/sacredHeart/
+ * christTheKing) are NOT in this map — they use fingerprint.
+ */
+const PSALTER_WEEK_MAPPING = {
+  advent: { 1: 1, 2: 2, 3: 3, 4: 4 },
+  lent: { 1: 1, 2: 2, 3: 3, 4: 4, 5: 1, 6: 2 },
+  easter: { 2: 2, 3: 3, 4: 4, 5: 1, 6: 2, 7: 3 },
+  christmas: { holyFamily: 1, baptism: 1 },
+  'ordinary-time': Object.fromEntries(
+    Array.from({ length: 34 }, (_, i) => [String(i + 1), ((i) % 4) + 1]),
+  ),
+}
+
+function getPsalterWeekFromMapping(season, weekKey) {
+  const m = PSALTER_WEEK_MAPPING[season]
+  if (!m) return null
+  return m[weekKey] ?? null
+}
+
 module.exports = {
   buildPageIndex,
   annotatePagesInPlace,
   lookupWithFallback,
+  PSALTER_WEEK_PAGES,
+  PSALTER_WEEK_MAPPING,
+  getPsalterWeekFromMapping,
 }
