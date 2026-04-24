@@ -244,10 +244,44 @@ export interface MarianAntiphonCandidate {
   page?: number
 }
 
+/**
+ * First Vespers of Sunday — extends HourPropers with an optional own
+ * `psalms` array.
+ *
+ * Roman Rite: 일요일 Vespers 는 두 번 노래된다. 토요일 저녁 = 다가오는
+ * Sunday 의 "1st Vespers", 일요일 저녁 = 같은 Sunday 의 "2nd Vespers"
+ * (=regular Sunday vespers). 1st Vespers 는 자체 proper psalms + 각
+ * psalm 의 전용 default antiphon/seasonal variant 를 가지며, 기존
+ * `HourPropers` 의 antiphons/shortReading/responsory/... 슬롯 외에
+ * PDF 의 "1 дүгээр Оройн даатгал залбирал" 섹션에 인쇄된 `psalms`
+ * 배열을 own 한다. 부재 시 consumer 는 기존 Sunday regular vespers 로
+ * fallback (loth-service 의 SAT+vespers 분기 참조).
+ *
+ * Phase 1 (task #19): 스키마 + resolver wiring. 실제 데이터 주입은
+ * Phase 2 (task #20) 에서 PDF 추출로 수행.
+ */
+export interface FirstVespersPropers extends HourPropers {
+  /**
+   * Override psalm 배열 — 4-week psalter 의 Saturday vespers 기본값을
+   * 대체해 First Vespers 전용 psalm 들을 렌더. 각 entry 는 psalter 와
+   * 동일한 PsalmEntry 구조 (ref / antiphon_key / default_antiphon /
+   * seasonal_antiphons 포함) 이므로 FR-155 의 variant resolver 가
+   * 동일하게 작동.
+   */
+  psalms?: PsalmEntry[]
+}
+
 export interface DayPropers {
   lauds?: HourPropers
   vespers?: HourPropers
   compline?: HourPropers
+  /**
+   * First Vespers of Sunday (Saturday 저녁에 채택). Sunday 의
+   * DayPropers 에 주입하며, resolver 가 `SAT + vespers` 조회 시 다음
+   * Sunday 의 `firstVespers` 를 먼저 확인하고 존재 시 우선 사용한다
+   * (FR-156).
+   */
+  firstVespers?: FirstVespersPropers
 }
 
 export interface SeasonPropers {

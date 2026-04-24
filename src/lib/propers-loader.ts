@@ -1,4 +1,4 @@
-import type { DayPropers, HourPropers, HourType, LiturgicalSeason, DayOfWeek, SanctoralEntry, HymnCandidate, OptionalMemorialEntry } from './types'
+import type { DayPropers, FirstVespersPropers, HourPropers, HourType, LiturgicalSeason, DayOfWeek, SanctoralEntry, HymnCandidate, OptionalMemorialEntry } from './types'
 import fs from 'fs'
 import path from 'path'
 import {
@@ -96,6 +96,65 @@ export function getSeasonHourPropers(
   if (!dayPropers) return null
 
   return (dayPropers[hour as keyof DayPropers] as HourPropers) ?? null
+}
+
+/**
+ * Look up the First Vespers of Sunday proper for a given season/week.
+ *
+ * Saturday evening physically sings the 1st Vespers of the upcoming Sunday
+ * (Roman Rite). Callers pass the Sunday's week-of-season (i.e. the NEXT
+ * week relative to the Saturday's own `weekOfSeason`) to retrieve
+ * `weeks[weekKey].SUN.firstVespers` if present. Returns `null` when the
+ * season JSON has no firstVespers authored for that Sunday — callers
+ * should then fall through to `getSeasonHourPropers(... 'SUN', 'vespers'
+ * ...)` (the regular/2nd-Vespers propers) so existing behaviour is
+ * preserved.
+ *
+ * Phase 1 (task #19): resolver wiring only — no propers JSON carries a
+ * firstVespers slot yet. Phase 2 (task #20) will populate it via PDF
+ * extraction, and this helper then becomes the active lookup path.
+ */
+export function getSeasonFirstVespers(
+  season: LiturgicalSeason,
+  sundayWeekOfSeason: number,
+  dateStr?: string,
+  celebrationName?: string,
+): FirstVespersPropers | null {
+  const weeks = loadSeasonPropers(season)
+
+  // Date-keyed overrides (ADVENT 12/17-24) — check `firstVespers` on the
+  // Sunday entry under the date key. Rare but parallels the regular
+  // propers lookup.
+  if (dateStr) {
+    const date = new Date(dateStr + 'T00:00:00Z')
+    const month = date.getUTCMonth() + 1
+    const dayOfMonth = date.getUTCDate()
+    const dateKey = `dec${dayOfMonth}`
+    if (month === 12 && dayOfMonth >= 17 && dayOfMonth <= 24) {
+      const dateDayPropers = weeks[dateKey]?.['SUN']
+      const fv = (dateDayPropers as DayPropers | undefined)?.firstVespers
+      if (fv) return fv
+    }
+  }
+
+  // Easter special keys — same pattern.
+  if (season === 'EASTER' && celebrationName) {
+    const lower = celebrationName.toLowerCase()
+    let specialKey: string | null = null
+    if (lower.includes('easter sunday') || lower === 'easter sunday') specialKey = 'easterSunday'
+    else if (lower.includes('ascension')) specialKey = 'ascension'
+    else if (lower.includes('pentecost')) specialKey = 'pentecost'
+    if (specialKey) {
+      const specialDayPropers = weeks[specialKey]?.['SUN']
+      const fv = (specialDayPropers as DayPropers | undefined)?.firstVespers
+      if (fv) return fv
+    }
+  }
+
+  const weekKey = String(sundayWeekOfSeason)
+  const dayPropers = weeks[weekKey]?.['SUN'] ?? weeks['1']?.['SUN']
+  if (!dayPropers) return null
+  return (dayPropers as DayPropers).firstVespers ?? null
 }
 
 // Cache for sanctoral propers
