@@ -26,6 +26,7 @@ import {
   dateToDayOfWeek,
   resolvePsalm,
   mergeComplineDefaults,
+  promoteToFirstVespersIdentity,
 } from './hours'
 import { applySeasonalAntiphon, pickSeasonalVariant } from './hours/seasonal-antiphon'
 import { warmBibleCache } from './bible-loader'
@@ -170,28 +171,18 @@ export async function assembleHour(
           psalmEntries = solemnityFirstVespers.psalms
         }
         // Promote effectiveDayOfWeek/weekOfSeason to tomorrow's
-        // identity — the liturgical identity of this evening IS the
-        // Solemnity's 1st Vespers, so downstream `pickSeasonalVariant`
-        // must see tomorrow's (dayOfWeek, weekOfSeason) to resolve
-        // per-Sunday / per-week seasonal_antiphons correctly.
-        //
-        // REQUIRED for movable solemnities whose firstVespers falls
-        // through `getSeasonFirstVespers` → `weeks[<specialKey or weekN>].SUN`,
-        // reusing per-week Phase 2 data that carries seasonal_antiphons.
-        // Example: Palm Sunday Eve (SAT Lent W5 → SUN Lent W6 SOLEMNITY).
-        // Without promotion, pickSeasonalVariant sees (SAT, W5) and
-        // fails the `dayOfWeek === 'SUN'` gate for lentPassionSunday,
-        // falling back to default_antiphon (Easter alleluia variant).
-        // With promotion (SUN, W6), lentPassionSunday fires as authored.
-        //
-        // NO-OP for fixed sanctoral solemnities (Christmas, Assumption,
-        // Sts. Peter & Paul, etc.) whose psalms carry no
-        // seasonal_antiphons — promotion affects variant lookup only.
-        //
-        // Mirrors the Saturday→Sunday firstVespers branch (L197-204)
-        // which applies the same promotion for regular Sunday eves.
-        effectiveDayOfWeek = dateToDayOfWeek(tomorrowStr)
-        effectiveWeekOfSeason = tomorrowDay.weekOfSeason
+        // identity via `promoteToFirstVespersIdentity`. IDENTICAL
+        // semantic to the Saturday→Sunday branch below — task #32
+        // extracted the helper specifically so both sites stay textually
+        // aligned. See `src/lib/hours/first-vespers-identity.ts` for
+        // the full rationale (and the FR-156 Phase 4c task #25
+        // regression that motivated the helper).
+        ;({ effectiveDayOfWeek, effectiveWeekOfSeason } =
+          promoteToFirstVespersIdentity(
+            tomorrowStr,
+            dateToDayOfWeek(tomorrowStr),
+            tomorrowDay.weekOfSeason,
+          ))
       }
     }
   }
@@ -226,10 +217,17 @@ export async function assembleHour(
         psalmEntries = firstVespers.psalms
       }
       // The liturgical identity of Saturday 1st Vespers IS Sunday —
-      // promote dayOfWeek/weekOfSeason so pickSeasonalVariant fires the
-      // per-Sunday branches (lentSunday, easterSunday, lentPassionSunday).
-      effectiveDayOfWeek = 'SUN'
-      effectiveWeekOfSeason = nextWeek
+      // promote dayOfWeek/weekOfSeason via `promoteToFirstVespersIdentity`
+      // so pickSeasonalVariant fires the per-Sunday branches
+      // (lentSunday, easterSunday, lentPassionSunday). IDENTICAL
+      // semantic to the solemnity branch above.
+      const sundayDate = new Date(dateStr + 'T00:00:00Z')
+      sundayDate.setUTCDate(sundayDate.getUTCDate() + 1)
+      const sMM = String(sundayDate.getUTCMonth() + 1).padStart(2, '0')
+      const sDD = String(sundayDate.getUTCDate()).padStart(2, '0')
+      const sundayStr = `${sundayDate.getUTCFullYear()}-${sMM}-${sDD}`
+      ;({ effectiveDayOfWeek, effectiveWeekOfSeason } =
+        promoteToFirstVespersIdentity(sundayStr, 'SUN', nextWeek))
     } else {
       // Pre-Phase-2 path: reuse the upcoming Sunday's regular (2nd) Vespers propers.
       seasonPropers = sundayRegular
