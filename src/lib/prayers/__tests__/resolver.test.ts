@@ -383,6 +383,187 @@ describe('resolveRichOverlay', () => {
       expect(overlay.shortReadingRich).toBeUndefined()
     })
   })
+
+  // Task #58 — Ordinary Time weekday sanity gate.
+  //
+  // Context: task #54 fix tightened seasonal wk1 fallback so EASTER/LENT/ADVENT
+  // weeks 2..N inherit weeks['1'] rich. ORDINARY_TIME was diagnosed as outside
+  // the impact window because OT only authors Sunday rich (no weekday seasonal
+  // rich files), so loadSeasonalRichOverlay returns null for OT weekdays and
+  // psalter commons rich passes through cleanly. These tests pin that
+  // diagnosis: for OT weekdays, seasonal rich resolves to null + psalter
+  // commons rich becomes the carrier — and the resolved field carries the
+  // psalter-commons source metadata (psalterWeek + dayKey + hour) so renderers
+  // can attribute the body correctly.
+  //
+  // Source-metadata assertion is the key signal: a regression that bled a
+  // seasonal Sunday rich into a weekday slot would either replace the source
+  // (kind:'seasonal') or leave it absent. The shortReadingRich body alone is
+  // not specific enough — both seasonal and psalter-commons could carry the
+  // same makePrayer() text in a buggy build.
+  describe('ordinary time weekday sanity (task #58)', () => {
+    function makePsalterCommonsPrayer(
+      label: string,
+      psalterWeek: string,
+      dayKey: string,
+      hour: string,
+    ): PrayerText {
+      return {
+        blocks: [{ kind: 'para', spans: [{ kind: 'text', text: label }] }],
+        page: 100,
+        // Mirrors the on-disk convention — see commons/psalter/w3-SAT-lauds.rich.json
+        // which embeds {kind: 'psalter-commons', psalterWeek, dayKey, hour}.
+        // The TS PrayerSourceRef union does not declare `psalter-commons`
+        // (the runtime uses a wider tag set than the type), so we cast.
+        source: {
+          kind: 'psalter-commons',
+          psalterWeek,
+          dayKey,
+          hour,
+        } as unknown as PrayerText['source'],
+      }
+    }
+
+    it('OT wk3 SAT lauds — seasonal rich null, psalter commons passes through with source metadata', () => {
+      // No seasonal/ordinary-time/wN-SAT-lauds.rich.json files written →
+      // loadSeasonalRichOverlay returns null (OT authors only Sunday weekKey;
+      // weekday slots are intentionally absent) and the resolver spreads
+      // psalter commons through unmodified.
+      fileContents['commons/psalter/w3-SAT-lauds.rich.json'] = JSON.stringify({
+        shortReadingRich: makePsalterCommonsPrayer(
+          'OT wk3 SAT lauds psalter body',
+          '3',
+          'SAT',
+          'lauds',
+        ),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'ORDINARY_TIME',
+        weekKey: '3',
+        day: 'SAT',
+        hour: 'lauds',
+        psalterWeek: 3,
+        celebrationName: 'Saturday of the Third Week in Ordinary Time',
+      })
+
+      expect(overlay.shortReadingRich).toBeDefined()
+      expect(overlay.shortReadingRich?.source).toEqual({
+        kind: 'psalter-commons',
+        psalterWeek: '3',
+        dayKey: 'SAT',
+        hour: 'lauds',
+      })
+      expect(overlay.shortReadingRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'OT wk3 SAT lauds psalter body' }],
+      })
+    })
+
+    it('OT wk7 MON vespers — psalter commons (psalterWeek 3) flows through with intact source', () => {
+      // OT wk7 → psalterWeek = (7-1) % 4 + 1 = 3 in the live cycle. Test
+      // explicitly drives psalterWeek=3 to mirror loth-service composition.
+      fileContents['commons/psalter/w3-MON-vespers.rich.json'] = JSON.stringify({
+        shortReadingRich: makePsalterCommonsPrayer(
+          'OT wk7 MON vespers psalter body',
+          '3',
+          'MON',
+          'vespers',
+        ),
+        responsoryRich: makePsalterCommonsPrayer(
+          'OT wk7 MON vespers responsory',
+          '3',
+          'MON',
+          'vespers',
+        ),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'ORDINARY_TIME',
+        weekKey: '7',
+        day: 'MON',
+        hour: 'vespers',
+        psalterWeek: 3,
+        celebrationName: 'Monday of the Seventh Week in Ordinary Time',
+      })
+
+      expect(overlay.shortReadingRich?.source).toMatchObject({
+        kind: 'psalter-commons',
+        psalterWeek: '3',
+        dayKey: 'MON',
+        hour: 'vespers',
+      })
+      expect(overlay.responsoryRich?.source).toMatchObject({
+        kind: 'psalter-commons',
+        psalterWeek: '3',
+        dayKey: 'MON',
+        hour: 'vespers',
+      })
+    })
+
+    it('OT wk20 WED lauds — psalter commons (psalterWeek 4) fallback to null seasonal', () => {
+      // OT wk20 → psalterWeek = (20-1) % 4 + 1 = 4.
+      fileContents['commons/psalter/w4-WED-lauds.rich.json'] = JSON.stringify({
+        shortReadingRich: makePsalterCommonsPrayer(
+          'OT wk20 WED lauds psalter body',
+          '4',
+          'WED',
+          'lauds',
+        ),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'ORDINARY_TIME',
+        weekKey: '20',
+        day: 'WED',
+        hour: 'lauds',
+        psalterWeek: 4,
+        celebrationName: 'Wednesday of the Twentieth Week in Ordinary Time',
+      })
+
+      expect(overlay.shortReadingRich?.source).toMatchObject({
+        kind: 'psalter-commons',
+        psalterWeek: '4',
+        dayKey: 'WED',
+        hour: 'lauds',
+      })
+      expect(overlay.shortReadingRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'OT wk20 WED lauds psalter body' }],
+      })
+    })
+
+    it('OT weekday — seasonal rich would override psalter commons IF authored (negative-path guard)', () => {
+      // Explicit negative-path guard: if a future OT weekday seasonal rich
+      // file were authored, the resolver MUST prefer it over psalter commons
+      // (per the priority chain documented in resolveRichOverlay). This test
+      // documents the regression risk: silently authoring an OT weekday
+      // seasonal rich file would shadow psalter commons. Currently no such
+      // file exists on disk, but the resolver contract is verified.
+      fileContents['commons/psalter/w3-FRI-lauds.rich.json'] = JSON.stringify({
+        shortReadingRich: makePsalterCommonsPrayer(
+          'psalter commons body (must be shadowed)',
+          '3',
+          'FRI',
+          'lauds',
+        ),
+      })
+      fileContents['seasonal/ordinary-time/w7-FRI-lauds.rich.json'] = JSON.stringify({
+        shortReadingRich: makePrayer('hypothetical OT seasonal weekday body'),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'ORDINARY_TIME',
+        weekKey: '7',
+        day: 'FRI',
+        hour: 'lauds',
+        psalterWeek: 3,
+      })
+
+      // Seasonal wins per the priority chain (spread order in resolveRichOverlay).
+      expect(overlay.shortReadingRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'hypothetical OT seasonal weekday body' }],
+      })
+    })
+  })
 })
 
 describe('loadHymnRichOverlay', () => {
