@@ -681,6 +681,181 @@ describe('resolveRichOverlay', () => {
       expect(overlay.shortReadingRich).toBeUndefined()
     })
   })
+
+  // Task #61 — Christmas special-key disk file load.
+  //
+  // CHRISTMAS season uses a mix of date-based (dec25/jan1/octave) and
+  // name-based (holyFamily/baptism/epiphany) matching. The rich-overlay
+  // Tier 1 path now falls back from day-specific to SUN-slot when the
+  // requested day file is absent — important for Christmas Day on a
+  // weekday (e.g. 2026-12-25 is FRI, only authored slot is wdec25-SUN-*).
+  describe('Christmas special-key load (task #61)', () => {
+    it('Christmas Day on a Friday (2026-12-25) — loads wdec25-SUN-lauds rich via SUN fallback', () => {
+      fileContents['seasonal/christmas/wdec25-SUN-lauds.rich.json'] = JSON.stringify({
+        shortReadingRich: makePrayer('Christmas Day reading'),
+        intercessionsRich: makePrayer('Christmas Day intercessions'),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'CHRISTMAS',
+        weekKey: '1',
+        day: 'FRI',
+        hour: 'lauds',
+        celebrationName: 'The Nativity of the Lord',
+        dateStr: '2026-12-25',
+      })
+
+      expect(overlay.shortReadingRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'Christmas Day reading' }],
+      })
+      expect(overlay.intercessionsRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'Christmas Day intercessions' }],
+      })
+    })
+
+    it('Mary, Mother of God (01-01 on a Thursday) — loads wjan1-SUN-vespers rich', () => {
+      // 2026-01-01 is a Thursday. wjan1-SUN-vespers carries the canonical
+      // formulary; SUN fallback retrieves it on a non-Sunday date.
+      fileContents['seasonal/christmas/wjan1-SUN-vespers.rich.json'] = JSON.stringify({
+        concludingPrayerRich: makePrayer('Mary Mother of God concluding prayer'),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'CHRISTMAS',
+        weekKey: '1',
+        day: 'THU',
+        hour: 'vespers',
+        celebrationName: 'Solemnity of Mary, Mother of God',
+        dateStr: '2026-01-01',
+      })
+
+      expect(overlay.concludingPrayerRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'Mary Mother of God concluding prayer' }],
+      })
+    })
+
+    it('Holy Family (Sunday) — loads wholyFamily-SUN-lauds rich (name-matched)', () => {
+      fileContents['seasonal/christmas/wholyFamily-SUN-lauds.rich.json'] = JSON.stringify({
+        concludingPrayerRich: makePrayer('Holy Family concluding'),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'CHRISTMAS',
+        weekKey: '1',
+        day: 'SUN',
+        hour: 'lauds',
+        celebrationName: 'The Holy Family of Jesus, Mary and Joseph',
+        dateStr: '2025-12-28',
+      })
+
+      expect(overlay.concludingPrayerRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'Holy Family concluding' }],
+      })
+    })
+
+    it('Baptism of the Lord (Sunday) — loads wbaptism-SUN-vespers rich (name-matched)', () => {
+      fileContents['seasonal/christmas/wbaptism-SUN-vespers.rich.json'] = JSON.stringify({
+        concludingPrayerRich: makePrayer('Baptism of the Lord concluding prayer'),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'CHRISTMAS',
+        weekKey: '1',
+        day: 'SUN',
+        hour: 'vespers',
+        celebrationName: 'The Baptism of the Lord',
+        dateStr: '2026-01-11',
+      })
+
+      expect(overlay.concludingPrayerRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'Baptism of the Lord concluding prayer' }],
+      })
+    })
+
+    it('Epiphany (date 01-06 on Tuesday) — loads wepiphany-SUN-lauds rich via name match + SUN fallback', () => {
+      fileContents['seasonal/christmas/wepiphany-SUN-lauds.rich.json'] = JSON.stringify({
+        intercessionsRich: makePrayer('Epiphany intercessions'),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'CHRISTMAS',
+        weekKey: '1',
+        day: 'TUE',
+        hour: 'lauds',
+        celebrationName: 'The Epiphany of the Lord',
+        dateStr: '2026-01-06',
+      })
+
+      expect(overlay.intercessionsRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'Epiphany intercessions' }],
+      })
+    })
+
+    it('Christmas Octave weekday (12-29 Mon) — loads woctave-SUN-lauds via date-key + SUN fallback', () => {
+      fileContents['seasonal/christmas/woctave-SUN-lauds.rich.json'] = JSON.stringify({
+        shortReadingRich: makePrayer('Christmas Octave reading'),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'CHRISTMAS',
+        weekKey: '1',
+        day: 'MON',
+        hour: 'lauds',
+        // romcal celebrationName for Octave weekdays varies — relying on
+        // dateStr (12-26..31) is the stable matcher.
+        celebrationName: '5th day in the Octave of Christmas',
+        dateStr: '2025-12-29',
+      })
+
+      expect(overlay.shortReadingRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'Christmas Octave reading' }],
+      })
+    })
+
+    it('regression — EASTER Ascension on Thursday with day-specific file MISSING uses SUN fallback', () => {
+      // The new SUN fallback also benefits #57's Ascension Thursday case.
+      // Previously day=THU returned null (only wascension-SUN-* exists);
+      // now Tier 1 finds the SUN-slot file. This is an enhancement, not a
+      // regression — the prior #57 e2e ("page renders without breakage")
+      // still passes.
+      fileContents['seasonal/easter/wascension-SUN-lauds.rich.json'] = JSON.stringify({
+        concludingPrayerRich: makePrayer('ascension concluding (SUN slot)'),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'EASTER',
+        weekKey: '7',
+        day: 'THU',
+        hour: 'lauds',
+        celebrationName: 'Ascension of the Lord',
+        dateStr: '2026-05-14',
+      })
+
+      expect(overlay.concludingPrayerRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'ascension concluding (SUN slot)' }],
+      })
+    })
+
+    it('regression — Christmas date with NO matching special-key returns null (Tier 1 miss)', () => {
+      // 2026-01-15 is a CHRISTMAS-season weekday post-Baptism (epiphanyWeek
+      // territory, but `resolveSpecialKey` does not yet match epiphanyWeek
+      // — left as a documented follow-up). With no special-key match,
+      // Tier 1 falls through; christmas.json has no numeric '1' entry so
+      // Tier 2/3 also miss in production. This test simulates an empty
+      // disk and asserts the resolver returns no overlay.
+      const overlay = resolveRichOverlay({
+        season: 'CHRISTMAS',
+        weekKey: '2',
+        day: 'THU',
+        hour: 'lauds',
+        celebrationName: 'Thursday after Epiphany',
+        dateStr: '2026-01-15',
+      })
+
+      expect(overlay.shortReadingRich).toBeUndefined()
+      expect(overlay.intercessionsRich).toBeUndefined()
+    })
+  })
 })
 
 describe('loadHymnRichOverlay', () => {

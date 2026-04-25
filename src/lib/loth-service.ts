@@ -356,6 +356,7 @@ export async function assembleHour(
     sanctoralKey: sanctoral ? dateKey : null,
     psalterWeek: day.psalterWeek,
     celebrationName: day.name,
+    dateStr,
   })
   mergedPropers = { ...mergedPropers, ...richOverlay }
 

@@ -68,6 +68,13 @@ export const DATES = {
   ascensionDay2026: '2026-05-14',       // Ascension Thursday (movable solemnity day-of)
   pentecostDay2026: '2026-05-24',       // Pentecost Sunday (movable solemnity day-of)
 
+  // Task #61 — Christmas special-key load. Christmas Day 2026-12-25
+  // falls on a Friday; the only authored rich slot is wdec25-SUN-*,
+  // so the resolver's day-specific → SUN-slot fallback must pick up
+  // the canonical Christmas Day formulary.
+  christmasDay2026: '2026-12-25',
+  maryMotherOfGod2026: '2026-01-01',    // Solemnity of Mary, Mother of God (Thursday)
+
   // FR-156 task #30 — FEAST rank First Vespers eves.
   // Resolver now accepts rank === 'FEAST' so the 4 feast entries whose
   // PDF authors 1st Vespers (02-02, 08-06, 09-14, 11-09) surface on

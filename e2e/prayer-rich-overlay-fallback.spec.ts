@@ -120,15 +120,56 @@ test.describe('seasonal rich overlay special-key load (task #57)', () => {
     await expect(prayerSection).toBeVisible()
   })
 
-  test('Ascension Thursday lauds — page renders without breakage (no SUN-slot rich match)', async ({
+  test('Ascension Thursday lauds — page renders cleanly (now picks up SUN-slot via fallback)', async ({
     page,
   }) => {
-    // 2026-05-14 day === 'THU'. The seasonal rich loader composes
-    // `seasonal/easter/wascension-THU-lauds.rich.json` which does NOT
-    // exist on disk (only the SUN-slot file is authored). Tier 1 returns
-    // null and Tier 2/3 also miss; the page must still render the JSON
-    // propers + psalter cycle bodies cleanly without console errors.
+    // 2026-05-14 day === 'THU'. Task #61 adds a SUN-slot fallback to
+    // the Tier 1 special-key load, so wascension-SUN-lauds.rich.json
+    // now applies on Thursday too. The page must still render cleanly.
     await page.goto(`/pray/${DATES.ascensionDay2026}/lauds`)
     await expect(page.locator('article')).toBeVisible()
+  })
+})
+
+// @fr FR-153
+// Task #61 — Christmas special-key disk file load. resolveSpecialKey
+// now returns Christmas keys (dec25/jan1/octave by date, holyFamily/
+// baptism/epiphany by name); rich-overlay Tier 1 with SUN-slot fallback
+// picks up the canonical formulary even on weekdays.
+test.describe('Christmas rich overlay special-key load (task #61)', () => {
+  test('Christmas Day on Friday (2026-12-25) lauds — shortReading renders rich shape', async ({
+    page,
+  }) => {
+    // 2026-12-25 = Friday. wdec25-SUN-lauds.rich.json carries
+    // shortReadingRich (+ intercessions/responsory/concludingPrayer /
+    // alternativeConcludingPrayer). The resolver's day → SUN fallback
+    // retrieves the SUN-slot file even though day !== 'SUN'.
+    //
+    // Rigorous text-content verification lives in
+    // `src/lib/__tests__/loth-service.test.ts` ("Christmas special-key
+    // rich integration" describe) which calls `assembleHour` directly
+    // against the real disk. This e2e covers the rendering shape:
+    // RichContent wrapper present, no legacy `<sup>` verse markers.
+    await page.goto(`/pray/${DATES.christmasDay2026}/lauds`)
+    const section = page.locator('section[aria-label="Уншлага"]')
+    await expect(section).toBeVisible()
+
+    const richWrapper = section.locator('div.space-y-2')
+    await expect(richWrapper).toHaveCount(1)
+    await expect(section.locator('sup')).toHaveCount(0)
+  })
+
+  test('Mary Mother of God (2026-01-01 Thursday) vespers — concluding prayer section renders cleanly', async ({
+    page,
+  }) => {
+    // 2026-01-01 = Thursday. wjan1-SUN-vespers.rich.json carries
+    // concludingPrayerRich. The resolver's date-matched special-key
+    // ('jan1') + SUN fallback retrieves it on a non-Sunday.
+    await page.goto(`/pray/${DATES.maryMotherOfGod2026}/vespers`)
+    await expect(page.locator('article')).toBeVisible()
+    const prayerSection = page.locator(
+      'section[aria-label="Төгсгөлийн даатгал залбирал"]',
+    ).first()
+    await expect(prayerSection).toBeVisible()
   })
 })

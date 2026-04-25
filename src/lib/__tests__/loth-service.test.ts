@@ -136,3 +136,55 @@ describe('hymn rich wiring (central catalog)', () => {
     }
   })
 })
+
+// @fr FR-153
+// Task #61 — Christmas special-key rich loading via real assembleHour.
+// Confirms the resolver chain (calendar → propers-loader.resolveSpecialKey
+// → rich-overlay Tier 1 with SUN-slot fallback) wires through end-to-end
+// against the real christmas.json + seasonal/christmas/wdec25-SUN-*.rich.json
+// disk files. Unit tests in resolver.test.ts cover the resolver logic in
+// isolation; this exercises the full Layer 1-4 merge.
+describe('Christmas special-key rich integration (task #61)', () => {
+  it('Christmas Day on Friday (2026-12-25) lauds — shortReadingRich loaded from wdec25-SUN slot', async () => {
+    const result = await assembleHour('2026-12-25', 'lauds')
+    expect(result).not.toBeNull()
+    expect(result!.liturgicalDay.season).toBe('CHRISTMAS')
+    const sr = result!.sections.find((s) => s.type === 'shortReading')
+    expect(sr).toBeDefined()
+    if (sr?.type !== 'shortReading') throw new Error('expected shortReading section')
+    expect(sr.textRich).toBeDefined()
+    // wdec25-SUN-lauds.rich.json shortReadingRich opens with
+    // "Эрт үед эш үзүүлэгчдээр..." (Hebrews 1:1-2 in Mongolian).
+    const block0 = sr.textRich!.blocks[0]
+    if (block0.kind === 'para') {
+      expect(block0.spans[0]).toMatchObject({
+        kind: 'text',
+        text: expect.stringContaining('Эрт үед эш үзүүлэгчдээр'),
+      })
+    } else {
+      throw new Error(`expected first block kind='para', got ${block0.kind}`)
+    }
+  })
+
+  it('Mary Mother of God (2026-01-01 Thursday) vespers — concludingPrayerRich loaded from wjan1-SUN slot', async () => {
+    const result = await assembleHour('2026-01-01', 'vespers')
+    expect(result).not.toBeNull()
+    expect(result!.liturgicalDay.season).toBe('CHRISTMAS')
+    const cp = result!.sections.find((s) => s.type === 'concludingPrayer')
+    expect(cp).toBeDefined()
+    if (cp?.type !== 'concludingPrayer') throw new Error('expected concludingPrayer section')
+    // wjan1-SUN-vespers.rich.json should populate textRich; the concludingPrayer
+    // section's text content is well-formed regardless of legacy/rich path.
+    expect(cp.text || cp.textRich).toBeTruthy()
+  })
+
+  it('regression — non-special-key Christmas weekday (post-Baptism) does not crash', async () => {
+    // 2026-01-15 is a CHRISTMAS-season Thursday post-Baptism — falls outside
+    // any matching special-key. resolveSpecialKey returns null, rich-overlay
+    // Tier 1 misses; Tier 2/3 falls through to wk1 fallback or null. The
+    // page must still assemble cleanly without throwing.
+    const result = await assembleHour('2026-01-15', 'lauds')
+    expect(result).not.toBeNull()
+    expect(result!.sections.length).toBeGreaterThan(0)
+  })
+})

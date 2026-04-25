@@ -20,11 +20,19 @@ export interface ResolveRichContext {
   psalterWeek?: number | string | null
   /**
    * romcal 이 부여한 전례 이름 (예: "Ascension of the Lord"). seasonal rich
-   * 의 wk1 fallback 가드에 사용 — special-key 후보 (Ascension/Pentecost 등)
-   * 는 wascension/weasterSunday/wpentecost rich 가 별도로 존재하므로 wk1
-   * fallback 으로 대체되면 안 된다.
+   * 의 wk1 fallback 가드 + special-key 매칭에 사용 — Easter/OT 의 movable
+   * solemnities (Ascension/Pentecost/Trinity 등) 와 Christmas 의 variable-date
+   * 관측일 (Holy Family/Baptism/Epiphany) 식별.
    */
   celebrationName?: string | null
+  /**
+   * ISO 날짜 문자열 (예: "2026-12-25"). Christmas season 의 fixed-date
+   * special-key 매칭 (dec25 / jan1 / octave) 에 사용 — celebrationName 만
+   * 으로는 romcal 의 Christmas 전례명 변형 ("Octave 평일", "Christmas
+   * Weekday" 등) 을 안정적으로 식별할 수 없어 date-key 가 필요. 누락 시
+   * Christmas fixed-date 매칭 미동작 (variable-date 매칭은 영향 없음).
+   */
+  dateStr?: string | null
 }
 
 /**
@@ -50,7 +58,7 @@ export function resolveRichOverlay(ctx: ResolveRichContext): RichOverlay {
   const psalterCommons = ctx.psalterWeek != null && ctx.hour !== 'compline'
     ? loadPsalterCommonsRichOverlay(ctx.psalterWeek, ctx.day, ctx.hour)
     : null
-  const seasonal = loadSeasonalRichOverlay(ctx.season, ctx.weekKey, ctx.day, ctx.hour, ctx.celebrationName)
+  const seasonal = loadSeasonalRichOverlay(ctx.season, ctx.weekKey, ctx.day, ctx.hour, ctx.celebrationName, ctx.dateStr)
   const sanctoral = ctx.sanctoralKey
     ? loadSanctoralRichOverlay(ctx.sanctoralKey, ctx.hour)
     : null
