@@ -84,15 +84,19 @@ PDF "Монгол Католик Чуулганы Цаг Үйл Ариунсны
 | 12-25 | ЭЗЭНИЙ МЭНДЭЛСЭН ӨДӨР (주님 성탄) | `solemnities.json` |
 | 01-01 | ТЭНГЭРБУРХАНЫ АРИУН ЭХ МАРИА (천주의 성모 마리아) | `solemnities.json` |
 
-### 비-PDF authored entries (3개) — 외부 출처
+### 비-PDF authored entries (3개) — **task #48 (FR-045 follow-up A) 에서 제거**
 
-| 키 | 비고 |
-|---|---|
-| `04-17-benedict-joseph-labre` | PDF에 grep 0 hits. 외부 출처 (몽골 교구 후원 등) |
-| `06-13-anthony-of-padua` | PDF에 grep 0 hits. 외부 출처 |
-| `10-04-francis-of-assisi` | PDF에 grep 0 hits. 외부 출처 |
+PDF 원문에 근거가 없는 외부 출처 3건은 FR-045 closure 직후 follow-up A 결정으로 제거했다 (task #48). `optional-memorials.json` 은 빈 객체 `{}` 로 비웠고, `propers-loader.ts::loadOptionalMemorials` / `celebrations.ts::getOptionalMemorialsForDate` / `types.ts::OptionalMemorialEntry` / API · 컴포넌트 인프라는 dormant 유지 — 추후 PDF authored optional memorial 이 추가되거나 별도 FR 로 외부 출처 카탈로그를 명시 도입할 때 즉시 재가동 가능하다.
 
-> **Follow-up (별건)**: PDF 외 로마 보편 달력 항목 (성 미카엘 등) 추가 또는 비-PDF 3건 정리는 본 FR-045 범위 밖. 필요 시 별도 FR 로 분리.
+| 키 | 제거 사유 | 사후 동작 |
+|---|---|---|
+| `04-17-benedict-joseph-labre` | PDF grep 0 hits, 외부 출처 (몽골 교구 후원 추정) | 04-17 평일은 default 옵션만 노출 |
+| `06-13-anthony-of-padua` | PDF grep 0 hits, 외부 출처 | 06-13 평일은 default 옵션만 노출 |
+| `10-04-francis-of-assisi` | PDF grep 0 hits, 외부 출처 | 10-04 평일은 default 옵션만 노출 |
+
+옛 슬러그를 `?celebration=` 쿼리에 그대로 전달해도 `resolveCelebration` 이 graceful fallback 으로 default 를 반환한다 (`celebrations.test.ts` 의 dormant 인프라 회귀 가드 3 케이스 참고).
+
+> **Follow-up (별건)**: PDF 외 로마 보편 달력 항목 (성 미카엘 등) 을 명시적 외부 출처 카탈로그로 추가하려면 별도 FR 로 분리 (소스 명시 + 라이선스 검토 필요).
 
 ## 의존성
 - **calendar** — 전례시기, 축일 등급 정보 (고유문 파일 선택에 필요)
