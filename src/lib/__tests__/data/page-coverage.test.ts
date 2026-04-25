@@ -105,7 +105,7 @@ function collect(): Cover {
 
   // Sanctoral (separate keys)
   const sanctoralCov: Cover = {}
-  for (const f of ['feasts', 'memorials', 'optional-memorials', 'solemnities']) {
+  for (const f of ['feasts', 'memorials', 'solemnities']) {
     walkPropers(read(`src/data/loth/sanctoral/${f}.json`), sanctoralCov)
   }
   // Translate propers* keys to sanctoral* keys for separate thresholding

@@ -44,13 +44,14 @@ describe('getCelebrationOptions', () => {
     expect(mary.color).toBe('WHITE')
   })
 
-  it('includes optional memorials from optional-memorials.json for matching MM-DD weekday', () => {
+  it('returns only the default option on 04-17 after non-PDF entries removed (FR-045 follow-up A)', () => {
+    // optional-memorials.json was emptied to {} (PDF 외 3건 제거 결정).
+    // Loader/types/celebrations.ts 인프라는 dormant 유지 — 빈 카탈로그에서도
+    // 04-17 평일은 default 옵션만 노출되어야 한다.
     const result = getCelebrationOptions('2026-04-17') // Easter Friday, WEEKDAY
-    const ids = result!.options.map((o) => o.id)
-    expect(ids).toContain('04-17-benedict-joseph-labre')
-    const entry = result!.options.find((o) => o.id === '04-17-benedict-joseph-labre')!
-    expect(entry.source).toBe('optional')
-    expect(entry.nameMn).toContain('Бенедикт')
+    expect(result!.options).toHaveLength(1)
+    expect(result!.options[0].id).toBe(DEFAULT_CELEBRATION_ID)
+    expect(result!.options[0].isDefault).toBe(true)
   })
 
   it('does not expose optional alternatives on a feast/solemnity (non-weekday rank)', () => {
@@ -84,11 +85,13 @@ describe('resolveCelebration', () => {
     expect(resolved!.sanctoralOverride!.lauds?.concludingPrayer).toContain('Мариа')
   })
 
-  it('resolves an optional-memorials entry and returns its override', () => {
+  it('falls back to default when a previously-known optional id is requested but no longer registered', () => {
+    // PDF 외 3건이 제거된 후, 옛 슬러그를 그대로 전달해도 graceful fallback 으로
+    // default 가 돌아와야 한다 (resolver 가 dormant 인프라를 안전 통과).
     const resolved = resolveCelebration('2026-04-17', '04-17-benedict-joseph-labre')
-    expect(resolved!.option.id).toBe('04-17-benedict-joseph-labre')
-    expect(resolved!.sanctoralOverride).not.toBeNull()
-    expect(resolved!.sanctoralOverride!.lauds?.concludingPrayer).toContain('Бенедикт')
+    expect(resolved!.option.isDefault).toBe(true)
+    expect(resolved!.option.id).toBe(DEFAULT_CELEBRATION_ID)
+    expect(resolved!.sanctoralOverride).toBeNull()
   })
 
   it('refuses to resolve a valid-looking id on a day it is not registered for', () => {
@@ -133,13 +136,21 @@ describe('assembleHour with celebrationId override', () => {
     expect(withDefault!.liturgicalDay.nameMn).toBe(base!.liturgicalDay.nameMn)
   })
 
-  it('applies an optional-memorials entry concluding prayer', async () => {
-    const chosen = await assembleHour('2026-04-17', 'lauds', {
+  it('ignores a dormant optional-memorials id on assembleHour and matches default behaviour', async () => {
+    // optional-memorials.json {} 이후, 옛 슬러그를 celebrationId 로 전달해도
+    // assembleHour 는 default 와 동일한 결과를 돌려줘야 한다.
+    const base = await assembleHour('2026-04-17', 'lauds')
+    const withDormant = await assembleHour('2026-04-17', 'lauds', {
       celebrationId: '04-17-benedict-joseph-labre',
     })
-    const concluding = chosen!.sections.find((s) => s.type === 'concludingPrayer')
-    expect((concluding as { type: 'concludingPrayer'; text: string }).text).toContain('Бенедикт')
-    expect(chosen!.liturgicalDay.nameMn).toContain('Бенедикт')
+    expect(base).not.toBeNull()
+    expect(withDormant).not.toBeNull()
+    expect(withDormant!.liturgicalDay.nameMn).toBe(base!.liturgicalDay.nameMn)
+    const baseConcluding = base!.sections.find((s) => s.type === 'concludingPrayer')
+    const dormantConcluding = withDormant!.sections.find((s) => s.type === 'concludingPrayer')
+    expect((dormantConcluding as { type: 'concludingPrayer'; text: string }).text).toBe(
+      (baseConcluding as { type: 'concludingPrayer'; text: string }).text,
+    )
   })
 
   it('ignores an unknown celebrationId and falls back to default behaviour', async () => {
