@@ -50,43 +50,98 @@ function loadSeasonPropers(season: LiturgicalSeason): Record<string, Record<stri
 }
 
 /**
- * Resolve a romcal `celebrationName` to a season-propers special-key
- * bucket name, when the (season, name) pair identifies a movable
- * observance with its own propers block outside the per-week 1..N cycle.
+ * Resolve a (season, name, date) tuple to a season-propers special-key
+ * bucket name, when the input identifies a movable observance with its
+ * own propers block outside the per-week 1..N cycle.
  *
  * Returns null for celebrations that should fall through to the normal
  * `weeks[weekOfSeason]` lookup.
  *
  * Covered observances:
- *   EASTER         → easterSunday · ascension · pentecost
- *   ORDINARY_TIME  → trinitySunday · corpusChristi · sacredHeart · christTheKing
+ *   EASTER         → easterSunday · ascension · pentecost  (name-matched)
+ *   ORDINARY_TIME  → trinitySunday · corpusChristi ·
+ *                    sacredHeart · christTheKing            (name-matched)
+ *   CHRISTMAS      → dec25 (12-25)        · jan1 (01-01)   (date-matched)
+ *                  · octave (12-26..31)                     (date-matched)
+ *                  · holyFamily · baptism · epiphany        (name-matched)
  *
  * Name matching is permissive (`lower.includes(fragment)`) so romcal
  * localisation drift ("Sacred Heart of Jesus" vs "The Most Sacred
  * Heart of Jesus" etc.) does not silently bypass the lookup.
  *
+ * Christmas season uses date-based matching for the fixed-date keys
+ * (dec25, jan1, octave) because romcal's celebrationName for those days
+ * varies ("Nativity of the Lord", "Christmas Day", "Solemnity of Mary",
+ * "5th day in the Octave of Christmas", etc.) and is not a stable
+ * matcher. The variable-date observances (holyFamily, baptism, epiphany)
+ * still rely on celebrationName since their dates depend on calendar
+ * configuration.
+ *
+ * NB: dec25/jan1 occur on weekdays in most years; the special-key path
+ * loads `weeks['dec25'].SUN.{hour}` (single SUN-slot is canonical), and
+ * the rich-overlay loader (`loadSeasonalRichOverlay`) mirrors this by
+ * falling back to the SUN-slot when the requested day file is absent.
+ *
  * FR-156 Phase 4a (task #23): adds OT keys so movable OT solemnities
  * (Trinity Sunday, Corpus Christi, Sacred Heart, Christ the King) can
  * resolve to their own First Vespers / Hour Propers blocks. Data
  * injection lands in Phase 4b (task #24) — Phase 4a is resolver-only.
+ *
+ * Task #61: adds CHRISTMAS keys so christmas.json's per-celebration
+ * `weeks[key]` blocks (dec25/octave/holyFamily/jan1/epiphany/baptism)
+ * become reachable via the season-propers path (previously fell to null
+ * because none of the keys are numeric). The rich-overlay's Tier 1
+ * special-key load (#57) auto-covers once `resolveSpecialKey` returns a
+ * non-null key for these dates.
  */
 export function resolveSpecialKey(
   season: LiturgicalSeason,
   celebrationName: string | undefined | null,
+  dateStr?: string | null,
 ): string | null {
-  if (!celebrationName) return null
-  const lower = celebrationName.toLowerCase()
   if (season === 'EASTER') {
+    if (!celebrationName) return null
+    const lower = celebrationName.toLowerCase()
     if (lower.includes('easter sunday')) return 'easterSunday'
     if (lower.includes('ascension')) return 'ascension'
     if (lower.includes('pentecost')) return 'pentecost'
     return null
   }
   if (season === 'ORDINARY_TIME') {
+    if (!celebrationName) return null
+    const lower = celebrationName.toLowerCase()
     if (lower.includes('trinity')) return 'trinitySunday'
     if (lower.includes('corpus christi') || lower.includes('body and blood')) return 'corpusChristi'
     if (lower.includes('sacred heart')) return 'sacredHeart'
     if (lower.includes('christ the king') || lower.includes('king of the universe')) return 'christTheKing'
+    return null
+  }
+  if (season === 'CHRISTMAS') {
+    // Variable-date observances first — celebrationName is the stable
+    // signal because dates depend on romcal calendar configuration
+    // (e.g. Holy Family shifts when 12-25 is a Sunday; Baptism is the
+    // Sunday after Epiphany unless Epiphany is shifted, etc.).
+    if (celebrationName) {
+      const lower = celebrationName.toLowerCase()
+      if (lower.includes('holy family')) return 'holyFamily'
+      if (lower.includes('baptism of the lord') || lower.includes('baptism')) return 'baptism'
+      if (lower.includes('epiphany of the lord') || lower.includes('the epiphany')) return 'epiphany'
+    }
+    // Fixed-date observances. Use UTC parsing to match the rest of the
+    // module (`getSeasonHourPropers` L107) and avoid TZ drift.
+    if (dateStr) {
+      const d = new Date(dateStr + 'T00:00:00Z')
+      const month = d.getUTCMonth() + 1
+      const dayOfMonth = d.getUTCDate()
+      if (month === 12 && dayOfMonth === 25) return 'dec25'
+      if (month === 1 && dayOfMonth === 1) return 'jan1'
+      // Christmas octave weekdays (Dec 26-31) — this catalog covers any
+      // celebration that lands inside the Octave outside dec25 itself.
+      if (month === 12 && dayOfMonth >= 26 && dayOfMonth <= 31) return 'octave'
+    }
+    // epiphanyWeek (weekdays Jan 7..Baptism eve) requires explicit
+    // date-range tracking that depends on the Baptism date. Left as a
+    // follow-up — the wepiphanyWeek-SUN-* rich files remain unloaded.
     return null
   }
   return null
@@ -116,11 +171,12 @@ export function getSeasonHourPropers(
     }
   }
 
-  // Check movable-observance special keys (Easter: easterSunday /
-  // ascension / pentecost; OT: trinitySunday / corpusChristi /
-  // sacredHeart / christTheKing). See `resolveSpecialKey` for the
-  // season/name matrix.
-  const specialKey = resolveSpecialKey(season, celebrationName)
+  // Check movable-observance special keys. See `resolveSpecialKey` for
+  // the (season, name, date) matrix:
+  //   EASTER         → easterSunday/ascension/pentecost (name-matched)
+  //   ORDINARY_TIME  → trinitySunday/corpusChristi/sacredHeart/christTheKing (name-matched)
+  //   CHRISTMAS      → dec25/jan1/octave (date-matched), holyFamily/baptism/epiphany (name-matched)
+  const specialKey = resolveSpecialKey(season, celebrationName, dateStr)
   if (specialKey) {
     const specialDayPropers = weeks[specialKey]?.[day] ?? weeks[specialKey]?.['SUN']
     if (specialDayPropers) {
@@ -212,7 +268,7 @@ export function getSeasonFirstVespers(
   // Phase 4b data-injection hook: once an OT movable carries a
   // `firstVespers` entry under `weeks['<specialKey>'].SUN.firstVespers`,
   // this lookup returns it unchanged. No caller changes needed.
-  const specialKey = resolveSpecialKey(season, celebrationName)
+  const specialKey = resolveSpecialKey(season, celebrationName, dateStr)
   if (specialKey) {
     const specialDayPropers = weeks[specialKey]?.['SUN']
     const fv = (specialDayPropers as DayPropers | undefined)?.firstVespers

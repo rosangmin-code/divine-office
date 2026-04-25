@@ -78,16 +78,22 @@ function readOverlayFile(filePath: string): RichOverlay | null {
  * Seasonal rich overlay 로더 (3-tier lookup, propers-loader 와 대칭).
  *
  * Lookup 순서 (높은 우선순위부터):
- *   1) **special-key 분기** — `resolveSpecialKey(season, celebrationName)` 가
- *      매치하면 `seasonal/{seasonDir}/w{specialKey}-{day}-{hour}.rich.json`
- *      을 시도. EASTER 의 `easterSunday`/`ascension`/`pentecost` 와
- *      ORDINARY_TIME 의 `trinitySunday`/`corpusChristi`/`sacredHeart`/
- *      `christTheKing` 이 대상. propers-loader.ts L123 의 `resolveSpecialKey`
- *      를 그대로 재사용하므로 'w' prefix 외에는 키가 동일 (ascension →
- *      wascension). EASTER 는 디스크 파일 보유, OT 는 미보유 — 미보유 시
- *      `readOverlayFile` 가 ENOENT 캐싱 후 null. **special-key 가 매치된
- *      경우 wk1 fallback 으로 대체 진입하지 않는다** (잘못된 wk1 SUN rich
- *      흡수 방지: Easter Sunday rich 가 Ascension/Pentecost 에 덮이는 회귀).
+ *   1) **special-key 분기** — `resolveSpecialKey(season, celebrationName, dateStr)`
+ *      가 매치하면 `seasonal/{seasonDir}/w{specialKey}-{day}-{hour}.rich.json`
+ *      먼저 시도, 부재 시 SUN-슬롯 fallback (`w{specialKey}-SUN-{hour}.rich.json`)
+ *      시도. propers-loader.ts L181 의 `weeks[specialKey]?.[day] ??
+ *      weeks[specialKey]?.['SUN']` 와 정확히 동일한 패턴 — 평일에 떨어진
+ *      movable solemnity (예: 2026-12-25 FRI Christmas Day, 2026-05-14 THU
+ *      Ascension) 도 SUN-슬롯 canonical formulary 를 적재한다.
+ *      대상:
+ *        EASTER         → easterSunday · ascension · pentecost (name)
+ *        ORDINARY_TIME  → trinitySunday · corpusChristi ·
+ *                         sacredHeart · christTheKing          (name)
+ *        CHRISTMAS      → dec25 · jan1 · octave                (date)
+ *                         · holyFamily · baptism · epiphany    (name)
+ *      **special-key 가 매치된 경우 wk1 fallback 으로 대체 진입하지 않는다**
+ *      (#54 회귀 가드: Easter Sunday rich 가 Ascension/Pentecost JSON 위에
+ *      덮이는 케이스 차단).
  *   2) **exact weekKey** — `seasonal/{seasonDir}/w{weekKey}-{day}-{hour}.rich.json`.
  *   3) **wk1 fallback** — `seasonal/{seasonDir}/w1-{day}-{hour}.rich.json`.
  *      `propers-loader.ts::getSeasonHourPropers` L141 의 `weeks['1']` fallback
@@ -102,6 +108,7 @@ export function loadSeasonalRichOverlay(
   day: DayOfWeek,
   hour: HourType,
   celebrationName?: string | null,
+  dateStr?: string | null,
 ): RichOverlay | null {
   const seasonDir = SEASON_KEBAB[season]
   const baseDir = path.join(
@@ -110,21 +117,32 @@ export function loadSeasonalRichOverlay(
     seasonDir,
   )
 
-  // Tier 1 — special-key (EASTER easterSunday/ascension/pentecost, OT
-  // trinitySunday/corpusChristi/sacredHeart/christTheKing). 디스크 파일이
-  // 있으면 numeric weekKey 보다 우선 — propers-loader 가 specialKey 를
-  // weekKey 보다 먼저 매치하는 동작과 일관.
-  const specialKey = resolveSpecialKey(season, celebrationName)
+  // Tier 1 — special-key. propers-loader.ts:resolveSpecialKey 가 (season,
+  // celebrationName, dateStr) 셋 중 적절한 신호로 매치 — Christmas 의
+  // dec25/jan1/octave 는 dateStr 기반, 그 외는 celebrationName 기반.
+  const specialKey = resolveSpecialKey(season, celebrationName, dateStr)
   if (specialKey) {
-    const specialPath = path.join(
+    // Day-specific 우선, SUN-슬롯 fallback. propers-loader 의
+    // `weeks[specialKey]?.[day] ?? weeks[specialKey]?.['SUN']` 와 동일한
+    // 우선순위. 현재 디스크에는 SUN-슬롯 파일만 authored 되어 있어 평일
+    // movable solemnity (Christmas FRI, Ascension THU 등) 에서도
+    // SUN-슬롯 rich 가 적재된다.
+    const dayPath = path.join(
       baseDir,
       `w${specialKey}-${day}-${hour}.rich.json`,
     )
-    const specialOverlay = readOverlayFile(specialPath)
-    if (specialOverlay) return specialOverlay
+    const dayOverlay = readOverlayFile(dayPath)
+    if (dayOverlay) return dayOverlay
+    if (day !== 'SUN') {
+      const sunPath = path.join(
+        baseDir,
+        `w${specialKey}-SUN-${hour}.rich.json`,
+      )
+      const sunOverlay = readOverlayFile(sunPath)
+      if (sunOverlay) return sunOverlay
+    }
     // 디스크 파일 부재 시에도 fall-through 하지 않는다 — propers-loader 가
-    // wk1 fallback 으로 가지 않는 것과 동일. wk1 SUN rich 가 Ascension/
-    // Pentecost JSON 위에 덮이는 #54 회귀 가드 그대로 유지.
+    // wk1 fallback 으로 가지 않는 것과 동일. #54 회귀 가드 보존.
     return null
   }
 
