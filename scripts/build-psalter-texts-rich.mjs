@@ -19,6 +19,7 @@
  */
 
 import { readFile, writeFile } from 'node:fs/promises'
+import { existsSync, readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { buildPsalterStanzasRich } from './parsers/rich-builder.mjs'
@@ -47,7 +48,18 @@ async function main() {
   const src = JSON.parse(srcRaw)
   const refs = Object.keys(src)
 
-  const catalog = {}
+  // 기존 카탈로그 read-modify-write — 다른 빌더(예: psalmPrayer) 가 이미 채워둔
+  // 필드(`psalmPrayerRich` 등) 를 보존하기 위해 from-scratch overwrite 대신
+  // per-ref spread-merge 로 stanzasRich 만 갱신한다.
+  let catalog = {}
+  if (existsSync(CATALOG_OUT)) {
+    try {
+      catalog = JSON.parse(readFileSync(CATALOG_OUT, 'utf8')) ?? {}
+    } catch (e) {
+      console.error(`[build] failed to parse existing catalog: ${e.message}`)
+      process.exit(1)
+    }
+  }
   const perRef = []
   const failures = []
 
@@ -92,7 +104,9 @@ async function main() {
       })
       continue
     }
+    const existing = catalog[ref] ?? {}
     catalog[ref] = {
+      ...existing,
       stanzasRich: {
         blocks: result.blocks,
         source: { kind: 'common', id: `psalter-text-${ref}` },
