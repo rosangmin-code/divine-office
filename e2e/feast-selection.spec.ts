@@ -2,9 +2,14 @@ import { test, expect } from '@playwright/test'
 
 // Dates derived from the romcal 2026 output used in unit tests.
 const OT_SATURDAY = '2026-05-30'   // FERIA, OT Saturday → default + saturday-mary
-const EASTER_WEEKDAY = '2026-04-17' // FERIA, Easter week 2 Friday → default + Benedict Joseph Labre
 const PLAIN_WEEKDAY = '2026-06-15'  // FERIA, OT Monday → default only
 const FEAST_DAY = '2026-06-13'      // FEAST (Immaculate Heart) → default only
+
+// Task #48 removed all PDF-외 optional memorials (04-17 Benedict Joseph Labre,
+// 06-13 Anthony of Padua, 10-04 Francis of Assisi) — `optional-memorials.json`
+// is now `{}`. The "registered optional memorial on its MM-DD" assertion is
+// obsolete; the surviving multi-option case is covered by the Saturday-Mary
+// votive memorial tests above.
 
 test.describe('Feast / memorial selection', () => {
   test('home page shows a picker on an OT Saturday and offers the saturday-mary option', async ({ page }) => {
@@ -89,14 +94,6 @@ test.describe('Feast / memorial selection', () => {
     expect(mary.color).toBe('WHITE')
   })
 
-  test('/api/calendar/options returns a registered optional memorial on its MM-DD', async ({ request }) => {
-    const res = await request.get(`/api/calendar/options/${EASTER_WEEKDAY}`)
-    expect(res.status()).toBe(200)
-    const body = await res.json()
-    const ids = body.options.map((o: { id: string }) => o.id)
-    expect(ids).toContain('04-17-benedict-joseph-labre')
-  })
-
   test('/api/calendar/options returns only the default on a plain weekday', async ({ request }) => {
     const res = await request.get(`/api/calendar/options/${PLAIN_WEEKDAY}`)
     expect(res.status()).toBe(200)
@@ -105,9 +102,24 @@ test.describe('Feast / memorial selection', () => {
     expect(body.options[0].id).toBe('default')
   })
 
-  test('invalid date returns 404 from the options API', async ({ request }) => {
+  // FR-031: optional-memorials.json is currently empty (task #48 removed the
+  // 3 non-PDF-authored entries). Days without a registered MM-DD optional
+  // memorial return only the romcal default — verifies the loader doesn't
+  // synthesise spurious options after the catalog became empty.
+  test('/api/calendar/options returns only default for an MM-DD without registered optional memorial', async ({ request }) => {
+    const res = await request.get('/api/calendar/options/2026-04-17') // formerly Benedict Joseph Labre
+    expect(res.status()).toBe(200)
+    const body = await res.json()
+    const ids = body.options.map((o: { id: string }) => o.id)
+    expect(ids).toEqual(['default'])
+  })
+
+  test('invalid date returns 400 from the options API', async ({ request }) => {
+    // Aligns with commit 905073b's `isValidDateStr` contract — malformed
+    // strings return 400 (Bad Request), not 404. The original 404 assertion
+    // was stale even before #48.
     const res = await request.get('/api/calendar/options/not-a-date')
-    expect(res.status()).toBe(404)
+    expect(res.status()).toBe(400)
   })
 
   test('unknown celebrationId is ignored and default propers are served', async ({ request }) => {

@@ -766,3 +766,233 @@ describe('FR-156 Phase 4b — movable solemnity firstVespers data (real loader)'
     expect(ant).not.toContain('өвөг Давидынх нь хаан ширээг')
   })
 })
+
+// @fr FR-011 task #60 — Saturday vespers regression guard for plain
+// Sundays misrouted via the evening-before-solemnity branch.
+//
+// Bug context: romcal labels EVERY Sunday as `rank === 'SOLEMNITY'`
+// (liturgical convention — Sunday outranks weekdays). Phase 3a (task #21)
+// added Path 2 (`getSeasonFirstVespers` for movable solemnities) gated
+// only on `tomorrowDay.rank === 'SOLEMNITY'`. Without a special-key
+// gate, Path 2 fell through to `weeks[N].SUN.firstVespers` for every
+// plain Sunday — and Phase 2 (task #20) made those entries non-null
+// but intentionally PARTIAL (psalms + shortReading + responsory +
+// intercessions; no concludingPrayer / gospelCanticleAntiphon — those
+// stay in regular Sunday vespers). The branch then assigned
+// `seasonPropers = solemnityFirstVespers` without the sundayRegular
+// backstop, silently dropping the concluding prayer + Magnificat
+// antiphon for every OT Saturday vespers.
+//
+// Fix gate: `resolveSpecialKey(tomorrowDay.season, tomorrowDay.name) != null`
+// — Path 2 only fires when the celebration name maps to a known
+// movable-solemnity bucket (ascension / pentecost / trinitySunday /
+// corpusChristi / sacredHeart / christTheKing). Plain Sundays fall
+// through to the Saturday→Sunday branch (L194+) which DOES merge
+// sundayRegular ⟩ firstVespers per FR-156 Phase 2.
+describe('FR-011 task #60 — plain-Sunday Saturday vespers backstop', () => {
+  beforeEach(() => {
+    vi.resetModules()
+  })
+
+  afterEach(() => {
+    vi.doUnmock('../propers-loader')
+    vi.doUnmock('../calendar')
+  })
+
+  // Plain-Sunday partial firstVespers — mirrors the actual shape produced
+  // by FR-156 Phase 2 task #20 injection for OT regular Sundays
+  // (5th Sunday of Ordinary Time, etc.).
+  const partialPlainSundayFirstVespers: FirstVespersPropers = {
+    psalms: [
+      {
+        type: 'psalm',
+        ref: 'Psalm 122',
+        antiphon_key: 'fv-w4-sun-ps1',
+        default_antiphon: 'PARTIAL-FV-PS1-ANTIPHON',
+        gloria_patri: true,
+      },
+    ],
+    shortReading: { ref: 'Romans 8:1', text: 'PARTIAL-FV-SHORT-READING' },
+    // Intentionally NO concludingPrayer / gospelCanticleAntiphon —
+    // mirrors the Phase 2 partial injection.
+  }
+
+  // Sunday regular vespers carries the concludingPrayer + Magnificat
+  // antiphon — these MUST survive the Saturday→Sunday firstVespers merge.
+  const sundayRegularVespers = {
+    gospelCanticleAntiphon: 'PLAIN-SUNDAY-REGULAR-MAGNIFICAT-ANTIPHON',
+    concludingPrayer: 'PLAIN-SUNDAY-REGULAR-CONCLUDING-PRAYER',
+  }
+
+  it('plain OT Saturday vespers — concludingPrayer + Magnificat antiphon come from sundayRegular when firstVespers is partial', async () => {
+    vi.doMock('../calendar', async () => {
+      const actual = await vi.importActual<typeof import('../calendar')>('../calendar')
+      return {
+        ...actual,
+        // Saturday rank=WEEKDAY, Sunday rank=SOLEMNITY (romcal default).
+        // Sunday name has NO special-key marker (not Trinity/Corpus
+        // Christi/Sacred Heart/Christ the King) — so resolveSpecialKey
+        // returns null and Path 2 must NOT claim seasonPropers.
+        getLiturgicalDay: vi.fn((dateStr: string) => {
+          if (dateStr === '2026-02-07') {
+            return {
+              date: dateStr,
+              name: 'Saturday of the 4th week of Ordinary Time',
+              nameMn: '',
+              season: 'ORDINARY_TIME',
+              seasonMn: '',
+              color: 'GREEN',
+              colorMn: '',
+              rank: 'WEEKDAY',
+              sundayCycle: 'A',
+              weekdayCycle: '2',
+              weekOfSeason: 3,
+              psalterWeek: 4,
+              otWeek: 4,
+            }
+          }
+          if (dateStr === '2026-02-08') {
+            return {
+              date: dateStr,
+              name: '5th Sunday of Ordinary Time',
+              nameMn: '',
+              season: 'ORDINARY_TIME',
+              seasonMn: '',
+              color: 'GREEN',
+              colorMn: '',
+              rank: 'SOLEMNITY',
+              sundayCycle: 'A',
+              weekdayCycle: '2',
+              weekOfSeason: 4,
+              psalterWeek: 1,
+              otWeek: 5,
+            }
+          }
+          return null
+        }),
+      }
+    })
+    vi.doMock('../propers-loader', async () => {
+      const actual = await vi.importActual<typeof import('../propers-loader')>('../propers-loader')
+      return {
+        ...actual,
+        // No fixed-date sanctoral firstVespers (Path 1 absent).
+        getSanctoralPropers: vi.fn(() => null),
+        // Phase 2 partial firstVespers for the plain Sunday — must NOT
+        // be adopted as seasonPropers by Path 2 (special-key gate
+        // prevents that), but must surface via the Saturday→Sunday
+        // branch with sundayRegular as backstop for missing fields.
+        getSeasonFirstVespers: vi.fn(() => partialPlainSundayFirstVespers),
+        // SAT vespers absent (OT only authors SUN), SUN vespers carries
+        // the regular propers.
+        getSeasonHourPropers: vi.fn(
+          (_s: unknown, _w: unknown, day: string, hour: string) =>
+            day === 'SUN' && hour === 'vespers' ? sundayRegularVespers : null,
+        ),
+        // Plain OT Sunday name does NOT match any movable bucket.
+        resolveSpecialKey: vi.fn(() => null),
+      }
+    })
+    const { assembleHour } = await import('../loth-service')
+    const result = await assembleHour('2026-02-07', 'vespers')
+    expect(result).not.toBeNull()
+    expect(result!.hourType).toBe('vespers')
+
+    // Critical assertions — the regression that task #60 fixes:
+    const sectionTypes = result!.sections.map((s) => s.type)
+    expect(sectionTypes).toContain('concludingPrayer')
+
+    const prayerSection = result!.sections.find((s) => s.type === 'concludingPrayer')
+    expect(prayerSection).toBeDefined()
+    if (prayerSection && prayerSection.type === 'concludingPrayer') {
+      // Comes from sundayRegular (partial firstVespers had no concludingPrayer).
+      expect(prayerSection.text).toBe('PLAIN-SUNDAY-REGULAR-CONCLUDING-PRAYER')
+    }
+
+    const gcSection = result!.sections.find((s) => s.type === 'gospelCanticle')
+    expect(gcSection).toBeDefined()
+    if (gcSection && gcSection.type === 'gospelCanticle') {
+      // Magnificat antiphon also from sundayRegular.
+      expect(gcSection.antiphon).toContain('PLAIN-SUNDAY-REGULAR-MAGNIFICAT-ANTIPHON')
+    }
+  })
+
+  it('movable-solemnity Path 2 still fires when celebration name maps to a special key (Trinity Sunday)', async () => {
+    // Counter-test: when the Sunday IS an actual movable solemnity
+    // (Trinity Sunday — celebrationName matches `resolveSpecialKey`
+    // ORDINARY_TIME bucket), Path 2 MUST claim seasonPropers as before.
+    // This test pins the special-key gate behavior so a future "tighten
+    // the gate further" change cannot silently break movable solemnities.
+    const trinityFirstVespers: FirstVespersPropers = {
+      gospelCanticleAntiphon: 'TRINITY-FV-MAGNIFICAT-ANTIPHON',
+      concludingPrayer: 'TRINITY-FV-CONCLUDING-PRAYER',
+      shortReading: { ref: '1 John 4:8', text: 'TRINITY-FV-SHORT-READING' },
+    }
+    vi.doMock('../calendar', async () => {
+      const actual = await vi.importActual<typeof import('../calendar')>('../calendar')
+      return {
+        ...actual,
+        getLiturgicalDay: vi.fn((dateStr: string) => {
+          if (dateStr === '2026-05-30') {
+            return {
+              date: dateStr,
+              name: 'Saturday of the 8th week of Ordinary Time',
+              nameMn: '',
+              season: 'ORDINARY_TIME',
+              seasonMn: '',
+              color: 'GREEN',
+              colorMn: '',
+              rank: 'WEEKDAY',
+              sundayCycle: 'A',
+              weekdayCycle: '2',
+              weekOfSeason: 8,
+              psalterWeek: 4,
+              otWeek: 8,
+            }
+          }
+          if (dateStr === '2026-05-31') {
+            return {
+              date: dateStr,
+              name: 'The Most Holy Trinity',
+              nameMn: '',
+              season: 'ORDINARY_TIME',
+              seasonMn: '',
+              color: 'WHITE',
+              colorMn: '',
+              rank: 'SOLEMNITY',
+              sundayCycle: 'A',
+              weekdayCycle: '2',
+              weekOfSeason: 9,
+              psalterWeek: 1,
+              otWeek: 9,
+            }
+          }
+          return null
+        }),
+      }
+    })
+    vi.doMock('../propers-loader', async () => {
+      const actual = await vi.importActual<typeof import('../propers-loader')>('../propers-loader')
+      return {
+        ...actual,
+        getSanctoralPropers: vi.fn(() => null),
+        getSeasonFirstVespers: vi.fn(() => trinityFirstVespers),
+        getSeasonHourPropers: vi.fn(() => null),
+        // celebrationName "The Most Holy Trinity" → 'trinitySunday'.
+        resolveSpecialKey: vi.fn((_s: unknown, name?: string | null) =>
+          name?.toLowerCase().includes('trinity') ? 'trinitySunday' : null,
+        ),
+      }
+    })
+    const { assembleHour } = await import('../loth-service')
+    const result = await assembleHour('2026-05-30', 'vespers')
+    expect(result).not.toBeNull()
+
+    const prayerSection = result!.sections.find((s) => s.type === 'concludingPrayer')
+    expect(prayerSection).toBeDefined()
+    if (prayerSection && prayerSection.type === 'concludingPrayer') {
+      // Trinity Path 2 wins — concludingPrayer from trinityFirstVespers.
+      expect(prayerSection.text).toBe('TRINITY-FV-CONCLUDING-PRAYER')
+    }
+  })
+})

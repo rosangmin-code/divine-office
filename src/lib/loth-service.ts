@@ -15,7 +15,7 @@ import type {
 import { HOUR_NAMES_MN as hourNamesMn } from './types'
 import { getLiturgicalDay, getToday } from './calendar'
 import { getPsalterPsalmody, getComplinePsalmody, getFullComplineData, getPsalterCommons } from './psalter-loader'
-import { getSeasonHourPropers, getSeasonFirstVespers, getSanctoralPropers, getHymnForHour, getHymnCandidatesForHour } from './propers-loader'
+import { getSeasonHourPropers, getSeasonFirstVespers, getSanctoralPropers, getHymnForHour, getHymnCandidatesForHour, resolveSpecialKey } from './propers-loader'
 import { resolveCelebration } from './celebrations'
 import { resolveRichOverlay } from './prayers/resolver'
 import { loadHymnRichOverlay } from './prayers/rich-overlay'
@@ -150,11 +150,25 @@ export async function assembleHour(
       let solemnityFirstVespers: FirstVespersPropers | null | undefined =
         tomorrowSanctoral?.firstVespers
       // Path 2 — movable SOLEMNITY via season-propers special key.
-      // Gated to SOLEMNITY only: there are no movable FEAST entries
-      // authored with firstVespers, and `resolveSpecialKey` buckets
-      // (ascension / pentecost / trinitySunday / corpusChristi /
-      // sacredHeart / christTheKing) all correspond to solemnities.
-      if (!solemnityFirstVespers && tomorrowDay.rank === 'SOLEMNITY') {
+      // Gated to SOLEMNITY AND a resolvable special key (`resolveSpecialKey`
+      // returns one of: ascension / pentecost / trinitySunday /
+      // corpusChristi / sacredHeart / christTheKing). Without the special-
+      // key gate, `getSeasonFirstVespers` falls through to
+      // `weeks[N].SUN.firstVespers` even for plain Sundays — and romcal
+      // labels EVERY Sunday as `rank === 'SOLEMNITY'`. The plain-Sunday
+      // firstVespers entries (Phase 2, task #20) are intentionally
+      // partial (psalms + shortReading + responsory + intercessions; no
+      // concludingPrayer / gospelCanticleAntiphon — those come from the
+      // regular Sunday vespers). Adopting them as `solemnityFirstVespers`
+      // bypasses the Saturday→Sunday merge below (L209-216) and silently
+      // drops the concluding prayer + Magnificat antiphon. Restricting
+      // Path 2 to special-key solemnities lets the Saturday→Sunday branch
+      // handle plain Sundays as before.
+      if (
+        !solemnityFirstVespers &&
+        tomorrowDay.rank === 'SOLEMNITY' &&
+        resolveSpecialKey(tomorrowDay.season, tomorrowDay.name) != null
+      ) {
         solemnityFirstVespers = getSeasonFirstVespers(
           tomorrowDay.season,
           tomorrowDay.weekOfSeason,
