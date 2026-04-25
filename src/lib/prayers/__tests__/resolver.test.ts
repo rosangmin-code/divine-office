@@ -383,6 +383,130 @@ describe('resolveRichOverlay', () => {
       expect(overlay.shortReadingRich).toBeUndefined()
     })
   })
+
+  // Task #57 — Tier 1 special-key file loading.
+  //
+  // wascension/weasterSunday/wpentecost (EASTER) and the OT special-key
+  // rich files exist on disk but were not consulted before this change.
+  // The resolver now matches `resolveSpecialKey(season, celebrationName)`
+  // first and tries `seasonal/{season}/w{specialKey}-{day}-{hour}.rich.json`
+  // before falling through to the numeric weekKey path.
+  describe('seasonal special-key load (task #57)', () => {
+    it('Easter Ascension SUN — loads wascension-SUN-lauds rich when disk file exists', () => {
+      fileContents['seasonal/easter/wascension-SUN-lauds.rich.json'] = JSON.stringify({
+        shortReadingRich: makePrayer('ascension reading'),
+      })
+      // wk1 SUN rich also present — must NOT be picked since special-key wins.
+      fileContents['seasonal/easter/w1-SUN-lauds.rich.json'] = JSON.stringify({
+        shortReadingRich: makePrayer('Easter Sunday rich (must NOT win)'),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'EASTER',
+        weekKey: '7',
+        day: 'SUN',
+        hour: 'lauds',
+        celebrationName: 'Ascension of the Lord',
+      })
+
+      expect(overlay.shortReadingRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'ascension reading' }],
+      })
+    })
+
+    it('Easter Easter Sunday lauds — loads weasterSunday-SUN-lauds rich', () => {
+      fileContents['seasonal/easter/weasterSunday-SUN-lauds.rich.json'] = JSON.stringify({
+        intercessionsRich: makePrayer('easterSunday intercessions'),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'EASTER',
+        weekKey: '1',
+        day: 'SUN',
+        hour: 'lauds',
+        celebrationName: 'Easter Sunday',
+      })
+
+      expect(overlay.intercessionsRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'easterSunday intercessions' }],
+      })
+    })
+
+    it('Easter Pentecost SUN vespers — loads wpentecost-SUN-vespers rich', () => {
+      fileContents['seasonal/easter/wpentecost-SUN-vespers.rich.json'] = JSON.stringify({
+        concludingPrayerRich: makePrayer('pentecost vespers prayer'),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'EASTER',
+        weekKey: '8',
+        day: 'SUN',
+        hour: 'vespers',
+        celebrationName: 'Pentecost Sunday',
+      })
+
+      expect(overlay.concludingPrayerRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'pentecost vespers prayer' }],
+      })
+    })
+
+    it('OT Trinity Sunday — loads wtrinitySunday rich when disk file exists (currently absent on disk; logic verified)', () => {
+      fileContents['seasonal/ordinary-time/wtrinitySunday-SUN-lauds.rich.json'] = JSON.stringify({
+        intercessionsRich: makePrayer('trinity intercessions'),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'ORDINARY_TIME',
+        weekKey: '5',
+        day: 'SUN',
+        hour: 'lauds',
+        celebrationName: 'The Most Holy Trinity',
+      })
+
+      expect(overlay.intercessionsRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'trinity intercessions' }],
+      })
+    })
+
+    it('regression — Easter wk3 SAT lauds (no special-key match) still uses wk1 fallback', () => {
+      // #54 fix preserved: special-key path doesn't match for plain weekday
+      // celebrations, so Tier 1 falls through to Tier 2/3 (wk1 fallback).
+      fileContents['seasonal/easter/w1-SAT-lauds.rich.json'] = JSON.stringify({
+        shortReadingRich: makePrayer('Бидний хэн нь...'),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'EASTER',
+        weekKey: '3',
+        day: 'SAT',
+        hour: 'lauds',
+        celebrationName: 'Saturday of the Third Week of Easter',
+      })
+
+      expect(overlay.shortReadingRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'Бидний хэн нь...' }],
+      })
+    })
+
+    it('regression — Easter Ascension SUN with special-key file MISSING returns null (no wk1 bleed)', () => {
+      // No wascension-SUN-lauds.rich.json in fileContents. wk1 SUN rich
+      // present must NOT be loaded — the #54 guard is preserved by the
+      // explicit `return null` after Tier 1 tries the special-key file.
+      fileContents['seasonal/easter/w1-SUN-lauds.rich.json'] = JSON.stringify({
+        shortReadingRich: makePrayer('Easter Sunday rich (must NOT bleed)'),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'EASTER',
+        weekKey: '7',
+        day: 'SUN',
+        hour: 'lauds',
+        celebrationName: 'Ascension of the Lord',
+      })
+
+      expect(overlay.shortReadingRich).toBeUndefined()
+    })
+  })
 })
 
 describe('loadHymnRichOverlay', () => {

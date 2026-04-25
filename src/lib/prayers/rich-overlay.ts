@@ -74,6 +74,28 @@ function readOverlayFile(filePath: string): RichOverlay | null {
   }
 }
 
+/**
+ * Seasonal rich overlay 로더 (3-tier lookup, propers-loader 와 대칭).
+ *
+ * Lookup 순서 (높은 우선순위부터):
+ *   1) **special-key 분기** — `resolveSpecialKey(season, celebrationName)` 가
+ *      매치하면 `seasonal/{seasonDir}/w{specialKey}-{day}-{hour}.rich.json`
+ *      을 시도. EASTER 의 `easterSunday`/`ascension`/`pentecost` 와
+ *      ORDINARY_TIME 의 `trinitySunday`/`corpusChristi`/`sacredHeart`/
+ *      `christTheKing` 이 대상. propers-loader.ts L123 의 `resolveSpecialKey`
+ *      를 그대로 재사용하므로 'w' prefix 외에는 키가 동일 (ascension →
+ *      wascension). EASTER 는 디스크 파일 보유, OT 는 미보유 — 미보유 시
+ *      `readOverlayFile` 가 ENOENT 캐싱 후 null. **special-key 가 매치된
+ *      경우 wk1 fallback 으로 대체 진입하지 않는다** (잘못된 wk1 SUN rich
+ *      흡수 방지: Easter Sunday rich 가 Ascension/Pentecost 에 덮이는 회귀).
+ *   2) **exact weekKey** — `seasonal/{seasonDir}/w{weekKey}-{day}-{hour}.rich.json`.
+ *   3) **wk1 fallback** — `seasonal/{seasonDir}/w1-{day}-{hour}.rich.json`.
+ *      `propers-loader.ts::getSeasonHourPropers` L141 의 `weeks['1']` fallback
+ *      과 대칭. Easter weeks 2-7 평일 (PDF p.700 octave rotation), Lent
+ *      weeks 2-5 평일, Advent weeks 2-3 평일에서 JSON propers 가 wk1 로
+ *      떨어지는 동안 rich 만 누락되어 발생하던 partial-merge 버그 (#54)
+ *      차단. weekKey === '1' 또는 special-key 매치 시 시도하지 않는다.
+ */
 export function loadSeasonalRichOverlay(
   season: LiturgicalSeason,
   weekKey: string,
@@ -87,20 +109,32 @@ export function loadSeasonalRichOverlay(
     'src/data/loth/prayers/seasonal',
     seasonDir,
   )
+
+  // Tier 1 — special-key (EASTER easterSunday/ascension/pentecost, OT
+  // trinitySunday/corpusChristi/sacredHeart/christTheKing). 디스크 파일이
+  // 있으면 numeric weekKey 보다 우선 — propers-loader 가 specialKey 를
+  // weekKey 보다 먼저 매치하는 동작과 일관.
+  const specialKey = resolveSpecialKey(season, celebrationName)
+  if (specialKey) {
+    const specialPath = path.join(
+      baseDir,
+      `w${specialKey}-${day}-${hour}.rich.json`,
+    )
+    const specialOverlay = readOverlayFile(specialPath)
+    if (specialOverlay) return specialOverlay
+    // 디스크 파일 부재 시에도 fall-through 하지 않는다 — propers-loader 가
+    // wk1 fallback 으로 가지 않는 것과 동일. wk1 SUN rich 가 Ascension/
+    // Pentecost JSON 위에 덮이는 #54 회귀 가드 그대로 유지.
+    return null
+  }
+
+  // Tier 2 — exact weekKey.
   const exact = path.join(baseDir, `w${weekKey}-${day}-${hour}.rich.json`)
   const direct = readOverlayFile(exact)
   if (direct) return direct
 
-  // 대칭 fallback (`propers-loader.ts::getSeasonHourPropers` L134 와 동기):
-  // Easter weeks 2-7 평일 / Lent weeks 2-5 평일 / Advent weeks 2-3 평일 등 시즌
-  // JSON 이 weeks['1'] 로 대표되는 케이스에서 rich 만 누락되어 partial merge
-  // (JSON propers + psalter commons rich) 가 발생하던 버그 차단.
-  // 가드: special-key 후보 (EASTER ascension/easterSunday/pentecost,
-  // ORDINARY_TIME trinitySunday/corpusChristi/sacredHeart/christTheKing) 는
-  // 자체 wascension/weasterSunday/wpentecost/...rich.json 이 디스크에 별도
-  // 존재하므로 이 경로로 대체 진입하지 않는다 (현재 미로드 상태와 동일).
+  // Tier 3 — wk1 fallback. weekKey === '1' 자기 자신은 시도 X.
   if (weekKey === '1') return null
-  if (resolveSpecialKey(season, celebrationName) != null) return null
   const fallback = path.join(baseDir, `w1-${day}-${hour}.rich.json`)
   return readOverlayFile(fallback)
 }

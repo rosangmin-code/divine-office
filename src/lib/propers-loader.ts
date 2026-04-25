@@ -131,13 +131,18 @@ export function getSeasonHourPropers(
   const weekKey = String(weekOfSeason)
 
   // Try exact week first, then fall back to week "1". Reflects the source
-  // PDF layout: Easter octave (PDF p.700) holds the only authored weekday
+  // PDF layout: Easter octave (PDF p.700) is the only authored weekday
   // formulary for weeks 2-7, and Advent / Lent weekdays similarly repeat
-  // their week-1 entries each week. `loadSeasonalRichOverlay` mirrors this
-  // fallback for the rich overlay so JSON propers + rich body don't drift
-  // (special-key dates — Ascension/Pentecost/etc. — are excluded from the
-  // mirror by name; they get their own wascension/weasterSunday/wpentecost
-  // rich files on disk).
+  // their wk1 weekday entries (Advent's "weekday repeat" + Lent wk2-5
+  // mirroring). The rich overlay path (`loadSeasonalRichOverlay`,
+  // src/lib/prayers/rich-overlay.ts L77+) implements the SAME fallback so
+  // JSON propers + rich body cannot drift (#54 partial-merge fix).
+  // Special-key dates — Easter ascension/easterSunday/pentecost, OT
+  // trinitySunday/corpusChristi/sacredHeart/christTheKing — are matched
+  // earlier by `resolveSpecialKey` (L123 above) and bypass this fallback;
+  // their seasonal rich counterparts live in
+  // `seasonal/{season}/w{specialKey}-{day}-{hour}.rich.json` and are
+  // picked up by Tier 1 of `loadSeasonalRichOverlay`.
   const dayPropers = weeks[weekKey]?.[day] ?? weeks['1']?.[day]
   if (!dayPropers) return null
 
