@@ -78,3 +78,57 @@ test.describe('seasonal rich overlay wk1 fallback (task #54)', () => {
     await expect(section.locator('sup')).toHaveCount(0)
   })
 })
+
+// @fr FR-153
+// Task #57 — Tier 1 special-key disk file load. The seasonal rich loader
+// now consults `seasonal/easter/w{specialKey}-{day}-{hour}.rich.json` for
+// `resolveSpecialKey` matches (Easter ascension/easterSunday/pentecost,
+// OT trinitySunday/corpusChristi/sacredHeart/christTheKing). Disk files
+// previously sat unloaded since #54 added the special-key wk1-fallback
+// guard but no Tier 1 load. Pentecost Sunday (2026-05-24) renders the
+// rich shortReading; Ascension Thursday (2026-05-14) day-of has no
+// matching THU disk file, but the page must still render cleanly.
+test.describe('seasonal rich overlay special-key load (task #57)', () => {
+  test('Pentecost Sunday lauds — shortReading renders from wpentecost rich', async ({
+    page,
+  }) => {
+    // 2026-05-24 = Pentecost Sunday. day === 'SUN' so
+    // `seasonal/easter/wpentecost-SUN-lauds.rich.json` is loaded by Tier 1.
+    // The file carries `shortReadingRich`; the page must render
+    // RichContent (single wrapper, no legacy `<sup>` verse numbers).
+    await page.goto(`/pray/${DATES.pentecostDay2026}/lauds`)
+    const section = page.locator('section[aria-label="Уншлага"]')
+    await expect(section).toBeVisible()
+
+    const richWrapper = section.locator('div.space-y-2')
+    await expect(richWrapper).toHaveCount(1)
+    await expect(section.locator('sup')).toHaveCount(0)
+  })
+
+  test('Pentecost Sunday vespers — concluding prayer section renders cleanly', async ({
+    page,
+  }) => {
+    // wpentecost-SUN-vespers.rich.json carries `concludingPrayerRich` /
+    // `intercessionsRich` / `responsoryRich` / `shortReadingRich`.
+    // Smoke regression: the page must mount the prayer article and
+    // surface the concluding prayer section without breakage.
+    await page.goto(`/pray/${DATES.pentecostDay2026}/vespers`)
+    await expect(page.locator('article')).toBeVisible()
+    const prayerSection = page.locator(
+      'section[aria-label="Төгсгөлийн даатгал залбирал"]',
+    ).first()
+    await expect(prayerSection).toBeVisible()
+  })
+
+  test('Ascension Thursday lauds — page renders without breakage (no SUN-slot rich match)', async ({
+    page,
+  }) => {
+    // 2026-05-14 day === 'THU'. The seasonal rich loader composes
+    // `seasonal/easter/wascension-THU-lauds.rich.json` which does NOT
+    // exist on disk (only the SUN-slot file is authored). Tier 1 returns
+    // null and Tier 2/3 also miss; the page must still render the JSON
+    // propers + psalter cycle bodies cleanly without console errors.
+    await page.goto(`/pray/${DATES.ascensionDay2026}/lauds`)
+    await expect(page.locator('article')).toBeVisible()
+  })
+})

@@ -62,6 +62,11 @@ export const DATES = {
   pentecostEve2026: '2026-05-23',       // Sat eve — Pentecost Sun May 24
   trinitySundayEve2026: '2026-05-30',   // Sat eve — Trinity Sun May 31
   christTheKingEve2026: '2026-11-21',   // Sat eve — Christ the King Sun Nov 22
+  // Task #57 — Ascension/Pentecost 당일 e2e regression 표적. seasonal
+  // rich loader Tier 1 이 wascension/wpentecost-SUN-{lauds,vespers}.rich.json
+  // 디스크 파일을 적재하여 PDF rich 포맷이 시각화되어야 한다.
+  ascensionDay2026: '2026-05-14',       // Ascension Thursday (movable solemnity day-of)
+  pentecostDay2026: '2026-05-24',       // Pentecost Sunday (movable solemnity day-of)
 
   // FR-156 task #30 — FEAST rank First Vespers eves.
   // Resolver now accepts rank === 'FEAST' so the 4 feast entries whose
