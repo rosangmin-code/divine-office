@@ -18,6 +18,13 @@ export interface ResolveRichContext {
    * 전달. 누락 시 psalter commons rich 를 시도하지 않는다.
    */
   psalterWeek?: number | string | null
+  /**
+   * romcal 이 부여한 전례 이름 (예: "Ascension of the Lord"). seasonal rich
+   * 의 wk1 fallback 가드에 사용 — special-key 후보 (Ascension/Pentecost 등)
+   * 는 wascension/weasterSunday/wpentecost rich 가 별도로 존재하므로 wk1
+   * fallback 으로 대체되면 안 된다.
+   */
+  celebrationName?: string | null
 }
 
 /**
@@ -43,7 +50,7 @@ export function resolveRichOverlay(ctx: ResolveRichContext): RichOverlay {
   const psalterCommons = ctx.psalterWeek != null && ctx.hour !== 'compline'
     ? loadPsalterCommonsRichOverlay(ctx.psalterWeek, ctx.day, ctx.hour)
     : null
-  const seasonal = loadSeasonalRichOverlay(ctx.season, ctx.weekKey, ctx.day, ctx.hour)
+  const seasonal = loadSeasonalRichOverlay(ctx.season, ctx.weekKey, ctx.day, ctx.hour, ctx.celebrationName)
   const sanctoral = ctx.sanctoralKey
     ? loadSanctoralRichOverlay(ctx.sanctoralKey, ctx.hour)
     : null

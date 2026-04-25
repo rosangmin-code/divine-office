@@ -70,9 +70,9 @@ function loadSeasonPropers(season: LiturgicalSeason): Record<string, Record<stri
  * resolve to their own First Vespers / Hour Propers blocks. Data
  * injection lands in Phase 4b (task #24) — Phase 4a is resolver-only.
  */
-function resolveSpecialKey(
+export function resolveSpecialKey(
   season: LiturgicalSeason,
-  celebrationName: string | undefined,
+  celebrationName: string | undefined | null,
 ): string | null {
   if (!celebrationName) return null
   const lower = celebrationName.toLowerCase()
@@ -130,7 +130,14 @@ export function getSeasonHourPropers(
 
   const weekKey = String(weekOfSeason)
 
-  // Try exact week first, then fall back to week "1" (Advent weekday propers repeat each week)
+  // Try exact week first, then fall back to week "1". Reflects the source
+  // PDF layout: Easter octave (PDF p.700) holds the only authored weekday
+  // formulary for weeks 2-7, and Advent / Lent weekdays similarly repeat
+  // their week-1 entries each week. `loadSeasonalRichOverlay` mirrors this
+  // fallback for the rich overlay so JSON propers + rich body don't drift
+  // (special-key dates — Ascension/Pentecost/etc. — are excluded from the
+  // mirror by name; they get their own wascension/weasterSunday/wpentecost
+  // rich files on disk).
   const dayPropers = weeks[weekKey]?.[day] ?? weeks['1']?.[day]
   if (!dayPropers) return null
 

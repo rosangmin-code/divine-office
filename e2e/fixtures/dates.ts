@@ -91,6 +91,21 @@ export const DATES = {
   // proper isn't a special day. 2026-04-23 is a Thursday in Easter week 3.
   easterWeekday: '2026-04-23',
 
+  // Task #54 — rich-overlay wk1 fallback regression dates.
+  // Easter wk2 MON / wk3 SAT both fall through propers-loader's wk1
+  // fallback for JSON propers; the matching seasonal rich file lives at
+  // `seasonal/easter/w1-{day}-{hour}.rich.json` (Easter Octave). Without
+  // the symmetric rich fallback, these dates render the JSON ref/page
+  // from week 1 alongside a body sourced from psalter commons rich.
+  easterW2Monday: '2026-04-13', // Easter Week 2 Monday
+  easterW3Saturday: '2026-04-25', // Easter Week 3 Saturday
+  // Lent / Advent weekday representatives for cross-season fallback guard.
+  // Lent Week 2 Tuesday (2026-03-03) and Advent Week 2 Wednesday
+  // (2025-12-10) both repeat their respective wk1 weekday formularies
+  // per propers-loader.
+  lentW2Tuesday: '2026-03-03',
+  adventW2Wednesday: '2025-12-10',
+
   // Solemnity: St. Joseph
   stJoseph: '2026-03-19',
 

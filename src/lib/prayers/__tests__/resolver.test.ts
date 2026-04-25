@@ -206,6 +206,183 @@ describe('resolveRichOverlay', () => {
 
     expect(overlay.shortReadingRich).toBeUndefined()
   })
+
+  // Task #54 — symmetric wk1 fallback for seasonal rich overlay.
+  //
+  // Bug: rich-overlay.ts L76-90 was asymmetric with propers-loader.ts L134.
+  // Easter weeks 2-7 weekdays use weeks['1'] propers (PDF p.700 octave) for
+  // JSON ref/body, but the rich overlay file `easter/wN-DAY-hour.rich.json`
+  // does not exist for N>1. The resolver loaded null for seasonal, then
+  // psalter-commons rich filled in body — producing JSON ref + psalter body
+  // mismatch. Fix mirrors propers-loader's `weeks['1']` fallback.
+  describe('seasonal wk1 fallback (task #54)', () => {
+    it('Easter wk3 SAT lauds — falls back to easter/w1-SAT-lauds.rich.json (Easter Octave)', () => {
+      fileContents['seasonal/easter/w1-SAT-lauds.rich.json'] = JSON.stringify({
+        shortReadingRich: makePrayer('Бидний хэн нь ч өөрийнхөө төлөө амьдрахгүй'),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'EASTER',
+        weekKey: '3',
+        day: 'SAT',
+        hour: 'lauds',
+        celebrationName: 'Saturday of the Third Week of Easter',
+      })
+
+      expect(overlay.shortReadingRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'Бидний хэн нь ч өөрийнхөө төлөө амьдрахгүй' }],
+      })
+    })
+
+    it('Easter wk2 MON lauds — falls back to easter/w1-MON-lauds.rich.json', () => {
+      fileContents['seasonal/easter/w1-MON-lauds.rich.json'] = JSON.stringify({
+        shortReadingRich: makePrayer('easter octave Monday reading'),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'EASTER',
+        weekKey: '2',
+        day: 'MON',
+        hour: 'lauds',
+        celebrationName: 'Monday of the Second Week of Easter',
+      })
+
+      expect(overlay.shortReadingRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'easter octave Monday reading' }],
+      })
+    })
+
+    it('Lent wk3 WED lauds — falls back to lent/w1-WED-lauds.rich.json', () => {
+      fileContents['seasonal/lent/w1-WED-lauds.rich.json'] = JSON.stringify({
+        shortReadingRich: makePrayer('lent week 1 wed reading'),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'LENT',
+        weekKey: '3',
+        day: 'WED',
+        hour: 'lauds',
+        celebrationName: 'Wednesday of the Third Week of Lent',
+      })
+
+      expect(overlay.shortReadingRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'lent week 1 wed reading' }],
+      })
+    })
+
+    it('Advent wk2 TUE vespers — falls back to advent/w1-TUE-vespers.rich.json', () => {
+      fileContents['seasonal/advent/w1-TUE-vespers.rich.json'] = JSON.stringify({
+        intercessionsRich: makePrayer('advent week 1 tue intercessions'),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'ADVENT',
+        weekKey: '2',
+        day: 'TUE',
+        hour: 'vespers',
+        celebrationName: 'Tuesday of the Second Week of Advent',
+      })
+
+      expect(overlay.intercessionsRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'advent week 1 tue intercessions' }],
+      })
+    })
+
+    it('exact week match takes precedence over wk1 fallback (Lent wk6 SAT lauds)', () => {
+      fileContents['seasonal/lent/w1-SAT-lauds.rich.json'] = JSON.stringify({
+        shortReadingRich: makePrayer('lent w1 SAT (must NOT be picked)'),
+      })
+      fileContents['seasonal/lent/w6-SAT-lauds.rich.json'] = JSON.stringify({
+        shortReadingRich: makePrayer('Holy Saturday reading'),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'LENT',
+        weekKey: '6',
+        day: 'SAT',
+        hour: 'lauds',
+        celebrationName: 'Holy Saturday',
+      })
+
+      expect(overlay.shortReadingRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'Holy Saturday reading' }],
+      })
+    })
+
+    it('Ordinary Time wk3 SAT lauds — no seasonal weekday rich; psalter commons handles body', () => {
+      // OT only authors Sunday rich files; weekdays go through psalter cycle.
+      // wk1 fallback would otherwise mistakenly pick a wk1 file if it existed.
+      fileContents['commons/psalter/w3-SAT-lauds.rich.json'] = JSON.stringify({
+        shortReadingRich: makePrayer('psalter week 3 SAT lauds'),
+      })
+      // No `seasonal/ordinary-time/w1-SAT-lauds.rich.json` written — fallback
+      // returns null, psalter commons spreads through.
+
+      const overlay = resolveRichOverlay({
+        season: 'ORDINARY_TIME',
+        weekKey: '3',
+        day: 'SAT',
+        hour: 'lauds',
+        psalterWeek: '3',
+        celebrationName: 'Saturday of the Third Week in Ordinary Time',
+      })
+
+      expect(overlay.shortReadingRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'psalter week 3 SAT lauds' }],
+      })
+    })
+
+    it('Easter Ascension SUN — special-key guard prevents wk1 fallback (no rich applied)', () => {
+      // wascension-SUN-lauds.rich.json exists on disk but is NOT loaded by the
+      // current seasonal path; the wk1 fallback MUST NOT substitute Easter
+      // Sunday's rich (which would mismatch the Ascension JSON propers).
+      fileContents['seasonal/easter/w1-SUN-lauds.rich.json'] = JSON.stringify({
+        shortReadingRich: makePrayer('Easter Sunday rich (must NOT bleed into Ascension)'),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'EASTER',
+        weekKey: '7',
+        day: 'SUN',
+        hour: 'lauds',
+        celebrationName: 'Ascension of the Lord',
+      })
+
+      expect(overlay.shortReadingRich).toBeUndefined()
+    })
+
+    it('Easter Pentecost SUN — special-key guard prevents wk1 fallback', () => {
+      fileContents['seasonal/easter/w1-SUN-vespers.rich.json'] = JSON.stringify({
+        shortReadingRich: makePrayer('Easter Sunday rich (must NOT bleed into Pentecost)'),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'EASTER',
+        weekKey: '8',
+        day: 'SUN',
+        hour: 'vespers',
+        celebrationName: 'Pentecost Sunday',
+      })
+
+      expect(overlay.shortReadingRich).toBeUndefined()
+    })
+
+    it('OT Christ the King SUN — special-key guard prevents wk1 fallback', () => {
+      fileContents['seasonal/ordinary-time/w1-SUN-vespers.rich.json'] = JSON.stringify({
+        shortReadingRich: makePrayer('OT week 1 Sunday rich (must NOT bleed)'),
+      })
+
+      const overlay = resolveRichOverlay({
+        season: 'ORDINARY_TIME',
+        weekKey: '34',
+        day: 'SUN',
+        hour: 'vespers',
+        celebrationName: 'Our Lord Jesus Christ, King of the Universe',
+      })
+
+      expect(overlay.shortReadingRich).toBeUndefined()
+    })
+  })
 })
 
 describe('loadHymnRichOverlay', () => {
