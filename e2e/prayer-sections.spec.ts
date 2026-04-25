@@ -101,7 +101,10 @@ test.describe('Prayer section detail rendering', () => {
     test('selecting a different hymn changes displayed text', async ({ page }) => {
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
       const hymnSection = page.locator('[aria-label="Магтуу"]')
-      const originalText = await hymnSection.locator('.font-serif').textContent()
+      // Hymn body now renders as multiple stanza paragraphs (RichContent
+      // path) — match the first font-serif element to capture the opening
+      // line. Strict-mode locator otherwise rejects multi-match.
+      const originalText = await hymnSection.locator('.font-serif').first().textContent()
 
       // Open menu and select a different hymn
       await page.getByRole('button', { name: /Бусад магтуу/ }).click()
@@ -117,7 +120,7 @@ test.describe('Prayer section detail rendering', () => {
         }
       }
 
-      const newText = await hymnSection.locator('.font-serif').textContent()
+      const newText = await hymnSection.locator('.font-serif').first().textContent()
       expect(newText).not.toBe(originalText)
     })
 
