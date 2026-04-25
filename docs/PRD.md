@@ -187,7 +187,7 @@ src/app/
 | 우선순위 | 작업 | 관련 ID |
 |----------|------|---------|
 | ~~P1~~ | ~~성인축일 고유문 확장~~ — **PDF authored entries 전수 추출 완료** (task #45, gap=0). PDF 외 로마 보편 달력 항목 추가는 별건 follow-up | ~~FR-045~~ |
-| P2 | PDF 뷰어 인터랙션 E2E 확장 (페이지 이동 / 범위 초과 1~969 / pdfjs 로드 실패 폴백) | FR-017i |
+| ~~P2~~ | ~~PDF 뷰어 인터랙션 E2E 확장~~ — **페이지 이동 (스와이프 + 키보드) 은 FR-017j 에서 8건 e2e 추가로 구현 완료**. 잔여: 범위 초과 (1~969) 외 영역 검증 / pdfjs 로드 실패 폴백 e2e | ~~FR-017i~~ / FR-017j |
 | P3 | Triduum (성삼일) 특별 전례(수난예식·부활성야) 처리 — 성주간 평일 기도문(성목·성금·성토 lauds/vespers)은 `lent.json weeks.6`에 구현 | - |
 | P3 | 주간/월간 기도 달력 뷰 | - |
 
@@ -292,6 +292,7 @@ FR-153 pilot (`f604835`) 이후 6개 하위 FR 로 분할 확산 완료. 병렬 
 | FR-017g | **후렴 페이지 표시**: 시편 후렴(`Шад дуулал`), 복음찬가 후렴(`Шад магтаал`), 초대송 후렴 모두 본문 끝에 `(х. N)` 를 표시한다. 시편 후렴은 부모 시편 페이지, 복음찬가·초대송 후렴은 시기별 propers 의 자체 페이지(`gospelCanticleAntiphonPage` / invitatory `section.page`) 를 사용한다. 이유: 후렴은 시기마다 본문이 달라 동일 복음찬가/초대송이라도 페이지가 바뀐다. | UI | P2 | 완료 |
 | FR-017h | **시편 마침기도 페이지 표시 (Дууллыг төгсгөх залбирал)**: 각 시편 블록 뒤 post-Gloria Patri 오라치오 제목 옆에 `(х. N)` 표시. `psalter-texts.json` 의 entry 별 `psalmPrayerPage` 병행 키(88/88 자동 주입), `AssembledPsalm.psalmPrayerPage` 로 전파. 이유: 마침기도는 시편 본문과 다른 페이지에 위치하며 사용자가 종이책에서 찾기 위해 별도 페이지 참조가 필요하다. | UI / 데이터 | P2 | 완료 |
 | FR-017i | **페이지 번호 클릭 시 앱 내부 PDF 뷰어 열기**: `PageRef` 는 `(х. N)` 을 **내부 링크**(`<Link href="/pdf/{bookPage}">`)로 렌더링한다. 새 탭이 아닌 같은 탭에서 `/pdf/[page]` 라우트로 이동하며, 상단 "Буцах" 버튼 또는 브라우저 뒤로가기로 원래 기도 페이지의 스크롤 위치로 복귀한다. 뷰어는 **`pdfjs-dist` 기반 client-side canvas 렌더러**(`src/components/pdf-viewer.tsx`) 로 `public/psalter.pdf` 에서 해당 책 페이지가 속한 2-up PDF 페이지를 불러온 뒤, **좌/우 반쪽 중 한 쪽만** (짝수 책 페이지=왼쪽, 홀수=오른쪽) 을 canvas 에 그린다. iOS Safari 등 모바일 브라우저가 네이티브 PDF fragment(`#page=N`)를 지원하지 않아 새 탭 접근이 깨지던 문제를 근본 해소. 매핑: `pdfPage = Math.floor(bookPage / 2) + 1`, `side = bookPage % 2 === 0 ? 'left' : 'right'` (`src/lib/pdf-page.ts`). 뷰어에는 이전/다음 책 페이지 네비게이션 버튼 포함. 링크 표시 여부는 `showPageRefs` 토글(FR-018) 로 제어, 링크 요소는 `data-role="page-ref-link"`, canvas 는 `data-role="pdf-canvas"` 마커를 가진다. | UI | P2 | 완료 |
+| FR-017j | **PDF 뷰어 UX 개선**: `/pdf/[page]` 라우트에서 (a) 캔버스를 컨테이너 폭 기준 fit-to-width 로 렌더해(cssScale 상한 1.0, dpr 적용 device px) 모바일 글자 크기를 키우고, (b) 헤더/하단 nav 를 제거해 캔버스 영역을 최대화하며, (c) 좌우 스와이프(native PointerEvents, THRESHOLD 60px / EDGE_DEADZONE 16px / VERTICAL_REJECT 1.2 / 100ms debounce) 와 키보드 ArrowLeft/Right + Home/End 로 페이지 이동을 제공한다. (d) "Буцах" 는 좌상단 플로팅 반투명 원형 버튼(44×44, dark 대응, `safe-area-inset` 보정) 으로 유지, prev/next 시각 버튼은 제거하되 sr-only 등가 컨트롤 + `aria-keyshortcuts` + `[role="status"][aria-live="polite"]` 페이지 인디케이터로 a11y 보전. PDF 문서는 컴포넌트 마운트 시 1회만 `getDocument` → `useRef` 캐싱(스와이프 spam 시 재로딩 0). `ResizeObserver` 가 컨테이너 폭 변경/회전 감지 시 같은 페이지 재렌더. CACHE_VERSION bump 없음(`public/sw.js` 무수정), 의존성 추가 없음(`react-swipeable` 등 미도입). | UI | P2 | 완료 |
 | FR-017a | **시편 주간 페이지 주석**: `psalter/week-{1..4}.json` 시편/교독성가/짧은독서/응송에 `page` 필드 + `intercessionsPage` 병행 키. 시편 95%↑ / 짧은독서·응송 95%↑ / 중보기도 85%↑. | 데이터 | P2 | 완료 |
 | FR-017b | **시즌 propers 페이지 주석**: `propers/{advent,christmas,easter,lent,ordinary-time}.json` 의 마침기도·복음찬가교송·중보기도·짧은독서·응송 각 객체/병행 키에 페이지. 마침기도 99%↑, 응송 85%↑. | 데이터 | P2 | 완료 |
 | FR-017c | **성인력 페이지 주석**: `sanctoral/{solemnities,feasts,memorials,optional-memorials}.json` 의 마침기도/복음찬가교송 등에 페이지. 마침기도 90%↑, 복음찬가교송 80%↑. | 데이터 | P2 | 완료 |

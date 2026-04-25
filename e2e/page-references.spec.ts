@@ -242,4 +242,124 @@ test.describe('PDF page references', () => {
       await expect(page).toHaveURL(new RegExp(LAUDS_URL.replace(/\//g, '\\/') + '$'))
     })
   })
+
+  // FR-017j: PDF viewer UX rewrite — fit-to-width canvas, swipe + keyboard
+  // navigation, floating Буцах, page indicator with aria-live.
+  // @fr FR-017j
+  test.describe('PDF viewer UX (FR-017j)', () => {
+    async function gotoViewer(page: Page, bookPage: number): Promise<void> {
+      await page.goto(`/pdf/${bookPage}`)
+      const canvas = page.locator('[data-role="pdf-canvas"]')
+      // Canvas takes a few hundred ms to render; allow generous timeout for CI.
+      await expect(canvas).toBeVisible({ timeout: 15_000 })
+      await expect(canvas).toHaveAttribute('data-book-page', String(bookPage))
+    }
+
+    async function dispatchSwipe(
+      page: Page,
+      fromX: number,
+      toX: number,
+      y: number = 400,
+    ): Promise<void> {
+      const target = '[data-role="pdf-viewer-container"]'
+      await page.dispatchEvent(target, 'pointerdown', {
+        bubbles: true,
+        pointerId: 1,
+        pointerType: 'touch',
+        clientX: fromX,
+        clientY: y,
+      })
+      await page.dispatchEvent(target, 'pointerup', {
+        bubbles: true,
+        pointerId: 1,
+        pointerType: 'touch',
+        clientX: toX,
+        clientY: y,
+      })
+    }
+
+    // @fr FR-017j
+    test('swipe left advances bookPage by 1', async ({ page }) => {
+      await gotoViewer(page, 58)
+      const canvas = page.locator('[data-role="pdf-canvas"]')
+      // 300 → 100 = dx -200 (well past 60px threshold), starts past 16px deadzone.
+      await dispatchSwipe(page, 300, 100)
+      await expect(canvas).toHaveAttribute('data-book-page', '59')
+    })
+
+    // @fr FR-017j
+    test('swipe right retreats bookPage by 1', async ({ page }) => {
+      await gotoViewer(page, 58)
+      const canvas = page.locator('[data-role="pdf-canvas"]')
+      await dispatchSwipe(page, 100, 300)
+      await expect(canvas).toHaveAttribute('data-book-page', '57')
+    })
+
+    // @fr FR-017j
+    test('swipe left at MAX (969) is a no-op', async ({ page }) => {
+      await gotoViewer(page, 969)
+      const canvas = page.locator('[data-role="pdf-canvas"]')
+      await dispatchSwipe(page, 300, 100)
+      // 200ms wait > 100ms swipe debounce window, ensures any state update would
+      // have settled by the time we assert no change.
+      await page.waitForTimeout(200)
+      await expect(canvas).toHaveAttribute('data-book-page', '969')
+    })
+
+    // @fr FR-017j
+    test('swipe right at MIN (1) is a no-op', async ({ page }) => {
+      await gotoViewer(page, 1)
+      const canvas = page.locator('[data-role="pdf-canvas"]')
+      await dispatchSwipe(page, 100, 300)
+      await page.waitForTimeout(200)
+      await expect(canvas).toHaveAttribute('data-book-page', '1')
+    })
+
+    // @fr FR-017j
+    test('keyboard ArrowRight advances bookPage', async ({ page }) => {
+      await gotoViewer(page, 58)
+      const canvas = page.locator('[data-role="pdf-canvas"]')
+      await page.keyboard.press('ArrowRight')
+      await expect(canvas).toHaveAttribute('data-book-page', '59')
+    })
+
+    // @fr FR-017j
+    test('keyboard ArrowLeft retreats bookPage', async ({ page }) => {
+      await gotoViewer(page, 58)
+      const canvas = page.locator('[data-role="pdf-canvas"]')
+      await page.keyboard.press('ArrowLeft')
+      await expect(canvas).toHaveAttribute('data-book-page', '57')
+    })
+
+    // @fr FR-017j
+    test('canvas occupies the full frame width (fit-to-width)', async ({
+      page,
+    }) => {
+      await gotoViewer(page, 58)
+      // The canvas frame is constrained by `max-w-[480px]` so the canvas never
+      // grows beyond a comfortable reading width on desktop. Fit-to-width
+      // should match the frame's clientWidth within rounding tolerance.
+      const frame = page.locator('[data-role="pdf-canvas-frame"]')
+      const canvas = page.locator('[data-role="pdf-canvas"]')
+      const frameBox = await frame.boundingBox()
+      const canvasBox = await canvas.boundingBox()
+      expect(frameBox).not.toBeNull()
+      expect(canvasBox).not.toBeNull()
+      expect(canvasBox!.width).toBeGreaterThanOrEqual(frameBox!.width - 4)
+      expect(canvasBox!.width).toBeLessThanOrEqual(frameBox!.width + 1)
+    })
+
+    // @fr FR-017j
+    test('aria-live page indicator updates when page changes', async ({
+      page,
+    }) => {
+      await gotoViewer(page, 58)
+      const indicator = page.locator('[data-role="pdf-page-indicator"]')
+      await expect(indicator).toHaveAttribute('role', 'status')
+      await expect(indicator).toHaveAttribute('aria-live', 'polite')
+      await expect(indicator).toContainText('х. 58')
+      await page.keyboard.press('ArrowRight')
+      await expect(indicator).toContainText('х. 59')
+    })
+  })
 })
