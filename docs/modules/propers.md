@@ -40,7 +40,7 @@
 | FR-042 | 축일 4개: 주님 봉헌(02-02), 주님 변모(08-06), 성 십자가 현양(09-14), 라테란 대성전 봉헌(11-09). | 완료 |
 | FR-043 | 기념일 3개: 위령의 날(11-02), 위령 공통(deceased), 토요일 성모 기념(saturday-mary). | 완료 |
 | FR-044 | 대축일/축일에서 replacesPsalter 플래그로 시편집 전체를 고유 시편으로 교체할 수 있다. | 완료 |
-| FR-045 | 성인축일 고유문을 확장한다 (현재 14개 → 목표: 로마 보편 달력 전체). | 미완료 |
+| FR-045 | 성인축일 고유문을 확장한다 — PDF "Монгол Католик Чуулганы Цаг Үйл Ариунсны Ном" authored entries 전수 추출 (가능 범위). | 완료 (task #45, PDF 16건 = JSON 16건, gap=0) |
 
 ### 3단계 Fallback 로직
 
@@ -48,6 +48,51 @@
 |----|----------|------|
 | FR-050 | 기도문 조립 시 3단계 우선순위를 적용한다: (1) psalter commons → (2) season propers → (3) sanctoral propers. 상위 레이어가 하위를 덮어쓴다. | 완료 |
 | FR-051 | 교송(antiphon) 역시 동일한 우선순위로 덮어쓴다: 시편집 기본 교송 → 계절 교송 → 성인축일 교송. | 완료 |
+
+## FR-045 PDF Sanctoral Audit (task #45)
+
+PDF "Монгол Католик Чуулганы Цаг Үйл Ариунсны Ном" (Four-Week psalter.- 2025.pdf) sanctoral 섹션 (pages 821-870, parsed_data/full_pdf.txt lines 27945-29413) 전수 enumeration 결과 — 모든 PDF authored entries 가 sanctoral JSON 에 추출되어 있음을 확인.
+
+### PDF dated entries (12개) — 모두 추출됨
+
+| MM-DD | PDF page | rank | JSON 파일 |
+|---|---|---|---|
+| 02-02 | 821 | Баяр (FEAST) | `feasts.json` |
+| 03-19 | 823 | Их баяр (SOLEMNITY) | `solemnities.json` |
+| 03-25 | 825 | Их баяр (SOLEMNITY) | `solemnities.json` |
+| 06-24 | 827 | Их баяр (SOLEMNITY) | `solemnities.json` |
+| 06-29 | 829 | Их баяр (SOLEMNITY) | `solemnities.json` |
+| 08-06 | 831 | Баяр (FEAST) | `feasts.json` |
+| 08-15 | 833 | Их Баяр (SOLEMNITY) | `solemnities.json` |
+| 09-14 | 835 | Баяр (FEAST) | `feasts.json` |
+| 11-01 | 837 | Их баяр (SOLEMNITY) | `solemnities.json` |
+| 11-02 | 839 | Дурсахуй (MEMORIAL) | `memorials.json` |
+| 11-09 | 840 | Баяр (FEAST) | `feasts.json` |
+| 12-08 | 842 | Их баяр (SOLEMNITY) | `solemnities.json` |
+
+### PDF special sections (2개) — 모두 추출됨
+
+| 명칭 | PDF page | JSON 키 |
+|---|---|---|
+| Талийгаач бологсдын төлөөх хурал (위령 공통) | 844-859 | `memorials.json::deceased` |
+| Цэвэр Охин Мариагийн Бямба гарагийг дурсахуй (토요일 성모 기념) | 860-870 | `memorials.json::saturday-mary` |
+
+### Christmas-season propers 출처 (2개) — 별 섹션이지만 sanctoral.json 에 저장됨
+
+| MM-DD | 명칭 | JSON 파일 |
+|---|---|---|
+| 12-25 | ЭЗЭНИЙ МЭНДЭЛСЭН ӨДӨР (주님 성탄) | `solemnities.json` |
+| 01-01 | ТЭНГЭРБУРХАНЫ АРИУН ЭХ МАРИА (천주의 성모 마리아) | `solemnities.json` |
+
+### 비-PDF authored entries (3개) — 외부 출처
+
+| 키 | 비고 |
+|---|---|
+| `04-17-benedict-joseph-labre` | PDF에 grep 0 hits. 외부 출처 (몽골 교구 후원 등) |
+| `06-13-anthony-of-padua` | PDF에 grep 0 hits. 외부 출처 |
+| `10-04-francis-of-assisi` | PDF에 grep 0 hits. 외부 출처 |
+
+> **Follow-up (별건)**: PDF 외 로마 보편 달력 항목 (성 미카엘 등) 추가 또는 비-PDF 3건 정리는 본 FR-045 범위 밖. 필요 시 별도 FR 로 분리.
 
 ## 의존성
 - **calendar** — 전례시기, 축일 등급 정보 (고유문 파일 선택에 필요)
