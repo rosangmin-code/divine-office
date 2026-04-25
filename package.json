@@ -13,7 +13,8 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:api": "playwright test api.spec.ts",
     "traceability": "node scripts/generate-test-fr-map.mjs",
-    "traceability:check": "node scripts/generate-test-fr-map.mjs --check"
+    "traceability:check": "node scripts/generate-test-fr-map.mjs --check",
+    "verify:first-vespers-ref": "node scripts/verify-first-vespers-ref-coverage.js"
   },
   "dependencies": {
     "next": "^16.2.4",
