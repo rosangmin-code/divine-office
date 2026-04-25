@@ -7,6 +7,7 @@ import type {
   HourType,
   PrayerText,
 } from '../types'
+import { resolveSpecialKey } from '../propers-loader'
 
 export type RichOverlay = Partial<Pick<HourPropers,
   | 'shortReadingRich'
@@ -78,15 +79,30 @@ export function loadSeasonalRichOverlay(
   weekKey: string,
   day: DayOfWeek,
   hour: HourType,
+  celebrationName?: string | null,
 ): RichOverlay | null {
   const seasonDir = SEASON_KEBAB[season]
-  const filePath = path.join(
+  const baseDir = path.join(
     process.cwd(),
     'src/data/loth/prayers/seasonal',
     seasonDir,
-    `w${weekKey}-${day}-${hour}.rich.json`,
   )
-  return readOverlayFile(filePath)
+  const exact = path.join(baseDir, `w${weekKey}-${day}-${hour}.rich.json`)
+  const direct = readOverlayFile(exact)
+  if (direct) return direct
+
+  // 대칭 fallback (`propers-loader.ts::getSeasonHourPropers` L134 와 동기):
+  // Easter weeks 2-7 평일 / Lent weeks 2-5 평일 / Advent weeks 2-3 평일 등 시즌
+  // JSON 이 weeks['1'] 로 대표되는 케이스에서 rich 만 누락되어 partial merge
+  // (JSON propers + psalter commons rich) 가 발생하던 버그 차단.
+  // 가드: special-key 후보 (EASTER ascension/easterSunday/pentecost,
+  // ORDINARY_TIME trinitySunday/corpusChristi/sacredHeart/christTheKing) 는
+  // 자체 wascension/weasterSunday/wpentecost/...rich.json 이 디스크에 별도
+  // 존재하므로 이 경로로 대체 진입하지 않는다 (현재 미로드 상태와 동일).
+  if (weekKey === '1') return null
+  if (resolveSpecialKey(season, celebrationName) != null) return null
+  const fallback = path.join(baseDir, `w1-${day}-${hour}.rich.json`)
+  return readOverlayFile(fallback)
 }
 
 export function loadSanctoralRichOverlay(
