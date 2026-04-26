@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 /**
- * FR-156 Phase 5 WI-A1-codify (task #75). Codify the bare → versed
- * mapping for the 6 distinct firstVespers psalms identified in
- * researcher #73's PDF analysis, and emit the resulting versed-map
- * JSON to parsed_data/first-vespers-versed-map.json.
+ * FR-156 Phase 5 WI-A1-codify (task #75 + #80 amendment). Codify the
+ * current → versed mapping for the 7 distinct firstVespers psalms
+ * identified in researcher #73 (6 psalms) + #80 (Psalm 141), and emit
+ * the resulting versed-map JSON to parsed_data/first-vespers-versed-map.json.
  *
- * The 6 psalms (and Christmas-Day sol 12-25) cover all 66 bare-ref
- * cells flagged by scripts/verify-first-vespers-ref-coverage.js. The
- * 7th distinct culprit Psalm 141 is tracked separately in task #80
- * (parallel research) — its mapping will be amended into this JSON
- * by a follow-up codify task once the case_verdict lands.
+ * Coverage:
+ *   - 66 bare-ref cells (Psalm 16/113/122/130/142/147) → WI-A2 rewrite
+ *   - 15 catalog-miss cells (Psalm 141:1-9, already versed) → WI-C only
+ *   - 12-25 sol-firstVespers (Psalm 113 + Psalm 147:12-20) → WI-A2 rewrite
+ * Per-entry actions (rewrite_needed + catalog_action) tell each
+ * downstream WI exactly which cells to touch.
  *
  * Reproducibility (plan §3.1 step 1-6):
  *   1. Open parsed_data/full_pdf.txt (PDF text dump from
@@ -42,12 +43,21 @@ const ROOT = path.resolve(__dirname, '..')
 const PDF_PATH = path.join(ROOT, 'parsed_data', 'full_pdf.txt')
 const OUT_PATH = path.join(ROOT, 'parsed_data', 'first-vespers-versed-map.json')
 
-// Canonical mapping derived from researcher #73's PDF analysis. Each
-// entry is keyed by the bare ref (the form currently in propers JSON);
-// `versed` is the target catalog key WI-A2 will rewrite to.
+// Canonical mapping derived from researcher #73 + #80 PDF analysis.
+// Each entry is keyed by `current_ref` — the form currently in propers
+// JSON. Most are bare ("Psalm 122") but Psalm 141 is already versed
+// ("Psalm 141:1-9") and only needs catalog augmentation, not rewrite.
+//
+// Per-entry actions for downstream WIs:
+//   rewrite_needed: WI-A2 will rewrite the propers ref to `versed`.
+//                   false when current_ref already equals versed.
+//   catalog_action: "ADD" → WI-C must augment psalter-texts.json with
+//                           the versed key (stanzas + psalmPrayer +
+//                           psalmPrayerPage). "none" → catalog already
+//                           has the versed key, no action.
 const CANONICAL = [
   {
-    bare: 'Psalm 16',
+    current_ref: 'Psalm 16',
     versed: 'Psalm 16:1-6',
     anchor_line: 5625,
     anchor_text: 'Дуулал 16',
@@ -57,10 +67,12 @@ const CANONICAL = [
     case_verdict: 'A*',
     case_notes:
       'Catalog has BOTH "Psalm 16:1-6" and "Psalm 16:7-11". PDF firstVespers body (L5629-5667, p.169-170) is byte-aligned with the catalog entry "Psalm 16:1-6" stanza — the verses 1-6 partition. The :7-11 partition belongs to a different hour (Saturday morning prayer) and is unrelated to firstVespers. CASE A* tag means catalog has a duplicate keying-by-range and the disambiguation is researcher-validated, not auto-derivable.',
+    rewrite_needed: true,
+    catalog_action: 'none',
     trigger_wi_c: false,
   },
   {
-    bare: 'Psalm 113',
+    current_ref: 'Psalm 113',
     versed: 'Psalm 113:1-9',
     anchor_line: 9785,
     anchor_text: 'Дуулал 113',
@@ -70,10 +82,12 @@ const CANONICAL = [
     case_verdict: 'A',
     case_notes:
       'Direct catalog match. Hebrew Ps 113 has 9 verses; PDF body L9796-9816 (p.288-289) covers all 9. Catalog entry "Psalm 113:1-9" stanza identical to PDF body. The same versed key applies to the Christmas-Day solemnity 12-25 firstVespers ps1 (PDF L20169) — single canonical destination.',
+    rewrite_needed: true,
+    catalog_action: 'none',
     trigger_wi_c: false,
   },
   {
-    bare: 'Psalm 122',
+    current_ref: 'Psalm 122',
     versed: 'Psalm 122:1-9',
     anchor_line: 13728,
     anchor_text: 'Дуулал 122',
@@ -83,10 +97,12 @@ const CANONICAL = [
     case_verdict: 'A',
     case_notes:
       'Direct catalog match. Hebrew Ps 122 has 9 verses; PDF body L13739-13757 (p.399-400) covers verses 1-9. Catalog entry "Psalm 122:1-9" stanza identical.',
+    rewrite_needed: true,
+    catalog_action: 'none',
     trigger_wi_c: false,
   },
   {
-    bare: 'Psalm 130',
+    current_ref: 'Psalm 130',
     versed: 'Psalm 130:1-8',
     anchor_line: 13788,
     anchor_text: 'Дуулал 130',
@@ -96,10 +112,27 @@ const CANONICAL = [
     case_verdict: 'A',
     case_notes:
       'Direct catalog match. Hebrew Ps 130 has 8 verses; PDF body L13792-13817 (p.401-402) covers verses 1-8. Catalog entry "Psalm 130:1-8" stanza identical.',
+    rewrite_needed: true,
+    catalog_action: 'none',
     trigger_wi_c: false,
   },
   {
-    bare: 'Psalm 142',
+    current_ref: 'Psalm 141:1-9',
+    versed: 'Psalm 141:1-9',
+    anchor_line: 1505,
+    anchor_text: 'Дуулал 141:1-9',
+    body_lines: '1512-1553',
+    body_first_line_fingerprint: 'Аяа ЭЗЭН, би Таныг дуудаж байна.',
+    pdf_page: '50-51',
+    case_verdict: 'B',
+    case_notes:
+      'Catalog ABSENT — psalter-texts.json has no "Psalm 141:*" key. Propers data is ALREADY versed ("Psalm 141:1-9") so no propers rewrite is needed (rewrite_needed=false). The drift is catalog-only: 15 cells (advent 1 + christmas 2 + lent 2 + easter 1 + ordinary-time 9, surfaced as catalog-miss by WI-A3 verifier) currently fall back to Bible JSONL lookup at runtime, losing PDF stanza structure. WI-C augmentation: add "Psalm 141:1-9" entry with stanzas from PDF L1512-1553 + psalmPrayer from PDF L1560-1564 (p.51). Hebrew Ps 141 has 9 verses; PDF body L1512-1553 (p.50-51) covers all 9. Anchor explicitly states "Дуулал 141:1-9" — verse range is PDF-authoritative.',
+    rewrite_needed: false,
+    catalog_action: 'ADD',
+    trigger_wi_c: true,
+  },
+  {
+    current_ref: 'Psalm 142',
     versed: 'Psalm 142:1-7',
     anchor_line: 1597,
     anchor_text: 'Дуулал 142',
@@ -108,11 +141,13 @@ const CANONICAL = [
     pdf_page: '53-54',
     case_verdict: 'B',
     case_notes:
-      'Catalog ABSENT — psalter-texts.json has no "Psalm 142:*" key (nearest is "Psalm 143:1-11"). Hebrew Ps 142 has 7 verses; PDF body L1602-1633 (p.53-54) covers verses 1-7 in full. Body fingerprint does NOT match catalog "Psalm 143:1-11" — this is genuine catalog absence (CASE B), not a Hebrew↔Vulgate numbering mismatch (CASE A). WI-C augmentation required: add new "Psalm 142:1-7" entry with stanzas extracted from PDF L1602-1633 + psalmPrayer extracted from L1635-1639.',
+      'Catalog ABSENT — psalter-texts.json has no "Psalm 142:*" key (nearest is "Psalm 143:1-11"). Hebrew Ps 142 has 7 verses; PDF body L1602-1633 (p.53-54) covers verses 1-7 in full. Body fingerprint does NOT match catalog "Psalm 143:1-11" — this is genuine catalog absence (CASE B), not a Hebrew↔Vulgate numbering mismatch (CASE A). WI-C augmentation required: add new "Psalm 142:1-7" entry with stanzas extracted from PDF L1602-1633 + psalmPrayer extracted from L1635-1639. Both rewrite (15 bare cells) AND catalog ADD required.',
+    rewrite_needed: true,
+    catalog_action: 'ADD',
     trigger_wi_c: true,
   },
   {
-    bare: 'Psalm 147',
+    current_ref: 'Psalm 147',
     versed: 'Psalm 147:12-20',
     anchor_line: 20201,
     anchor_text: 'Дуулал 147: 12-20',
@@ -122,13 +157,17 @@ const CANONICAL = [
     case_verdict: 'A',
     case_notes:
       'Direct catalog match. PDF anchor at L20201 explicitly states "Дуулал 147: 12-20" — verse range is PDF-authoritative, no inference required. PDF body L20202-20229 (p.585-586) covers verses 12-20. Catalog entry "Psalm 147:12-20" stanza identical. Sole occurrence is Christmas-Day solemnity 12-25 firstVespers ps2 (sanctoral/solemnities.json $.12-25.firstVespers.psalms[1]).',
+    rewrite_needed: true,
+    catalog_action: 'none',
     trigger_wi_c: false,
   },
 ]
 
-function chapterOf(bare) {
-  const m = bare.match(/^Psalm (\d+)$/)
-  if (!m) throw new Error(`bare ref must be "Psalm N", got "${bare}"`)
+function chapterOf(currentRef) {
+  // Accepts both bare ("Psalm 122") and already-versed ("Psalm 141:1-9")
+  // forms — the latter applies to entries where rewrite_needed=false.
+  const m = currentRef.match(/^Psalm (\d+)(?::|$)/)
+  if (!m) throw new Error(`current_ref must start with "Psalm N", got "${currentRef}"`)
   return parseInt(m[1], 10)
 }
 
@@ -160,22 +199,24 @@ function buildVersedMap() {
   for (const entry of CANONICAL) {
     const errs = verifyAnchorAndBody(lines, entry)
     if (errs.length > 0) {
-      allErrors.push({ bare: entry.bare, errors: errs })
+      allErrors.push({ current_ref: entry.current_ref, errors: errs })
     }
   }
   if (allErrors.length > 0) {
     return { ok: false, errors: allErrors }
   }
-  // Sort by chapter number for stable output (16, 113, 122, 130, 142, 147).
-  const sorted = [...CANONICAL].sort((a, b) => chapterOf(a.bare) - chapterOf(b.bare))
+  // Sort by chapter number for stable output (16, 113, 122, 130, 141, 142, 147).
+  const sorted = [...CANONICAL].sort((a, b) => chapterOf(a.current_ref) - chapterOf(b.current_ref))
   const out = {}
   for (const e of sorted) {
-    out[e.bare] = {
+    out[e.current_ref] = {
       versed: e.versed,
       evidence_pdf_lines: e.body_lines,
       evidence_pdf_page: e.pdf_page,
       case_verdict: e.case_verdict,
       case_notes: e.case_notes,
+      rewrite_needed: e.rewrite_needed,
+      catalog_action: e.catalog_action,
       trigger_wi_c: e.trigger_wi_c,
     }
   }
@@ -196,7 +237,7 @@ function main() {
   if (!result.ok) {
     console.error('ERROR: PDF anchor/fingerprint verification failed.')
     for (const e of result.errors) {
-      console.error(`  ${e.bare}:`)
+      console.error(`  ${e.current_ref}:`)
       for (const msg of e.errors) console.error(`    ${msg}`)
     }
     console.error('JSON output WAS NOT written. Update CANONICAL[].anchor_line/body_lines after re-extracting PDF.')
