@@ -362,13 +362,23 @@ export async function assembleHour(
   }
 
   // Layer 4: Rich overlays (PDF 원형 마크업)
+  // FR-156 Symptom A fix (Option α, task #66/#72): psalterWeek 은
+  // firstVespers 분기가 활성일 때만 undefined 로 넘겨 psalter commons rich
+  // 적재를 skip 한다. 그렇게 하지 않으면 Saturday 의 psalter commons rich
+  // (예: w3-SAT-vespers shortReadingRich = 1 Petr 1:3-7) 가 Layer 4 에서
+  // Sunday firstVespers plain shortReading (예: 2 Peter 1:19-21 PDF p.402)
+  // 위에 textRich-priority 로 덮여 화면에서 가린다. 두 분기
+  // (Solemnity/FEAST + Saturday→Sunday) 모두 promoteToFirstVespersIdentity
+  // 로 effectiveDayOfWeek 을 다음 날(보통 SUN) 로 바꾸므로
+  // `effectiveDayOfWeek !== dayOfWeek` 가 깔끔한 분기-활성 시그널.
+  const firstVespersBranchActive = effectiveDayOfWeek !== dayOfWeek
   const richOverlay = resolveRichOverlay({
     season: day.season,
     weekKey: String(day.weekOfSeason),
     day: dayOfWeek,
     hour,
     sanctoralKey: sanctoral ? dateKey : null,
-    psalterWeek: day.psalterWeek,
+    psalterWeek: firstVespersBranchActive ? undefined : day.psalterWeek,
     celebrationName: day.name,
     dateStr,
   })

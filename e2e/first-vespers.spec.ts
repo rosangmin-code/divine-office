@@ -69,3 +69,62 @@ test.describe('First Vespers of Palm Sunday (FR-156)', () => {
     expect((psalmody.psalms as unknown[]).length).toBeGreaterThan(0)
   })
 })
+
+// @fr FR-156 Symptom A — psalter commons rich must not Layer-4 override
+// firstVespers plain shortReading (task #66 / #72).
+//
+// Bug context: Saturday vespers in Easter Week 3 (2026-04-25) is the
+// 1st Vespers of Easter Week 4 Sunday (2026-04-26). The Sunday firstVespers
+// carries shortReading = 2 Peter 1:19-21 ("Үүр цайж...", PDF p.402).
+// Before #72, loth-service passed `psalterWeek: day.psalterWeek` (= 3 in
+// this case) into resolveRichOverlay, which then loaded
+// prayers/commons/psalter/w3-SAT-vespers.rich.json and Layer-4 spread its
+// shortReadingRich (= 1 Petr 1:3-7, "Эзэн Есүс Христийн маань...") on
+// top of the firstVespers plain shortReading. Because the textRich-priority
+// UI prefers the rich overlay, the Saturday psalter commons reading
+// surfaced where the Sunday firstVespers reading should have rendered.
+//
+// Fix: when the firstVespers branch promoted effectiveDayOfWeek (SAT→SUN),
+// loth-service passes `psalterWeek: undefined` so resolveRichOverlay
+// skips loadPsalterCommonsRichOverlay entirely (psalterWeek != null
+// guard in resolver.ts L58). seasonal/sanctoral rich are unaffected.
+test.describe('Symptom A regression — Saturday vespers firstVespers shortReading', () => {
+  test('Easter wk3 SAT vespers (2026-04-25) shortReading.ref / text come from Sunday firstVespers (PDF p.402), not w3-SAT psalter commons', async ({
+    request,
+  }) => {
+    const res = await request.get('/api/loth/2026-04-25/vespers')
+    expect(res.ok()).toBe(true)
+    const body = await res.json()
+    expect(body.liturgicalDay?.season).toBe('EASTER')
+
+    const shortReading = body.sections.find(
+      (s: { type: string }) => s.type === 'shortReading',
+    )
+    expect(shortReading).toBeTruthy()
+
+    // Sunday firstVespers reading wins (2 Peter 1:19-21, PDF p.402).
+    expect(shortReading.ref).toBe('2 Peter 1:19-21')
+    expect(shortReading.page).toBe(402)
+
+    // Body 첫 단어 "Үүр цайж" is the firstVespers plain shortReading.
+    // hours/resolvers/reading.ts wires shortReading.text into a single
+    // synthetic verse when present; otherwise it splits per-verse.
+    const verses = shortReading.verses as Array<{ verse: number; text: string }>
+    const plainText = verses.map((v) => v.text).join(' ')
+    expect(plainText).toContain('Үүр цайж')
+
+    // Negative guard: w3-SAT-vespers psalter commons rich (1 Petr 1:3-7,
+    // "Эзэн Есүс Христийн маань Тэнгэрбурхан ба Эцэг") must NOT have
+    // overridden the firstVespers reading.
+    expect(plainText).not.toContain('Эзэн Есүс Христийн маань')
+
+    // textRich must also NOT carry the Saturday psalter commons rich.
+    type RichSpan = { kind: string; text?: string }
+    type RichBlock = { kind: string; spans?: RichSpan[] }
+    const tr = shortReading.textRich as { blocks?: RichBlock[] } | undefined
+    const richText = (tr?.blocks?.[0]?.spans ?? [])
+      .map((s) => (s.kind === 'text' ? s.text ?? '' : ''))
+      .join('')
+    expect(richText).not.toContain('Эзэн Есүс Христийн маань')
+  })
+})

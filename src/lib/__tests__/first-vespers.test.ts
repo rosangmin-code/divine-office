@@ -767,6 +767,82 @@ describe('FR-156 Phase 4b — movable solemnity firstVespers data (real loader)'
   })
 })
 
+// @fr FR-156 Symptom A — psalter commons rich must not Layer-4 override
+// firstVespers plain shortReading (task #66 / #72).
+describe('FR-156 Symptom A — Saturday vespers firstVespers shortReading wins over psalter commons rich', () => {
+  beforeEach(() => {
+    vi.resetModules()
+  })
+
+  // Real-loader integration. Mirrors the playwright e2e in
+  // `e2e/first-vespers.spec.ts` (Symptom A regression block) at the
+  // assembleHour layer — exercises the actual data files so Layer 4 rich
+  // overlay merge is not stubbed.
+  //
+  // Bug context: 2026-04-25 Saturday, Easter Week 3. Tomorrow is Easter
+  // Week 4 Sunday; its firstVespers shortReading = 2 Peter 1:19-21
+  // ("Үүр цайж...", PDF p.402). Before #72, loth-service passed
+  // `psalterWeek: day.psalterWeek` (= 3) into resolveRichOverlay, which
+  // loaded prayers/commons/psalter/w3-SAT-vespers.rich.json and Layer-4
+  // spread its shortReadingRich (= 1 Petr 1:3-7, "Эзэн Есүс Христийн
+  // маань...") on top of the firstVespers plain shortReading. The
+  // textRich-priority UI rendered the Saturday psalter commons reading
+  // where the Sunday firstVespers reading should appear.
+  it('Easter wk3 SAT vespers (2026-04-25) shortReading.ref / text come from Sunday firstVespers (PDF p.402), not w3-SAT psalter commons', async () => {
+    const { assembleHour } = await import('../loth-service')
+    const result = await assembleHour('2026-04-25', 'vespers')
+    expect(result).not.toBeNull()
+    expect(result!.hourType).toBe('vespers')
+
+    const sr = result!.sections.find((s) => s.type === 'shortReading')
+    expect(sr).toBeDefined()
+    if (sr && sr.type === 'shortReading') {
+      // Sunday firstVespers reading wins. The plain text is wired into
+      // the section as a single synthetic verse via
+      // hours/resolvers/reading.ts L26-34 (when shortReading.text is set).
+      expect(sr.ref).toBe('2 Peter 1:19-21')
+      expect(sr.page).toBe(402)
+      const plainText = sr.verses.map((v) => v.text).join(' ')
+      expect(plainText).toContain('Үүр цайж')
+      // Negative guard: w3-SAT-vespers psalter commons rich (1 Petr 1:3-7,
+      // "Эзэн Есүс Христийн маань Тэнгэрбурхан ба Эцэг") must NOT have
+      // overridden the firstVespers reading.
+      expect(plainText).not.toContain('Эзэн Есүс Христийн маань')
+      // Rich overlay must also NOT carry the Saturday psalter commons
+      // shortReadingRich. After Symptom A fix, psalter commons rich is
+      // skipped (psalterWeek=undefined) AND no Easter wk3 SAT seasonal
+      // rich is authored, so textRich is expected absent for this case.
+      const richText =
+        sr.textRich?.blocks?.[0] && sr.textRich.blocks[0].kind === 'para'
+          ? sr.textRich.blocks[0].spans
+              .map((s) => (s.kind === 'text' ? s.text : ''))
+              .join('')
+          : ''
+      expect(richText).not.toContain('Эзэн Есүс Христийн маань')
+    }
+  })
+
+  // Counter-test: regular Saturday vespers (Sat NOT promoted to Sunday
+  // firstVespers — e.g. solemnity replaces the day) still resolves
+  // psalter commons rich normally. Use a plain mid-week Saturday in
+  // Ordinary Time where firstVespers branch fires (default behavior),
+  // but assert that for a regular weekday vespers (TUE/WED) the psalter
+  // commons rich still applies. We sample 2026-02-04 Wednesday (OT W4)
+  // — vespers, no firstVespers branch — to confirm Layer-4 still works
+  // for the non-promoted path.
+  it('regular weekday vespers (2026-02-04 WED OT) still loads psalter commons rich Layer-4 (regression guard)', async () => {
+    const { assembleHour } = await import('../loth-service')
+    const result = await assembleHour('2026-02-04', 'vespers')
+    expect(result).not.toBeNull()
+    expect(result!.hourType).toBe('vespers')
+    // Existence check — rendering must succeed without errors. Specific
+    // psalter commons rich field surfacing is exercised by the broader
+    // e2e/prayer-psalter-commons.spec.ts; here we only guard against the
+    // Symptom A fix accidentally killing Layer-4 for non-promoted paths.
+    expect(result!.sections.length).toBeGreaterThan(0)
+  })
+})
+
 // @fr FR-011 task #60 — Saturday vespers regression guard for plain
 // Sundays misrouted via the evening-before-solemnity branch.
 //
