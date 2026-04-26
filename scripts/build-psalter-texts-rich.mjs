@@ -30,6 +30,7 @@ const REPO_ROOT = resolve(__dirname, '..')
 
 const SRC_IN = resolve(REPO_ROOT, 'src/data/loth/psalter-texts.json')
 const DENYLIST_IN = resolve(REPO_ROOT, 'src/data/loth/refrain-denylist.json')
+const ALLOWLIST_IN = resolve(REPO_ROOT, 'src/data/loth/refrain-allowlist.json')
 const CATALOG_OUT = resolve(
   REPO_ROOT,
   'src/data/loth/prayers/commons/psalter-texts.rich.json',
@@ -66,6 +67,56 @@ function loadRefrainDenylist() {
   return refs
 }
 
+function loadRefrainAllowlist() {
+  // FR-160-A4: src/data/loth/refrain-allowlist.json 을 Map<ref, string[]> 로 로드.
+  // 파일 부재 시에만 빈 Map 반환 (pre-FR-160-A4 동작 = forced_lines 미적용).
+  // JSON parse/스키마 오류는 fail-hard (denylist 와 동일 정합성 정책).
+  if (!existsSync(ALLOWLIST_IN)) return new Map()
+  let raw
+  try {
+    raw = JSON.parse(readFileSync(ALLOWLIST_IN, 'utf8'))
+  } catch (e) {
+    console.error(`[build] failed to parse refrain-allowlist: ${e.message}`)
+    process.exit(1)
+  }
+  if (!Array.isArray(raw?.entries)) {
+    console.error(
+      `[build] refrain-allowlist: missing or invalid 'entries' array (expected {entries: [{ref, forced_lines, ...}]})`,
+    )
+    process.exit(1)
+  }
+  const map = new Map()
+  // FR-160 NFR-009f: 모든 audit metadata 필수 (evidence_pdf, liturgical_basis,
+  // classified_at). 단순 lexical 반복이 아니라 PDF 실측 + 공식 전례 근거가
+  // 입증되어야만 forced refrain 마킹이 정당. 누락 시 fail-hard 로 빌드 차단.
+  const REQUIRED_META = ['evidence_pdf', 'liturgical_basis', 'classified_at']
+  for (const entry of raw.entries) {
+    if (!entry || typeof entry.ref !== 'string') continue
+    const ref = entry.ref.trim()
+    if (!ref) continue
+    if (!Array.isArray(entry.forced_lines)) {
+      console.error(
+        `[build] refrain-allowlist: entry "${ref}" missing or invalid 'forced_lines' array`,
+      )
+      process.exit(1)
+    }
+    for (const field of REQUIRED_META) {
+      if (typeof entry[field] !== 'string' || entry[field].trim().length === 0) {
+        console.error(
+          `[build] refrain-allowlist: entry "${ref}" missing or empty mandatory '${field}' field (NFR-009f)`,
+        )
+        process.exit(1)
+      }
+    }
+    const lines = entry.forced_lines
+      .filter((l) => typeof l === 'string')
+      .map((l) => l.trim())
+      .filter((l) => l.length > 0)
+    if (lines.length > 0) map.set(ref, lines)
+  }
+  return map
+}
+
 function median(nums) {
   if (nums.length === 0) return 0
   const sorted = [...nums].sort((a, b) => a - b)
@@ -78,6 +129,7 @@ async function main() {
   const src = JSON.parse(srcRaw)
   const refs = Object.keys(src)
   const refrainDenylist = loadRefrainDenylist()
+  const refrainAllowlist = loadRefrainAllowlist()
 
   // 기존 카탈로그 read-modify-write — 다른 빌더(예: psalmPrayer) 가 이미 채워둔
   // 필드(`psalmPrayerRich` 등) 를 보존하기 위해 from-scratch overwrite 대신
@@ -110,6 +162,7 @@ async function main() {
         stanzas: entry.stanzas,
         ref,
         denylist: refrainDenylist,
+        allowlist: refrainAllowlist,
       })
     } catch (e) {
       failures.push({ ref, reason: `builder threw: ${e.message}` })

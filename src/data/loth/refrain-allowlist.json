@@ -1,0 +1,66 @@
+{
+  "_doc": "FR-160-A4 refrain false-negative allowlist (denylist 의 대응체). detectRefrainLines (rich-builder.mjs Layer F) 가 threshold=3 미달이라 자동 감지 못한 2-rep authentic refrain 라인을 강제로 role=refrain 으로 마킹. 각 entry 는 PDF 실측 evidence + GILH/공식 전례 근거 (liturgical_basis) 필수. allowlist 는 detection 결과에 union — denylist 우선 (denylisted ref 는 allowlist 무시). 추가 entry 는 #115 (divine-researcher) audit 워크플로우 거쳐 peer 합의 후 ship. 본 파일은 FR-160-A4 task #120 6 entries 로 시작.",
+  "entries": [
+    {
+      "ref": "Psalm 24:1-10",
+      "forced_lines": [
+        "Гулдан хаалганууд аа, толгойгоо өргөж",
+        "Мөнхийн үүднүүд ээ, өргөгдөгтүн",
+        "Сүр жавхлангийн энэ Хаан хэн бэ?"
+      ],
+      "evidence_pdf": "Four-Week psalter.- 2025.pdf, p.93 Psalm 24:1-10 vv 7-10. antiphonal Q&A 구조 (procession 응답).",
+      "liturgical_basis": "vv 7-10 antiphonal entrance Q&A — gates/king of glory 응답 구조는 GILH 의 입당 시편 회중 응답 패턴.",
+      "classified_at": "2026-04-27"
+    },
+    {
+      "ref": "Psalm 116:10-19",
+      "forced_lines": [
+        "Бүх ард түмнийх нь өмнө"
+      ],
+      "evidence_pdf": "Four-Week psalter.- 2025.pdf, p.290 Psalm 116:10-19 vv 14+18. paying-vows 반복 (서원 응답).",
+      "liturgical_basis": "vv 14+18 paying-vows 반복은 시편 본문에 명시된 회중 화답구.",
+      "classified_at": "2026-04-27"
+    },
+    {
+      "ref": "Psalm 8:1-10",
+      "forced_lines": [
+        "ЭЗЭН, бидний Эзэн",
+        "Таны нэр бүх газар дэлхийд",
+        "Юутай суу алдартай вэ"
+      ],
+      "evidence_pdf": "Four-Week psalter.- 2025.pdf, p.284 Psalm 8:1-10 v1+v9 inclusio.",
+      "liturgical_basis": "v1=v9 inclusio 는 시편 구조 자체의 봉인 응답구. 회중 응답 refrain 으로 기능.",
+      "classified_at": "2026-04-27"
+    },
+    {
+      "ref": "Psalm 42:2-6",
+      "forced_lines": [
+        "Сэтгэл минь ээ, чи юунд цөхөрнө вэ?",
+        "Тэнгэрбурханд найд"
+      ],
+      "evidence_pdf": "Four-Week psalter.- 2025.pdf, p.197 Psalm 42:2-6 vv 5+11. self-address refrain.",
+      "liturgical_basis": "vv 5+11 self-address (영혼아 어찌 낙심하느냐) 는 시편 본문 명시 refrain — 한 stanza 내 정확히 동일 두 라인이 회중 응답 기능.",
+      "classified_at": "2026-04-27"
+    },
+    {
+      "ref": "Psalm 67:2-8",
+      "forced_lines": [
+        "Тэнгэрбурхан, Таныг ард түмнүүд магтаг",
+        "Бүх ард түмнүүд Таныг магтаг"
+      ],
+      "evidence_pdf": "Four-Week psalter.- 2025.pdf, p.240 Psalm 67:2-8 vv 3+5. peoples-praise refrain.",
+      "liturgical_basis": "vv 3+5 동일 회중 응답구 — '백성들이 주를 찬양하게 하소서' 두 번 반복은 시편 본문의 명시 refrain 구조.",
+      "classified_at": "2026-04-27"
+    },
+    {
+      "ref": "Psalm 99:1-9",
+      "forced_lines": [
+        "Тэр бол ариун",
+        "Учир нь бидний Тэнгэрбурхан ЭЗЭН бол ариун"
+      ],
+      "evidence_pdf": "Four-Week psalter.- 2025.pdf, p.364 Psalm 99:1-9 vv 3+5+9. holy-refrain (lexical variant accepted as same refrain function).",
+      "liturgical_basis": "vv 3+5+9 의 '그는 거룩하시다' refrain — 마지막 occurrence 가 lexical variant ('Tэр' vs 'учир нь...ЭЗЭН') 이지만 동일 refrain 기능 (peer R3 AGREE, lexical variant accepted).",
+      "classified_at": "2026-04-27"
+    }
+  ]
+}

@@ -127,6 +127,21 @@ export const DATES = {
   // anaphora, 3 reps) was tagged role=refrain by threshold=3 boundary
   // fire. Source: divine-researcher #104 FR-160-A2 gold dataset, p.81.
   psalterW1Monday: '2026-01-12',
+  // FR-160-A4 (task #120) — Psalm 24:1-10 antiphonal Q&A allowlist
+  // false-negative guard. 2026-01-13 is psalterWeek=1 TUE; Lauds
+  // psalmody[0] = Psalm 24:1-10 per psalter/week-1.json. The antiphonal
+  // entrance Q&A (vv 7-10, 'Гулдан хаалганууд аа...' / 'Сүр жавхлангийн
+  // энэ Хаан хэн бэ?', 3 forced lines × 2 stanza occurrences = 6
+  // refrain lines) was missed by threshold=3 (each line appears 2x).
+  // After allowlist consult: all 3 forced lines tagged role=refrain.
+  psalterW1Tuesday: '2026-01-13',
+  // FR-160-A4 (task #120) — Psalm 67:2-8 peoples-praise refrain
+  // allowlist guard. 2026-03-10 is psalterWeek=3 TUE; Lauds psalmody[2]
+  // = Psalm 67:2-8 per psalter/week-3.json. vv 3+5 'Тэнгэрбурхан, Таныг
+  // ард түмнүүд магтаг' / 'Бүх ард түмнүүд Таныг магтаг' (2 forced
+  // lines × 2 stanzas = 4 refrain lines) — second e2e regression
+  // surface for FR-160-A4 cross-week coverage.
+  psalterW3Tuesday: '2026-03-10',
   // Lent / Advent weekday representatives for cross-season fallback guard.
   // Lent Week 2 Tuesday (2026-03-03) and Advent Week 2 Wednesday
   // (2025-12-10) both repeat their respective wk1 weekday formularies

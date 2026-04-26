@@ -4,7 +4,7 @@
 > and FR/NFR IDs in test titles. **Do not edit by hand.**
 > The curated matrix lives in [`docs/traceability-matrix.md`](./traceability-matrix.md).
 
-Scan: 26 test files contributed 20 unique IDs.
+Scan: 27 test files contributed 20 unique IDs.
 
 | ID | Test file | Test title(s) |
 |---|---|---|
@@ -39,6 +39,7 @@ Scan: 26 test files contributed 20 unique IDs.
 | FR-156 | `e2e/solemnity-first-vespers.spec.ts` | (tagged, title unknown) |
 | FR-156 | `src/lib/__tests__/first-vespers.test.ts` | FR-156 Phase 2 — getSeasonFirstVespers returns injected data<br>advent firstVespers psalms[*].ref are all versed-form post WI-B3 rewrite (task #91)<br>(tagged, title unknown)<br>FR-156 Phase 3a — Solemnity First Vespers<br>FR-156 task #30 — FEAST rank First Vespers<br>FR-156 Phase 3b — Solemnity firstVespers data injection<br>FR-156 Phase 4a — movable solemnity First Vespers<br>FR-156 Phase 4a — OT special-key lookup flow<br>FR-156 Phase 4b — movable solemnity firstVespers data (real loader)<br>FR-156 Symptom A — Saturday vespers firstVespers shortReading wins over psalter commons rich<br>FR-156 Phase 5 WI-B1 — easter firstVespers psalm bodies non-empty after bare→versed rewrite |
 | FR-156 | `src/lib/hours/__tests__/first-vespers-identity.test.ts` | promoteToFirstVespersIdentity (FR-156 task #32 helper) |
+| FR-160 | `e2e/prayer-psalm-refrain-allowlist.spec.ts` | Refrain allowlist false-negative cleanup (FR-160-A4)<br>Psalm 24:1-10 forced lines tagged role=refrain (psalterWeek 1 TUE Lauds)<br>Psalm 24:1-10 refrain lines carry rubric red colour<br>Psalm 67:2-8 forced lines tagged role=refrain (psalterWeek 3 TUE Lauds)<br>Psalm 150:1-6 still has 0 refrain lines (denylist precedence)<br>Daniel 3 canticle threshold refrains still detected (additive merge) |
 | FR-160 | `e2e/prayer-psalm-refrain-denylist.spec.ts` | Refrain denylist false-positive cleanup (FR-160-A1)<br>Psalm 150:1-6 stanza has 0 role=refrain lines<br>Psalm 150:1-6 stanza body has no rubric red span<br>Daniel 3 canticle refrains preserved on OT Wk1 SUN Lauds (regression guard)<br>Psalm 29:1-10 stanza has 0 role=refrain lines (psalterWeek 1 MON Lauds)<br>Psalm 29:1-10 stanza body has no rubric red span |
 | NFR-013 | `e2e/mobile.spec.ts` | prayer article inner width >= 320px for readability (NFR-013)<br>antiphon inner width >= 320px on mobile (NFR-013) |
 | NFR-014 | `e2e/mobile.spec.ts` | psalm has left padding on mobile (NFR-014)<br>psalm stanzas have visible spacing on mobile (NFR-014) |

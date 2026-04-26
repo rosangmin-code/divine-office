@@ -1243,7 +1243,7 @@ function refrainKey(line) {
 
 export function detectRefrainLines(
   stanzas,
-  { threshold = 3, ref = null, denylist = null } = {},
+  { threshold = 3, ref = null, denylist = null, allowlist = null } = {},
 ) {
   // FR-160-A1: ref 가 denylist 에 있으면 어떤 line 도 refrain 으로 태그하지 않는다.
   // PDF 원문에서 검정 본문으로 렌더되는 반복 구절 (Psalm 150 'Түүнийг магтагтун!' 등) 이
@@ -1269,7 +1269,36 @@ export function detectRefrainLines(
   for (const [key, n] of counts) {
     if (n >= threshold) out.add(key)
   }
+  // FR-160-A4: ref 가 allowlist 에 있으면 forced_lines (PDF/GILH 실측 evidence
+  // 기반 회중 응답 refrain) 를 detection 결과에 union. threshold=3 미달이라
+  // 자동 감지 못한 2-rep authentic refrain 을 강제로 role=refrain 으로 마킹.
+  if (ref != null && allowlist != null) {
+    const forced = lookupAllowlist(allowlist, ref)
+    if (forced != null) {
+      for (const line of forced) {
+        if (typeof line !== 'string') continue
+        const key = refrainKey(line)
+        if (key) out.add(key)
+      }
+    }
+  }
   return out
+}
+
+function lookupAllowlist(allowlist, ref) {
+  // Map<string, string[]|Set<string>> 또는 Record<string, string[]|Set<string>>
+  // 양쪽 형태 모두 지원 (build script 는 Map, 테스트는 plain object 편의).
+  let v
+  if (allowlist instanceof Map) {
+    v = allowlist.get(ref)
+  } else if (allowlist && typeof allowlist === 'object') {
+    v = allowlist[ref]
+  } else {
+    return null
+  }
+  if (v instanceof Set) return Array.from(v)
+  if (Array.isArray(v)) return v
+  return null
 }
 
 export function buildStanzasFromSource(stanzas, { refrains } = {}) {
@@ -1334,11 +1363,16 @@ export function verifyStanzasStructuralEquivalence(stanzas, blocks, refrains) {
   }
 }
 
-export function buildPsalterStanzasRich({ stanzas, ref = null, denylist = null }) {
+export function buildPsalterStanzasRich({
+  stanzas,
+  ref = null,
+  denylist = null,
+  allowlist = null,
+}) {
   if (!Array.isArray(stanzas)) {
     throw new Error('[rich-builder] buildPsalterStanzasRich: stanzas must be an array')
   }
-  const refrains = detectRefrainLines(stanzas, { ref, denylist })
+  const refrains = detectRefrainLines(stanzas, { ref, denylist, allowlist })
   const blocks = buildStanzasFromSource(stanzas, { refrains })
   const textGate = verifyStanzasTextEquivalence(stanzas, blocks)
   const structGate = verifyStanzasStructuralEquivalence(stanzas, blocks, refrains)
