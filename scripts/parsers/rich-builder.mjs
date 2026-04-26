@@ -1241,7 +1241,22 @@ function refrainKey(line) {
   return stripStanzaLeadingSpaces(line).trim().replace(/[.,!–—-]+$/u, '')
 }
 
-export function detectRefrainLines(stanzas, { threshold = 3 } = {}) {
+export function detectRefrainLines(
+  stanzas,
+  { threshold = 3, ref = null, denylist = null } = {},
+) {
+  // FR-160-A1: ref 가 denylist 에 있으면 어떤 line 도 refrain 으로 태그하지 않는다.
+  // PDF 원문에서 검정 본문으로 렌더되는 반복 구절 (Psalm 150 'Түүнийг магтагтун!' 등) 이
+  // threshold over-fire 로 role=refrain 잘못 부여되는 false-positive 차단용.
+  if (ref != null && denylist != null) {
+    const has =
+      denylist instanceof Set
+        ? denylist.has(ref)
+        : Array.isArray(denylist)
+          ? denylist.includes(ref)
+          : false
+    if (has) return new Set()
+  }
   const counts = new Map()
   for (const stanza of stanzas) {
     for (const line of stanza) {
@@ -1319,11 +1334,11 @@ export function verifyStanzasStructuralEquivalence(stanzas, blocks, refrains) {
   }
 }
 
-export function buildPsalterStanzasRich({ stanzas }) {
+export function buildPsalterStanzasRich({ stanzas, ref = null, denylist = null }) {
   if (!Array.isArray(stanzas)) {
     throw new Error('[rich-builder] buildPsalterStanzasRich: stanzas must be an array')
   }
-  const refrains = detectRefrainLines(stanzas)
+  const refrains = detectRefrainLines(stanzas, { ref, denylist })
   const blocks = buildStanzasFromSource(stanzas, { refrains })
   const textGate = verifyStanzasTextEquivalence(stanzas, blocks)
   const structGate = verifyStanzasStructuralEquivalence(stanzas, blocks, refrains)

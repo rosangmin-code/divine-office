@@ -111,6 +111,12 @@ export const DATES = {
   // from week 1 alongside a body sourced from psalter commons rich.
   easterW2Monday: '2026-04-13', // Easter Week 2 Monday
   easterW3Saturday: '2026-04-25', // Easter Week 3 Saturday
+  // FR-160-A1 (task #103) — Psalm 150 refrain false-positive regression
+  // guard. 2026-04-26 is Easter Wk4 Sunday; Lauds psalmody[2] surfaces
+  // Psalm 150:1-6 whose 'Түүнийг магтагтун!' 6-rep verse-ending was
+  // mis-tagged role=refrain by detectRefrainLines threshold over-fire.
+  // After the denylist gate, no line should carry .text-red-700.
+  easterW4Sunday: '2026-04-26',
   // Lent / Advent weekday representatives for cross-season fallback guard.
   // Lent Week 2 Tuesday (2026-03-03) and Advent Week 2 Wednesday
   // (2025-12-10) both repeat their respective wk1 weekday formularies

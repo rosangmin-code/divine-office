@@ -4,24 +4,28 @@
 > and FR/NFR IDs in test titles. **Do not edit by hand.**
 > The curated matrix lives in [`docs/traceability-matrix.md`](./traceability-matrix.md).
 
-Scan: 22 test files contributed 17 unique IDs.
+Scan: 26 test files contributed 20 unique IDs.
 
 | ID | Test file | Test title(s) |
 |---|---|---|
 | FR-011 | `e2e/prayer-magnificat-pages.spec.ts` | Magnificat page references (Easter W2 THU vespers) |
 | FR-011 | `e2e/special-days.spec.ts` | Saturday vespers uses next Sunday propers (FR-011, 1st Vespers)<br>Saturday vespers differs from regular Saturday LAUDS (sanity: fallback is hour-scoped) |
+| FR-011 | `src/lib/__tests__/first-vespers.test.ts` | (tagged, title unknown) |
+| FR-017j | `e2e/page-references.spec.ts` | PDF viewer UX (FR-017j)<br>swipe left advances bookPage by 1<br>swipe right retreats bookPage by 1<br>swipe left at MAX (969) is a no-op<br>swipe right at MIN (1) is a no-op<br>keyboard ArrowRight advances bookPage<br>keyboard ArrowLeft retreats bookPage<br>canvas occupies the full frame width (fit-to-width)<br>aria-live page indicator updates when page changes |
 | FR-028 | `e2e/settings.spec.ts` | home header no longer renders a theme toggle (FR-028)<br>guide header no longer renders a theme toggle (FR-028) |
 | FR-029 | `e2e/settings.spec.ts` | back link navigates from /settings to home (FR-029) |
 | FR-030 | `e2e/settings.spec.ts` | font preview box is visible and replaces old Ave Maria text (FR-030) |
 | FR-032 | `e2e/prayer-sections.spec.ts` | psalm-concluding prayer hidden when psalmPrayerCollapsed toggle is on (FR-032) |
 | FR-032 | `e2e/settings.spec.ts` | psalm-prayer switch persists to localStorage and survives reload (FR-032)<br>psalm-prayer switch uses gold when enabled (FR-032) |
+| FR-045 | `src/lib/__tests__/celebrations.test.ts` | returns only the default option on 04-17 after non-PDF entries removed (FR-045 follow-up A) |
 | FR-124 | `e2e/prayer-sections.spec.ts` | Psalm 119 sub-sections in psalter-texts have distinct content (FR-124) |
 | FR-132 | `e2e/prayer-sections.spec.ts` | psalm-concluding prayer renders when data is present (FR-132) |
 | FR-152 | `e2e/prayer-responsory.spec.ts` | API exposes new 3-field responsory shape (fullResponse, versicle, shortResponse)<br>responsory section carries data-role marker for decoupled selectors |
 | FR-153 | `e2e/pdf-fidelity-pilot.spec.ts` | concluding prayer renders rich overlay without duplicating the section heading<br>responsory uses V./R. markers when rich overlay present<br>no silent regression on non-rich sections (core structure intact) |
 | FR-153 | `e2e/prayer-intercessions.spec.ts` | Advent weekday lauds uses rich overlay (single-node body, no data-role fallback)<br>rich response line renders red hyphen prefix (PDF rubric) |
+| FR-153 | `e2e/prayer-rich-overlay-fallback.spec.ts` | (tagged, title unknown)<br>seasonal rich overlay special-key load (task #57)<br>Christmas rich overlay special-key load (task #61) |
 | FR-153 | `e2e/prayer-short-reading.spec.ts` | Advent Sunday lauds renders rich overlay (RichContent wrapper, no legacy verses)<br>Ordinary Time weekday lauds falls back to psalter commons rich<br>Compline shortReading uses commons/compline rich overlay<br>rich shortReading reflows to single paragraph (no per-line splits) |
-| FR-153 | `src/lib/__tests__/loth-service.test.ts` | hymn rich wiring (central catalog) |
+| FR-153 | `src/lib/__tests__/loth-service.test.ts` | hymn rich wiring (central catalog)<br>Christmas special-key rich integration (task #61) |
 | FR-153d | `e2e/prayer-responsory.spec.ts` | OT w1 SUN Lauds — psalter commons renders 5-block rich AST<br>OT weekday Lauds — psalter commons rich (weekday periodization)<br>Sunday Compline — ordinarium commons rich |
 | FR-153f | `e2e/prayer-psalm-stanzas-rich.spec.ts` | Psalter stanzasRich rendering (FR-153f)<br>renders psalm stanzas via rich AST (data-role markers present)<br>Daniel 3 refrain lines are tagged with role=refrain<br>refrain lines carry rubric red colour (§12.1) |
 | FR-153h | `e2e/prayer-psalm-prayer-rich.spec.ts` | Psalter psalmPrayerRich rendering (FR-153h)<br>psalm-prayer section renders with Mongolian rubric heading<br>first psalm psalmPrayer renders via rich AST (RichContent paragraph branch)<br>psalm-prayer heading carries red rubric class (§12.1) |
@@ -30,11 +34,12 @@ Scan: 22 test files contributed 17 unique IDs.
 | FR-155 | `src/lib/hours/__tests__/seasonal-antiphon.test.ts` | lentPassionSunday wins over lentSunday[5] on Lent 5th Sunday (Passion Sunday)<br>easterAlt is a fallback — used only when easter is absent/empty |
 | FR-155 | `src/lib/hours/resolvers/__tests__/psalm.test.ts` | Passion Sunday (LENT SUN week 5) picks lentPassionSunday over lentSunday[5]<br>easterAlt fallback fires only when easter is absent/empty |
 | FR-156 | `e2e/feast-first-vespers.spec.ts` | (tagged, title unknown) |
-| FR-156 | `e2e/first-vespers.spec.ts` | (tagged, title unknown) |
+| FR-156 | `e2e/first-vespers.spec.ts` | (tagged, title unknown)<br>First Vespers of Lent Sunday — versed-ref body resolution (FR-156 Phase 5 WI-B2)<br>First Vespers of Advent Sunday — versed-ref body resolution (FR-156 Phase 5 WI-B3)<br>FR-156 Phase 5 WI-B1 — easter SAT vespers psalm bodies non-empty<br>First Vespers of Ordinary Sunday — versed-ref body resolution (FR-156 Phase 5 WI-B5)<br>First Vespers of Christmas — versed-ref body resolution (FR-156 Phase 5 WI-B4) |
 | FR-156 | `e2e/movable-first-vespers.spec.ts` | (tagged, title unknown) |
 | FR-156 | `e2e/solemnity-first-vespers.spec.ts` | (tagged, title unknown) |
-| FR-156 | `src/lib/__tests__/first-vespers.test.ts` | FR-156 Phase 2 — getSeasonFirstVespers returns injected data<br>FR-156 Phase 3a — Solemnity First Vespers<br>FR-156 task #30 — FEAST rank First Vespers<br>FR-156 Phase 3b — Solemnity firstVespers data injection<br>FR-156 Phase 4a — movable solemnity First Vespers<br>FR-156 Phase 4a — OT special-key lookup flow<br>FR-156 Phase 4b — movable solemnity firstVespers data (real loader)<br>(tagged, title unknown) |
+| FR-156 | `src/lib/__tests__/first-vespers.test.ts` | FR-156 Phase 2 — getSeasonFirstVespers returns injected data<br>advent firstVespers psalms[*].ref are all versed-form post WI-B3 rewrite (task #91)<br>(tagged, title unknown)<br>FR-156 Phase 3a — Solemnity First Vespers<br>FR-156 task #30 — FEAST rank First Vespers<br>FR-156 Phase 3b — Solemnity firstVespers data injection<br>FR-156 Phase 4a — movable solemnity First Vespers<br>FR-156 Phase 4a — OT special-key lookup flow<br>FR-156 Phase 4b — movable solemnity firstVespers data (real loader)<br>FR-156 Symptom A — Saturday vespers firstVespers shortReading wins over psalter commons rich<br>FR-156 Phase 5 WI-B1 — easter firstVespers psalm bodies non-empty after bare→versed rewrite |
 | FR-156 | `src/lib/hours/__tests__/first-vespers-identity.test.ts` | promoteToFirstVespersIdentity (FR-156 task #32 helper) |
+| FR-160 | `e2e/prayer-psalm-refrain-denylist.spec.ts` | Refrain denylist false-positive cleanup (FR-160-A1)<br>Psalm 150:1-6 stanza has 0 role=refrain lines<br>Psalm 150:1-6 stanza body has no rubric red span<br>Daniel 3 canticle refrains preserved on OT Wk1 SUN Lauds (regression guard) |
 | NFR-013 | `e2e/mobile.spec.ts` | prayer article inner width >= 320px for readability (NFR-013)<br>antiphon inner width >= 320px on mobile (NFR-013) |
 | NFR-014 | `e2e/mobile.spec.ts` | psalm has left padding on mobile (NFR-014)<br>psalm stanzas have visible spacing on mobile (NFR-014) |
 | NFR-016 | `e2e/settings.spec.ts` | active radio uses brass gold accent, not liturgical green (NFR-016) |

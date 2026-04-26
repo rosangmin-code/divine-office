@@ -29,12 +29,42 @@ const __dirname = dirname(__filename)
 const REPO_ROOT = resolve(__dirname, '..')
 
 const SRC_IN = resolve(REPO_ROOT, 'src/data/loth/psalter-texts.json')
+const DENYLIST_IN = resolve(REPO_ROOT, 'src/data/loth/refrain-denylist.json')
 const CATALOG_OUT = resolve(
   REPO_ROOT,
   'src/data/loth/prayers/commons/psalter-texts.rich.json',
 )
 const REPORT_OUT = resolve(REPO_ROOT, 'scripts/out/psalter-rich-report.md')
 const FAILURES_OUT = resolve(REPO_ROOT, 'scripts/out/psalter-rich-failures.md')
+
+function loadRefrainDenylist() {
+  // FR-160-A1: src/data/loth/refrain-denylist.json 의 entries[].ref 만 추출해 Set 으로 반환.
+  // 파일 부재 시에만 빈 Set 반환 (pre-FR-160 동작). JSON parse/스키마 오류는 빌드를
+  // 중단시켜야 함 — 같은 빌더가 카탈로그 parse 실패를 fail-hard 로 다루는 것과 일관.
+  // (silent-fail 시 알려진 false-positive override 가 사라지고 잘못된 카탈로그가 ship 됨.)
+  if (!existsSync(DENYLIST_IN)) return new Set()
+  let raw
+  try {
+    raw = JSON.parse(readFileSync(DENYLIST_IN, 'utf8'))
+  } catch (e) {
+    console.error(`[build] failed to parse refrain-denylist: ${e.message}`)
+    process.exit(1)
+  }
+  if (!Array.isArray(raw?.entries)) {
+    console.error(
+      `[build] refrain-denylist: missing or invalid 'entries' array (expected {entries: [{ref, ...}]})`,
+    )
+    process.exit(1)
+  }
+  const refs = new Set()
+  for (const entry of raw.entries) {
+    if (entry && typeof entry.ref === 'string') {
+      const ref = entry.ref.trim()
+      if (ref.length > 0) refs.add(ref)
+    }
+  }
+  return refs
+}
 
 function median(nums) {
   if (nums.length === 0) return 0
@@ -47,6 +77,7 @@ async function main() {
   const srcRaw = await readFile(SRC_IN, 'utf8')
   const src = JSON.parse(srcRaw)
   const refs = Object.keys(src)
+  const refrainDenylist = loadRefrainDenylist()
 
   // 기존 카탈로그 read-modify-write — 다른 빌더(예: psalmPrayer) 가 이미 채워둔
   // 필드(`psalmPrayerRich` 등) 를 보존하기 위해 from-scratch overwrite 대신
@@ -75,7 +106,11 @@ async function main() {
     }
     let result
     try {
-      result = buildPsalterStanzasRich({ stanzas: entry.stanzas })
+      result = buildPsalterStanzasRich({
+        stanzas: entry.stanzas,
+        ref,
+        denylist: refrainDenylist,
+      })
     } catch (e) {
       failures.push({ ref, reason: `builder threw: ${e.message}` })
       continue

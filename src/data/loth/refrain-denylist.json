@@ -1,0 +1,11 @@
+{
+  "_doc": "FR-160-A1 refrain false-positive denylist. detectRefrainLines (rich-builder.mjs Layer F) consults this list before threshold-based detection — refs in `entries[].ref` opt out of auto refrain tagging entirely. Use only for refs whose stanza body has a repeated line that PDF原文 renders in plain (black) text, not as rubric red. Adding new entries requires PDF evidence (page reference + visual/color confirmation). See docs/PRD.md §12.1 FR-160, NFR-009e.",
+  "entries": [
+    {
+      "ref": "Psalm 150:1-6",
+      "reason": "PDF 원문 'Түүнийг магтагтун!' 6 reps 가 모두 검정색(verse-ending) 으로 렌더 — rubric red 아님. detectRefrainLines threshold=3 over-fire 로 false-positive role=refrain 부여 → UI 에서 빨간글씨 혼입.",
+      "evidence_pdf": "Four-Week psalter.- 2025.pdf, Week 4 SUN Lauds Psalmody Psalm 150:1-6 stanza body. 'Түүнийг магтагтун!' (verse 1·2·3·4·5·6 의 verse-ending 반복) 모두 검정 본문 색상.",
+      "classified_at": "2026-04-26"
+    }
+  ]
+}
