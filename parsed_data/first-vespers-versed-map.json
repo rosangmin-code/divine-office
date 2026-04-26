@@ -5,6 +5,8 @@
     "evidence_pdf_page": "169-170",
     "case_verdict": "A*",
     "case_notes": "Catalog has BOTH \"Psalm 16:1-6\" and \"Psalm 16:7-11\". PDF firstVespers body (L5629-5667, p.169-170) is byte-aligned with the catalog entry \"Psalm 16:1-6\" stanza — the verses 1-6 partition. The :7-11 partition belongs to a different hour (Saturday morning prayer) and is unrelated to firstVespers. CASE A* tag means catalog has a duplicate keying-by-range and the disambiguation is researcher-validated, not auto-derivable.",
+    "rewrite_needed": true,
+    "catalog_action": "none",
     "trigger_wi_c": false
   },
   "Psalm 113": {
@@ -13,6 +15,8 @@
     "evidence_pdf_page": "288-289",
     "case_verdict": "A",
     "case_notes": "Direct catalog match. Hebrew Ps 113 has 9 verses; PDF body L9796-9816 (p.288-289) covers all 9. Catalog entry \"Psalm 113:1-9\" stanza identical to PDF body. The same versed key applies to the Christmas-Day solemnity 12-25 firstVespers ps1 (PDF L20169) — single canonical destination.",
+    "rewrite_needed": true,
+    "catalog_action": "none",
     "trigger_wi_c": false
   },
   "Psalm 122": {
@@ -21,6 +25,8 @@
     "evidence_pdf_page": "399-400",
     "case_verdict": "A",
     "case_notes": "Direct catalog match. Hebrew Ps 122 has 9 verses; PDF body L13739-13757 (p.399-400) covers verses 1-9. Catalog entry \"Psalm 122:1-9\" stanza identical.",
+    "rewrite_needed": true,
+    "catalog_action": "none",
     "trigger_wi_c": false
   },
   "Psalm 130": {
@@ -29,14 +35,28 @@
     "evidence_pdf_page": "401-402",
     "case_verdict": "A",
     "case_notes": "Direct catalog match. Hebrew Ps 130 has 8 verses; PDF body L13792-13817 (p.401-402) covers verses 1-8. Catalog entry \"Psalm 130:1-8\" stanza identical.",
+    "rewrite_needed": true,
+    "catalog_action": "none",
     "trigger_wi_c": false
+  },
+  "Psalm 141:1-9": {
+    "versed": "Psalm 141:1-9",
+    "evidence_pdf_lines": "1512-1553",
+    "evidence_pdf_page": "50-51",
+    "case_verdict": "B",
+    "case_notes": "Catalog ABSENT — psalter-texts.json has no \"Psalm 141:*\" key. Propers data is ALREADY versed (\"Psalm 141:1-9\") so no propers rewrite is needed (rewrite_needed=false). The drift is catalog-only: 15 cells (advent 1 + christmas 2 + lent 2 + easter 1 + ordinary-time 9, surfaced as catalog-miss by WI-A3 verifier) currently fall back to Bible JSONL lookup at runtime, losing PDF stanza structure. WI-C augmentation: add \"Psalm 141:1-9\" entry with stanzas from PDF L1512-1553 + psalmPrayer from PDF L1560-1564 (p.51). Hebrew Ps 141 has 9 verses; PDF body L1512-1553 (p.50-51) covers all 9. Anchor explicitly states \"Дуулал 141:1-9\" — verse range is PDF-authoritative.",
+    "rewrite_needed": false,
+    "catalog_action": "ADD",
+    "trigger_wi_c": true
   },
   "Psalm 142": {
     "versed": "Psalm 142:1-7",
     "evidence_pdf_lines": "1602-1633",
     "evidence_pdf_page": "53-54",
     "case_verdict": "B",
-    "case_notes": "Catalog ABSENT — psalter-texts.json has no \"Psalm 142:*\" key (nearest is \"Psalm 143:1-11\"). Hebrew Ps 142 has 7 verses; PDF body L1602-1633 (p.53-54) covers verses 1-7 in full. Body fingerprint does NOT match catalog \"Psalm 143:1-11\" — this is genuine catalog absence (CASE B), not a Hebrew↔Vulgate numbering mismatch (CASE A). WI-C augmentation required: add new \"Psalm 142:1-7\" entry with stanzas extracted from PDF L1602-1633 + psalmPrayer extracted from L1635-1639.",
+    "case_notes": "Catalog ABSENT — psalter-texts.json has no \"Psalm 142:*\" key (nearest is \"Psalm 143:1-11\"). Hebrew Ps 142 has 7 verses; PDF body L1602-1633 (p.53-54) covers verses 1-7 in full. Body fingerprint does NOT match catalog \"Psalm 143:1-11\" — this is genuine catalog absence (CASE B), not a Hebrew↔Vulgate numbering mismatch (CASE A). WI-C augmentation required: add new \"Psalm 142:1-7\" entry with stanzas extracted from PDF L1602-1633 + psalmPrayer extracted from L1635-1639. Both rewrite (15 bare cells) AND catalog ADD required.",
+    "rewrite_needed": true,
+    "catalog_action": "ADD",
     "trigger_wi_c": true
   },
   "Psalm 147": {
@@ -45,6 +65,8 @@
     "evidence_pdf_page": "585-586",
     "case_verdict": "A",
     "case_notes": "Direct catalog match. PDF anchor at L20201 explicitly states \"Дуулал 147: 12-20\" — verse range is PDF-authoritative, no inference required. PDF body L20202-20229 (p.585-586) covers verses 12-20. Catalog entry \"Psalm 147:12-20\" stanza identical. Sole occurrence is Christmas-Day solemnity 12-25 firstVespers ps2 (sanctoral/solemnities.json $.12-25.firstVespers.psalms[1]).",
+    "rewrite_needed": true,
+    "catalog_action": "none",
     "trigger_wi_c": false
   }
 }
