@@ -42,7 +42,17 @@ next-env.d.ts
 /.claude/
 *.pdf
 !/public/psalter.pdf
-/parsed_data/
+# Default-deny everything in parsed_data/ (PDF re-extraction outputs are
+# heavy and regenerable). Specific curated deliverables are re-included
+# below — these are SSOT inputs to downstream WIs and must travel with
+# the repo.
+/parsed_data/*
+# FR-156 Phase 5 WI-A1 deliverable — curated bare→versed map for the
+# 6 firstVespers psalms. Tracked because WI-A2 rewrite + WI-C catalog
+# augmentation consume it as SSOT. Regenerable via
+#   `node scripts/extract-first-vespers-versed-map.js`
+# (anchored against parsed_data/full_pdf.txt, which stays untracked).
+!/parsed_data/first-vespers-versed-map.json
 /output_sample.txt
 /parsed_raw.txt
 /psalter_full_text.txt
