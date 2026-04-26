@@ -109,7 +109,7 @@
             },
             {
               "type": "psalm",
-              "ref": "Psalm 142",
+              "ref": "Psalm 142:1-7",
               "antiphon_key": "fv-w1-sun-ps2",
               "default_antiphon": "Аяа Эзэн, Та бол миний хоргодох газар, амьдрал дахь миний хамаг хүсэл эрмэлзэл. Ирэлтийн цаг улирал: Эзэн Өөрийн бүх",
               "gloria_patri": true,
@@ -482,7 +482,7 @@
             },
             {
               "type": "psalm",
-              "ref": "Psalm 16",
+              "ref": "Psalm 16:1-6",
               "antiphon_key": "fv-w2-sun-ps2",
               "default_antiphon": "Аяа Эзэн минь, би Таны царайг харах үедээ төгс баяр баясгаланг эдлэх болно. Аллэлуяа!",
               "gloria_patri": true,
@@ -547,7 +547,7 @@
           "psalms": [
             {
               "type": "psalm",
-              "ref": "Psalm 113",
+              "ref": "Psalm 113:1-9",
               "antiphon_key": "fv-w3-sun-ps1",
               "default_antiphon": "Нар мандахаас жаргах хүртэл Эзэний нэр магтагдах болтугай.",
               "gloria_patri": true,
@@ -629,7 +629,7 @@
           "psalms": [
             {
               "type": "psalm",
-              "ref": "Psalm 122",
+              "ref": "Psalm 122:1-9",
               "antiphon_key": "fv-w4-sun-ps1",
               "default_antiphon": "Йерусалимын амар амгалангийн төлөө гуйн залбирцгаая.",
               "gloria_patri": true,
@@ -646,7 +646,7 @@
             },
             {
               "type": "psalm",
-              "ref": "Psalm 130",
+              "ref": "Psalm 130:1-8",
               "antiphon_key": "fv-w4-sun-ps2",
               "default_antiphon": "Өглөөнөөс орой хүртэл би Эзэнийг итгэмжтэйгээр хүлээсэн.",
               "gloria_patri": true,

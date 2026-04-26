@@ -208,3 +208,57 @@ test.describe('First Vespers of Lent Sunday — versed-ref body resolution (FR-1
     expect(ps1!.antiphon).toContain('Сүмд өдөр бүр та нартай хамт байж')
   })
 })
+
+// @fr FR-156
+// @phase 5
+// WI-B3 (task #91) — advent 시즌 firstVespers bare-ref → versed 적용 후
+// psalm 본문이 실제로 채워지는지 (parser regex 가 versed-form 만 받으므로
+// bare-form 일 때는 verses 가 비어 있었음) + advent seasonal antiphon
+// variant 가 올바르게 표면화되는지 확인.
+test.describe('First Vespers of Advent Sunday — versed-ref body resolution (FR-156 Phase 5 WI-B3)', () => {
+  test('Saturday 2025-11-29 vespers (eve of Advent W1 SUN) psalm bodies are non-empty + advent variant fires', async ({
+    request,
+  }) => {
+    // 2025-11-29 = Saturday between OT W34 and Advent W1 (firstAdventSunday
+    // = 2025-11-30). Saturday vespers liturgically renders Advent W1 SUN
+    // 1st Vespers. PDF authors firstVespers.psalms[1] as bare "Psalm 142"
+    // — WI-B3 (#91) rewrites it to "Psalm 142:1-7" so scripture-ref-parser
+    // matches and Bible JSONL lookup populates verses[].
+    const res = await request.get(`/api/loth/${DATES.lastOTSaturday}/vespers`)
+    expect(res.ok()).toBe(true)
+    const body = await res.json()
+    expect(body.liturgicalDay?.season).toBe('ADVENT')
+    expect(body.liturgicalDay?.weekOfSeason).toBe(1)
+
+    const psalmody = body.sections.find((s: { type: string }) => s.type === 'psalmody')
+    expect(psalmody).toBeTruthy()
+
+    type Psalm = {
+      reference: string
+      antiphon?: string
+      verses: Array<{ verse: number; text: string }>
+    }
+    const psalms = psalmody.psalms as Psalm[]
+
+    // Advent W1 SUN firstVespers psalms (post-rewrite):
+    //   ps[0]: Psalm 141:1-9   (already versed pre-#91 — sanity)
+    //   ps[1]: Psalm 142:1-7   (rewritten from "Psalm 142" by #91)
+    //   ps[2]: Philippians 2:6-11 (canticle, already versed)
+    const ps2 = psalms.find((p) => p.reference === 'Psalm 142:1-7')
+    expect(ps2, 'Psalm 142:1-7 must appear after WI-B3 rewrite').toBeTruthy()
+    expect(ps2!.verses.length).toBeGreaterThan(0)
+    expect(ps2!.verses.some((v) => v.text && v.text.trim().length > 0)).toBe(true)
+
+    // ps[0] (Psalm 141:1-9) was already versed pre-#91 — sanity guard
+    // that rewrite didn't disturb it.
+    const ps1 = psalms.find((p) => p.reference === 'Psalm 141:1-9')
+    expect(ps1).toBeTruthy()
+    expect(ps1!.verses.length).toBeGreaterThan(0)
+
+    // ps[0] carries seasonal_antiphons.advent — pickSeasonalVariant must
+    // surface the advent string (not the default "Аяа Эзэн минь, залбирал
+    // минь таны өмнө утлага адил тавигдаг."). The advent antiphon begins
+    // "Сайнмэдээний айлдлыг бүх үндэстнүүдэд тунхаглагтун."
+    expect(ps1!.antiphon).toContain('Сайнмэдээний айлдлыг')
+  })
+})
