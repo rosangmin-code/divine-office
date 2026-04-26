@@ -180,7 +180,7 @@
             },
             {
               "type": "psalm",
-              "ref": "Psalm 142",
+              "ref": "Psalm 142:1-7",
               "antiphon_key": "fv-w1-sun-ps2",
               "default_antiphon": "Аяа Эзэн, Та бол миний хоргодох газар, амьдрал дахь миний хамаг хүсэл эрмэлзэл. Ирэлтийн цаг улирал: Эзэн Өөрийн бүх",
               "gloria_patri": true,
@@ -360,7 +360,7 @@
             },
             {
               "type": "psalm",
-              "ref": "Psalm 142",
+              "ref": "Psalm 142:1-7",
               "antiphon_key": "fv-w1-sun-ps2",
               "default_antiphon": "Аяа Эзэн, Та бол миний хоргодох газар, амьдрал дахь миний хамаг хүсэл эрмэлзэл. Ирэлтийн цаг улирал: Эзэн Өөрийн бүх",
               "gloria_patri": true,

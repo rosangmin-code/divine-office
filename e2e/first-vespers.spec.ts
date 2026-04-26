@@ -390,3 +390,60 @@ test.describe('First Vespers of Ordinary Sunday — versed-ref body resolution (
     )
   })
 })
+
+// @fr FR-156
+// @phase 5
+// WI-B4 (task #94) — christmas 시즌 + sanctoral/solemnities 12-25 firstVespers
+// bare-ref → versed 적용 후 psalm 본문이 실제로 채워지는지 (parser regex 가
+// versed-form 만 받으므로 bare-form 일 때는 verses 가 비어 있었음) +
+// Christmas Magnificat 안티폰이 올바르게 표면화되는지 확인.
+test.describe('First Vespers of Christmas — versed-ref body resolution (FR-156 Phase 5 WI-B4)', () => {
+  test('Christmas Eve 2026-12-24 vespers (eve of 12-25 SOLEMNITY) Ps 113 + Ps 147 bodies are non-empty', async ({
+    request,
+  }) => {
+    // 2026-12-24 = Thursday evening, the day before Christmas (12-25).
+    // Phase 3a resolver adopts sanctoral/solemnities.json 12-25
+    // firstVespers, which authored ps[0]/ps[1] as bare "Psalm 113" /
+    // "Psalm 147" — WI-B4 (#94) rewrites to "Psalm 113:1-9" /
+    // "Psalm 147:12-20" so scripture-ref-parser matches and Bible JSONL
+    // lookup populates verses[].
+    const res = await request.get(`/api/loth/${DATES.christmasEve2026}/vespers`)
+    expect(res.ok()).toBe(true)
+    const body = await res.json()
+
+    const psalmody = body.sections.find((s: { type: string }) => s.type === 'psalmody')
+    expect(psalmody).toBeTruthy()
+
+    type Psalm = {
+      reference: string
+      antiphon?: string
+      verses: Array<{ verse: number; text: string }>
+    }
+    const psalms = psalmody.psalms as Psalm[]
+
+    // Christmas 12-25 firstVespers psalms (post-rewrite):
+    //   ps[0]: Psalm 113:1-9        (rewritten from "Psalm 113" by #94)
+    //   ps[1]: Psalm 147:12-20      (rewritten from "Psalm 147" by #94)
+    //   ps[2]: Philippians 2:6-11   (canticle, already versed)
+    const ps1 = psalms.find((p) => p.reference === 'Psalm 113:1-9')
+    expect(ps1, 'Psalm 113:1-9 must appear after WI-B4 rewrite').toBeTruthy()
+    expect(ps1!.verses.length).toBeGreaterThan(0)
+    expect(ps1!.verses.some((v) => v.text && v.text.trim().length > 0)).toBe(true)
+
+    const ps2 = psalms.find((p) => p.reference === 'Psalm 147:12-20')
+    expect(ps2, 'Psalm 147:12-20 must appear after WI-B4 rewrite').toBeTruthy()
+    expect(ps2!.verses.length).toBeGreaterThan(0)
+    expect(ps2!.verses.some((v) => v.text && v.text.trim().length > 0)).toBe(true)
+
+    // Magnificat carries the Christmas-specific gospelCanticleAntiphon
+    // ("Нар өглөө тэнгэрт мандахад..." — sanctoral/solemnities.json 12-25
+    // line 219). Sanity guard that rewrite didn't disturb adjacent fields.
+    const magnificat = body.sections.find(
+      (s: { type: string; canticle?: string }) =>
+        s.type === 'gospel-canticle' || (s as { canticle?: string }).canticle === 'magnificat',
+    )
+    if (magnificat) {
+      expect((magnificat as { antiphon?: string }).antiphon).toContain('Нар өглөө тэнгэрт мандахад')
+    }
+  })
+})

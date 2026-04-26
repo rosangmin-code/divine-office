@@ -149,6 +149,58 @@ describe('FR-156 Phase 2 — getSeasonFirstVespers returns injected data', () =>
     expect(offenders, 'no bare-ref psalms must remain in ordinary-time firstVespers').toEqual([])
   })
 
+  // @fr FR-156
+  // @phase 5
+  // WI-B4 (task #94) — christmas (holyFamily/baptism) + sanctoral/solemnities
+  // 12-25 firstVespers bare-ref → versed 적용 가드. 4 cells:
+  //   propers/christmas.json $.weeks.holyFamily.SUN.firstVespers.psalms[1]
+  //                          "Psalm 142" → "Psalm 142:1-7"
+  //   propers/christmas.json $.weeks.baptism.SUN.firstVespers.psalms[1]
+  //                          "Psalm 142" → "Psalm 142:1-7"
+  //   sanctoral/solemnities.json $.12-25.firstVespers.psalms[0]
+  //                              "Psalm 113" → "Psalm 113:1-9"
+  //   sanctoral/solemnities.json $.12-25.firstVespers.psalms[1]
+  //                              "Psalm 147" → "Psalm 147:12-20"
+  it('christmas (holyFamily/baptism) firstVespers psalms[1].ref are versed-form post WI-B4 rewrite (task #94)', async () => {
+    const { getSeasonFirstVespers } = await import('../propers-loader')
+    // CHRISTMAS season firstVespers slot is keyed by celebrationName via
+    // resolveSpecialKey(): "Holy Family" → holyFamily, "Baptism of the
+    // Lord" → baptism. weeks[<key>].SUN.firstVespers is the rewrite target.
+    const cases: Array<{ celebration: string; label: string }> = [
+      { celebration: 'Holy Family', label: 'holyFamily' },
+      { celebration: 'Baptism of the Lord', label: 'baptism' },
+    ]
+    const VERSED_REGEX = /^[A-Za-z\d ]+\s+\d+:[\d\-\sa,.bc]+$/
+    for (const { celebration, label } of cases) {
+      const fv = getSeasonFirstVespers(
+        'CHRISTMAS' as never,
+        1,
+        undefined,
+        celebration,
+      )
+      expect(fv, `christmas ${label} firstVespers must be present`).not.toBeNull()
+      const psalm = fv!.psalms![1]
+      expect(psalm, `christmas ${label} firstVespers.psalms[1]`).toBeDefined()
+      expect(psalm.ref, `christmas ${label}.SUN.firstVespers.psalms[1].ref must be versed-form`).toBe('Psalm 142:1-7')
+      expect(psalm.ref, 'must satisfy parser regex (colon required)').toMatch(VERSED_REGEX)
+    }
+  })
+
+  it('sanctoral 12-25 (Christmas) firstVespers psalms[0..1].ref are versed-form post WI-B4 rewrite (task #94)', async () => {
+    const { getSanctoralPropers } = await import('../propers-loader')
+    const entry = getSanctoralPropers('12-25')
+    expect(entry).not.toBeNull()
+    expect(entry!.firstVespers).toBeDefined()
+    const fv = entry!.firstVespers!
+    expect(fv.psalms, 'sanctoral 12-25 firstVespers psalms').toBeDefined()
+    expect(fv.psalms![0].ref).toBe('Psalm 113:1-9')
+    expect(fv.psalms![1].ref).toBe('Psalm 147:12-20')
+    // Versed-form regex parity with parser
+    const VERSED_REGEX = /^[A-Za-z\d ]+\s+\d+:[\d\-\sa,.bc]+$/
+    expect(fv.psalms![0].ref).toMatch(VERSED_REGEX)
+    expect(fv.psalms![1].ref).toMatch(VERSED_REGEX)
+  })
+
   it('firstVespers psalms carry seasonal_antiphons for their psalter week (regression guard)', async () => {
     const { getSeasonFirstVespers } = await import('../propers-loader')
     // Lent week 5 → psalter W1 (lentSunday[5] lives there).
@@ -527,8 +579,8 @@ describe('FR-156 Phase 3b — Solemnity firstVespers data injection', () => {
     const fv = entry!.firstVespers!
     expect(fv.psalms, 'Christmas firstVespers psalms').toBeDefined()
     expect(fv.psalms!.length).toBe(3)
-    expect(fv.psalms![0].ref).toBe('Psalm 113')
-    expect(fv.psalms![1].ref).toBe('Psalm 147')
+    expect(fv.psalms![0].ref).toBe('Psalm 113:1-9')
+    expect(fv.psalms![1].ref).toBe('Psalm 147:12-20')
     expect(fv.psalms![2].ref).toBe('Philippians 2:6-11')
     expect(fv.shortReading?.ref).toBe('Galatians 4:3-7')
     expect(fv.gospelCanticleAntiphon).toContain('Нар өглөө тэнгэрт мандахад')

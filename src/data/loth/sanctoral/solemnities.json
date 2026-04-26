@@ -204,7 +204,7 @@
       "psalms": [
         {
           "type": "psalm",
-          "ref": "Psalm 113",
+          "ref": "Psalm 113:1-9",
           "antiphon_key": "solemnity-12-25-ps1",
           "default_antiphon": "Бидний амар амгалан болсон Хаан сүр жавхлантайгаар айсуй. Бүх ертөнц Түүнийг харахаар эрэлхийлдэг.",
           "gloria_patri": true,
@@ -212,7 +212,7 @@
         },
         {
           "type": "psalm",
-          "ref": "Psalm 147",
+          "ref": "Psalm 147:12-20",
           "antiphon_key": "solemnity-12-25-ps2",
           "default_antiphon": "Тэр Өөрийн Үгийг дэлхийд илгээж, Үг нь маш хурдан тархаж байна.",
           "gloria_patri": true,
