@@ -476,7 +476,7 @@ WI-B[1..5] 의 sequencing:
 
 1. ~~**PR 분할 단위**~~ → **결정: 5 시즌 분할 채택** (§3.4 default). 시즌별 JSON 파일이 자연 경계가 되어 review 부담 평탄화 + worktree 5건 병렬 dispatch 가능.
 2. ~~**parser regex bare-ref 지원**~~ → **결정: 무수정**. Phase 5 의 verifier-gated 데이터 normalization (`verify-first-vespers-ref-coverage.js` + 3 byte-equal verifier) 으로 drift 차단 충분. SSOT (`psalter-texts.json`) 의 versed 형 invariant 보존이 더 가치. 별건 FR 로도 등록하지 않음 — verifier 가 위 invariant 의 enforcement 역할을 영구 담당. 향후 bare-ref 가 다시 등장하면 `verify-first-vespers-ref-coverage.js` 가 즉시 차단.
-3. ~~**catalog 보강 (WI-C) 트리거 결정**~~ → **결정: WI-C 실행** (commit 1356c73, task #88). WI-A1 의 case_verdict 결과 Psalm 142:1-7 + Psalm 147:1-12 = 2 entries 가 CASE B (catalog 누락) 로 판명 → catalog ADD 진행.
+3. ~~**catalog 보강 (WI-C) 트리거 결정**~~ → **결정: WI-C 실행** (commit 1356c73, task #88). WI-A1 의 case_verdict 결과 catalog 부재 entries 2건 (Psalm 141:1-9 + Psalm 142:1-7) 이 CASE B 로 판명 → catalog ADD 진행. Psalm 147 은 PDF firstVespers 가 기존 catalog 키 (Psalm 147:1-11) 와 정합 → ADD 불필요.
 4. ~~**task #66 결과 합류**~~ → **별건 처리 완료** (commit 782e5b6 — Symptom A: psalter commons rich 적재 skip). Magnificat 누락은 본 plan 의 bare-ref 와 별개 root cause (Layer-4 rich overlay 가 firstVespers plain shortReading 을 override) 였고, 별도 commit 으로 main 머지됨. WI-B1 의 e2e regression guard (`Symptom A regression — Saturday vespers firstVespers shortReading`) 가 영구 가드.
 5. ~~**e2e 시즌별 SAT 날짜 선정**~~ → **결정: 각 시즌 PR 시점에 자율 선정**. WI-B1~B5 commit 들에서 다음 날짜로 fixture 충돌 없이 작성: easter 2026-04-25, lent 2026-02-21 + 2026-03-28, advent 2025-11-29, christmas 2026-12-24, ordinary-time 2026-09-12.
 6. ~~**OT 42 cells 의 worktree 단위**~~ → **결정: 단일 worktree** (WI-B5 한 개). 자동화 (`rewrite-first-vespers-bare-refs.js --season ordinary-time`) 가 신뢰성 입증.
@@ -485,12 +485,15 @@ WI-B[1..5] 의 sequencing:
 
 | ID | 결정 | 근거 |
 |----|------|------|
-| ADR-P5-1 | parser regex 무수정 | verifier-gated normalization 으로 충분, SSOT 단순성 보존 (Q2) |
+| ADR-P5-1 | parser regex 무수정 (Q2) | verifier-gated normalization 으로 충분, SSOT 단순성 보존. `verify-first-vespers-ref-coverage.js` 가 future drift 영구 enforcement |
 | ADR-P5-2 | normalize 패치는 WI-A4 = WI-B1 흡수 | PDF extractor canonical bare ↔ propers versed-form 동등 처리는 1회성 인프라이며 WI-B1 의 first season rewrite 와 함께 진입하는 것이 자연스러움 (§4 WI-A4 본문 참조) |
-| ADR-P5-3 | catalog 키 ADD 결정 (Psalm 142:1-7 + Psalm 147:1-12) | PDF 본문이 정확한 chapter 번호 — Hebrew↔Vulgate mismatch 가설 폐기 (CASE B 채택) |
-| ADR-P5-4 | Symptom A (psalter commons rich Layer-4 override) 별건 분리 | bare-ref drift 와 다른 root cause (rich-overlay resolver), 동시 진행 시 PR scope 비대화 (commit 782e5b6 별건 머지) |
+| ADR-P5-3 | catalog 키 ADD 결정 (Q3): Psalm 141:1-9 + Psalm 142:1-7 (commit 1356c73) | PDF 본문이 정확한 chapter 번호 — Hebrew↔Vulgate mismatch 가설 폐기 (CASE B 채택). Psalm 147 은 기존 catalog 키 (147:1-11) 와 정합되어 ADD 불필요 |
+| ADR-P5-4 | Symptom A (psalter commons rich Layer-4 override) 별건 분리 (Q4) | bare-ref drift 와 다른 root cause (rich-overlay resolver), 동시 진행 시 PR scope 비대화 (commit 782e5b6 별건 머지) |
+| ADR-P5-5 | PR 분할 단위 = 5 시즌 (Q1) | 시즌별 JSON 파일이 자연 경계 → review 부담 평탄화 + worktree 5건 병렬 dispatch 가능. psalm 단위 분할 (대안) 은 시즌 JSON 수정 빈도 ↑ |
+| ADR-P5-6 | e2e 시즌별 SAT 날짜 자율 선정 (Q5) | leader-arbitration 불필요 — 각 WI-B 회차 dispatch 시 fixture 충돌 없는 날짜 자율 결정. 실제 채택: easter 2026-04-25, lent 2026-02-21+2026-03-28, advent 2025-11-29, christmas 2026-12-24, ordinary-time 2026-09-12 |
+| ADR-P5-7 | OT 42 cells 단일 worktree (Q6) | 자동화 (`rewrite-first-vespers-bare-refs.js --season ordinary-time`) 신뢰성 입증, B5a/b/c/d 분할은 review 부담 ↑ |
 
-### 7.3 Out of scope (명시)
+### 7.4 Out of scope (명시)
 
 - parser regex bare-ref 지원 (R-1 별건 FR)
 - task #66 의 Magnificat antiphon 누락이 별개 결함일 경우의 fix
