@@ -317,3 +317,76 @@ test.describe('FR-156 Phase 5 WI-B1 — easter SAT vespers psalm bodies non-empt
     expect(gc.antiphon ?? '').not.toBe('')
   })
 })
+
+// @fr FR-156
+// @phase 5
+// WI-B5 (task #95) — ordinary-time 시즌 firstVespers bare-ref → versed
+// 적용 (42 cells = 34 weeks × ps[0]/ps[1] 의 4-week psalter cycle 패턴)
+// 후 psalm 본문이 실제로 채워지는지 확인. bare ref 일 때는 verses[] 가
+// 비어 placeholder 가 노출됐다.
+test.describe('First Vespers of Ordinary Sunday — versed-ref body resolution (FR-156 Phase 5 WI-B5)', () => {
+  test('Saturday 2026-02-07 vespers (eve of OT W5 SUN, psalterW1) psalm bodies non-empty after rewrite', async ({
+    request,
+  }) => {
+    // 2026-02-07 = Saturday of OT W4 (eve of OT W5 SUN). OT W5 maps to
+    // psalter W1 ((5-1) % 4 + 1 = 1). firstVespers psalms[1] was bare
+    // "Psalm 142" pre-#95 — rewritten to "Psalm 142:1-7" so Bible JSONL
+    // lookup populates verses[].
+    const res = await request.get(`/api/loth/${DATES.ordinarySaturday}/vespers`)
+    expect(res.ok()).toBe(true)
+    const body = await res.json()
+    expect(body.liturgicalDay?.season).toBe('ORDINARY_TIME')
+
+    const psalmody = body.sections.find((s: { type: string }) => s.type === 'psalmody')
+    expect(psalmody).toBeTruthy()
+
+    type Psalm = {
+      reference: string
+      verses: Array<{ verse: number; text: string }>
+    }
+    const psalms = psalmody.psalms as Psalm[]
+
+    // OT W5 SUN firstVespers (psalterW1):
+    //   ps[0]: Psalm 141:1-9    (already versed pre-#95 — sanity)
+    //   ps[1]: Psalm 142:1-7    (rewritten from "Psalm 142" by #95)
+    //   ps[2]: Philippians 2:6-11 (canticle)
+    const ps2 = psalms.find((p) => p.reference === 'Psalm 142:1-7')
+    expect(ps2, 'Psalm 142:1-7 must appear after WI-B5 rewrite').toBeTruthy()
+    expect(ps2!.verses.length).toBeGreaterThan(0)
+    expect(ps2!.verses.some((v) => v.text && v.text.trim().length > 0)).toBe(true)
+
+    // ps[0] (Psalm 141:1-9) — sanity guard that rewrite didn't disturb it.
+    const ps1 = psalms.find((p) => p.reference === 'Psalm 141:1-9')
+    expect(ps1).toBeTruthy()
+    expect(ps1!.verses.length).toBeGreaterThan(0)
+  })
+
+  test('Saturday 2025-11-22 vespers (eve of Christ the King, OT W34 SUN) — Christ the King wins over OT firstVespers', async ({
+    request,
+  }) => {
+    // 2025-11-22 = Saturday eve of Christ the King 2025 (Sunday 2025-11-23).
+    // Christ the King is a movable solemnity → resolveSpecialKey returns
+    // 'christTheKing' → loth-service Path 2 picks up
+    // weeks['christTheKing'].SUN.firstVespers (Phase 4b movable solemnity
+    // injection), NOT weeks['34'] regular Sunday firstVespers.
+    //
+    // This test guards that #95's OT W34 rewrite didn't accidentally
+    // become reachable when Christ the King overrides — i.e. movable
+    // solemnity Path 2 still wins.
+    const res = await request.get('/api/loth/2025-11-22/vespers')
+    expect(res.ok()).toBe(true)
+    const body = await res.json()
+
+    const psalmody = body.sections.find((s: { type: string }) => s.type === 'psalmody')
+    expect(psalmody).toBeTruthy()
+    const refs = (psalmody.psalms as Array<{ reference: string }>).map((p) => p.reference)
+
+    // weeks['34'] post-#95: ps[1] = "Psalm 16:1-6". When Christ the King
+    // movable solemnity Path 2 fires, the rendered psalmody comes from
+    // weeks['christTheKing'].SUN.firstVespers (not weeks['34']) — so
+    // "Psalm 16:1-6" MUST NOT surface, proving Path 2 still overrides.
+    expect(refs, 'OT W34 Psalm 16:1-6 must NOT appear when Christ the King overrides').not.toContain(
+      'Psalm 16:1-6',
+    )
+  })
+})

@@ -90,6 +90,65 @@ describe('FR-156 Phase 2 — getSeasonFirstVespers returns injected data', () =>
     expect(offenders, 'no bare-ref psalms must remain in advent firstVespers').toEqual([])
   })
 
+  // @fr FR-156
+  // @phase 5
+  // WI-B5 (task #95) — ordinary-time 시즌 firstVespers bare-ref → versed
+  // 적용 가드. 42 cells (W1~W34 SUN ps[0] 또는 ps[1]) 가 4-week psalter
+  // cycle 패턴으로 5 distinct refs 에 대응:
+  //   ps[1] = Psalm 142:1-7  (W1, W5, W9, ...)  / Psalm 16:1-6  (W2, W6, ...)
+  //   ps[0] = Psalm 113:1-9  (W3, W7, W11, ...) / Psalm 122:1-9 (W4, W8, ...)
+  //   ps[1] = Psalm 130:1-8  (W4, W8, W12, ...)
+  // bare ref 일 때는 scripture-ref-parser regex (versed-only) 미스매치로
+  // verses[] 가 비어 placeholder 노출 → WI-A2 의 rewrite 가 일괄 변환.
+  it('ordinary-time firstVespers psalms[*].ref are all versed-form post WI-B5 rewrite (task #95)', async () => {
+    const { getSeasonFirstVespers } = await import('../propers-loader')
+    // 4-week psalter cycle: psalterWeek = ((weekOfSeason - 1) % 4) + 1.
+    // Sample one OT week per psalter slot to verify all 5 refs:
+    //   W1 (psalterW1) ps[1]: "Psalm 142" → "Psalm 142:1-7"
+    //   W2 (psalterW2) ps[1]: "Psalm 16"  → "Psalm 16:1-6"
+    //   W3 (psalterW3) ps[0]: "Psalm 113" → "Psalm 113:1-9"
+    //   W4 (psalterW4) ps[0]: "Psalm 122" → "Psalm 122:1-9"
+    //   W4 (psalterW4) ps[1]: "Psalm 130" → "Psalm 130:1-8"
+    const expectations: Array<{ week: number; index: number; ref: string }> = [
+      { week: 1, index: 1, ref: 'Psalm 142:1-7' },
+      { week: 2, index: 1, ref: 'Psalm 16:1-6' },
+      { week: 3, index: 0, ref: 'Psalm 113:1-9' },
+      { week: 4, index: 0, ref: 'Psalm 122:1-9' },
+      { week: 4, index: 1, ref: 'Psalm 130:1-8' },
+      // Last-cycle representative (W34 = psalterW2): ps[1] = "Psalm 16:1-6"
+      { week: 34, index: 1, ref: 'Psalm 16:1-6' },
+    ]
+    for (const { week, index, ref } of expectations) {
+      const fv = getSeasonFirstVespers('ORDINARY_TIME' as never, week)
+      expect(fv, `ORDINARY_TIME week ${week} firstVespers must be present`).not.toBeNull()
+      const psalm = fv!.psalms![index]
+      expect(psalm, `OT W${week} firstVespers.psalms[${index}]`).toBeDefined()
+      expect(psalm.ref, `OT W${week}.SUN.firstVespers.psalms[${index}].ref must be versed-form`).toBe(ref)
+      expect(psalm.ref, `${ref} must satisfy parser regex (colon required)`).toMatch(
+        /^[A-Za-z\d ]+\s+\d+:[\d\-\sa,.bc]+$/,
+      )
+    }
+  })
+
+  // Negative-path guard for OT firstVespers — confirm no bare refs
+  // remain across all 34 weeks. Scans every authored cell so a future
+  // drift (manual edit removing the colon) is caught immediately.
+  it('ordinary-time firstVespers contains zero bare-ref psalms across all 34 weeks (task #95 regression)', async () => {
+    const { getSeasonFirstVespers } = await import('../propers-loader')
+    const VERSED_REGEX = /^[A-Za-z\d ]+\s+\d+:[\d\-\sa,.bc]+$/
+    const offenders: string[] = []
+    for (let week = 1; week <= 34; week++) {
+      const fv = getSeasonFirstVespers('ORDINARY_TIME' as never, week)
+      if (!fv?.psalms) continue
+      fv.psalms.forEach((p, i) => {
+        if (typeof p.ref === 'string' && !VERSED_REGEX.test(p.ref)) {
+          offenders.push(`OT W${week}.psalms[${i}] ref="${p.ref}"`)
+        }
+      })
+    }
+    expect(offenders, 'no bare-ref psalms must remain in ordinary-time firstVespers').toEqual([])
+  })
+
   it('firstVespers psalms carry seasonal_antiphons for their psalter week (regression guard)', async () => {
     const { getSeasonFirstVespers } = await import('../propers-loader')
     // Lent week 5 → psalter W1 (lentSunday[5] lives there).
