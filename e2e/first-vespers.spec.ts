@@ -27,13 +27,15 @@ test.describe('First Vespers of Palm Sunday (FR-156)', () => {
     expect(body.liturgicalDay?.weekOfSeason).toBe(5) // Saturday of Lent W5
 
     // Psalmody must reflect the First Vespers of Palm Sunday (PDF_W2:
-    // Ps 119:105-112 + Ps 16 + Philippians 2:6-11), NOT the 4-week
+    // Ps 119:105-112 + Ps 16:1-6 + Philippians 2:6-11), NOT the 4-week
     // psalter Saturday vespers (which would be Ps 113 + 116 + Phil).
+    // Note: "Psalm 16" rewritten to versed form "Psalm 16:1-6" by
+    // FR-156 Phase 5 WI-A2/WI-B2 (task #87/#90).
     const psalmody = body.sections.find((s: { type: string }) => s.type === 'psalmody')
     expect(psalmody).toBeTruthy()
     const refs = (psalmody.psalms as Array<{ reference: string }>).map((p) => p.reference)
     expect(refs).toContain('Psalm 119:105-112')
-    expect(refs).toContain('Psalm 16')
+    expect(refs).toContain('Psalm 16:1-6')
     expect(refs).toContain('Philippians 2:6-11')
   })
 
@@ -126,5 +128,83 @@ test.describe('Symptom A regression — Saturday vespers firstVespers shortReadi
       .map((s) => (s.kind === 'text' ? s.text ?? '' : ''))
       .join('')
     expect(richText).not.toContain('Эзэн Есүс Христийн маань')
+  })
+})
+
+// @fr FR-156
+// @phase 5
+// WI-B2 (task #90) — lent 시즌 firstVespers bare-ref → versed 적용 후
+// psalm 본문이 실제로 채워지는지 (parser regex 가 versed-form 만 받으므로
+// bare-form 일 때는 verses 가 비어 있었음) 확인.
+test.describe('First Vespers of Lent Sunday — versed-ref body resolution (FR-156 Phase 5 WI-B2)', () => {
+  test('Saturday 2026-02-21 vespers (eve of Lent W1 SUN) psalm bodies are non-empty after rewrite', async ({
+    request,
+  }) => {
+    // Lent W1 SUN firstVespers (psalms[1] = Psalm 142:1-7, 이전 bare
+    // "Psalm 142" 였던 것이 #90 rewrite 로 versed-form 으로 변환).
+    const res = await request.get('/api/loth/2026-02-21/vespers')
+    expect(res.ok()).toBe(true)
+    const body = await res.json()
+    expect(body.liturgicalDay?.season).toBe('LENT')
+    // 2026-02-21 = Saturday of Lent W1 (eve of W1 SUN).
+    expect(body.liturgicalDay?.weekOfSeason).toBe(1)
+
+    const psalmody = body.sections.find((s: { type: string }) => s.type === 'psalmody')
+    expect(psalmody).toBeTruthy()
+
+    const psalms = psalmody.psalms as Array<{
+      reference: string
+      verses: Array<{ verse: number; text: string }>
+    }>
+    // After WI-B2 rewrite, versed-form refs allow Bible JSONL lookup
+    // populating verses[]. ps[1] specifically (Psalm 142:1-7) was bare
+    // before; assert its verses are non-empty.
+    const ps2 = psalms.find((p) => p.reference === 'Psalm 142:1-7')
+    expect(ps2, 'Psalm 142:1-7 must appear after WI-B2 rewrite').toBeTruthy()
+    expect(ps2!.verses.length).toBeGreaterThan(0)
+    expect(ps2!.verses.some((v) => v.text && v.text.trim().length > 0)).toBe(true)
+
+    // ps[0] (Psalm 119:105-112) was already versed pre-#90 — sanity check
+    // that rewrite didn't disturb it.
+    const ps1 = psalms.find((p) => p.reference === 'Psalm 119:105-112')
+    expect(ps1).toBeTruthy()
+    expect(ps1!.verses.length).toBeGreaterThan(0)
+  })
+
+  test('Saturday 2026-03-28 vespers (eve of Palm Sunday) psalm bodies + lentPassionSunday variant after rewrite', async ({
+    request,
+  }) => {
+    // Palm Sunday eve. firstVespers psalms[1] (Psalm 16:1-6, ex bare
+    // "Psalm 16") rewritten by #90. ps1 (Psalm 119:105-112) carries
+    // seasonal_antiphons.lentPassionSunday — promoted Saturday→Sunday
+    // identity (W5 SAT → W6 SUN) makes pickSeasonalVariant fire it.
+    const res = await request.get('/api/loth/2026-03-28/vespers')
+    expect(res.ok()).toBe(true)
+    const body = await res.json()
+    expect(body.liturgicalDay?.season).toBe('LENT')
+    expect(body.liturgicalDay?.weekOfSeason).toBe(5)
+
+    const psalmody = body.sections.find((s: { type: string }) => s.type === 'psalmody')
+    expect(psalmody).toBeTruthy()
+
+    type Psalm = {
+      reference: string
+      antiphon?: string
+      verses: Array<{ verse: number; text: string }>
+    }
+    const psalms = psalmody.psalms as Psalm[]
+
+    // ps[1] versed-form refs body resolves.
+    const ps2 = psalms.find((p) => p.reference === 'Psalm 16:1-6')
+    expect(ps2, 'Psalm 16:1-6 must appear after WI-B2 rewrite').toBeTruthy()
+    expect(ps2!.verses.length).toBeGreaterThan(0)
+    expect(ps2!.verses.some((v) => v.text && v.text.trim().length > 0)).toBe(true)
+
+    // ps[0] lentPassionSunday seasonal variant fires (Phase 4c task #25
+    // regression guard — Saturday→Sunday identity promotion makes
+    // pickSeasonalVariant return the lentPassionSunday text for W6).
+    const ps1 = psalms.find((p) => p.reference === 'Psalm 119:105-112')
+    expect(ps1).toBeTruthy()
+    expect(ps1!.antiphon).toContain('Сүмд өдөр бүр та нартай хамт байж')
   })
 })
