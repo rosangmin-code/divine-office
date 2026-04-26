@@ -262,3 +262,58 @@ test.describe('First Vespers of Advent Sunday — versed-ref body resolution (FR
     expect(ps1!.antiphon).toContain('Сайнмэдээний айлдлыг')
   })
 })
+
+// @fr FR-156
+// @phase 5
+// WI-B1 — easter season firstVespers bare→versed rewrite. Before the
+// rewrite the propers cell stored bare "Psalm 122" which both the
+// catalog lookup (psalter-texts.json keys versed-only) and the
+// scripture-ref-parser (colon required) missed, so the UI rendered an
+// empty psalm card. After rewrite the cell is "Psalm 122:1-9" — direct
+// catalog hit, stanzas + psalmPrayer load from PDF source.
+test.describe('FR-156 Phase 5 WI-B1 — easter SAT vespers psalm bodies non-empty', () => {
+  test('Easter wk3 SAT vespers (2026-04-25) ps1 reference is versed and stanzas + Magnificat render', async ({
+    request,
+  }) => {
+    // Saturday vespers promotes to upcoming Sunday's firstVespers
+    // (Easter Wk 4 SUN = 2026-04-26). After Phase 5 rewrite, ps1's
+    // ref is "Psalm 122:1-9" rather than the bare "Psalm 122".
+    const res = await request.get('/api/loth/2026-04-25/vespers')
+    expect(res.ok()).toBe(true)
+    const body = await res.json()
+    expect(body.liturgicalDay?.season).toBe('EASTER')
+
+    const psalmody = body.sections.find((s: { type: string }) => s.type === 'psalmody')
+    expect(psalmody).toBeTruthy()
+    type Psalm = {
+      reference: string
+      antiphon?: string
+      stanzas?: string[][]
+    }
+    const psalms = psalmody.psalms as Psalm[]
+    expect(psalms.length).toBeGreaterThanOrEqual(1)
+
+    // ps1 — versed ref + non-empty stanzas + opening line fingerprint.
+    const ps1 = psalms[0]
+    expect(ps1.reference).toBe('Psalm 122:1-9')
+    expect(ps1.antiphon ?? '').not.toBe('')
+    expect(ps1.stanzas).toBeTruthy()
+    expect(ps1.stanzas!.length).toBeGreaterThan(0)
+    expect(ps1.stanzas![0].length).toBeGreaterThan(0)
+    const stanza0 = ps1.stanzas![0].join(' ')
+    expect(stanza0).toContain('ЭЗЭНий өргөө рүү явцгаая')
+
+    // ps2 — also a Phase 5 rewrite target (Psalm 130 → Psalm 130:1-8).
+    const ps2 = psalms[1]
+    expect(ps2.reference).toBe('Psalm 130:1-8')
+    expect(ps2.stanzas).toBeTruthy()
+    expect(ps2.stanzas!.length).toBeGreaterThan(0)
+
+    // Magnificat (gospelCanticle) must render — empty Magnificat was a
+    // visible symptom of the firstVespers fallback path failing prior
+    // to Phase 5.
+    const gc = body.sections.find((s: { type: string }) => s.type === 'gospelCanticle')
+    expect(gc).toBeTruthy()
+    expect(gc.antiphon ?? '').not.toBe('')
+  })
+})

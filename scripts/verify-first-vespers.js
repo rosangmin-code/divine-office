@@ -18,6 +18,27 @@ const EXTRACTED_PATH = path.join(ROOT, 'scripts', 'output', 'first-vespers-extra
 const EXTRACTOR_PATH = path.join(ROOT, 'scripts', 'extract-first-vespers.js')
 const PROPERS_DIR = path.join(ROOT, 'src', 'data', 'loth', 'propers')
 const INJECT_PATH = path.join(ROOT, 'scripts', 'inject-first-vespers.js')
+const VERSED_MAP_PATH = path.join(ROOT, 'parsed_data', 'first-vespers-versed-map.json')
+
+// FR-156 Phase 5 (WI-A1/B*) — PDF extractor still emits bare refs
+// ("Psalm 16") because those are the literal anchors in the PDF text;
+// post-Phase-5 propers files use versed refs ("Psalm 16:1-6") because
+// the rewrite applied a researcher-validated bare→versed map. To stay
+// byte-equal across Phase 5 we normalize the extractor's `ref` through
+// the same versed-map before diffing.
+function loadVersedRefMap() {
+  if (!fs.existsSync(VERSED_MAP_PATH)) return new Map()
+  const raw = JSON.parse(fs.readFileSync(VERSED_MAP_PATH, 'utf8'))
+  const m = new Map()
+  for (const [currentRef, entry] of Object.entries(raw)) {
+    if (entry.rewrite_needed) m.set(currentRef, entry.versed)
+  }
+  return m
+}
+const VERSED_REF_MAP = loadVersedRefMap()
+function normalizeRef(ref) {
+  return VERSED_REF_MAP.get(ref) ?? ref
+}
 
 // Season → seasonWeek → psalter week — must match inject script.
 const MAPPINGS = {
@@ -61,7 +82,16 @@ function diff(expected, actual, pathPrefix) {
     return issues
   }
   if (expected === null || typeof expected !== 'object') {
-    if (expected !== actual) {
+    // Phase 5 normalization — at .ref paths, run both sides through the
+    // versed-map so bare ↔ versed equivalence is tolerated regardless of
+    // whether this season's rewrite has landed yet.
+    let exp = expected
+    let act = actual
+    if (pathPrefix.endsWith('.ref')) {
+      if (typeof exp === 'string') exp = normalizeRef(exp)
+      if (typeof act === 'string') act = normalizeRef(act)
+    }
+    if (exp !== act) {
       issues.push({ path: pathPrefix, type: 'value-mismatch', expected, actual })
     }
     return issues

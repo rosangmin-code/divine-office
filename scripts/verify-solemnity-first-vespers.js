@@ -16,6 +16,25 @@ const ROOT = path.resolve(__dirname, '..')
 const EXTRACTOR_PATH = path.join(ROOT, 'scripts', 'extract-solemnity-first-vespers.js')
 const EXTRACTED_PATH = path.join(ROOT, 'scripts', 'output', 'solemnity-first-vespers-extracted.json')
 const SANCTORAL_DIR = path.join(ROOT, 'src', 'data', 'loth', 'sanctoral')
+const VERSED_MAP_PATH = path.join(ROOT, 'parsed_data', 'first-vespers-versed-map.json')
+
+// FR-156 Phase 5 — same bare↔versed normalization as
+// verify-first-vespers.js. Solemnity 12-25 has Psalm 113 / Psalm 147
+// cells that get rewritten by WI-B*. See verify-first-vespers.js for
+// the design note.
+function loadVersedRefMap() {
+  if (!fs.existsSync(VERSED_MAP_PATH)) return new Map()
+  const raw = JSON.parse(fs.readFileSync(VERSED_MAP_PATH, 'utf8'))
+  const m = new Map()
+  for (const [currentRef, entry] of Object.entries(raw)) {
+    if (entry.rewrite_needed) m.set(currentRef, entry.versed)
+  }
+  return m
+}
+const VERSED_REF_MAP = loadVersedRefMap()
+function normalizeRef(ref) {
+  return VERSED_REF_MAP.get(ref) ?? ref
+}
 
 function buildExpectedFirstVespers(block, antiphonKeyPrefix) {
   const typeKey = ['ps1', 'ps2', 'cant']
@@ -51,7 +70,13 @@ function diff(expected, actual, pathPrefix) {
     return issues
   }
   if (expected === null || typeof expected !== 'object') {
-    if (expected !== actual) {
+    let exp = expected
+    let act = actual
+    if (pathPrefix.endsWith('.ref')) {
+      if (typeof exp === 'string') exp = normalizeRef(exp)
+      if (typeof act === 'string') act = normalizeRef(act)
+    }
+    if (exp !== act) {
       issues.push({ path: pathPrefix, type: 'value-mismatch', expected, actual })
     }
     return issues

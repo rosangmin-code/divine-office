@@ -697,7 +697,7 @@ describe('FR-156 Phase 4b — movable solemnity firstVespers data (real loader)'
     expect(fv).not.toBeNull()
     expect(fv!.psalms).toBeDefined()
     expect(fv!.psalms!.length).toBe(3)
-    expect(fv!.psalms![0].ref).toBe('Psalm 113')
+    expect(fv!.psalms![0].ref).toBe('Psalm 113:1-9')
     expect(fv!.psalms![1].ref).toBe('Psalm 147:1-11')
     expect(fv!.psalms![2].ref).toBe('Revelation 15:3-4')
     expect(fv!.shortReading).toBeTruthy()
@@ -1128,5 +1128,43 @@ describe('FR-011 task #60 — plain-Sunday Saturday vespers backstop', () => {
       // Trinity Path 2 wins — concludingPrayer from trinityFirstVespers.
       expect(prayerSection.text).toBe('TRINITY-FV-CONCLUDING-PRAYER')
     }
+  })
+})
+
+// @fr FR-156
+// @phase 5
+describe('FR-156 Phase 5 WI-B1 — easter firstVespers psalm bodies non-empty after bare→versed rewrite', () => {
+  beforeEach(() => {
+    // Prior describe blocks vi.doMock('../propers-loader') with afterEach
+    // vi.doUnmock — but Node module cache survives until vi.resetModules.
+    // Reset so this real-loader integration test gets a fresh import.
+    vi.resetModules()
+  })
+
+  it('Easter wk3 SAT vespers (2026-04-25) → Wk 4 SUN firstVespers ps1 = Psalm 122:1-9 (catalog hit, non-empty stanzas)', async () => {
+    // 2026-04-25 is Easter Wk 3 SAT — Saturday-vespers branch promotes
+    // to Easter Wk 4 SUN's firstVespers. Wk 4 SUN ps1 was bare "Psalm 122"
+    // before Phase 5; rewrite tool versed it to "Psalm 122:1-9" which is a
+    // direct catalog hit.
+    const { assembleHour } = await import('../loth-service')
+    const result = await assembleHour('2026-04-25', 'vespers')
+    expect(result).not.toBeNull()
+    const psalmody = result!.sections.find((s) => s.type === 'psalmody')
+    expect(psalmody).toBeDefined()
+    if (!psalmody || psalmody.type !== 'psalmody') throw new Error('psalmody section missing')
+    expect(psalmody.psalms.length).toBeGreaterThanOrEqual(1)
+    const ps1 = psalmody.psalms[0]
+    // Reference must be the versed catalog key, not the bare form.
+    expect(ps1.reference).toBe('Psalm 122:1-9')
+    // Stanzas must be non-empty — empty stanzas would mean catalog miss
+    // fell through to Bible JSONL or to the placeholder, both of which
+    // signal a regression in the WI-A2 + WI-C wiring.
+    expect(ps1.stanzas).toBeDefined()
+    expect(ps1.stanzas!.length).toBeGreaterThan(0)
+    expect(ps1.stanzas![0].length).toBeGreaterThan(0)
+    // First line of stanza 0 carries the canonical Psalm 122 opening
+    // from PDF body L13739: "Тэд надад "ЭЗЭНий өргөө рүү явцгаая" гэхэд".
+    const firstStanzaText = ps1.stanzas![0].join(' ')
+    expect(firstStanzaText).toContain('ЭЗЭНий өргөө рүү явцгаая')
   })
 })

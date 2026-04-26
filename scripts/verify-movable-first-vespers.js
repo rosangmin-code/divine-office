@@ -29,6 +29,24 @@ const EXTRACTED_PATH = path.join(ROOT, 'scripts', 'output', 'solemnity-first-ves
 const PROPERS_DIR = path.join(ROOT, 'src', 'data', 'loth', 'propers')
 const EASTER_PATH = path.join(PROPERS_DIR, 'easter.json')
 const OT_PATH = path.join(PROPERS_DIR, 'ordinary-time.json')
+const VERSED_MAP_PATH = path.join(ROOT, 'parsed_data', 'first-vespers-versed-map.json')
+
+// FR-156 Phase 5 — bare↔versed normalization, see verify-first-vespers.js.
+// Pentecost (easter weeks.pentecost) has Psalm 113 → Psalm 113:1-9 in
+// the versed-map; the rewrite tool already updates that cell.
+function loadVersedRefMap() {
+  if (!fs.existsSync(VERSED_MAP_PATH)) return new Map()
+  const raw = JSON.parse(fs.readFileSync(VERSED_MAP_PATH, 'utf8'))
+  const m = new Map()
+  for (const [currentRef, entry] of Object.entries(raw)) {
+    if (entry.rewrite_needed) m.set(currentRef, entry.versed)
+  }
+  return m
+}
+const VERSED_REF_MAP = loadVersedRefMap()
+function normalizeRef(ref) {
+  return VERSED_REF_MAP.get(ref) ?? ref
+}
 
 const TARGET_SLUGS = [
   ['ascension',     'easter'],
@@ -73,7 +91,13 @@ function diff(expected, actual, pathPrefix) {
     return issues
   }
   if (expected === null || typeof expected !== 'object') {
-    if (expected !== actual) {
+    let exp = expected
+    let act = actual
+    if (pathPrefix.endsWith('.ref')) {
+      if (typeof exp === 'string') exp = normalizeRef(exp)
+      if (typeof act === 'string') act = normalizeRef(act)
+    }
+    if (exp !== act) {
       issues.push({ path: pathPrefix, type: 'value-mismatch', expected, actual })
     }
     return issues
