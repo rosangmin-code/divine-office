@@ -117,6 +117,16 @@ export const DATES = {
   // mis-tagged role=refrain by detectRefrainLines threshold over-fire.
   // After the denylist gate, no line should carry .text-red-700.
   easterW4Sunday: '2026-04-26',
+  // FR-160-A1 (task #103, A2 input boost) — Psalm 29:1-10 anaphoric
+  // verse-opening false-positive guard. 2026-01-12 is "Monday of the
+  // 1st week of Ordinary Time" with psalterWeek=1; Lauds psalmody[2] =
+  // Psalm 29:1-10 per psalter/week-1.json. Note: weekOfSeason and
+  // psalterWeek diverge — romcal's "Nth week" label tracks the start
+  // of OT after Baptism of the Lord, while psalter week cycles 1..4.
+  // The standalone 'ЭЗЭНий дуу хоолой' verse-opening (theophany
+  // anaphora, 3 reps) was tagged role=refrain by threshold=3 boundary
+  // fire. Source: divine-researcher #104 FR-160-A2 gold dataset, p.81.
+  psalterW1Monday: '2026-01-12',
   // Lent / Advent weekday representatives for cross-season fallback guard.
   // Lent Week 2 Tuesday (2026-03-03) and Advent Week 2 Wednesday
   // (2025-12-10) both repeat their respective wk1 weekday formularies

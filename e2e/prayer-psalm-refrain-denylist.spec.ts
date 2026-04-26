@@ -48,4 +48,28 @@ test.describe('Refrain denylist false-positive cleanup (FR-160-A1)', () => {
     const refrains = page.locator('[data-role="psalm-stanza-refrain"]')
     expect(await refrains.count()).toBeGreaterThanOrEqual(3)
   })
+
+  // @fr FR-160
+  // A2 input boost — Psalm 29:1-10 anaphoric verse-opening false-positive
+  // (3-rep 'ЭЗЭНий дуу хоолой', boundary-threshold fire). 2026-01-19 OT
+  // Wk1 Monday Lauds psalmody[2] = Psalm 29:1-10 per psalter/week-1.json.
+  // After the denylist gate, no role=refrain line within the Psalm 29
+  // block.
+  test('Psalm 29:1-10 stanza has 0 role=refrain lines (psalterWeek 1 MON Lauds)', async ({ page }) => {
+    await page.goto(`/pray/${DATES.psalterW1Monday}/lauds`)
+    const ps29 = page.locator('section[aria-label="Psalm 29:1-10"]')
+    await expect(ps29).toBeVisible()
+    const refrains = ps29.locator('[data-role="psalm-stanza-refrain"]')
+    expect(await refrains.count()).toBe(0)
+  })
+
+  // @fr FR-160
+  test('Psalm 29:1-10 stanza body has no rubric red span', async ({ page }) => {
+    await page.goto(`/pray/${DATES.psalterW1Monday}/lauds`)
+    const ps29 = page.locator('section[aria-label="Psalm 29:1-10"]')
+    const redInsideStanza = ps29.locator(
+      '[data-role="psalm-stanza"] .text-red-700, [data-role="psalm-stanza"] .text-red-400',
+    )
+    expect(await redInsideStanza.count()).toBe(0)
+  })
 })

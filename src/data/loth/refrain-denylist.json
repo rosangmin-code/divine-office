@@ -6,6 +6,12 @@
       "reason": "PDF 원문 'Түүнийг магтагтун!' 6 reps 가 모두 검정색(verse-ending) 으로 렌더 — rubric red 아님. detectRefrainLines threshold=3 over-fire 로 false-positive role=refrain 부여 → UI 에서 빨간글씨 혼입.",
       "evidence_pdf": "Four-Week psalter.- 2025.pdf, Week 4 SUN Lauds Psalmody Psalm 150:1-6 stanza body. 'Түүнийг магтагтун!' (verse 1·2·3·4·5·6 의 verse-ending 반복) 모두 검정 본문 색상.",
       "classified_at": "2026-04-26"
+    },
+    {
+      "ref": "Psalm 29:1-10",
+      "reason": "PDF 원문 'ЭЗЭНий дуу хоолой' 3 reps 는 anaphoric verse-opening (theophany verse start vv 3-9) 으로, 매 line 이 새로운 content 를 도입하는 verse 첫머리 고정구이지 회중 응답 refrain 이 아님. detectRefrainLines threshold=3 boundary 도달 로 false-positive role=refrain 부여 → 본문이 빨간글씨로 노출.",
+      "evidence_pdf": "Four-Week psalter.- 2025.pdf p.81 line 2560+, Week 1 MON Lauds Psalmody Psalm 29:1-10 stanza body 'ЭЗЭНий дуу хоолой ...' (각 verse 의 영현(theophany) 도입) 모두 검정 본문 색상. (FR-160-A2 137 refs gold dataset 회신, divine-researcher #104).",
+      "classified_at": "2026-04-26"
     }
   ]
 }

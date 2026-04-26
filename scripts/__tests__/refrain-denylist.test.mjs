@@ -28,6 +28,32 @@ const PSALM_150_STANZAS = [
   ['Эгшиглэнт цангалаар', 'Түүнийг магтагтун!', 'Цангинасан цангалаар', 'Түүнийг магтагтун!'],
 ]
 
+// PDF p.81 Psalm 29:1-10 — anaphoric verse-opening "ЭЗЭНий дуу хоолой"
+// is rendered (post column-split) as a STANDALONE LINE 3 times across
+// stanzas, with the verse continuation following on the next line.
+// Each occurrence introduces fresh theophany content, NOT a rubric
+// refrain. PDF body color is plain black throughout. detectRefrainLines
+// threshold=3 fires at exactly the boundary value.
+// Source: divine-researcher #104 FR-160-A2 137 refs gold dataset.
+// Mirrors the canonical psalter-texts.json entry structure.
+const PSALM_29_STANZAS = [
+  [
+    '  Тэнгэрлэг биес ээ,',
+    '  ЭЗЭНийг өргөмжлөгтүн!',
+    '  Алдар хийгээд хүч чадлаар нь',
+    '  ЭЗЭНийг өргөмжлөгтүн!',
+    'ЭЗЭНий дуу хоолой',
+    '  Усан дээгүүр байх ажээ.',
+  ],
+  [
+    'Тэрээр оодгонуулдаг билээ.',
+    'ЭЗЭНий дуу хоолой',
+    'Галын дөлийг салгадаг.',
+    'ЭЗЭНий дуу хоолой',
+    'Цөл газрыг чичрүүлдэг.',
+  ],
+]
+
 // Daniel 3-style canticle with a clear authentic refrain ("Эзэнийг магтагтун")
 // repeated ≥3x — must remain detected when ref is NOT denylisted.
 const DAN3_LIKE_STANZAS = [
@@ -68,12 +94,30 @@ describe('FR-160-A1 detectRefrainLines denylist consult', () => {
   })
 
   it('preserves authentic refrain detection on non-denylisted refs (Daniel 3-like)', () => {
-    const denylist = new Set(['Psalm 150:1-6'])
+    const denylist = new Set(['Psalm 150:1-6', 'Psalm 29:1-10'])
     const refrains = detectRefrainLines(DAN3_LIKE_STANZAS, {
       ref: 'Daniel 3:57-88',
       denylist,
     })
     expect(refrains.has('Эзэнийг магтагтун')).toBe(true)
+  })
+
+  it('blocks anaphoric verse-opening false-positive (Psalm 29:1-10 from A2 gold dataset)', () => {
+    // 'ЭЗЭНий дуу хоолой' 3 reps — anaphora, not a refrain. Pre-FR-160
+    // would tag all 3 as role=refrain; with denylist consult, none.
+    const denylist = new Set(['Psalm 150:1-6', 'Psalm 29:1-10'])
+    const refrains = detectRefrainLines(PSALM_29_STANZAS, {
+      ref: 'Psalm 29:1-10',
+      denylist,
+    })
+    expect(refrains.size).toBe(0)
+  })
+
+  it('threshold-based detection still fires on Psalm 29 anaphora when ref not denylisted', () => {
+    // Pre-FR-160 baseline reproduction — proves the input genuinely
+    // triggers threshold over-fire, so the denylist is doing real work.
+    const refrains = detectRefrainLines(PSALM_29_STANZAS)
+    expect(refrains.has('ЭЗЭНий дуу хоолой')).toBe(true)
   })
 
   it('threshold-based detection unchanged when ref/denylist not supplied (backward compat)', () => {
