@@ -229,6 +229,14 @@ export interface HourPropers {
   concludingPrayerRich?: PrayerText
   alternativeConcludingPrayerRich?: PrayerText
   hymnRich?: PrayerText
+
+  // FR-160-B: inline rubric directives. Both arrays are additive — the
+  // Layer 4.5 hydrate step evaluates them against runtime context and
+  // mutates the surrounding fields (skip/substitute/prepend/append for
+  // conditional, ordinarium body inlining for redirect). Empty arrays
+  // and `undefined` are equivalent (noop).
+  conditionalRubrics?: ConditionalRubric[]
+  pageRedirects?: PageRedirect[]
 }
 
 export interface HymnCandidate {
@@ -347,6 +355,111 @@ export interface CelebrationOption {
 export interface CelebrationOptionsResult {
   date: string
   options: CelebrationOption[]
+}
+
+// FR-160-B — Inline conditional + page-redirect rubric data model
+// (PR-1: schema + types + Zod + Layer 4.5 hydrate). Two new sibling
+// fields land on `HourPropers` outside the existing PrayerText AST
+// because semantics (when/action/redirect) differ from presentation
+// (rubric span). Layer 4 of `assembleHour` merges these alongside
+// rich overlays; Layer 4.5 hydrates them against runtime context
+// (season/dayOfWeek/dateStr/hour) and the ordinarium catalog.
+
+export type ConditionalRubricAction = 'skip' | 'substitute' | 'prepend' | 'append'
+
+export type ConditionalRubricSection =
+  | 'invitatory'
+  | 'openingVersicle'
+  | 'hymn'
+  | 'psalmody'
+  | 'shortReading'
+  | 'responsory'
+  | 'gospelCanticle'
+  | 'intercessions'
+  | 'concludingPrayer'
+  | 'dismissal'
+
+export interface ConditionalRubricLocator {
+  section: ConditionalRubricSection
+  /** Optional ordinal — e.g. psalmody[1] = the second psalm */
+  index?: number
+}
+
+export interface ConditionalRubricWhen {
+  season?: LiturgicalSeason[]
+  dayOfWeek?: DayOfWeek[]
+  /** Inclusive MM-DD range, both ends required when present */
+  dateRange?: { from: string; to: string }
+  /** Built-in predicates evaluated against HourContext */
+  predicate?: 'isFirstHourOfDay' | 'isVigil' | 'isObligatoryMemorial'
+}
+
+export interface ConditionalRubricTarget {
+  /** Bible/canticle ref that the directive points to (e.g. "Psalm 95:1-11") */
+  ref?: string
+  /** Inline plain text */
+  text?: string
+  /** Inline rich AST (rare) */
+  textRich?: PrayerText
+  /** Closed-enum lookup into the ordinarium catalog */
+  ordinariumKey?: PageRedirectOrdinariumKey
+}
+
+export interface ConditionalRubricEvidencePdf {
+  page: number
+  line?: number
+  text: string
+}
+
+export interface ConditionalRubric {
+  /** Unique identifier — stable across rebuilds (e.g. "easter-sun-lauds-skip-ps2") */
+  rubricId: string
+  when: ConditionalRubricWhen
+  action: ConditionalRubricAction
+  /** Mandatory for non-skip actions (validated by Zod refinement) */
+  target?: ConditionalRubricTarget
+  appliesTo: ConditionalRubricLocator
+  evidencePdf: ConditionalRubricEvidencePdf
+  /** GILH § / liturgical reference */
+  liturgicalBasis?: string
+}
+
+/**
+ * Closed enum of ordinarium catalog keys. Adding a new key is a schema
+ * change and requires updating both Zod + the ordinarium-key-catalog
+ * JSON in the same PR.
+ */
+export type PageRedirectOrdinariumKey =
+  | 'benedictus'
+  | 'magnificat'
+  | 'nunc-dimittis'
+  | 'dismissal-blessing'
+  | 'compline-responsory'
+  | 'common-prayers'
+  | 'gloria-patri'
+  | 'invitatory-psalms'
+  | 'hymns'
+
+export type PageRedirectSection =
+  | 'invitatory'
+  | 'hymn'
+  | 'psalmody'
+  | 'shortReading'
+  | 'responsory'
+  | 'gospelCanticle'
+  | 'intercessions'
+  | 'concludingPrayer'
+  | 'dismissal'
+
+export interface PageRedirect {
+  redirectId: string
+  ordinariumKey: PageRedirectOrdinariumKey
+  /** PDF page (1..969 — outside the printed book is rejected at parse time) */
+  page: number
+  /** PDF label as printed (e.g. "Магтуу: х. 879") */
+  label: string
+  appliesAt: PageRedirectSection
+  evidencePdf: ConditionalRubricEvidencePdf
 }
 
 // FR-160-C — psalm-header preface (rubric red metadata above the psalm
