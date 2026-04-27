@@ -7,14 +7,60 @@
       "gospelCanticleAntiphon": "Би бол амилалт ба амь мөн. Надад итгэдэг нь үхэвч амилна. Надад амьдрагч хийгээд итгэгч бүхэн хэзээ ч үхэхгүй.",
       "concludingPrayer": "Аяа, Эзэн минь, Та бидний даатгал залбирлыг сонсоно уу. Та Амин ганц Хүүгээ үхлээс амилуулснаараа бидэнд итгэл бишрэлийг хайрласан билээ. Н. бидний ах (эгч) Түүний амилалтын хувь заяаг эдлэх болно гэсэн найдварыг маань Та бэхжүүлнэ үү.",
       "concludingPrayerPage": 852,
-      "gospelCanticleAntiphonPage": 850
+      "gospelCanticleAntiphonPage": 850,
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-memorial-11-02-all-souls-lauds-sunday-substitute",
+          "when": {
+            "dayOfWeek": [
+              "SUN"
+            ]
+          },
+          "action": "substitute",
+          "target": {
+            "text": "Хэрэв “11 дүгээр сарын 2” гэсэн Дурсахуй Ням гарагт таарвал Хамаг итгэлт талийгаач бологсдын төлөөх мөргөлийг үйлдэх ч гэсэн Талийгаач бологсдын төлөөх хурлыг үл уншина. Хурлын даатгал залбирлуудыг энэ номын “Дөрвөн долоо хоног” гэсэн хэсэг дээр тохиож буй зөв Ням гарагаас татаж авна."
+          },
+          "appliesTo": {
+            "section": "psalmody"
+          },
+          "evidencePdf": {
+            "page": 839,
+            "line": 28459,
+            "text": "бологсдын төлөөх хурлыг үл уншина."
+          },
+          "liturgicalBasis": "11-02 All Souls' Day Lauds: when falling on Sunday, the Office for the Dead is NOT read; the day's prayers are taken from the 4-week psalter at the appropriate Sunday. Attached to lauds cell for runtime evaluation."
+        }
+      ]
     },
     "vespers": {
       "gospelCanticleAntiphon": "Эцэг үхэгсдийг босгон, тэдэнд амь өдөгчлөн, Хүү нь бас Өөрийн хүссэн хүнд амь өгдөг.",
       "concludingPrayer": "Аяа, Эзэн минь, Та бидний даатгал залбирлыг сонсоно уу. Та Амин ганц Хүүгээ үхлээс амилуулснаараа бидэнд итгэл бишрэлийг хайрласан билээ. Н. бидний ах (эгч) Түүний амилалтын хувь заяаг эдлэх болно гэсэн найдварыг маань Та бэхжүүлнэ үү.",
       "alternativeConcludingPrayer": "Аяа, Тэнгэрбурхан Эцэг минь, Та бол итгэгчдийнхээ алдар нь болоод шударга хүмүүсийн амьдрал нь билээ. Таны Хүү үхлээрээ болон амилалтаараа биднийг цагааттасан. Та зардас Н.-ийг Өөртөө дуудсан бөгөөд тэр Танд бат итгэж, найдаж байсан тул түүнийг Та тэнгэрийн орон рууга удирдан залж, мөнхийн баяр баясгаланг эдлүүлнэ үү хэмээн Танаас бид түүний төлөө залбиран гүйж байна.",
       "concludingPrayerPage": 852,
-      "gospelCanticleAntiphonPage": 856
+      "gospelCanticleAntiphonPage": 856,
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-memorial-11-02-all-souls-vespers-sunday-substitute",
+          "when": {
+            "dayOfWeek": [
+              "SUN"
+            ]
+          },
+          "action": "substitute",
+          "target": {
+            "text": "Хэрэв “11 дүгээр сарын 2” гэсэн Дурсахуй Ням гарагт таарвал Хамаг итгэлт талийгаач бологсдын төлөөх мөргөлийг үйлдэх ч гэсэн Талийгаач бологсдын төлөөх хурлыг үл уншина. Хурлын даатгал залбирлуудыг энэ номын “Дөрвөн долоо хоног” гэсэн хэсэг дээр тохиож буй зөв Ням гарагаас татаж авна."
+          },
+          "appliesTo": {
+            "section": "psalmody"
+          },
+          "evidencePdf": {
+            "page": 839,
+            "line": 28459,
+            "text": "бологсдын төлөөх хурлыг үл уншина."
+          },
+          "liturgicalBasis": "11-02 All Souls' Day Vespers: same Sunday-skip rubric as lauds (PDF rubric applies to whole day)."
+        }
+      ]
     }
   },
   "deceased": {

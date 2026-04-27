@@ -13,7 +13,21 @@
       "alleluiaConditional": true,
       "concludingPrayer": "Аяа, Эцэг минь, Та бидний Аврагчийг Гэгээн Иосефийн халамжид даатгасан тул түүний залбирлын тус дэмээр Таны Шашин Есүс Христ Эзэндээ үргэлжлүүлэн үйлчлэх болтугай.",
       "concludingPrayerPage": 823,
-      "gospelCanticleAntiphonPage": 823
+      "gospelCanticleAntiphonPage": 823,
+      "pageRedirects": [
+        {
+          "redirectId": "sanctoral-solemnity-03-19-st-joseph-lauds-invitatory",
+          "ordinariumKey": "invitatory-psalms",
+          "page": 28,
+          "label": "Урих дуудлагын дуулал: х. 28",
+          "appliesAt": "invitatory",
+          "evidencePdf": {
+            "page": 823,
+            "line": 28015,
+            "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+          }
+        }
+      ]
     },
     "vespers2": {
       "gospelCanticleAntiphon": "Есүс гучаад настай байхдаа Өөрийн үйлчлэлийг эхэлсэн бөгөөд хүмүүсийн боддогоор, Тэр бол Иосефийн хүү байв.",
@@ -44,7 +58,21 @@
       "alleluiaConditional": true,
       "concludingPrayer": "Аяа, Тэнгэрбурхан Эцэг минь, Таны Үг бие махбод болж, Цэвэр Охин Мариагаас мэндэлсэн тул бид Есүс Христ лугаа улам илүү адил болох болтугай. Учир нь Түүнийг бид үнэн Тэнгэрбурхан, үнэн хүн болсон хүмүүний цагааттагч хэмээн хүлээн зөвшөөрдөг.",
       "concludingPrayerPage": 825,
-      "gospelCanticleAntiphonPage": 825
+      "gospelCanticleAntiphonPage": 825,
+      "pageRedirects": [
+        {
+          "redirectId": "sanctoral-solemnity-03-25-annunciation-lauds-invitatory",
+          "ordinariumKey": "invitatory-psalms",
+          "page": 28,
+          "label": "Урих дуудлагын дуулал: х. 28",
+          "appliesAt": "invitatory",
+          "evidencePdf": {
+            "page": 825,
+            "line": 28062,
+            "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+          }
+        }
+      ]
     },
     "vespers2": {
       "gospelCanticleAntiphon": "Габриел тэнгэрэлч Мариад хандан \"Амар амгалан Мариа минь ээ, Та хишиг ивээлээр бялхам билээ. Эзэн Тантай хамт байна. Таныг эмэгтэйчүүдийн дундаас адисалсан билээ\" хэмээн айлдсан.",
@@ -73,7 +101,21 @@
       "gospelCanticleAntiphon": "Захариагийн ам нь нээгдэн, \"Израилийн Тэнгэрбурхан Эзэн магтагдах болтугай\" хэмээн эш үзүүлэв.",
       "concludingPrayer": "Аяа, Тэнгэрбурхан Эцэг минь, Та Эзэн Христэд зориулж төгс хүмүүсийг бэлдэхийн тулд Баптисм хүртээгч Иоханыг өргөсөн билээ. Та Өөрийн Шашинд сүнслэг баяр баяслыг хайрлан соёрхож, Танд итгэгчдийг амар амгалан болон Авралын зам мөрөөр удирдана уу.",
       "concludingPrayerPage": 828,
-      "gospelCanticleAntiphonPage": 827
+      "gospelCanticleAntiphonPage": 827,
+      "pageRedirects": [
+        {
+          "redirectId": "sanctoral-solemnity-06-24-baptist-lauds-invitatory",
+          "ordinariumKey": "invitatory-psalms",
+          "page": 28,
+          "label": "Урих дуудлагын дуулал: х. 28",
+          "appliesAt": "invitatory",
+          "evidencePdf": {
+            "page": 827,
+            "line": 28123,
+            "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+          }
+        }
+      ]
     },
     "vespers2": {
       "gospelCanticleAntiphon": "Бидний төлөө мэндэлсэн энэ хүүхэд аливаа нэгэн эш үзүүлэгчээс илүү агуу юм. Түүний тухай Аврагч ийн хэлсэн: \"Эмэгтэйгээс төрөгсдийн дунд Баптисм хүртээгч Иоханаас илүү нэгэн байгаагүй\".",
@@ -101,7 +143,21 @@
       "gospelCanticleAntiphon": "Симон Петр Түүнд: \"Эзэн, бид хэн рүү явах юм бэ? Мөнх амийн үгс Танд байна. Та бол Тэнгэрбурханы Хүү, Христ мөн гэдэгт бид итгэцгээсэн, мөн таньж мэдэцгээсэн\". Аллэлуяа!",
       "concludingPrayer": "Аяа. Тэнгэрбурхан Эцэг минь, өнөөдөр Петр, Паул элч нарын их баярыг тэмдэглэлцэж Та бидний байсган чигнүүлж байгаа билээ. Тэр хоёроор дамжуулан Таны Шашин анх итгэл бишрэлийг хүлээн авсан тул тэдний номлол сургаалд үнэнч байхад бидэнд тусална уу.",
       "concludingPrayerPage": 830,
-      "gospelCanticleAntiphonPage": 830
+      "gospelCanticleAntiphonPage": 830,
+      "pageRedirects": [
+        {
+          "redirectId": "sanctoral-solemnity-06-29-peter-paul-lauds-invitatory",
+          "ordinariumKey": "invitatory-psalms",
+          "page": 28,
+          "label": "Урих дуудлагын дуулал: х. 28",
+          "appliesAt": "invitatory",
+          "evidencePdf": {
+            "page": 829,
+            "line": 28189,
+            "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+          }
+        }
+      ]
     },
     "vespers2": {
       "gospelCanticleAntiphon": "Аяа Эзэн минь, Элч Петр, харь үндэстний багш Паул тэр хоёр бээр Таны хуулийг бидэнд заан сургасан билээ.",
@@ -128,7 +184,21 @@
       "gospelCanticleAntiphon": "Үүр цайх үед мандаж буй нар мэт тэнгэрт залагдаж буй Йерусалимын энэ охин юутай гоо үзэсгэлэнтэй вэ!",
       "concludingPrayer": "Аяа, төгс хүчит мөнхийн Тэнгэрбурхан минь, Гэм Нүгэлгүй Цэвэр Охин Мариа болох Хүүгийнхээ Эхийг Та бие ба сүнсээр тэнгэрлэг сүр жавхланд өргөмжилсөн тул эрхэм дээд бүхэнд бид тэмүүлэхдээ түүний сүр жавхланг зохист хуваалцагчид болохыг Та болгоон соёрхоно уу.",
       "concludingPrayerPage": 834,
-      "gospelCanticleAntiphonPage": 834
+      "gospelCanticleAntiphonPage": 834,
+      "pageRedirects": [
+        {
+          "redirectId": "sanctoral-solemnity-08-15-assumption-lauds-invitatory",
+          "ordinariumKey": "invitatory-psalms",
+          "page": 28,
+          "label": "Урих дуудлагын дуулал: х. 28",
+          "appliesAt": "invitatory",
+          "evidencePdf": {
+            "page": 833,
+            "line": 28309,
+            "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+          }
+        }
+      ]
     },
     "vespers2": {
       "gospelCanticleAntiphon": "Өнөөдөр Цэвэр Охин Мариа тэнгэрт залагдсан. Түүнийг Христтэй хамт үүрд мөнх хаанчлахын нь төлөө баярлацгааа.",
@@ -156,7 +226,21 @@
       "gospelCanticleAntiphon": "Гэгээнтнүүд Эцэгийнхээ хаанчлалд нар мэт гийх болно. Аллэлуяа!",
       "concludingPrayer": "Аяа, төгс хүчит мөнхийн Тэнгэрбурхан минь, өнөөдөр бид бүх цаг үе болон газар газрын гэгээн эрэгтэй, эмэгтэйчүүдийг хүндэтгэн бишрэч байгаа тул тэдний залбирал бидэнд Таны хайр энэрэл болон ууч уучлал өршөөлийг хүртээх болтугай.",
       "concludingPrayerPage": 837,
-      "gospelCanticleAntiphonPage": 837
+      "gospelCanticleAntiphonPage": 837,
+      "pageRedirects": [
+        {
+          "redirectId": "sanctoral-solemnity-11-01-all-saints-lauds-invitatory",
+          "ordinariumKey": "invitatory-psalms",
+          "page": 28,
+          "label": "Урих дуудлагын дуулал: х. 28",
+          "appliesAt": "invitatory",
+          "evidencePdf": {
+            "page": 837,
+            "line": 28417,
+            "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+          }
+        }
+      ]
     },
     "vespers2": {
       "gospelCanticleAntiphon": "Хамаг гэгээнтнүүд Христтэй хамт баяса цэнгдэг хаанчлал хэчнээн сүр жавхлантай вэ! Цагаан хувцас өмсөн тэд Хүргийг хаана ч явсан дагадаг.",

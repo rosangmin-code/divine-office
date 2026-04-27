@@ -11,7 +11,21 @@
       "gospelCanticleAntiphon": "Эцэг эх нь Түүнийг Өргөө сүмд авчрах үед Симеон, Есүсийг гар дээрээ авч, Тэнгэрбурханыг магтав.",
       "concludingPrayer": "Аяа, төгс хүчит Эцэг минь, хүмүүн бидний төлөө бие махбодыг олсон Таны Хүү Есүс Христийг өргөө сүмд өргөж байсан тул Тэр бидний зүрх сэтгэлийг гэм нүглээс чөлөөлж, Таны оршихуйд аваачив болтугай.",
       "gospelCanticleAntiphonPage": 821,
-      "concludingPrayerPage": 821
+      "concludingPrayerPage": 821,
+      "pageRedirects": [
+        {
+          "redirectId": "sanctoral-feast-02-02-presentation-lauds-invitatory",
+          "ordinariumKey": "invitatory-psalms",
+          "page": 28,
+          "label": "Урих дуудлагын дуулал: х. 28",
+          "appliesAt": "invitatory",
+          "evidencePdf": {
+            "page": 821,
+            "line": 27964,
+            "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+          }
+        }
+      ]
     },
     "vespers2": {
       "gospelCanticleAntiphon": "Өнөөдөр төгс жаргалт Цэвэр Охин Мариа Нялх Есүсийг Өргөө сүмд өргөсөн бөгөөд Ариун Сүнсэнд хөтлөгдөн ирсэн Симон Түүнийг гар дээрээ авч, Тэнгэрбурханыг магтав.",
@@ -23,7 +37,30 @@
       "gospelCanticleAntiphon": "Хөгшин хүн бяцхан хүүг тэвэрч авсан боловч хүүхэд нь хөгшин хүний Эзэн байв. Цэвэр ариун эмэгтэй хүүхэд төрүүлсэн боловч одоо ч үүрд цэвэр ариун хэвээрээ үлдсэн. Тэр хүүхдийнхээ өмнө өвдөг сөгдөн мөргөв.",
       "concludingPrayer": "Аяа, төгс хүчит Эцэг минь, хүмүүн бидний төлөө бие махбодыг олсон Таны Хүү Есүс Христийг өргөө сүмд өргөж байсан тул Тэр бидний зүрх сэтгэлийг гэм нүглээс чөлөөлж, Таны оршихуйд Гэгээнтнүүдийн Онцлог шинж аваачих болтугай. Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан Есүс Христ бидний Эзэн, Таны Хүүгээр уламжлан тийн болтугай. 2 дугаар Оройн даатгал залбирал Мариагийн магтаал Шад магтаал Өнөөдөр төгс жаргалт Цэвэр Охин Мариа Нялх Есүсийг Өргөө сүмд өргөсөн бөгөөд Ариун Сүнсэнд хөтлөгдөн ирсэн Симон Түүнийг гар дээрээ авч, Тэнгэрбурханыг магтав. Гэгээнтнүүдийн Онцлог шинж 3 дугаар сарын 19 ИОСЕФ ГЭГЭЭНТЭН ТӨГС ЖАРГАЛТ ЦЭВЭР ОХИН МАРИАГИЙН НӨХӨР Их баяр",
       "concludingPrayerPage": 821,
-      "gospelCanticleAntiphonPage": 821
+      "gospelCanticleAntiphonPage": 821,
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-feast-02-02-presentation-firstvespers-sunday",
+          "when": {
+            "dayOfWeek": [
+              "SUN"
+            ]
+          },
+          "action": "substitute",
+          "target": {
+            "text": "Хэрэв энэ баяр Ням гарагт таарвал 1 дүгээр Оройн даатгал залбирал уншина."
+          },
+          "appliesTo": {
+            "section": "hymn"
+          },
+          "evidencePdf": {
+            "page": 821,
+            "line": 27950,
+            "text": "Хэрэв энэ баяр Ням гарагт таарвал 1 дүгээр"
+          },
+          "liturgicalBasis": "FEAST rank: 02-02 (Presentation) firstVespers is conditionally read only on Sunday. Attached to firstVespers cell so runtime applyConditionalRubrics evaluates this rubric when sanctoral[firstVespers] is merged (loth-service.ts Layer 4.5)."
+        }
+      ]
     }
   },
   "08-06": {
@@ -39,7 +76,21 @@
       "gospelCanticleAntiphon": "Үүлнээс: \"Энэ бол Миний хайрт Хүү, Таалал минь Түүнд оршдог. Түүнийг сонсогтун!\" гэх дуун гарав.",
       "concludingPrayer": "Аяа, Тэнгэрбурхан Эцэг минь, Та амин ганц Хүүгийнхээ жавхлант хувиралгалтаар Эшгүүдийг гэрчлэлээр итгэл бишрэлийн далд нууцыг бататтасан бөгөөд Өөрийн охид хөвгүүдийн урчлэлтийг ер бусаар зөгнөн бэлгэдсэн билээ.",
       "concludingPrayerPage": 831,
-      "gospelCanticleAntiphonPage": 831
+      "gospelCanticleAntiphonPage": 831,
+      "pageRedirects": [
+        {
+          "redirectId": "sanctoral-feast-08-06-transfiguration-lauds-invitatory",
+          "ordinariumKey": "invitatory-psalms",
+          "page": 28,
+          "label": "Урих дуудлагын дуулал: х. 28",
+          "appliesAt": "invitatory",
+          "evidencePdf": {
+            "page": 831,
+            "line": 28244,
+            "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+          }
+        }
+      ]
     },
     "vespers2": {
       "gospelCanticleAntiphon": "Шавь нар нь үүлнээс гарсан дуу сонсоод нүүрээрээ унаж, ихэд айв. Есүс ирж, тэдэнд гар хүрээд \"Бос, бүү ай\" гэлээ.",
@@ -50,7 +101,30 @@
       "gospelCanticleAntiphon": "Христ Есүс, Та бол Эцэгийн цог жавхаа бөгөөд Түүний бодгаль ахуйн төгс дүр төрх юм. Та бүхий л бүтээлийг хүчирхэг үгсээрээ тэтгэдэг бөгөөд биднийг бүх гэм нүглээс минь ангижруулдаг. Энэ өдөр Та өндөр ууланд сүр жавхлангаар өргөмжлөгдсөн билээ.",
       "concludingPrayer": "Аяа, Тэнгэрбурхан Эцэг минь, Та амин ганц Хүүгийнхээ жавхлант хувиралгалтаар Эцгүүдийг гэрчлэлээр итгэл бишрэлийн далд нууцыг бататгасан бөгөөд Өөрийн охид хөвгүүдийн үрчлэлтийг ер бусаар зөгнөн бэлгэдсэн билээ. Гэгээнтнүүдийн Онцлог шинж Бид Таны хүүгийн дууг сонсохдоо Түүний хамтаар мөнхийн амьдралын өвийг залгамжлагчид болохыг Та бидэнд болгоон соёрхоно уу. Тэрээр Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг цорын ганц Тэнгэрбурхан билээ. 2 дугаар Оройн даатгал залбирал Мариагийн магтаал Шад магтаал Шавь нар үүлнээс гарсан дууг сонсоод нүүрээрээ унаж, ихэд айв. Есүс ирж, тэдэнд гар хүрээд “Бос, бүү ай” гэлээ. Гэгээнтнүүдийн Онцлог шинж 8 дугаар сарын 15 ТӨГС ЖАРГАЛТ ЦЭВЭР ОХИН МАРИА ТЭНГЭРТ ЗАЛАГДСАН ӨДӨР Их Баяр",
       "concludingPrayerPage": 831,
-      "gospelCanticleAntiphonPage": 831
+      "gospelCanticleAntiphonPage": 831,
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-feast-08-06-transfiguration-firstvespers-sunday",
+          "when": {
+            "dayOfWeek": [
+              "SUN"
+            ]
+          },
+          "action": "substitute",
+          "target": {
+            "text": "(Хэрэв энэ баяр Ням гарагт таарвал)"
+          },
+          "appliesTo": {
+            "section": "hymn"
+          },
+          "evidencePdf": {
+            "page": 831,
+            "line": 28232,
+            "text": "(Хэрэв энэ баяр Ням гарагт таарвал)"
+          },
+          "liturgicalBasis": "FEAST rank — 08-06 (Transfiguration) firstVespers conditionally read on Sunday only. Attached to firstVespers cell for runtime evaluation."
+        }
+      ]
     }
   },
   "09-14": {
@@ -66,7 +140,21 @@
       "gospelCanticleAntiphon": "Аяа Эзэн минь, загалмайн мод дэлхий ертөнцөд баяр хөөрийг авчирсан тул бид Таны загалмайд мөргөж, Таны ариун амилалтыг магтан, алдаршуулж байна.",
       "concludingPrayer": "Аяа, Тэнгэрбурхан Эцэг минь, хүн төрөлхтний авралын төлөө Амин ганц Хүүгээ загалмайн үхлээс Та ул татгалзуулсан тул газар дэлхий дэх түүний далд нууцыг танин мэдэхдээ бид тэнгэр дэх Түүний цагааттгалын хишгийг хүртэхийг Та болгоон соёрхоно уу.",
       "concludingPrayerPage": 835,
-      "gospelCanticleAntiphonPage": 835
+      "gospelCanticleAntiphonPage": 835,
+      "pageRedirects": [
+        {
+          "redirectId": "sanctoral-feast-09-14-holy-cross-lauds-invitatory",
+          "ordinariumKey": "invitatory-psalms",
+          "page": 28,
+          "label": "Урих дуудлагын дуулал: х. 28",
+          "appliesAt": "invitatory",
+          "evidencePdf": {
+            "page": 835,
+            "line": 28362,
+            "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+          }
+        }
+      ]
     },
     "vespers2": {
       "gospelCanticleAntiphon": "Аяа загалмай, Та бол бидний ялалтын сүр жавхлант тэмдэг юм. Таны ид хүчээр дамжуулан бид Христ Есүсийн ялалтад оролцож, хуваалцах болтугай.",
@@ -78,7 +166,30 @@
       "gospelCanticleAntiphon": "Христ зовлонг эдлэн, тэгээд гурав дахь хоногтоо үхлээс амилах ёстой хэмээн бичигдсэн байжээ",
       "concludingPrayer": "Аяа, Тэнгэрбурхан Эцэг минь, хүн төрөлхтний авралын төлөө Амин ганц Хүүгээ загалмайн үхлээс Та үл татгалзуулсан тул газар дэлхий дэх түүний далд нууцыг танин мэдэхдээ бид тэнгэр дэх Түүний цагаатгалын хишгийг хүртэхийг Та болгоон соёрхоно уу. Гэгээнтнүүдийн Онцлог шинж Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан Есүс Христ бидний Эзэн, Таны Хүүгээр уламжлан тийн болтугай. 2 дугаар Оройн даатгал залбирал Мариагийн магтаал Шад магтаал Аяа загалмай, Та бол бидний ялалтын сүр жавхлант тэмдэг юм. Таны ид хүчээр дамжуулан бид Христ Есүсийн ялалтад оролцож, хуваалцах болтугай. Гэгээнтнүүдийн Онцлог шинж 11 дүгээр сарын 1 ХАМАГ ГЭГЭЭНТНҮҮД Их баяр",
       "concludingPrayerPage": 835,
-      "gospelCanticleAntiphonPage": 835
+      "gospelCanticleAntiphonPage": 835,
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-feast-09-14-holy-cross-firstvespers-sunday",
+          "when": {
+            "dayOfWeek": [
+              "SUN"
+            ]
+          },
+          "action": "substitute",
+          "target": {
+            "text": "(Хэрэв энэ баяр Ням гарагт таарвал)"
+          },
+          "appliesTo": {
+            "section": "hymn"
+          },
+          "evidencePdf": {
+            "page": 835,
+            "line": 28353,
+            "text": "(Хэрэв энэ баяр Ням гарагт таарвал)"
+          },
+          "liturgicalBasis": "FEAST rank — 09-14 (Holy Cross) firstVespers conditionally read on Sunday only. Attached to firstVespers cell for runtime evaluation."
+        }
+      ]
     }
   },
   "11-09": {
@@ -98,7 +209,21 @@
       "alternativeConcludingPrayer": "Аяа, Эцэг минь ээ, Та ард түмнээ Өөрийн Шашин болгохоор дуудсан тул Таны нэр алдрын төлөө цугларан ирсэн бид Таныг хайрлан хүндэтгэж, Таны амласан хаанчлал дахь мөнхийн амьдралыг хүртэл Таныг дагах болтугай.",
       "concludingPrayerPage": 840,
       "alternativeConcludingPrayerPage": 841,
-      "gospelCanticleAntiphonPage": 840
+      "gospelCanticleAntiphonPage": 840,
+      "pageRedirects": [
+        {
+          "redirectId": "sanctoral-feast-11-09-lateran-lauds-invitatory",
+          "ordinariumKey": "invitatory-psalms",
+          "page": 28,
+          "label": "Урих дуудлагын дуулал: х. 28",
+          "appliesAt": "invitatory",
+          "evidencePdf": {
+            "page": 840,
+            "line": 28495,
+            "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+          }
+        }
+      ]
     },
     "vespers2": {
       "gospelCanticleAntiphon": "Энэ бол Тэнгэрбурханы оршин байсан өргөө бөгөөд Тэр түүний ариун болгосон юм. Судар дээр \"Тэндээс Та нар намайг олох болно\" гэж байсан тул энд бид Түүний нэрийг дууддаг.",

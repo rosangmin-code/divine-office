@@ -819,6 +819,346 @@
         },
         "liturgicalBasis": "Ordinary Time Week 34 Sunday is replaced by Christ the King solemnity (ordinary-time.json christTheKing.SUN, p.817). Calendar-level substitution: the runtime resolver matches the celebration name to specialKey 'christTheKing' and consults the dedicated solemnity block."
       }
+    },
+    {
+      "id": "sanctoral-solemnity-03-19-st-joseph-lauds-invitatory-redirect",
+      "scope": "sanctoral",
+      "target": {
+        "file": "src/data/loth/sanctoral/solemnities.json",
+        "path": "$.03-19.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "sanctoral-solemnity-03-19-st-joseph-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал: х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 823,
+          "line": 28015,
+          "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+        }
+      }
+    },
+    {
+      "id": "sanctoral-solemnity-03-25-annunciation-lauds-invitatory-redirect",
+      "scope": "sanctoral",
+      "target": {
+        "file": "src/data/loth/sanctoral/solemnities.json",
+        "path": "$.03-25.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "sanctoral-solemnity-03-25-annunciation-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал: х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 825,
+          "line": 28062,
+          "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+        }
+      }
+    },
+    {
+      "id": "sanctoral-solemnity-06-24-baptist-lauds-invitatory-redirect",
+      "scope": "sanctoral",
+      "target": {
+        "file": "src/data/loth/sanctoral/solemnities.json",
+        "path": "$.06-24.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "sanctoral-solemnity-06-24-baptist-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал: х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 827,
+          "line": 28123,
+          "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+        }
+      }
+    },
+    {
+      "id": "sanctoral-solemnity-06-29-peter-paul-lauds-invitatory-redirect",
+      "scope": "sanctoral",
+      "target": {
+        "file": "src/data/loth/sanctoral/solemnities.json",
+        "path": "$.06-29.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "sanctoral-solemnity-06-29-peter-paul-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал: х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 829,
+          "line": 28189,
+          "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+        }
+      }
+    },
+    {
+      "id": "sanctoral-solemnity-08-15-assumption-lauds-invitatory-redirect",
+      "scope": "sanctoral",
+      "target": {
+        "file": "src/data/loth/sanctoral/solemnities.json",
+        "path": "$.08-15.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "sanctoral-solemnity-08-15-assumption-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал: х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 833,
+          "line": 28309,
+          "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+        }
+      }
+    },
+    {
+      "id": "sanctoral-solemnity-11-01-all-saints-lauds-invitatory-redirect",
+      "scope": "sanctoral",
+      "target": {
+        "file": "src/data/loth/sanctoral/solemnities.json",
+        "path": "$.11-01.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "sanctoral-solemnity-11-01-all-saints-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал: х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 837,
+          "line": 28417,
+          "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+        }
+      }
+    },
+    {
+      "id": "sanctoral-feast-02-02-presentation-lauds-invitatory-redirect",
+      "scope": "sanctoral",
+      "target": {
+        "file": "src/data/loth/sanctoral/feasts.json",
+        "path": "$.02-02.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "sanctoral-feast-02-02-presentation-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал: х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 821,
+          "line": 27964,
+          "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+        }
+      }
+    },
+    {
+      "id": "sanctoral-feast-02-02-presentation-firstvespers-sunday-only",
+      "scope": "sanctoral",
+      "target": {
+        "file": "src/data/loth/sanctoral/feasts.json",
+        "path": "$.02-02.firstVespers"
+      },
+      "kind": "conditionalRubric",
+      "data": {
+        "rubricId": "sanctoral-feast-02-02-presentation-firstvespers-sunday",
+        "when": {
+          "dayOfWeek": ["SUN"]
+        },
+        "action": "substitute",
+        "target": {
+          "text": "Хэрэв энэ баяр Ням гарагт таарвал 1 дүгээр Оройн даатгал залбирал уншина."
+        },
+        "appliesTo": { "section": "hymn" },
+        "evidencePdf": {
+          "page": 821,
+          "line": 27950,
+          "text": "Хэрэв энэ баяр Ням гарагт таарвал 1 дүгээр"
+        },
+        "liturgicalBasis": "FEAST rank: 02-02 (Presentation) firstVespers is conditionally read only on Sunday. Attached to firstVespers cell so runtime applyConditionalRubrics evaluates this rubric when sanctoral[firstVespers] is merged (loth-service.ts Layer 4.5)."
+      }
+    },
+    {
+      "id": "sanctoral-feast-08-06-transfiguration-lauds-invitatory-redirect",
+      "scope": "sanctoral",
+      "target": {
+        "file": "src/data/loth/sanctoral/feasts.json",
+        "path": "$.08-06.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "sanctoral-feast-08-06-transfiguration-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал: х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 831,
+          "line": 28244,
+          "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+        }
+      }
+    },
+    {
+      "id": "sanctoral-feast-08-06-transfiguration-firstvespers-sunday-only",
+      "scope": "sanctoral",
+      "target": {
+        "file": "src/data/loth/sanctoral/feasts.json",
+        "path": "$.08-06.firstVespers"
+      },
+      "kind": "conditionalRubric",
+      "data": {
+        "rubricId": "sanctoral-feast-08-06-transfiguration-firstvespers-sunday",
+        "when": {
+          "dayOfWeek": ["SUN"]
+        },
+        "action": "substitute",
+        "target": {
+          "text": "(Хэрэв энэ баяр Ням гарагт таарвал)"
+        },
+        "appliesTo": { "section": "hymn" },
+        "evidencePdf": {
+          "page": 831,
+          "line": 28232,
+          "text": "(Хэрэв энэ баяр Ням гарагт таарвал)"
+        },
+        "liturgicalBasis": "FEAST rank — 08-06 (Transfiguration) firstVespers conditionally read on Sunday only. Attached to firstVespers cell for runtime evaluation."
+      }
+    },
+    {
+      "id": "sanctoral-feast-09-14-holy-cross-lauds-invitatory-redirect",
+      "scope": "sanctoral",
+      "target": {
+        "file": "src/data/loth/sanctoral/feasts.json",
+        "path": "$.09-14.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "sanctoral-feast-09-14-holy-cross-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал: х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 835,
+          "line": 28362,
+          "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+        }
+      }
+    },
+    {
+      "id": "sanctoral-feast-09-14-holy-cross-firstvespers-sunday-only",
+      "scope": "sanctoral",
+      "target": {
+        "file": "src/data/loth/sanctoral/feasts.json",
+        "path": "$.09-14.firstVespers"
+      },
+      "kind": "conditionalRubric",
+      "data": {
+        "rubricId": "sanctoral-feast-09-14-holy-cross-firstvespers-sunday",
+        "when": {
+          "dayOfWeek": ["SUN"]
+        },
+        "action": "substitute",
+        "target": {
+          "text": "(Хэрэв энэ баяр Ням гарагт таарвал)"
+        },
+        "appliesTo": { "section": "hymn" },
+        "evidencePdf": {
+          "page": 835,
+          "line": 28353,
+          "text": "(Хэрэв энэ баяр Ням гарагт таарвал)"
+        },
+        "liturgicalBasis": "FEAST rank — 09-14 (Holy Cross) firstVespers conditionally read on Sunday only. Attached to firstVespers cell for runtime evaluation."
+      }
+    },
+    {
+      "id": "sanctoral-feast-11-09-lateran-lauds-invitatory-redirect",
+      "scope": "sanctoral",
+      "target": {
+        "file": "src/data/loth/sanctoral/feasts.json",
+        "path": "$.11-09.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "sanctoral-feast-11-09-lateran-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал: х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 840,
+          "line": 28495,
+          "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+        }
+      }
+    },
+    {
+      "id": "sanctoral-memorial-11-02-all-souls-lauds-sunday-skip",
+      "scope": "sanctoral",
+      "target": {
+        "file": "src/data/loth/sanctoral/memorials.json",
+        "path": "$.11-02.lauds"
+      },
+      "kind": "conditionalRubric",
+      "data": {
+        "rubricId": "sanctoral-memorial-11-02-all-souls-lauds-sunday-substitute",
+        "when": {
+          "dayOfWeek": ["SUN"]
+        },
+        "action": "substitute",
+        "target": {
+          "text": "Хэрэв “11 дүгээр сарын 2” гэсэн Дурсахуй Ням гарагт таарвал Хамаг итгэлт талийгаач бологсдын төлөөх мөргөлийг үйлдэх ч гэсэн Талийгаач бологсдын төлөөх хурлыг үл уншина. Хурлын даатгал залбирлуудыг энэ номын “Дөрвөн долоо хоног” гэсэн хэсэг дээр тохиож буй зөв Ням гарагаас татаж авна."
+        },
+        "appliesTo": { "section": "psalmody" },
+        "evidencePdf": {
+          "page": 839,
+          "line": 28459,
+          "text": "бологсдын төлөөх хурлыг үл уншина."
+        },
+        "liturgicalBasis": "11-02 All Souls' Day Lauds: when falling on Sunday, the Office for the Dead is NOT read; the day's prayers are taken from the 4-week psalter at the appropriate Sunday. Attached to lauds cell for runtime evaluation."
+      }
+    },
+    {
+      "id": "sanctoral-memorial-11-02-all-souls-vespers-sunday-skip",
+      "scope": "sanctoral",
+      "target": {
+        "file": "src/data/loth/sanctoral/memorials.json",
+        "path": "$.11-02.vespers"
+      },
+      "kind": "conditionalRubric",
+      "data": {
+        "rubricId": "sanctoral-memorial-11-02-all-souls-vespers-sunday-substitute",
+        "when": {
+          "dayOfWeek": ["SUN"]
+        },
+        "action": "substitute",
+        "target": {
+          "text": "Хэрэв “11 дүгээр сарын 2” гэсэн Дурсахуй Ням гарагт таарвал Хамаг итгэлт талийгаач бологсдын төлөөх мөргөлийг үйлдэх ч гэсэн Талийгаач бологсдын төлөөх хурлыг үл уншина. Хурлын даатгал залбирлуудыг энэ номын “Дөрвөн долоо хоног” гэсэн хэсэг дээр тохиож буй зөв Ням гарагаас татаж авна."
+        },
+        "appliesTo": { "section": "psalmody" },
+        "evidencePdf": {
+          "page": 839,
+          "line": 28459,
+          "text": "бологсдын төлөөх хурлыг үл уншина."
+        },
+        "liturgicalBasis": "11-02 All Souls' Day Vespers: same Sunday-skip rubric as lauds (PDF rubric applies to whole day)."
+      }
     }
   ]
 }
