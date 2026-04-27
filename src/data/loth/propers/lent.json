@@ -810,7 +810,21 @@
           "concludingPrayerPage": 653,
           "alternativeConcludingPrayerPage": 653,
           "gospelCanticleAntiphonPage": 652,
-          "intercessionsPage": 652
+          "intercessionsPage": 652,
+          "pageRedirects": [
+            {
+              "redirectId": "lent-w6-sun-vespers-dismissal",
+              "ordinariumKey": "dismissal-blessing",
+              "page": 876,
+              "label": "Магтуу: х. 876",
+              "appliesAt": "dismissal",
+              "evidencePdf": {
+                "page": 651,
+                "line": 22569,
+                "text": "Магтуу: х. 876."
+              }
+            }
+          ]
         },
         "lauds": {
           "shortReading": {
@@ -837,7 +851,21 @@
           "concludingPrayerPage": 653,
           "alternativeConcludingPrayerPage": 653,
           "gospelCanticleAntiphonPage": 655,
-          "intercessionsPage": 655
+          "intercessionsPage": 655,
+          "pageRedirects": [
+            {
+              "redirectId": "lent-w6-sun-lauds-dismissal",
+              "ordinariumKey": "dismissal-blessing",
+              "page": 876,
+              "label": "Магтуу: х. 876",
+              "appliesAt": "dismissal",
+              "evidencePdf": {
+                "page": 654,
+                "line": 22690,
+                "text": "Магтуу: х. 876."
+              }
+            }
+          ]
         },
         "vespers2": {
           "shortReading": {
@@ -865,7 +893,21 @@
           "concludingPrayerPage": 653,
           "alternativeConcludingPrayerPage": 653,
           "gospelCanticleAntiphonPage": 657,
-          "intercessionsPage": 658
+          "intercessionsPage": 658,
+          "pageRedirects": [
+            {
+              "redirectId": "lent-w6-sun-vespers2-dismissal",
+              "ordinariumKey": "dismissal-blessing",
+              "page": 876,
+              "label": "Магтуу: х. 876",
+              "appliesAt": "dismissal",
+              "evidencePdf": {
+                "page": 657,
+                "line": 22797,
+                "text": "Магтуу: х. 876."
+              }
+            }
+          ]
         },
         "firstVespers": {
           "psalms": [
@@ -972,7 +1014,21 @@
           "concludingPrayer": "Аяа, Эцэг минь, Та Өөрийн сүр жавхлангийн төлөө болон бидний авралын төлөө Есүс Христийг мөнхийн Тэргүүн Тайлгачаар өргөмжилсөн билээ. Түүний цусаар Таны эрхшээлд оруулсан ард түмэн Эвхаристын ёслолын үед Түүний дурсгалыг тэмдэглэснээрээ Түүний загалмай болон амилалтын ид хүчийг хуваалцах болтугай. Тэрээр Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг цорын ганц Тэнгэрбурхан билээ.",
           "concludingPrayerPage": 663,
           "gospelCanticleAntiphonPage": 660,
-          "intercessionsPage": 660
+          "intercessionsPage": 660,
+          "pageRedirects": [
+            {
+              "redirectId": "lent-w6-thu-vespers-dismissal",
+              "ordinariumKey": "dismissal-blessing",
+              "page": 876,
+              "label": "Магтуу: х. 876",
+              "appliesAt": "dismissal",
+              "evidencePdf": {
+                "page": 661,
+                "line": 22937,
+                "text": "Магтуу: х. 876."
+              }
+            }
+          ]
         }
       },
       "FRI": {
@@ -1000,7 +1056,33 @@
           "concludingPrayer": "Аяа, Эцэг минь, Есүс Өөрийгөө муу хүмүүсээс гэтэлгэж, загалмай дээр амь тэмцэх үедээ бидэнд үзүүлсэн энэхүү хайраар Та Өөрийн ард түмнээ хайрлаж хандана уу. Учир нь Тэрээр Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг цорын ганц Тэнгэрбурхан билээ.",
           "concludingPrayerPage": 670,
           "gospelCanticleAntiphonPage": 669,
-          "intercessionsPage": 669
+          "intercessionsPage": 669,
+          "pageRedirects": [
+            {
+              "redirectId": "lent-w6-fri-lauds-invitatory",
+              "ordinariumKey": "invitatory-psalms",
+              "page": 28,
+              "label": "Урих дуудлагын дуулал: х. 28",
+              "appliesAt": "invitatory",
+              "evidencePdf": {
+                "page": 664,
+                "line": 23036,
+                "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+              }
+            },
+            {
+              "redirectId": "lent-w6-fri-lauds-dismissal",
+              "ordinariumKey": "dismissal-blessing",
+              "page": 876,
+              "label": "Магтуу: х. 876",
+              "appliesAt": "dismissal",
+              "evidencePdf": {
+                "page": 664,
+                "line": 23038,
+                "text": "Магтуу: х. 876."
+              }
+            }
+          ]
         },
         "vespers": {
           "shortReading": {
@@ -1032,7 +1114,21 @@
           "concludingPrayer": "Аяа, Эцэг минь, Есүс Өөрийгөө муу хүмүүсээс гэтэлгэж, загалмай дээр амь тэмцэх үедээ бидэнд үзүүлсэн энэхүү хайраар Та Өөрийн ард түмнээ хайрлаж хандана уу. Учир нь Тэрээр Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг цорын ганц Тэнгэрбурхан билээ.",
           "concludingPrayerPage": 670,
           "gospelCanticleAntiphonPage": 675,
-          "intercessionsPage": 675
+          "intercessionsPage": 675,
+          "pageRedirects": [
+            {
+              "redirectId": "lent-w6-fri-vespers-dismissal",
+              "ordinariumKey": "dismissal-blessing",
+              "page": 876,
+              "label": "Магтуу: х. 876",
+              "appliesAt": "dismissal",
+              "evidencePdf": {
+                "page": 671,
+                "line": 23278,
+                "text": "Магтуу: х. 876."
+              }
+            }
+          ]
         }
       },
       "SAT": {
@@ -1061,7 +1157,33 @@
           "concludingPrayer": "Аяа. төгс хүчит, мөнхийн Тэнгэрбурхан минь, Таны цорын ганц Хүү үхэгсдийн дунд орж ирсэн бөгөөд сүр жавхлангаар амилсан билээ. Ариун угаалаар уламжлан Түүнтэй хамт оршуулагдсан итгэлт ард түмнээ Та Өөрийн сайн сайхнаар амилуулна уу. Ингэснээр тэд Тэнгэрийн орны мөнхийн амьдралд Түүнтэй хамт нэгдэх болно. Тэнд Тэрээр Тэнгэр Эцэг тантай болон Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг ганц Тэнгэрбурхан билээ.",
           "concludingPrayerPage": 683,
           "gospelCanticleAntiphonPage": 681,
-          "intercessionsPage": 681
+          "intercessionsPage": 681,
+          "pageRedirects": [
+            {
+              "redirectId": "lent-w6-sat-lauds-invitatory",
+              "ordinariumKey": "invitatory-psalms",
+              "page": 28,
+              "label": "Урих дуудлагын дуулал: х. 28",
+              "appliesAt": "invitatory",
+              "evidencePdf": {
+                "page": 677,
+                "line": 23484,
+                "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+              }
+            },
+            {
+              "redirectId": "lent-w6-sat-lauds-dismissal",
+              "ordinariumKey": "dismissal-blessing",
+              "page": 876,
+              "label": "Магтуу: х. 876",
+              "appliesAt": "dismissal",
+              "evidencePdf": {
+                "page": 677,
+                "line": 23486,
+                "text": "Магтуу: х. 876."
+              }
+            }
+          ]
         },
         "vespers": {
           "shortReading": {
@@ -1088,7 +1210,21 @@
           "concludingPrayer": "Аяа. төгс хүчит, мөнхийн Тэнгэрбурхан минь, Таны цорын ганц Хүү үхэгсдийн дунд орж ирсэн бөгөөд сүр жавхлангаар амилсан билээ. Ариун угаалаар уламжлан Түүнтэй хамт оршуулагдсан итгэлт ард түмнээ Та Өөрийн сайн сайхнаар амилуулна уу. Ингэснээр тэд Тэнгэрийн орны мөнхийн амьдралд Түүнтэй хамт нэгдэх болно. Тэнд Тэрээр Тэнгэр Эцэг тантай болон Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг ганц Тэнгэрбурхан билээ.",
           "concludingPrayerPage": 683,
           "gospelCanticleAntiphonPage": 687,
-          "intercessionsPage": 669
+          "intercessionsPage": 669,
+          "pageRedirects": [
+            {
+              "redirectId": "lent-w6-sat-vespers-dismissal",
+              "ordinariumKey": "dismissal-blessing",
+              "page": 876,
+              "label": "Магтуу: х. 876-877",
+              "appliesAt": "dismissal",
+              "evidencePdf": {
+                "page": 683,
+                "line": 23702,
+                "text": "Магтуу: х. 876-877."
+              }
+            }
+          ]
         }
       }
     }

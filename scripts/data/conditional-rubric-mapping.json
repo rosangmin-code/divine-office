@@ -328,6 +328,216 @@
           "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
         }
       }
+    },
+    {
+      "id": "lent-w6-sun-vespers-dismissal-redirect",
+      "scope": "lent",
+      "target": {
+        "file": "src/data/loth/propers/lent.json",
+        "path": "$.weeks.6.SUN.vespers"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "lent-w6-sun-vespers-dismissal",
+        "ordinariumKey": "dismissal-blessing",
+        "page": 876,
+        "label": "Магтуу: х. 876",
+        "appliesAt": "dismissal",
+        "evidencePdf": {
+          "page": 651,
+          "line": 22569,
+          "text": "Магтуу: х. 876."
+        }
+      }
+    },
+    {
+      "id": "lent-w6-sun-lauds-dismissal-redirect",
+      "scope": "lent",
+      "target": {
+        "file": "src/data/loth/propers/lent.json",
+        "path": "$.weeks.6.SUN.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "lent-w6-sun-lauds-dismissal",
+        "ordinariumKey": "dismissal-blessing",
+        "page": 876,
+        "label": "Магтуу: х. 876",
+        "appliesAt": "dismissal",
+        "evidencePdf": {
+          "page": 654,
+          "line": 22690,
+          "text": "Магтуу: х. 876."
+        }
+      }
+    },
+    {
+      "id": "lent-w6-sun-vespers2-dismissal-redirect",
+      "scope": "lent",
+      "target": {
+        "file": "src/data/loth/propers/lent.json",
+        "path": "$.weeks.6.SUN.vespers2"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "lent-w6-sun-vespers2-dismissal",
+        "ordinariumKey": "dismissal-blessing",
+        "page": 876,
+        "label": "Магтуу: х. 876",
+        "appliesAt": "dismissal",
+        "evidencePdf": {
+          "page": 657,
+          "line": 22797,
+          "text": "Магтуу: х. 876."
+        }
+      }
+    },
+    {
+      "id": "lent-w6-thu-vespers-dismissal-redirect",
+      "scope": "lent",
+      "target": {
+        "file": "src/data/loth/propers/lent.json",
+        "path": "$.weeks.6.THU.vespers"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "lent-w6-thu-vespers-dismissal",
+        "ordinariumKey": "dismissal-blessing",
+        "page": 876,
+        "label": "Магтуу: х. 876",
+        "appliesAt": "dismissal",
+        "evidencePdf": {
+          "page": 661,
+          "line": 22937,
+          "text": "Магтуу: х. 876."
+        }
+      }
+    },
+    {
+      "id": "lent-w6-fri-lauds-invitatory-redirect",
+      "scope": "lent",
+      "target": {
+        "file": "src/data/loth/propers/lent.json",
+        "path": "$.weeks.6.FRI.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "lent-w6-fri-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал: х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 664,
+          "line": 23036,
+          "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+        }
+      }
+    },
+    {
+      "id": "lent-w6-fri-lauds-dismissal-redirect",
+      "scope": "lent",
+      "target": {
+        "file": "src/data/loth/propers/lent.json",
+        "path": "$.weeks.6.FRI.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "lent-w6-fri-lauds-dismissal",
+        "ordinariumKey": "dismissal-blessing",
+        "page": 876,
+        "label": "Магтуу: х. 876",
+        "appliesAt": "dismissal",
+        "evidencePdf": {
+          "page": 664,
+          "line": 23038,
+          "text": "Магтуу: х. 876."
+        }
+      }
+    },
+    {
+      "id": "lent-w6-fri-vespers-dismissal-redirect",
+      "scope": "lent",
+      "target": {
+        "file": "src/data/loth/propers/lent.json",
+        "path": "$.weeks.6.FRI.vespers"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "lent-w6-fri-vespers-dismissal",
+        "ordinariumKey": "dismissal-blessing",
+        "page": 876,
+        "label": "Магтуу: х. 876",
+        "appliesAt": "dismissal",
+        "evidencePdf": {
+          "page": 671,
+          "line": 23278,
+          "text": "Магтуу: х. 876."
+        }
+      }
+    },
+    {
+      "id": "lent-w6-sat-lauds-invitatory-redirect",
+      "scope": "lent",
+      "target": {
+        "file": "src/data/loth/propers/lent.json",
+        "path": "$.weeks.6.SAT.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "lent-w6-sat-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал: х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 677,
+          "line": 23484,
+          "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+        }
+      }
+    },
+    {
+      "id": "lent-w6-sat-lauds-dismissal-redirect",
+      "scope": "lent",
+      "target": {
+        "file": "src/data/loth/propers/lent.json",
+        "path": "$.weeks.6.SAT.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "lent-w6-sat-lauds-dismissal",
+        "ordinariumKey": "dismissal-blessing",
+        "page": 876,
+        "label": "Магтуу: х. 876",
+        "appliesAt": "dismissal",
+        "evidencePdf": {
+          "page": 677,
+          "line": 23486,
+          "text": "Магтуу: х. 876."
+        }
+      }
+    },
+    {
+      "id": "lent-w6-sat-vespers-dismissal-redirect",
+      "scope": "lent",
+      "target": {
+        "file": "src/data/loth/propers/lent.json",
+        "path": "$.weeks.6.SAT.vespers"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "lent-w6-sat-vespers-dismissal",
+        "ordinariumKey": "dismissal-blessing",
+        "page": 876,
+        "label": "Магтуу: х. 876-877",
+        "appliesAt": "dismissal",
+        "evidencePdf": {
+          "page": 683,
+          "line": 23702,
+          "text": "Магтуу: х. 876-877."
+        }
+      }
     }
   ]
 }
