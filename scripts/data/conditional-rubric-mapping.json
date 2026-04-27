@@ -1,0 +1,96 @@
+{
+  "$comment": "FR-160-B PR-2..7 — manual mapping table. Each entry expresses the intent: 'append this ConditionalRubric/PageRedirect to the JSON cell at <target.path>'. The rewrite tool (scripts/mark-conditional-rubrics.js) is the only writer; reviewers edit this file. Idempotency is by entry.id (also written into the emitted rubricId/redirectId). evidencePdf is sourced from the actual full_pdf.txt extraction; line numbers are 1-based file lines for traceability and are tolerated to drift if rebuild changes line offsets — the page+text combo is the authoritative locator. PageRedirect.ordinariumKey is restricted to the 9-key catalog (src/data/loth/ordinarium-key-catalog.json).",
+  "version": "1",
+  "entries": [
+    {
+      "id": "advent-w1-sun-lauds-invitatory-redirect",
+      "scope": "advent",
+      "target": {
+        "file": "src/data/loth/propers/advent.json",
+        "path": "$.weeks.1.SUN.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "advent-w1-sun-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал: х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 551,
+          "line": 19023,
+          "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+        }
+      }
+    },
+    {
+      "id": "advent-dec24-sun-lauds-invitatory-redirect",
+      "scope": "advent",
+      "target": {
+        "file": "src/data/loth/propers/advent.json",
+        "path": "$.weeks.dec24.SUN.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "advent-dec24-sun-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал, х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 580,
+          "line": 20064,
+          "text": "Урих дуудлагын шад дуулал 24. Урих дуудлагын дуулал, х. 28."
+        }
+      }
+    },
+    {
+      "id": "advent-dec24-sun-lauds-dismissal-redirect",
+      "scope": "advent",
+      "target": {
+        "file": "src/data/loth/propers/advent.json",
+        "path": "$.weeks.dec24.SUN.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "advent-dec24-sun-lauds-dismissal",
+        "ordinariumKey": "dismissal-blessing",
+        "page": 874,
+        "label": "Магтуу: х. 874",
+        "appliesAt": "dismissal",
+        "evidencePdf": {
+          "page": 580,
+          "line": 20067,
+          "text": "Магтуу: х. 874."
+        }
+      }
+    },
+    {
+      "id": "advent-dec24-sun-lauds-psalmody-from-current-week",
+      "scope": "advent",
+      "target": {
+        "file": "src/data/loth/propers/advent.json",
+        "path": "$.weeks.dec24.SUN.lauds"
+      },
+      "kind": "conditionalRubric",
+      "data": {
+        "rubricId": "advent-dec24-sun-lauds-psalmody-substitute",
+        "when": {
+          "season": ["ADVENT"],
+          "dateRange": { "from": "12-24", "to": "12-24" }
+        },
+        "action": "substitute",
+        "target": {
+          "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+        },
+        "appliesTo": { "section": "psalmody" },
+        "evidencePdf": {
+          "page": 580,
+          "line": 20071,
+          "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+        },
+        "liturgicalBasis": "GILH §29 — late Advent (Dec 17-24) Lauds psalmody is taken from the current 4-week psalter day, not from a proper cycle."
+      }
+    }
+  ]
+}

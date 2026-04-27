@@ -57,7 +57,21 @@
           "concludingPrayerPage": 550,
           "alternativeConcludingPrayerPage": 550,
           "gospelCanticleAntiphonPage": 552,
-          "intercessionsPage": 552
+          "intercessionsPage": 552,
+          "pageRedirects": [
+            {
+              "redirectId": "advent-w1-sun-lauds-invitatory",
+              "ordinariumKey": "invitatory-psalms",
+              "page": 28,
+              "label": "Урих дуудлагын дуулал: х. 28",
+              "appliesAt": "invitatory",
+              "evidencePdf": {
+                "page": 551,
+                "line": 19023,
+                "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+              }
+            }
+          ]
         },
         "vespers2": {
           "shortReading": {
@@ -727,7 +741,60 @@
           "concludingPrayer": "Аяа, Эзэн Есүс ээ, хоцролгүй ирэгтүн. Таны хайранд итгэдэг хүмүүст шинэ эр зоригийг хайрлана уу. Та Өөрийн ирэлтээрээ биднийг хаанчлалынхаа баяр баясгаланд хүргэнэ үү. Тэнд Та Тэнгэр Эцэгтэй болон Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан билээ.",
           "concludingPrayerPage": 582,
           "gospelCanticleAntiphonPage": 581,
-          "intercessionsPage": 581
+          "intercessionsPage": 581,
+          "pageRedirects": [
+            {
+              "redirectId": "advent-dec24-sun-lauds-invitatory",
+              "ordinariumKey": "invitatory-psalms",
+              "page": 28,
+              "label": "Урих дуудлагын дуулал, х. 28",
+              "appliesAt": "invitatory",
+              "evidencePdf": {
+                "page": 580,
+                "line": 20064,
+                "text": "Урих дуудлагын шад дуулал 24. Урих дуудлагын дуулал, х. 28."
+              }
+            },
+            {
+              "redirectId": "advent-dec24-sun-lauds-dismissal",
+              "ordinariumKey": "dismissal-blessing",
+              "page": 874,
+              "label": "Магтуу: х. 874",
+              "appliesAt": "dismissal",
+              "evidencePdf": {
+                "page": 580,
+                "line": 20067,
+                "text": "Магтуу: х. 874."
+              }
+            }
+          ],
+          "conditionalRubrics": [
+            {
+              "rubricId": "advent-dec24-sun-lauds-psalmody-substitute",
+              "when": {
+                "season": [
+                  "ADVENT"
+                ],
+                "dateRange": {
+                  "from": "12-24",
+                  "to": "12-24"
+                }
+              },
+              "action": "substitute",
+              "target": {
+                "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+              },
+              "appliesTo": {
+                "section": "psalmody"
+              },
+              "evidencePdf": {
+                "page": 580,
+                "line": 20071,
+                "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+              },
+              "liturgicalBasis": "GILH §29 — late Advent (Dec 17-24) Lauds psalmody is taken from the current 4-week psalter day, not from a proper cycle."
+            }
+          ]
         }
       }
     }
