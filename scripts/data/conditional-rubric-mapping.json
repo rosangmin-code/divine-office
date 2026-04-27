@@ -538,6 +538,234 @@
           "text": "Магтуу: х. 876-877."
         }
       }
+    },
+    {
+      "id": "easter-eastersunday-sun-lauds-invitatory-redirect",
+      "scope": "easter",
+      "target": {
+        "file": "src/data/loth/propers/easter.json",
+        "path": "$.weeks.easterSunday.SUN.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "easter-eastersunday-sun-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал: х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 690,
+          "line": 23926,
+          "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+        }
+      }
+    },
+    {
+      "id": "easter-eastersunday-sun-lauds-dismissal-redirect",
+      "scope": "easter",
+      "target": {
+        "file": "src/data/loth/propers/easter.json",
+        "path": "$.weeks.easterSunday.SUN.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "easter-eastersunday-sun-lauds-dismissal",
+        "ordinariumKey": "dismissal-blessing",
+        "page": 876,
+        "label": "Магтуу: х. 876-877",
+        "appliesAt": "dismissal",
+        "evidencePdf": {
+          "page": 690,
+          "line": 23928,
+          "text": "Магтуу: х. 876-877."
+        }
+      }
+    },
+    {
+      "id": "easter-eastersunday-sun-lauds-psalmody-from-w1-sunday",
+      "scope": "easter",
+      "target": {
+        "file": "src/data/loth/propers/easter.json",
+        "path": "$.weeks.easterSunday.SUN.lauds"
+      },
+      "kind": "conditionalRubric",
+      "data": {
+        "rubricId": "easter-eastersunday-sun-lauds-psalmody-substitute",
+        "when": {
+          "season": ["EASTER"],
+          "predicate": "isFirstHourOfDay"
+        },
+        "action": "substitute",
+        "target": {
+          "text": "Дууллууд ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна. х. 58."
+        },
+        "appliesTo": { "section": "psalmody" },
+        "evidencePdf": {
+          "page": 690,
+          "line": 23933,
+          "text": "Дууллууд ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна. х. 58."
+        },
+        "liturgicalBasis": "Easter Sunday Lauds psalmody is drawn from psalter Week 1 Sunday (page 58); special-day rubric noted in PDF p.690."
+      }
+    },
+    {
+      "id": "easter-eastersunday-sun-vespers-dismissal-redirect",
+      "scope": "easter",
+      "target": {
+        "file": "src/data/loth/propers/easter.json",
+        "path": "$.weeks.easterSunday.SUN.vespers"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "easter-eastersunday-sun-vespers-dismissal",
+        "ordinariumKey": "dismissal-blessing",
+        "page": 876,
+        "label": "Магтуу: х. 876-877",
+        "appliesAt": "dismissal",
+        "evidencePdf": {
+          "page": 693,
+          "line": 24042,
+          "text": "Магтуу: х. 876-877."
+        }
+      }
+    },
+    {
+      "id": "easter-ascension-sun-lauds-invitatory-redirect",
+      "scope": "easter",
+      "target": {
+        "file": "src/data/loth/propers/easter.json",
+        "path": "$.weeks.ascension.SUN.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "easter-ascension-sun-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал: х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 731,
+          "line": 25368,
+          "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+        }
+      }
+    },
+    {
+      "id": "easter-pentecost-sun-lauds-invitatory-redirect",
+      "scope": "easter",
+      "target": {
+        "file": "src/data/loth/propers/easter.json",
+        "path": "$.weeks.pentecost.SUN.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "easter-pentecost-sun-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал: х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 739,
+          "line": 25632,
+          "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+        }
+      }
+    },
+    {
+      "id": "easter-pentecost-sun-lauds-dismissal-redirect",
+      "scope": "easter",
+      "target": {
+        "file": "src/data/loth/propers/easter.json",
+        "path": "$.weeks.pentecost.SUN.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "easter-pentecost-sun-lauds-dismissal",
+        "ordinariumKey": "dismissal-blessing",
+        "page": 877,
+        "label": "Магтуу: 877-878",
+        "appliesAt": "dismissal",
+        "evidencePdf": {
+          "page": 739,
+          "line": 25634,
+          "text": "Магтуу: 877-878."
+        }
+      }
+    },
+    {
+      "id": "easter-pentecost-sun-lauds-psalmody-from-w1-sunday",
+      "scope": "easter",
+      "target": {
+        "file": "src/data/loth/propers/easter.json",
+        "path": "$.weeks.pentecost.SUN.lauds"
+      },
+      "kind": "conditionalRubric",
+      "data": {
+        "rubricId": "easter-pentecost-sun-lauds-psalmody-substitute",
+        "when": {
+          "season": ["EASTER"],
+          "predicate": "isFirstHourOfDay"
+        },
+        "action": "substitute",
+        "target": {
+          "text": "Дууллууд ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна. х. 58."
+        },
+        "appliesTo": { "section": "psalmody" },
+        "evidencePdf": {
+          "page": 739,
+          "line": 25639,
+          "text": "Дууллууд ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна. х. 58."
+        },
+        "liturgicalBasis": "Pentecost Lauds psalmody is drawn from psalter Week 1 Sunday (page 58); follows the Easter-season pattern."
+      }
+    },
+    {
+      "id": "easter-pentecost-sun-vespers2-dismissal-redirect",
+      "scope": "easter",
+      "target": {
+        "file": "src/data/loth/propers/easter.json",
+        "path": "$.weeks.pentecost.SUN.vespers2"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "easter-pentecost-sun-vespers2-dismissal",
+        "ordinariumKey": "dismissal-blessing",
+        "page": 877,
+        "label": "Магтуу: 877-878",
+        "appliesAt": "dismissal",
+        "evidencePdf": {
+          "page": 742,
+          "line": 25748,
+          "text": "Магтуу: 877-878."
+        }
+      }
+    },
+    {
+      "id": "easter-pentecost-sun-vespers2-psalmody-from-w1-sunday",
+      "scope": "easter",
+      "target": {
+        "file": "src/data/loth/propers/easter.json",
+        "path": "$.weeks.pentecost.SUN.vespers2"
+      },
+      "kind": "conditionalRubric",
+      "data": {
+        "rubricId": "easter-pentecost-sun-vespers2-psalmody-substitute",
+        "when": {
+          "season": ["EASTER"],
+          "dayOfWeek": ["SUN"]
+        },
+        "action": "substitute",
+        "target": {
+          "text": "Дууллууд ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна. х. 58."
+        },
+        "appliesTo": { "section": "psalmody" },
+        "evidencePdf": {
+          "page": 742,
+          "line": 25752,
+          "text": "Дууллууд ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна. х. 58."
+        },
+        "liturgicalBasis": "Pentecost 2nd Vespers psalmody also drawn from psalter Week 1 Sunday."
+      }
     }
   ]
 }
