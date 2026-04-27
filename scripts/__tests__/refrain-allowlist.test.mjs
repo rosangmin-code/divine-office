@@ -257,13 +257,17 @@ describe('FR-160-A4 refrain-allowlist.json schema validation', () => {
     }
   })
 
-  it('contains all 6 task #120 confirmed entries', () => {
+  it('contains all 6 task #120 confirmed entries (post-FR-160-D canonical refs)', () => {
+    // FR-160-D (task #126) dedup: Psalm 8:1-10 was redundant → canonical
+    // Psalm 8:2-10 (externalRefs=2 wins over rangeWidth tie-break).
+    // refrain-allowlist.json was amended atomically alongside the catalog
+    // dedup so the forced-refrain entry follows the new canonical key.
     const raw = JSON.parse(readFileSync(ALLOWLIST_PATH, 'utf8'))
     const refs = new Set(raw.entries.map((e) => e.ref))
     for (const expected of [
       'Psalm 24:1-10',
       'Psalm 116:10-19',
-      'Psalm 8:1-10',
+      'Psalm 8:2-10',
       'Psalm 42:2-6',
       'Psalm 67:2-8',
       'Psalm 99:1-9',

@@ -283,7 +283,7 @@
           },
           {
             "type": "psalm",
-            "ref": "Psalm 45:11-18",
+            "ref": "Psalm 45:2-10",
             "antiphon_key": "w2-mon-vesp-ps2",
             "default_antiphon": "Сүйт залуу энд байна. Гараад түүнийг угтаж авцгаа.",
             "title": "Хааны хуримын магтаал",
@@ -436,7 +436,7 @@
           },
           {
             "type": "psalm",
-            "ref": "Psalm 49:14-21",
+            "ref": "Psalm 49:1-13",
             "antiphon_key": "w2-tue-vesp-ps2",
             "default_antiphon": "\"Тэнгэрт эд баялгийг өөрсдөдөө хураа\" хэмээн Эзэн айлдаж байна.",
             "title": "Эд баялгийн хоосон чанар",
@@ -742,7 +742,7 @@
           },
           {
             "type": "psalm",
-            "ref": "Psalm 72:12-20",
+            "ref": "Psalm 72:1-11",
             "antiphon_key": "w2-thu-vesp-ps2",
             "default_antiphon": "Эзэн ядуусын хүүхдүүдийг аварч, боолчлолоос чөлөөлөх болно.",
             "title": "Мессиагийн хааны эрх мэдэл",
