@@ -349,6 +349,20 @@ export interface CelebrationOptionsResult {
   options: CelebrationOption[]
 }
 
+// FR-160-C — psalm-header preface (rubric red metadata above the psalm
+// body in the Mongolian LOTH PDF). Two kinds: patristic Father preface
+// (Хэсихиус / Августин / Касиодор / Арнобиус / Кацен / Ориген) or NT
+// typological citation pointing to a NT verse that prefigures the psalm
+// (Үйлс / Матай / Иохан / Лук / Марк / Ром / Еврей / Ефес / Галат /
+// Илчлэл / Филиппой). Catalog: src/data/loth/prayers/commons/
+// psalter-headers.rich.json. Loader: loadPsalterHeaderRich(ref).
+export interface PsalterHeaderRich {
+  kind: 'patristic_preface' | 'nt_typological'
+  attribution: string       // e.g. "Хэсихиус", "Гэгээн Августин", "Үйлс 2:42"
+  preface_text: string      // The full preface body (the citation/quote text)
+  page?: number             // Book page where this header appears
+}
+
 // --- Assembled Hour (output of loth-service) ---
 
 export interface AssembledPsalm {
@@ -359,6 +373,7 @@ export interface AssembledPsalm {
   verses: { verse: number; text: string }[]  // fallback when stanzas unavailable
   stanzas?: string[][]                        // poetic lines grouped by stanza (from PDF source)
   stanzasRich?: PrayerText       // FR-153f: rich AST overlay for stanzas (indent 0/1/2 + refrain role)
+  headerRich?: PsalterHeaderRich // FR-160-C: psalm-header preface (patristic Father / NT typological citation)
   gloriaPatri: boolean
   psalmPrayer?: string           // Дууллыг төгсгөх залбирал — post-Gloria Patri oratio
   psalmPrayerRich?: PrayerText   // FR-153h: rich AST overlay for psalmPrayer (prose blocks + rubric spans)

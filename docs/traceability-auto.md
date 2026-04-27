@@ -4,7 +4,7 @@
 > and FR/NFR IDs in test titles. **Do not edit by hand.**
 > The curated matrix lives in [`docs/traceability-matrix.md`](./traceability-matrix.md).
 
-Scan: 27 test files contributed 20 unique IDs.
+Scan: 28 test files contributed 20 unique IDs.
 
 | ID | Test file | Test title(s) |
 |---|---|---|
@@ -41,6 +41,7 @@ Scan: 27 test files contributed 20 unique IDs.
 | FR-156 | `src/lib/hours/__tests__/first-vespers-identity.test.ts` | promoteToFirstVespersIdentity (FR-156 task #32 helper) |
 | FR-160 | `e2e/prayer-psalm-refrain-allowlist.spec.ts` | Refrain allowlist false-negative cleanup (FR-160-A4)<br>Psalm 24:1-10 forced lines tagged role=refrain (psalterWeek 1 TUE Lauds)<br>Psalm 24:1-10 refrain lines carry rubric red colour<br>Psalm 67:2-8 forced lines tagged role=refrain (psalterWeek 3 TUE Lauds)<br>Psalm 150:1-6 still has 0 refrain lines (denylist precedence)<br>Daniel 3 canticle threshold refrains still detected (additive merge) |
 | FR-160 | `e2e/prayer-psalm-refrain-denylist.spec.ts` | Refrain denylist false-positive cleanup (FR-160-A1)<br>Psalm 150:1-6 stanza has 0 role=refrain lines<br>Psalm 150:1-6 stanza body has no rubric red span<br>Daniel 3 canticle refrains preserved on OT Wk1 SUN Lauds (regression guard)<br>Psalm 29:1-10 stanza has 0 role=refrain lines (psalterWeek 1 MON Lauds)<br>Psalm 29:1-10 stanza body has no rubric red span |
+| FR-160 | `e2e/prayer-psalter-headers.spec.ts` | Psalter header preface rendering (FR-160-C)<br>Psalm 150:1-6 has a patristic preface header (Easter Wk4 SUN Lauds)<br>Psalm 150:1-6 header carries rubric red colour<br>Psalm 67:2-8 has an NT typological citation header (psalterWeek 3 TUE Lauds)<br>Daniel 3 canticle has no psalm-header-rich element (catalog gap) |
 | NFR-013 | `e2e/mobile.spec.ts` | prayer article inner width >= 320px for readability (NFR-013)<br>antiphon inner width >= 320px on mobile (NFR-013) |
 | NFR-014 | `e2e/mobile.spec.ts` | psalm has left padding on mobile (NFR-014)<br>psalm stanzas have visible spacing on mobile (NFR-014) |
 | NFR-016 | `e2e/settings.spec.ts` | active radio uses brass gold accent, not liturgical green (NFR-016) |

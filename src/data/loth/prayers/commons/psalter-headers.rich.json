@@ -1,0 +1,925 @@
+{
+  "_doc": "FR-160-C psalter-headers catalog. Patristic Father preface + NT typological citation that appear at psalm-header position in the Mongolian LOTH PDF (between \"Дуулал N\" title and the first verse). Loader: src/lib/prayers/rich-overlay.ts::loadPsalterHeaderRich(ref). Renderer: src/components/psalm-block.tsx — PsalterHeaderRich block above the psalm body. Multiple entries per ref are possible because the same psalm reappears in different liturgical positions (different PDF pages) with different patristic/typological prefaces. Source: scripts/extract-psalter-headers.js (raw-text pattern match against parsed_data/full_pdf.txt) → scripts/build-psalter-headers-catalog.js. PDF evidence: page + evidence_line_range[start,end] line numbers in parsed_data/full_pdf.txt. See PRD §12.1 FR-160-C, NFR-009h.",
+  "refs": {
+    "Psalm 67:2-8": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Үйлс 28:28",
+          "preface_text": "Бүх үндэстний дундах хүмүүс Эзэнд мөргөх болно Иймээс Тэнгэрбурханы энэхүү аврал харь үндэстнүүдэд илгээгдсэн бөгөөд тэд ч сонсох болно гэдгийг та нар мэдэгтүн (Үйлс 28:28).",
+          "page": 30,
+          "source": "extracted",
+          "evidence_line_range": [
+            939,
+            942
+          ]
+        },
+        {
+          "kind": "nt_typological",
+          "attribution": "Үйлс 28:28",
+          "preface_text": "Бүх үндэстний дундах хүмүүс Эзэнд мөргөх болно Иймээс Тэнгэрбурханы энэхүү аврал харь үндэстнүүдэд илгээгдсэн бөгөөд тэд ч сонсох болно гэдгийг та нар мэдэгтүн (Үйлс 28:28).",
+          "page": 239,
+          "source": "extracted",
+          "evidence_line_range": [
+            8098,
+            8102
+          ]
+        },
+        {
+          "kind": "nt_typological",
+          "attribution": "Үйлс 28:28",
+          "preface_text": "Бүх үндэстний дундах хүмүүс Эзэнд мөргөх болно Тэнгэрбурханы энэхүү аврал харь үндэстнүүдэд илгээгдсэн бөгөөд тэд ч сонсох болно гэдгийг та нар мэдэгтүн (Үйлс 28:28).",
+          "page": 333,
+          "source": "extracted",
+          "evidence_line_range": [
+            11423,
+            11427
+          ]
+        }
+      ]
+    },
+    "Psalm 149:1-9": {
+      "entries": [
+        {
+          "kind": "patristic_preface",
+          "attribution": "Хэсихиус",
+          "preface_text": "Тэнгэрбурханы ариун ард түмний баяр хөөр Шашны хөвгүүд, шинэ ард түмний хүүхдүүд ээ Христ өөрсдийн Хаандаа баярлацгаа! (Хэсихиус)",
+          "page": 64,
+          "source": "extracted",
+          "evidence_line_range": [
+            2004,
+            2006
+          ]
+        }
+      ]
+    },
+    "Psalm 114:1-8": {
+      "entries": [
+        {
+          "kind": "patristic_preface",
+          "attribution": "Гэгээн Августин",
+          "preface_text": "Израильчууд Египетийн боолчлолоос чөлөөлөгдсөн байна Ариун угаалын үед Тэнгэрбурханыг эсэргүүцдэг энэ дэлхий хорвоогоос татгалзахдаа та нар бас Египетээс гарсан юм (Гэгээн Августин).",
+          "page": 70,
+          "source": "extracted",
+          "evidence_line_range": [
+            2211,
+            2215
+          ]
+        }
+      ]
+    },
+    "Psalm 29:1-10": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Матай 3:17",
+          "preface_text": "Тэнгэрбурханы Үгэнд зориулсан хүндэтгэлийн магтаал Эцэгийн дуу хоолой ийн тунхаглав: “Үзэгтүн, хайрт Хүү минь энэ билээ” (Матай 3:17)",
+          "page": 80,
+          "source": "extracted",
+          "evidence_line_range": [
+            2561,
+            2564
+          ]
+        }
+      ]
+    },
+    "Psalm 11:1-7": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Матай 5:6",
+          "preface_text": "Тэнгэрбурхан бол зөв шударга хүний хөрвөшгүй бат түшиг мөн. Зөвт байдлын төлөө өлсөж, цангагсад ерөөлтэй еэ! Тэд цатгагдах болно (Матай 5:6).",
+          "page": 84,
+          "source": "extracted",
+          "evidence_line_range": [
+            2712,
+            2715
+          ]
+        }
+      ]
+    },
+    "Psalm 33:1-9": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Иохан 1:3",
+          "preface_text": "Тэнгэрбурханы тасралтгүй хайр халамжийн төлөөх магтаалын дуу Бүх юм Үгээр бий болсон (Иохан 1:3).",
+          "page": 96,
+          "source": "extracted",
+          "evidence_line_range": [
+            3111,
+            3113
+          ]
+        }
+      ]
+    },
+    "Psalm 20:2-8": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Үйлс 2:21",
+          "preface_text": "Хааны ялалтын төлөөх даатгал залбирал Эзэний нэрийг дууддаг бүхэн аврагдах болно (Үйлс 2:21).",
+          "page": 101,
+          "source": "extracted",
+          "evidence_line_range": [
+            3296,
+            3298
+          ]
+        }
+      ]
+    },
+    "Psalm 36:6-13": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Иохан 8:12",
+          "preface_text": "Гэм нүгэлтнүүдийн заль мэх ба Тэнгэрбурханы сайхан сэтгэл Намайг дагадаг хүн харанхуй дотор явахгүй, харин амийн гэрэлтэй болно (Иохан 8:12).",
+          "page": 109,
+          "source": "extracted",
+          "evidence_line_range": [
+            3567,
+            3570
+          ]
+        }
+      ]
+    },
+    "Psalm 27:1-6": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Илчлэл 21:3",
+          "preface_text": "Аюулын үед Тэнгэрбурхан бидний дэргэд зогсдог Одоо Тэнгэрбурхан үнэхээр миний дотор оршдог (Илчлэл 21:3).",
+          "page": 116,
+          "source": "extracted",
+          "evidence_line_range": [
+            3824,
+            3827
+          ]
+        }
+      ]
+    },
+    "Psalm 27:7-14": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Илчлэл 21:3",
+          "preface_text": "Аюулын үед Тэнгэрбурхан бидний дэргэд зогсдог Одоо Тэнгэрбурхан үнэхээр миний дотор оршдог (Илчлэл 21:3).",
+          "page": 116,
+          "source": "extracted",
+          "evidence_line_range": [
+            3824,
+            3827
+          ]
+        }
+      ]
+    },
+    "Psalm 57:2-12": {
+      "entries": [
+        {
+          "kind": "patristic_preface",
+          "attribution": "Гэгээн Августин",
+          "preface_text": "Хавчлагын дундах өглөөний даатгал залбирал Энэ дуулал бидний Эзэний тарчлалтыг өгүүлдэг (Гэгээн Августин).",
+          "page": 125,
+          "source": "extracted",
+          "evidence_line_range": [
+            4113,
+            4116
+          ]
+        }
+      ]
+    },
+    "Psalm 48:2-12": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Илчлэл 21:10",
+          "preface_text": "Ард түмний чөлөөлтийн төлөө талархал Тэр намайг сүрлэг өндөр уулан дээр аваачаад Тэнгэрбурханы ариун хот Йерусалимыг үзүүллээ (Илчлэл 21:10).",
+          "page": 128,
+          "source": "extracted",
+          "evidence_line_range": [
+            4232,
+            4235
+          ]
+        }
+      ]
+    },
+    "Psalm 30:2-13": {
+      "entries": [
+        {
+          "kind": "patristic_preface",
+          "attribution": "Кацен",
+          "preface_text": "Үхлээс аварсны төлөө талархал Сүр жавхлангаар өргөмжилсөн Христ цаг ямагт Эцэтээ талархал өргөдөг (Кацен).",
+          "page": 132,
+          "source": "extracted",
+          "evidence_line_range": [
+            4390,
+            4392
+          ]
+        }
+      ]
+    },
+    "Psalm 32:1-11": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Ром 4:6",
+          "preface_text": "Нүглүүд нь уучлагдсан тэд жаргалтай яа! Өөрийн үнэ цэнээр биш харин Тэнгэрбурханаар зөвтгөгдсөнөөр дамжуулан Тэнгэрбурханы мэлмийн өмнө ариун болсон хүний аз жаргалын тухай Давид өгүүлдэг (Ром 4:6).",
+          "page": 135,
+          "source": "extracted",
+          "evidence_line_range": [
+            4474,
+            4480
+          ]
+        }
+      ]
+    },
+    "Psalm 51:3-19": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Ефес 4:23-24",
+          "preface_text": "Аяа Тэнгэрбурхан минь, намайг нигүүлсээч Та нар оюун санааныхаа сүнс дотор шинэчлэгдэж, үнэний зөвт байдал ба ариун чанар дор Тэнгэрбурханы дагуу бүтээгдсэн шинэ хүнийг өмс (Ефес 4:23-24).",
+          "page": 142,
+          "source": "extracted",
+          "evidence_line_range": [
+            4709,
+            4713
+          ]
+        },
+        {
+          "kind": "nt_typological",
+          "attribution": "Ефес 4:23-24",
+          "preface_text": "Аяа Тэнгэрбурхан минь, намайг нигүүлсээч Та нар оюун санааныхаа сүнс дотор шинэчлэгдэж, үнэний зөвт байдал ба ариун чанар дор Тэнгэрбурханы дагуу бүтээгдсэн шинэ хүнийг өмс (Ефес 4:23-24).",
+          "page": 263,
+          "source": "extracted",
+          "evidence_line_range": [
+            8923,
+            8927
+          ]
+        },
+        {
+          "kind": "nt_typological",
+          "attribution": "Ефес 4:23-24",
+          "preface_text": "Аяа Тэнгэрбурхан минь, намайг нигүүлсээч Та нар оюун санааныхаа сүнс дотор шинэчлэгдэж, үнэний зөвт байдал ба ариун чанар дор Тэнгэрбурханы дагуу бүтээгдсэн шинэ хүнийг өмс (Ефес 4:23-24).",
+          "page": 375,
+          "source": "extracted",
+          "evidence_line_range": [
+            12923,
+            12927
+          ]
+        },
+        {
+          "kind": "nt_typological",
+          "attribution": "Ефес 4:23-24",
+          "preface_text": "Аяа Тэнгэрбурхан минь, намайг нигүүлсээч Та нар оюун санааныхаа сүнс дотор шинэчлэгдэж, үнэний зөвт байдал ба ариун чанар дор Тэнгэрбурханы дагуу бүтээгдсэн шинэ хүнийг өмс (Ефес 4:23-24).",
+          "page": 488,
+          "source": "extracted",
+          "evidence_line_range": [
+            16891,
+            16895
+          ]
+        }
+      ]
+    },
+    "Psalm 41:2-14": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Марк 14:18",
+          "preface_text": "Өвчтэй хүний даатгал залбирал Есүс -Үнэнээр Би та нарт хэлье. Надтай хамт хооллож буй та нарын нэг чинь Надаас урвана гэлээ (Марк 14:18).",
+          "page": 150,
+          "source": "extracted",
+          "evidence_line_range": [
+            5020,
+            5023
+          ]
+        }
+      ]
+    },
+    "Psalm 46:2-12": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Матай 1:23",
+          "preface_text": "Тэнгэрбурхан бол бидний хоргодох газар ба хүч юм Түүнийг Иммануел (орчуулбал “Тэнгэрбурхан бидэнтэй хамт”) гэж тэд нэрлэнэ гэсэн юм (Матай 1:23).",
+          "page": 152,
+          "source": "extracted",
+          "evidence_line_range": [
+            5091,
+            5095
+          ]
+        }
+      ]
+    },
+    "Psalm 117:1-2": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Ром 15:8-9",
+          "preface_text": "Тэнгэрбурханы өрөвдөх нинжин сэтгэлд зориулсан магтаал Учир нь би хэлнэ. […] Энэ нь мөн Түүний өршөөлийнх нь төлөө харийнхан Тэнгэрбурханыг алдаршуулахын тулд ажээ (Ром 15:8-9).",
+          "page": 162,
+          "source": "extracted",
+          "evidence_line_range": [
+            5429,
+            5433
+          ]
+        },
+        {
+          "kind": "nt_typological",
+          "attribution": "Ром 15:8-9",
+          "preface_text": "Тэнгэрбурханы өрөвдөх бөгөөд нинжин сэтгэлд зориулсан магтаал Учир нь би хэлнэ. […] Энэ нь мөн Түүний өршөөлийнх нь төлөө харийнхан Тэнгэрбурханыг алдаршуулахын тулд ажээ (Ром 15:8-9).",
+          "page": 394,
+          "source": "extracted",
+          "evidence_line_range": [
+            13595,
+            13599
+          ]
+        }
+      ]
+    },
+    "Psalm 16:1-6": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Үйлс 2:24",
+          "preface_text": "Эзэн бол миний өв юм Тэнгэрбурхан үхлийн шаналлыг устгаж, Есүсийг амилуулав (Үйлс 2:24).",
+          "page": 168,
+          "source": "extracted",
+          "evidence_line_range": [
+            5626,
+            5628
+          ]
+        },
+        {
+          "kind": "nt_typological",
+          "attribution": "Үйлс 2:24",
+          "preface_text": "Эзэн бол миний өв юм Тэнгэрбурхан үхлийн шаналлыг устгаж, Есүсийг амилуулав (Үйлс 2:24).",
+          "page": 535,
+          "source": "extracted",
+          "evidence_line_range": [
+            18547,
+            18549
+          ]
+        }
+      ]
+    },
+    "Psalm 118:1-16": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Үйлс 4:11",
+          "preface_text": "Авралын төлөөх баярын дуу Есүс бол барилгачид та нарт гологдсон ч булангийн тулгуур чулуу болсон юм (Үйлс 4:11).",
+          "page": 175,
+          "source": "extracted",
+          "evidence_line_range": [
+            5861,
+            5863
+          ]
+        },
+        {
+          "kind": "nt_typological",
+          "attribution": "Үйлс 4:11",
+          "preface_text": "Авралын төлөөх баярын дуу Есүс бол барилгачид та нарт гологдсон ч булангийн тулгуур чулуу болсон юм (Үйлс 4:11).",
+          "page": 405,
+          "source": "extracted",
+          "evidence_line_range": [
+            13983,
+            13985
+          ]
+        }
+      ]
+    },
+    "Psalm 150:1-6": {
+      "entries": [
+        {
+          "kind": "patristic_preface",
+          "attribution": "Хэсихиус",
+          "preface_text": "Эзэнийг магтагтун! Таны ухаан санаа болон зүрх сэтгэл дуунд тань шингэж орших болтугай. Энэ нь Тэнгэрбурханыг таны бүхий л бие сэтгэлээр алдаршуулах явдал юм (Хэсихиус).",
+          "page": 180,
+          "source": "extracted",
+          "evidence_line_range": [
+            6056,
+            6060
+          ]
+        },
+        {
+          "kind": "patristic_preface",
+          "attribution": "Хэсихиус",
+          "preface_text": "Эзэнийг магтагтун! Таны ухаан санаа болон зүрх сэтгэл дуунд тань шингэж орших болтугай. Энэ нь Тэнгэрбурханыг таны бүхий л бие сэтгэлээр алдаршуулах явдал юм (Хэсихиус).",
+          "page": 411,
+          "source": "extracted",
+          "evidence_line_range": [
+            14177,
+            14181
+          ]
+        }
+      ]
+    },
+    "Psalm 42:2-6": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Илчлэл 22:17",
+          "preface_text": "Сүм хийд дэх Эзэний оршихуйг хүсэн хүлээхүй Цангасан нэгэн нь ирэг. Хүссэн нэгэн нь амийн усыг үнэгүй аваг (Илчлэл 22:17).",
+          "page": 195,
+          "source": "extracted",
+          "evidence_line_range": [
+            6558,
+            6560
+          ]
+        }
+      ]
+    },
+    "Psalm 45:2-10": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Матай 25:6",
+          "preface_text": "Хааны хуримын магтаал Гэтэл шөнө дөлөөр “Хараач, сүйт залуу байна. Түүнийг угтаж авцгаа” гэх хашхираан хаджээ (Матай 25:6).",
+          "page": 203,
+          "source": "extracted",
+          "evidence_line_range": [
+            6849,
+            6852
+          ]
+        }
+      ]
+    },
+    "Psalm 43:1-5": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Иохан 12:46",
+          "preface_text": "Сүм хийдийг хүсэн хүлээхүй Би ертөнцөд гэрэл болон ирсэн (Иохан 12:46).",
+          "page": 211,
+          "source": "extracted",
+          "evidence_line_range": [
+            7123,
+            7124
+          ]
+        }
+      ]
+    },
+    "Psalm 65:2-9": {
+      "entries": [
+        {
+          "kind": "patristic_preface",
+          "attribution": "Ориген",
+          "preface_text": "Ёслол төгөлдөр талархал Сион тэнгэрийн орныг төлөөлөн бэлгэддэг (Ориген).",
+          "page": 214,
+          "source": "extracted",
+          "evidence_line_range": [
+            7239,
+            7241
+          ]
+        }
+      ]
+    },
+    "Psalm 49:1-13": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Матай 19:23",
+          "preface_text": "Эд баялгийн хоосон чанар Баян хүн тэнгэрийн хаанчлалд орох нь нэн бэрх (Матай 19:23).",
+          "page": 219,
+          "source": "extracted",
+          "evidence_line_range": [
+            7413,
+            7415
+          ]
+        }
+      ]
+    },
+    "Psalm 62:2-9": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Ром 15:13",
+          "preface_text": "Тэнгэрбурханы доторх амар амгалан Найдварын Тэнгэрбурхан та нарыг итгэл дотор бүх баяр баясгалан ба амар тайвнаар дүүргэх болтугай (Ром 15:13).",
+          "page": 236,
+          "source": "extracted",
+          "evidence_line_range": [
+            8013,
+            8016
+          ]
+        }
+      ]
+    },
+    "Psalm 80:2-8, 15-20": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Илчлэл 22:20",
+          "preface_text": "Эзэн, Та Ирэгтүн! Өөрийн усан үзмийн модыг арчилж өгнө үү: Ирээрэй, Эзэн Есүс ээ! (Илчлэл 22:20)",
+          "page": 246,
+          "source": "extracted",
+          "evidence_line_range": [
+            8338,
+            8340
+          ]
+        }
+      ]
+    },
+    "Psalm 81:2-11": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Еврей 3:12",
+          "preface_text": "Эвслийн гэрээг ёслол төгөлдөр шинэчлэхүй Ах дүү нар аа, та нараас хэн нэг нь ёрын, итгэлгүй зүрхтэй байж, амьд Тэнгэрбурханаас салах вий хэмээн болгоомжлогтун (Еврей 3:12).",
+          "page": 250,
+          "source": "extracted",
+          "evidence_line_range": [
+            8481,
+            8484
+          ]
+        }
+      ]
+    },
+    "Psalm 72:1-11": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Матай 2:11",
+          "preface_text": "Мессиагийн хааны эрх мэдэл Тэгээд гэрт орж, эх Мариагийнхаа хамт буй хүүхдийг хараад, сөгдөн Түүнд мөргөж, эрдэнэсийн хайрцгаа нээгээд алт, гүгэл, миррийг бэлэг болгон өргөв. (Матай 2:11)",
+          "page": 254,
+          "source": "extracted",
+          "evidence_line_range": [
+            8642,
+            8646
+          ]
+        }
+      ]
+    },
+    "Psalm 121:1-8": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Илчлэл 7:16",
+          "preface_text": "Өөрийн ард түмнийг Хамгаалагч Тэд цаашид өлсөх ч үгүй, цангах ч үгүй. Тэд наранд шарагдах ч үгүй, ямар ч халуунд халахгүй (Илчлэл 7:16).",
+          "page": 273,
+          "source": "extracted",
+          "evidence_line_range": [
+            9291,
+            9294
+          ]
+        }
+      ]
+    },
+    "Psalm 8:2-10": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Ефес 1:22",
+          "preface_text": "Эзэний цог жавхлан ба хүмүүний эрхэм чанар Тэнгэрбурхан бүх юмсыг Түүний хөл дор захируулж, Түүнийг чуулганд бүх юмсын дээрх Тэргүүн болгож өгөв (Ефес 1:22).",
+          "page": 282,
+          "source": "extracted",
+          "evidence_line_range": [
+            9617,
+            9620
+          ]
+        },
+        {
+          "kind": "nt_typological",
+          "attribution": "Ефес 1:22",
+          "preface_text": "Эзэний цог жавхлан ба хүмүүний эрхэм чанар Тэнгэрбурхан бүх юмсыг Түүний хөл дор захируулж, Түүнийг чуулганд бүх юмсын дээрх Тэргүүн болгож өгөв (Ефес 1:22).",
+          "page": 508,
+          "source": "extracted",
+          "evidence_line_range": [
+            17593,
+            17596
+          ]
+        }
+      ]
+    },
+    "Psalm 113:1-9": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Лук 1:52",
+          "preface_text": "Эзэний нэр алдрыгмагтан дуулагтун Удирдагчдыг сэнтийгээс нь буулган даруу 288 288 3 дугаар долоо хоног байгсдыг Тэр өргөмжлөв (Лук 1:52).",
+          "page": 287,
+          "source": "extracted",
+          "evidence_line_range": [
+            9786,
+            9795
+          ]
+        }
+      ]
+    },
+    "Psalm 93:1-5": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Илчлэл 19:6-7",
+          "preface_text": "Бүтээгч Тэнгэрбурханы сүр жавхлан Төгс хүчит Эзэн Тэнгэрбурхан маань хаанчилж байна гэхийг би сонсов. Баярлан хөөрч, Түүнд алдрыг нь өргөн өргөмжилцгөөе (Илчлэл 19:6-7).",
+          "page": 295,
+          "source": "extracted",
+          "evidence_line_range": [
+            10056,
+            10059
+          ]
+        }
+      ]
+    },
+    "Psalm 148:1-14": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Илчлэл 5:13",
+          "preface_text": "Бүтээгч Тэнгэрбурханыг магтахуй Сэнтийд Залрагч ба Хурганд магтаал, хүндэтгэл, алдар, сүр хүч нь үеийн үед байх болтугай (Илчлэл 5:13).",
+          "page": 300,
+          "source": "extracted",
+          "evidence_line_range": [
+            10239,
+            10242
+          ]
+        }
+      ]
+    },
+    "Psalm 111:1-10": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Илчлэл 15:3",
+          "preface_text": "Тэнгэрбурханы агуу үйлс .Төгс хүчит Эзэн Тэнгэрбурхан минь, Таны үйлс агуу бөгөөд гайхалтай (Илчлэл 15:3).",
+          "page": 306,
+          "source": "extracted",
+          "evidence_line_range": [
+            10460,
+            10462
+          ]
+        }
+      ]
+    },
+    "Psalm 84:2-13": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Еврей 13:14",
+          "preface_text": "Тэнгэрбурханы сүмийн төлөөх хүсэл эрмэлзэл Учир нь энд бидэнд бат орших хот алга. Харин бид ирэх хотыг эрж байна (Еврей 13:14).",
+          "page": 314,
+          "source": "extracted",
+          "evidence_line_range": [
+            10734,
+            10736
+          ]
+        }
+      ]
+    },
+    "Psalm 123:1-4": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Матай 20:30",
+          "preface_text": "Эзэн бол ард түмийнхээ тасралтгүй тусламж мөн Замын хажууд суугаа хоёр сохор хүн Есүсийг дэргэдүүр нь өнгөрөхийг сонсоод - Давидын Хүү, Эзэн минь ээ, биднийгээ өршөөгөөч гэж хашхиралдав (Матай 20:30).",
+          "page": 322,
+          "source": "extracted",
+          "evidence_line_range": [
+            11047,
+            11052
+          ]
+        }
+      ]
+    },
+    "Psalm 124:1-8": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Үйлс 18:9-10",
+          "preface_text": "Бидний тусламж Эзэний нэрд бий Эзэн шөнө нь Паулд үзэгдлээр дамжуулан: -Бүү ай... Би чамтай хамт байна (Үйлс 18:9-10).",
+          "page": 324,
+          "source": "extracted",
+          "evidence_line_range": [
+            11095,
+            11097
+          ]
+        }
+      ]
+    },
+    "Psalm 85:2-14": {
+      "entries": [
+        {
+          "kind": "patristic_preface",
+          "attribution": "Ориген",
+          "preface_text": "Бидний аврал ойр байна Бидний аврагчийг дэлхий ертөнцөд орж ирэхэд Тэнгэрбурхан газар дэлхийг адисалсан юм (Ориген).",
+          "page": 330,
+          "source": "extracted",
+          "evidence_line_range": [
+            11307,
+            11310
+          ]
+        }
+      ]
+    },
+    "Psalm 125:1-5": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Галат 6:16",
+          "preface_text": "Ард түмнээ хамгаалагч Эзэн Тэнгэрбурханы Израиль дээр амар тайван, өршөөл нь байх болтугай (Галат 6:16).",
+          "page": 337,
+          "source": "extracted",
+          "evidence_line_range": [
+            11565,
+            11567
+          ]
+        }
+      ]
+    },
+    "Psalm 87:1-7": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Галат 4:26",
+          "preface_text": "Бид бүгдийн эх Йерусалим хот Харин дээр оршигч Йерусалим нь эрх чөлөөтэй. Тэр бол бидний эх юм (Галат 4:26).",
+          "page": 360,
+          "source": "extracted",
+          "evidence_line_range": [
+            12384,
+            12386
+          ]
+        }
+      ]
+    },
+    "Psalm 132:1-10": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Лук 1:32",
+          "preface_text": "Тэнгэрбурханы Давидын гэрт амласан амлалтууд Эзэн Тэнгэрбурхан Түүнд өвөг Давидынх нь хаан ширээг өгөх болно (Лук 1:32).",
+          "page": 367,
+          "source": "extracted",
+          "evidence_line_range": [
+            12657,
+            12659
+          ]
+        }
+      ]
+    },
+    "Psalm 122:1-9": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Еврей 12:22",
+          "preface_text": "Ариун хот Йерусалим Харин та нар Сион уул, амьд Тэнгэрбурханы хот, 399 Бямба гарагийн орой 399 тэнгэрлэг Йерусалим руу ирсэн (Еврей 12:22).",
+          "page": 398,
+          "source": "extracted",
+          "evidence_line_range": [
+            13729,
+            13738
+          ]
+        }
+      ]
+    },
+    "Psalm 112:1-10": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Ефес 5:8-9",
+          "preface_text": "Шулуун шударга хүний баяр цэнгэл Гэрлийн хүүхдүүд ёсоор яв. Бүх сайн, зөвт байдал ба үнэнд гэрлийн үр жимс байна (Ефес 5:8-9).",
+          "page": 416,
+          "source": "extracted",
+          "evidence_line_range": [
+            14384,
+            14386
+          ]
+        }
+      ]
+    },
+    "Psalm 136:1-9": {
+      "entries": [
+        {
+          "kind": "patristic_preface",
+          "attribution": "Кассиодор",
+          "preface_text": "Дээгүүр өнгөрөх баярын магтаал Бид Тэнгэрбуханы гайхамшгуудыг дурсан санаснаараа Түүнийг магтдаг (Кассиодор).",
+          "page": 432,
+          "source": "extracted",
+          "evidence_line_range": [
+            14951,
+            14953
+          ]
+        }
+      ]
+    },
+    "Psalm 136:10-26": {
+      "entries": [
+        {
+          "kind": "patristic_preface",
+          "attribution": "Кассиодор",
+          "preface_text": "Дээгүүр өнгөрөх баярын магтаал Бид Тэнгэрбуханы гайхамшгуудыг дурсан санаснаараа Түүнийг магтдаг (Кассиодор).",
+          "page": 432,
+          "source": "extracted",
+          "evidence_line_range": [
+            14951,
+            14953
+          ]
+        }
+      ]
+    },
+    "Psalm 101:1-8": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Иох 14:15",
+          "preface_text": "Сайн удирдагчийн өчиг Та нар Намайг хайрладаг бол тушаалуудыг минь сахь (Иох 14:15).",
+          "page": 441,
+          "source": "extracted",
+          "evidence_line_range": [
+            15239,
+            15241
+          ]
+        }
+      ]
+    },
+    "Psalm 108:2-7": {
+      "entries": [
+        {
+          "kind": "patristic_preface",
+          "attribution": "Арнобиус",
+          "preface_text": "Тэнгэрбурханы магтаал ба тусламжийн гуйлт Тэнгэрбурханы Хүү тэнгэрүүдийн дээгүүр өргөмжлөгдсөнөөс хойш Түүний сүр жавхланг дэлхий даяар тунхагладаг (Арнобиус).",
+          "page": 457,
+          "source": "extracted",
+          "evidence_line_range": [
+            15801,
+            15804
+          ]
+        }
+      ]
+    },
+    "Psalm 146:1-10": {
+      "entries": [
+        {
+          "kind": "patristic_preface",
+          "attribution": "Арнобиус",
+          "preface_text": "Тэнгэрбурханд найдагчид аз жаргалтай болох гэдэг нь ямар утгатай вэ гэдгээ мэддэг Энэ насандаа Эзэнийг магтах гэдэг нь бидний бүх хийх үйлс Түүний сүр жавхланд зориулагдах байх хэрэгтэй гэсэн утгатай (Арнобиус).",
+          "page": 460,
+          "source": "extracted",
+          "evidence_line_range": [
+            15929,
+            15934
+          ]
+        }
+      ]
+    },
+    "Psalm 145:1-13": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Илчлэл 16:5",
+          "preface_text": "Тэнгэрбурханы сүр хүчийг магтахуй Өө, Ариун Нэгэн минь, Та эдгээрийг шүүсэн тул, байгаа, байсан Та зөвт юм (Илчлэл 16:5).",
+          "page": 497,
+          "source": "extracted",
+          "evidence_line_range": [
+            17219,
+            17221
+          ]
+        }
+      ]
+    },
+    "Psalm 88:2-10": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Лук 22:53",
+          "preface_text": "Өвчтэй хүний даатгал залбирал Энэ цаг болоод харанхуйн хүч нь та нарынх юм (Лук 22:53).",
+          "page": 539,
+          "source": "extracted",
+          "evidence_line_range": [
+            18689,
+            18691
+          ]
+        }
+      ]
+    }
+  },
+  "unmatched": {
+    "Psalm 95": [
+      {
+        "kind": "nt_typological",
+        "attribution": "Еврей 3:13",
+        "page": 28
+      }
+    ],
+    "Psalm 4": [
+      {
+        "kind": "patristic_preface",
+        "attribution": "Гэгээн Августин",
+        "page": 512
+      }
+    ],
+    "Psalm 134": [
+      {
+        "kind": "nt_typological",
+        "attribution": "Илчлэл 19:5",
+        "page": 514
+      }
+    ],
+    "Psalm 91": [
+      {
+        "kind": "nt_typological",
+        "attribution": "Лук 10:19",
+        "page": 517
+      }
+    ]
+  }
+}
