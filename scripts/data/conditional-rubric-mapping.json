@@ -91,6 +91,243 @@
         },
         "liturgicalBasis": "GILH §29 — late Advent (Dec 17-24) Lauds psalmody is taken from the current 4-week psalter day, not from a proper cycle."
       }
+    },
+    {
+      "id": "christmas-dec25-sun-vespers-dismissal-redirect",
+      "scope": "christmas",
+      "target": {
+        "file": "src/data/loth/propers/christmas.json",
+        "path": "$.weeks.dec25.SUN.vespers"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "christmas-dec25-sun-vespers-dismissal",
+        "ordinariumKey": "dismissal-blessing",
+        "page": 874,
+        "label": "Магтуу: х. 874-875",
+        "appliesAt": "dismissal",
+        "evidencePdf": {
+          "page": 583,
+          "line": 20164,
+          "text": "Магтуу: х. 874-875."
+        }
+      }
+    },
+    {
+      "id": "christmas-dec25-sun-lauds-invitatory-redirect",
+      "scope": "christmas",
+      "target": {
+        "file": "src/data/loth/propers/christmas.json",
+        "path": "$.weeks.dec25.SUN.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "christmas-dec25-sun-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал: х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 589,
+          "line": 20373,
+          "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+        }
+      }
+    },
+    {
+      "id": "christmas-dec25-sun-lauds-dismissal-redirect",
+      "scope": "christmas",
+      "target": {
+        "file": "src/data/loth/propers/christmas.json",
+        "path": "$.weeks.dec25.SUN.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "christmas-dec25-sun-lauds-dismissal",
+        "ordinariumKey": "dismissal-blessing",
+        "page": 874,
+        "label": "Магтуу: х. 874-875",
+        "appliesAt": "dismissal",
+        "evidencePdf": {
+          "page": 589,
+          "line": 20381,
+          "text": "Магтуу: х. 874-875."
+        }
+      }
+    },
+    {
+      "id": "christmas-dec25-sun-lauds-psalmody-from-w1-sunday",
+      "scope": "christmas",
+      "target": {
+        "file": "src/data/loth/propers/christmas.json",
+        "path": "$.weeks.dec25.SUN.lauds"
+      },
+      "kind": "conditionalRubric",
+      "data": {
+        "rubricId": "christmas-dec25-sun-lauds-psalmody-substitute",
+        "when": {
+          "season": ["CHRISTMAS"],
+          "dateRange": { "from": "12-25", "to": "12-25" }
+        },
+        "action": "substitute",
+        "target": {
+          "text": "Дууллууд ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна. х. 58."
+        },
+        "appliesTo": { "section": "psalmody" },
+        "evidencePdf": {
+          "page": 589,
+          "line": 20388,
+          "text": "Дууллууд ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна. х. 58."
+        },
+        "liturgicalBasis": "Christmas Day Lauds psalmody is drawn from psalter Week 1 Sunday (page 58)."
+      }
+    },
+    {
+      "id": "christmas-dec25-sun-vespers2-dismissal-redirect",
+      "scope": "christmas",
+      "target": {
+        "file": "src/data/loth/propers/christmas.json",
+        "path": "$.weeks.dec25.SUN.vespers2"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "christmas-dec25-sun-vespers2-dismissal",
+        "ordinariumKey": "dismissal-blessing",
+        "page": 874,
+        "label": "Магтуу: х. 874-875",
+        "appliesAt": "dismissal",
+        "evidencePdf": {
+          "page": 592,
+          "line": 20496,
+          "text": "Магтуу: х. 874-875."
+        }
+      }
+    },
+    {
+      "id": "christmas-octave-sun-lauds-invitatory-redirect",
+      "scope": "christmas",
+      "target": {
+        "file": "src/data/loth/propers/christmas.json",
+        "path": "$.weeks.octave.SUN.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "christmas-octave-sun-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал: х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 601,
+          "line": 20807,
+          "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+        }
+      }
+    },
+    {
+      "id": "christmas-holyfamily-sun-lauds-invitatory-redirect",
+      "scope": "christmas",
+      "target": {
+        "file": "src/data/loth/propers/christmas.json",
+        "path": "$.weeks.holyFamily.SUN.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "christmas-holyfamily-sun-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал: х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 599,
+          "line": 20742,
+          "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+        }
+      }
+    },
+    {
+      "id": "christmas-jan1-sun-lauds-invitatory-redirect",
+      "scope": "christmas",
+      "target": {
+        "file": "src/data/loth/propers/christmas.json",
+        "path": "$.weeks.jan1.SUN.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "christmas-jan1-sun-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал: х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 607,
+          "line": 21004,
+          "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+        }
+      }
+    },
+    {
+      "id": "christmas-epiphany-sun-lauds-invitatory-redirect",
+      "scope": "christmas",
+      "target": {
+        "file": "src/data/loth/propers/christmas.json",
+        "path": "$.weeks.epiphany.SUN.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "christmas-epiphany-sun-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал: х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 609,
+          "line": 21069,
+          "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+        }
+      }
+    },
+    {
+      "id": "christmas-epiphanyweek-sun-lauds-invitatory-redirect",
+      "scope": "christmas",
+      "target": {
+        "file": "src/data/loth/propers/christmas.json",
+        "path": "$.weeks.epiphanyWeek.SUN.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "christmas-epiphanyweek-sun-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал: х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 611,
+          "line": 21130,
+          "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+        }
+      }
+    },
+    {
+      "id": "christmas-baptism-sun-lauds-invitatory-redirect",
+      "scope": "christmas",
+      "target": {
+        "file": "src/data/loth/propers/christmas.json",
+        "path": "$.weeks.baptism.SUN.lauds"
+      },
+      "kind": "pageRedirect",
+      "data": {
+        "redirectId": "christmas-baptism-sun-lauds-invitatory",
+        "ordinariumKey": "invitatory-psalms",
+        "page": 28,
+        "label": "Урих дуудлагын дуулал: х. 28",
+        "appliesAt": "invitatory",
+        "evidencePdf": {
+          "page": 616,
+          "line": 21308,
+          "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+        }
+      }
     }
   ]
 }
