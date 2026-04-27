@@ -29,6 +29,8 @@ import {
   promoteToFirstVespersIdentity,
 } from './hours'
 import { applySeasonalAntiphon, pickSeasonalVariant } from './hours/seasonal-antiphon'
+import { applyConditionalRubrics } from './hours/conditional-rubric-resolver'
+import { applyPageRedirects, loadOrdinariumKeyCatalog } from './hours/page-redirect-resolver'
 import { warmBibleCache } from './bible-loader'
 import type { HourContext } from './hours'
 
@@ -383,6 +385,32 @@ export async function assembleHour(
     dateStr,
   })
   mergedPropers = { ...mergedPropers, ...richOverlay }
+
+  // Layer 4.5: FR-160-B conditional + page-redirect hydration.
+  // Both helpers are noop when the propers don't carry the new
+  // arrays, so existing data files are byte-equal until B3 marks
+  // them. applyPageRedirects fail-hards on unknown ordinariumKey.
+  //
+  // Use `effectiveDayOfWeek` (not the civil `dayOfWeek`) so Saturday
+  // First Vespers / next-day Solemnity branches evaluate rubrics with
+  // the day's liturgical identity (typically SUN). Otherwise rubrics
+  // keyed to `dayOfWeek: ['SUN']` would silently miss on Saturday eve.
+  {
+    const isFirstHourOfDayCtx = hour === 'lauds'
+    const condResult = applyConditionalRubrics(mergedPropers, {
+      season: day.season,
+      dayOfWeek: effectiveDayOfWeek,
+      dateStr,
+      hour,
+      isFirstHourOfDay: isFirstHourOfDayCtx,
+    })
+    mergedPropers = condResult.propers
+    if (mergedPropers.pageRedirects && mergedPropers.pageRedirects.length > 0) {
+      const catalog = loadOrdinariumKeyCatalog()
+      const redirResult = applyPageRedirects(mergedPropers, catalog)
+      mergedPropers = redirResult.propers
+    }
+  }
 
   // Layer 5: seasonal antiphon augmentation (GILH §113 — Easter Alleluia).
   // Applied last so it affects both seasonal and psalter-commons gospel

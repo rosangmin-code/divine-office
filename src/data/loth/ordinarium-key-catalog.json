@@ -1,0 +1,59 @@
+{
+  "$comment": "FR-160-B PR-1 — closed-enum ordinarium-key catalog. 9 keys map to canonical PDF landing pages and the JSON file that owns the body. PageRedirect.ordinariumKey MUST appear here; runtime hydration looks up sourcePath. Adding/removing keys is a schema change (Zod enum + types). `kind: fixed` means redirect.page MUST equal entry.page (verifier + runtime gate); `kind: variable` allows per-celebration page differences (e.g. Магтуу: х. 879 vs х. 880).",
+  "entries": {
+    "benedictus": {
+      "kind": "fixed",
+      "page": 34,
+      "label": "Бенедиктус",
+      "sourcePath": "src/data/loth/ordinarium/canticles.json#benedictus"
+    },
+    "magnificat": {
+      "kind": "fixed",
+      "page": 40,
+      "label": "Магнификат",
+      "sourcePath": "src/data/loth/ordinarium/canticles.json#magnificat"
+    },
+    "nunc-dimittis": {
+      "kind": "fixed",
+      "page": 515,
+      "label": "Нунк димиттис",
+      "sourcePath": "src/data/loth/ordinarium/canticles.json#nuncDimittis"
+    },
+    "dismissal-blessing": {
+      "kind": "variable",
+      "page": 879,
+      "label": "Магтуу",
+      "sourcePath": "src/data/loth/ordinarium/common-prayers.json#dismissal"
+    },
+    "compline-responsory": {
+      "kind": "fixed",
+      "page": 515,
+      "label": "Шөнийн даатгал залбирлын хариулт",
+      "sourcePath": "src/data/loth/ordinarium/compline.json#responsory"
+    },
+    "common-prayers": {
+      "kind": "fixed",
+      "page": 22,
+      "label": "Нийтлэг залбирал",
+      "sourcePath": "src/data/loth/ordinarium/common-prayers.json"
+    },
+    "gloria-patri": {
+      "kind": "fixed",
+      "page": 22,
+      "label": "Жавхлан Эцэгт",
+      "sourcePath": "src/data/loth/ordinarium/common-prayers.json#openingVersicle.gloryBe"
+    },
+    "invitatory-psalms": {
+      "kind": "variable",
+      "page": 28,
+      "label": "Урих дуулал",
+      "sourcePath": "src/data/loth/ordinarium/invitatory.json"
+    },
+    "hymns": {
+      "kind": "variable",
+      "page": 883,
+      "label": "Магтуу дуу",
+      "sourcePath": "src/data/loth/ordinarium/hymns.json"
+    }
+  }
+}
