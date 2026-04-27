@@ -766,6 +766,59 @@
         },
         "liturgicalBasis": "Pentecost 2nd Vespers psalmody also drawn from psalter Week 1 Sunday."
       }
+    },
+    {
+      "id": "ordinary-time-w1-sun-substitute-baptism-of-the-lord",
+      "scope": "ordinary-time",
+      "target": {
+        "file": "src/data/loth/propers/ordinary-time.json",
+        "path": "$.weeks.1.SUN"
+      },
+      "kind": "conditionalRubric",
+      "data": {
+        "rubricId": "ordinary-time-w1-sun-baptism-of-the-lord-substitute",
+        "when": {
+          "season": ["ORDINARY_TIME"],
+          "dateRange": { "from": "01-07", "to": "01-13" }
+        },
+        "action": "substitute",
+        "target": {
+          "text": "Жирийн цаг улирлын нэг дэх Ням гарагийн оронд Эзэний Ариун Угаал хэмээх баяр (х. 616) байдаг."
+        },
+        "appliesTo": { "section": "psalmody" },
+        "evidencePdf": {
+          "page": 753,
+          "line": 26067,
+          "text": "Жирийн цаг улирлын нэг дэх Ням гарагийн оронд Эзэний Ариун Угаал хэмээх баяр (х. 616) байдаг."
+        },
+        "liturgicalBasis": "Ordinary Time Week 1 Sunday is replaced by the Baptism of the Lord feast (christmas.json baptism.SUN, p.616). Calendar-level substitution: when the date matches the Baptism (Sunday after Epiphany), the runtime resolver consults christmas.json instead of ordinary-time.json weeks.1.SUN."
+      }
+    },
+    {
+      "id": "ordinary-time-w34-sun-substitute-christ-the-king",
+      "scope": "ordinary-time",
+      "target": {
+        "file": "src/data/loth/propers/ordinary-time.json",
+        "path": "$.weeks.34.SUN"
+      },
+      "kind": "conditionalRubric",
+      "data": {
+        "rubricId": "ordinary-time-w34-sun-christ-the-king-substitute",
+        "when": {
+          "season": ["ORDINARY_TIME"]
+        },
+        "action": "substitute",
+        "target": {
+          "text": "“Есүс Христ Бидний Эзэн Ертөнцийн Хаан” хэмээх баяр (х. 817) Жирийн цаг улирлын гучин дөрөв дэх Ням гарагийн оронд тохиолддог."
+        },
+        "appliesTo": { "section": "psalmody" },
+        "evidencePdf": {
+          "page": 816,
+          "line": 27864,
+          "text": "хэмээх баяр (х. 817) Жирийн цаг улирлын гучин дөрөв дэх Ням гарагийн оронд тохиолддог/ тохиодог."
+        },
+        "liturgicalBasis": "Ordinary Time Week 34 Sunday is replaced by Christ the King solemnity (ordinary-time.json christTheKing.SUN, p.817). Calendar-level substitution: the runtime resolver matches the celebration name to specialKey 'christTheKing' and consults the dedicated solemnity block."
+      }
     }
   ]
 }
