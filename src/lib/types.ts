@@ -237,7 +237,44 @@ export interface HourPropers {
   // and `undefined` are equivalent (noop).
   conditionalRubrics?: ConditionalRubric[]
   pageRedirects?: PageRedirect[]
+
+  // FR-160-B PR-8 (B4): per-section rubric overrides surfaced for the
+  // 5 sections whose printed body lives outside HourPropers
+  // (psalmody/intercessions/invitatory/dismissal/openingVersicle).
+  // PR-1 already handles concludingPrayer/hymn/shortReading by mutating
+  // the corresponding HourPropers fields directly. For the 5 PR-8
+  // sections the resolver records the matched directive in this map so
+  // the assembler/UI (PR-9) can render it alongside (or in place of)
+  // the section body — without re-running upstream ordinarium loaders.
+  // Empty / undefined = noop. additive only.
+  sectionOverrides?: SectionOverrideMap
 }
+
+// FR-160-B PR-8: applied conditional-rubric record. Captures the
+// resolved action so the assembler can decide *how* to surface the
+// directive (skip = hide the section; substitute = show only the
+// directive; prepend/append = render directive before/after the body).
+// `text` is the resolved target.text (post-resolveTargetText). `ref`
+// and `ordinariumKey` propagate the rubric's target hints when present
+// for downstream resolvers (e.g. ordinarium body inlining in B5).
+export interface SectionOverride {
+  rubricId: string
+  mode: ConditionalRubricAction
+  text?: string
+  ref?: string
+  ordinariumKey?: PageRedirectOrdinariumKey
+  /**
+   * Propagated from `ConditionalRubric.appliesTo.index` so the
+   * assembler / UI can target an item-level override (e.g. psalmody[1]
+   * specifically). Absent when the rubric applies to the whole
+   * section.
+   */
+  index?: number
+}
+
+export type SectionOverrideMap = Partial<
+  Record<ConditionalRubricSection, SectionOverride[]>
+>
 
 export interface HymnCandidate {
   number: number

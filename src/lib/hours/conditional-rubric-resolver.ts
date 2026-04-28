@@ -1,4 +1,4 @@
-// FR-160-B PR-1 — Layer 4.5 conditional rubric hydration.
+// FR-160-B Layer 4.5 conditional rubric hydration.
 //
 // Evaluates `HourPropers.conditionalRubrics` against runtime context
 // (season, dayOfWeek, dateStr, hour, isFirstHourOfDay) and applies the
@@ -13,20 +13,33 @@
 //   - prepend     → prepend target.text to existing field (rare)
 //   - append      → append target.text to existing field (rare)
 //
-// PR-1 scope: hydrate signature + match logic + skip/substitute/prepend/
-// append for `concludingPrayer`, `shortReading`, `responsory`,
-// `hymn`. Other sections (psalmody/intercessions) are placeholder noops
-// that defer mutation to PR-8 (B4) — the rubricsApplied counter still
-// fires so verifier coverage gates can detect drift.
+// PR-1 sections (mutate HourPropers fields directly):
+//   concludingPrayer, hymn, shortReading, responsory, intercessions
+//   (skip only), gospelCanticle (skip only)
+//
+// PR-8 sections (record in sectionOverrides; printed body lives outside
+// HourPropers in ordinarium / psalter / sanctoral.properPsalmody):
+//   psalmody, intercessions (substitute/prepend/append),
+//   invitatory, dismissal, openingVersicle
+//
+// The PR-8 sections cover rubrics like 11-02 All Souls' "Хурлын
+// даатгал залбирлуудыг … Ням гарагаас татаж авна" (substitute psalmody
+// → take prayers from the regular Sunday office). The assembler / UI
+// (PR-9 + B5) reads sectionOverrides to render the directive without
+// re-running the psalter resolver.
 
 import type {
   ConditionalRubric,
+  ConditionalRubricAction,
   ConditionalRubricLocator,
+  ConditionalRubricSection,
   ConditionalRubricWhen,
   DayOfWeek,
   HourPropers,
   HourType,
   LiturgicalSeason,
+  SectionOverride,
+  SectionOverrideMap,
 } from '../types'
 
 export interface ConditionalRubricContext {
@@ -72,12 +85,53 @@ function resolveTargetText(rubric: ConditionalRubric): string | null {
   if (!t) return null
   if (typeof t.text === 'string' && t.text.length > 0) return t.text
   // ref-only / ordinariumKey-only / textRich-only targets defer to
-  // upstream assembler (PR-8); here we treat them as opaque-no-text.
+  // the assembler / UI; here we treat them as opaque-no-text.
   return null
 }
 
-function applySkip(propers: HourPropers, locator: ConditionalRubricLocator): HourPropers {
-  const next = { ...propers }
+// PR-8 sections — the printed body lives outside HourPropers, so the
+// resolver records each matching rubric in sectionOverrides[section]
+// instead of mutating a string field. These are also the sections
+// that don't have substitute/prepend/append wiring in PR-1.
+const PR8_SECTIONS: ReadonlySet<ConditionalRubricSection> = new Set([
+  'psalmody',
+  'invitatory',
+  'dismissal',
+  'openingVersicle',
+])
+
+function appendSectionOverride(
+  propers: HourPropers,
+  section: ConditionalRubricSection,
+  override: SectionOverride,
+): HourPropers {
+  const next: HourPropers = { ...propers }
+  const existing: SectionOverrideMap = next.sectionOverrides ?? {}
+  const sectionList = existing[section] ?? []
+  next.sectionOverrides = {
+    ...existing,
+    [section]: [...sectionList, override],
+  }
+  return next
+}
+
+function rubricToOverride(
+  rubric: ConditionalRubric,
+  text: string | null,
+): SectionOverride {
+  const out: SectionOverride = {
+    rubricId: rubric.rubricId,
+    mode: rubric.action,
+  }
+  if (text != null) out.text = text
+  if (rubric.target?.ref != null) out.ref = rubric.target.ref
+  if (rubric.target?.ordinariumKey != null) out.ordinariumKey = rubric.target.ordinariumKey
+  if (typeof rubric.appliesTo.index === 'number') out.index = rubric.appliesTo.index
+  return out
+}
+
+function applySkip(propers: HourPropers, locator: ConditionalRubricLocator, rubric: ConditionalRubric): HourPropers {
+  let next = { ...propers }
   switch (locator.section) {
     case 'shortReading':
       delete next.shortReading
@@ -101,13 +155,18 @@ function applySkip(propers: HourPropers, locator: ConditionalRubricLocator): Hou
       delete next.intercessions
       delete next.intercessionsPage
       delete next.intercessionsRich
+      next = appendSectionOverride(next, 'intercessions', rubricToOverride(rubric, null))
       break
     case 'gospelCanticle':
       delete next.gospelCanticleAntiphon
       delete next.gospelCanticleAntiphonPage
       break
-    // psalmody / invitatory / openingVersicle / dismissal — handled by
-    // assembler stage (PR-8). PR-1 keeps the section data intact.
+    case 'psalmody':
+    case 'invitatory':
+    case 'dismissal':
+    case 'openingVersicle':
+      next = appendSectionOverride(next, locator.section, rubricToOverride(rubric, null))
+      break
   }
   return next
 }
@@ -117,8 +176,22 @@ function applySubstitute(
   rubric: ConditionalRubric,
 ): HourPropers {
   const text = resolveTargetText(rubric)
-  if (text == null) return propers
-  const next = { ...propers }
+  if (text == null) {
+    // ref / ordinariumKey-only target with no inline text: still
+    // record the override for downstream resolvers (PR-9 surfaces
+    // ref/ordinariumKey hints).
+    if (
+      rubric.target?.ref != null ||
+      rubric.target?.ordinariumKey != null
+    ) {
+      const sec = rubric.appliesTo.section
+      if (PR8_SECTIONS.has(sec) || sec === 'intercessions') {
+        return appendSectionOverride(propers, sec, rubricToOverride(rubric, null))
+      }
+    }
+    return propers
+  }
+  let next = { ...propers }
   switch (rubric.appliesTo.section) {
     case 'concludingPrayer':
       next.concludingPrayer = text
@@ -137,7 +210,21 @@ function applySubstitute(
       next.shortReading = { ref: rubric.target?.ref ?? '', text }
       delete next.shortReadingRich
       break
-    // PR-1 scope: other sections deferred to PR-8.
+    case 'intercessions':
+      // substitute the petition list with a single directive line.
+      // The override map carries the rubric metadata for B5 UI.
+      next.intercessions = [text]
+      delete next.intercessionsPage
+      delete next.intercessionsRich
+      next = appendSectionOverride(next, 'intercessions', rubricToOverride(rubric, text))
+      break
+    case 'psalmody':
+    case 'invitatory':
+    case 'dismissal':
+    case 'openingVersicle':
+      next = appendSectionOverride(next, rubric.appliesTo.section, rubricToOverride(rubric, text))
+      break
+    // responsory / gospelCanticle — substitute deferred (no current data).
   }
   return next
 }
@@ -146,10 +233,13 @@ function applyPrependAppend(
   propers: HourPropers,
   rubric: ConditionalRubric,
   mode: 'prepend' | 'append',
-): HourPropers {
+): HourPropers | null {
   const text = resolveTargetText(rubric)
-  if (text == null) return propers
-  const next = { ...propers }
+  // Textless prepend/append cannot mutate any field — return null so
+  // the caller knows to skip this rubric entirely (no rubricsApplied
+  // record). Avoids overstating applied effects in audit/telemetry.
+  if (text == null) return null
+  let next = { ...propers }
   const join = (existing: string | undefined, addition: string): string =>
     mode === 'prepend' ? `${addition}\n${existing ?? ''}`.trim() : `${existing ?? ''}\n${addition}`.trim()
 
@@ -168,6 +258,23 @@ function applyPrependAppend(
         }
       }
       break
+    case 'intercessions': {
+      const existing = next.intercessions ?? []
+      next.intercessions = mode === 'prepend' ? [text, ...existing] : [...existing, text]
+      next = appendSectionOverride(next, 'intercessions', rubricToOverride(rubric, text))
+      break
+    }
+    case 'psalmody':
+    case 'invitatory':
+    case 'dismissal':
+    case 'openingVersicle':
+      next = appendSectionOverride(next, rubric.appliesTo.section, rubricToOverride(rubric, text))
+      break
+    // responsory / gospelCanticle — prepend/append deferred (no current data).
+    default:
+      // Section that has no prepend/append handler — treat as no-op
+      // and signal the caller via null so rubricsApplied isn't padded.
+      return null
   }
   return next
 }
@@ -192,20 +299,29 @@ export function applyConditionalRubrics(
     if (!matchesWhen(rubric.when, ctx)) continue
     switch (rubric.action) {
       case 'skip':
-        next = applySkip(next, rubric.appliesTo)
+        next = applySkip(next, rubric.appliesTo, rubric)
         break
       case 'substitute':
         next = applySubstitute(next, rubric)
         break
-      case 'prepend':
-        next = applyPrependAppend(next, rubric, 'prepend')
+      case 'prepend': {
+        const out = applyPrependAppend(next, rubric, 'prepend')
+        if (out == null) continue // textless / unhandled section — don't record
+        next = out
         break
-      case 'append':
-        next = applyPrependAppend(next, rubric, 'append')
+      }
+      case 'append': {
+        const out = applyPrependAppend(next, rubric, 'append')
+        if (out == null) continue
+        next = out
         break
+      }
     }
     applied.push(rubric)
   }
 
   return { propers: next, rubricsApplied: applied }
 }
+
+// Re-export action enum for callers wanting strict typing of override.mode.
+export type { ConditionalRubricAction }
