@@ -57,14 +57,22 @@ const PATRISTIC_RE = new RegExp(
 
 // NT books cited (typological psalm prefaces). Discovered via comprehensive
 // grep over parsed_data/full_pdf.txt — superset of the dispatch list.
+// Ordering: multi-word entries (e.g. '1 Петр') and numbered prefixes ('1Кор')
+// MUST precede their single-word counterparts so alternation matches the
+// longer form first and never gets shadowed by a shorter prefix.
 const NT_BOOKS = [
+  '1 Петр', '2 Петр',
+  '1Кор', '2Кор', '1Иохан', '2Иохан', '1Тимот', '2Тимот',
   'Үйлс', 'Матай', 'Иохан', 'Иох', 'Лук', 'Марк',
   'Ром', 'Еврей', 'Ефес', 'Галат', 'Илчлэл', 'Филиппой',
-  '1Кор', '2Кор', '1Иохан', '2Иохан', '1Тимот', '2Тимот',
   'Тит', 'Иаков', 'Колосси', 'Үзэгдэл',
+  'Иуда', 'Филемон',
 ]
+// Optional `харьцуул.\s+` (Mongolian "compare with") cf-style prefix — appears
+// in some prefaces (e.g. parsed_data/full_pdf.txt:13223, 14790). The prefix
+// is consumed but excluded from the captured citation.
 const NT_RE = new RegExp(
-  `\\(((?:${NT_BOOKS.join('|')})\\s*\\d+(?:[:.]\\d+(?:[,-]\\s*\\d+)*)?)\\)`,
+  `\\((?:харьцуул\\.\\s+)?((?:${NT_BOOKS.join('|')})\\s*\\d+(?:[:.]\\d+(?:[,-]\\s*\\d+)*)?)\\)`,
   'u',
 )
 
@@ -97,9 +105,26 @@ async function main() {
 
   // Walk: find "Дуулал N" or "Магтаал N" / canticle header lines
   for (let i = 0; i < lines.length; i++) {
-    const titleMatch = lines[i].match(/^\s*Дуулал\s+(\d+)\s*$/)
+    // R1: anchor matches plain `Дуулал N` and verse-range variants
+    // (`Дуулал N:m-n`, `Дуулал N: m-n`, `Дуулал N:m-n, p-q`). The verse
+    // range suffix is captured separately so the catalog builder can
+    // attach the block to the matching canonical key (`Psalm N:m-n`) when
+    // the same psalm appears under multiple verse-range keys with
+    // different prefaces.
+    const titleMatch = lines[i].match(
+      /^\s*Дуулал\s+(\d+)((?::\s*\d+(?:-\d+)?(?:,\s*\d+(?:-\d+)?)*)?)\s*$/,
+    )
     if (!titleMatch) continue
     const psalmNum = parseInt(titleMatch[1], 10)
+    // Normalize captured verse-range suffix to canonical key form
+    // (no space after `:`, single space after `,`). Empty string for
+    // plain `Дуулал N` anchors — builder fans out to all matching keys.
+    const verseRange = (titleMatch[2] || '')
+      .replace(/^:\s*/, '')
+      .trim()
+      .split(/\s*,\s*/)
+      .filter(Boolean)
+      .join(', ')
 
     // Look ahead up to 15 lines to find a patristic/NT attribution
     const windowStart = i + 1
@@ -143,6 +168,7 @@ async function main() {
     if (!refs[refKey]) refs[refKey] = []
     refs[refKey].push({
       psalmNumber: psalmNum,
+      verseRange,
       kind: attribKind,
       attribution: attribValue,
       preface_text: block,

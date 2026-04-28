@@ -57,12 +57,24 @@ async function main() {
       }))
       continue
     }
-    // For each canonical key, attach the same blocks (a psalm may
-    // appear under verse-subset keys but the headers come from PDF
-    // at the psalm body's first occurrence — page is the disambiguator).
-    for (const canonicalKey of matchingKeys) {
-      if (!refs[canonicalKey]) refs[canonicalKey] = { entries: [] }
-      for (const block of blocks) {
+    // R1.5: per-block canonical-key resolution. When the anchor captured
+    // a verse range (e.g. `Дуулал 116:1-9` → block.verseRange `'1-9'`),
+    // attach the block ONLY to the exact canonical key (`Psalm 116:1-9`)
+    // — preserves per-occurrence preface accuracy when the same psalm
+    // appears under multiple verse-range keys with different prefaces.
+    // Falls back to fan-out to all matchingKeys when:
+    //   - block has no verseRange (plain `Дуулал N` anchor), OR
+    //   - exact key not in catalog (verse range ≠ any psalter-texts key)
+    for (const block of blocks) {
+      const exactKey = block.verseRange
+        ? `Psalm ${psalmNumber}:${block.verseRange}`
+        : null
+      const targetKeys =
+        exactKey && matchingKeys.includes(exactKey)
+          ? [exactKey]
+          : matchingKeys
+      for (const canonicalKey of targetKeys) {
+        if (!refs[canonicalKey]) refs[canonicalKey] = { entries: [] }
         refs[canonicalKey].entries.push({
           kind: block.kind,
           attribution: block.attribution,
