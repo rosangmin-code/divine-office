@@ -543,10 +543,11 @@ export type HourSection =
       gloryBe: string
       rubric?: string
       page?: number
+      directives?: SectionOverride[]
     }
-  | { type: 'openingVersicle'; versicle: string; response: string; gloryBe: string; alleluia?: string; pairedWithInvitatory?: boolean }
+  | { type: 'openingVersicle'; versicle: string; response: string; gloryBe: string; alleluia?: string; pairedWithInvitatory?: boolean; directives?: SectionOverride[] }
   | { type: 'hymn'; text: string; page?: number; candidates?: HymnCandidate[]; selectedIndex?: number; textRich?: PrayerText }
-  | { type: 'psalmody'; psalms: AssembledPsalm[] }
+  | { type: 'psalmody'; psalms: AssembledPsalm[]; directives?: SectionOverride[] }
   | { type: 'shortReading'; ref: string; bookMn: string; verses: { verse: number; text: string }[]; page?: number; textRich?: PrayerText }
   | { type: 'responsory'; fullResponse: string; versicle: string; shortResponse: string; page?: number; rich?: PrayerText }
   | {
@@ -579,10 +580,11 @@ export type HourSection =
       closing?: string
       page?: number
       rich?: PrayerText
+      directives?: SectionOverride[]
     }
   | { type: 'ourFather' }
   | { type: 'concludingPrayer'; text: string; page?: number; alternateText?: string; textRich?: PrayerText; alternateTextRich?: PrayerText }
-  | { type: 'dismissal'; priest: { greeting: { versicle: string; response: string }; blessing: { text: string; response: string }; dismissalVersicle: { versicle: string; response: string } }; individual: { versicle: string; response: string } }
+  | { type: 'dismissal'; priest: { greeting: { versicle: string; response: string }; blessing: { text: string; response: string }; dismissalVersicle: { versicle: string; response: string } }; individual: { versicle: string; response: string }; directives?: SectionOverride[] }
   | { type: 'examen'; text: string; page?: number }
   | { type: 'blessing'; text: string; response: string; page?: number }
   | { type: 'marianAntiphon'; title: string; text: string; page?: number; candidates?: MarianAntiphonCandidate[]; selectedIndex?: number }

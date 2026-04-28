@@ -1,7 +1,7 @@
 import type { HourSection, HourPropers } from '../types'
 import type { ComplineData } from '../psalter-loader'
 import type { HourAssembler } from './types'
-import { buildOpeningVersicle, resolveShortReading, resolveGospelCanticle } from './shared'
+import { buildOpeningVersicle, resolveShortReading, resolveGospelCanticle, attachSectionDirectives } from './shared'
 
 /**
  * Merge compline-specific defaults from complineData into propers
@@ -33,7 +33,7 @@ export const assembleCompline: HourAssembler = (ctx) => {
   const sections: HourSection[] = []
 
   // 1. Opening Versicle (Deus, in adiutorium)
-  sections.push(buildOpeningVersicle(ctx.ordinarium, ctx.liturgicalDay.season))
+  sections.push(attachSectionDirectives(buildOpeningVersicle(ctx.ordinarium, ctx.liturgicalDay.season), ctx.mergedPropers))
 
   // 2. Examen of Conscience
   if (ctx.complineData?.examen) {
@@ -45,7 +45,7 @@ export const assembleCompline: HourAssembler = (ctx) => {
 
   // 3. Psalmody
   if (ctx.assembledPsalms.length > 0) {
-    sections.push({ type: 'psalmody', psalms: ctx.assembledPsalms })
+    sections.push(attachSectionDirectives({ type: 'psalmody', psalms: ctx.assembledPsalms }, ctx.mergedPropers))
   }
 
   // 4. Short Reading

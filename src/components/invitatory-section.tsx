@@ -5,6 +5,7 @@ import type { HourSection } from '@/lib/types'
 import { useSettings } from '@/lib/settings'
 import { AntiphonBox } from './prayer-renderer'
 import { PageRef } from './page-ref'
+import { DirectiveBlock, partitionDirectives } from './prayer-sections/directive-block'
 
 type InvitatoryProps = { section: Extract<HourSection, { type: 'invitatory' }> }
 
@@ -13,6 +14,9 @@ export function InvitatorySection({ section }: InvitatoryProps) {
   const collapsed = settings.invitatoryCollapsed
   const listId = useId()
   const [menuOpen, setMenuOpen] = useState(false)
+  const { hasSkip, hasSubstitute, prepends, appends, substitutes, skips } =
+    partitionDirectives(section.directives)
+  const hideBody = hasSkip || hasSubstitute
 
   const candidates = section.candidates
   const rawIndex = settings.invitatoryPsalmIndex ?? 0
@@ -22,6 +26,7 @@ export function InvitatorySection({ section }: InvitatoryProps) {
       : 0
   const activePsalm = candidates?.[psalmIndex] ?? section.psalm
   const activePage = candidates ? candidates[psalmIndex]?.page : section.page
+  const hasDirectives = (section.directives?.length ?? 0) > 0
 
   return (
     <section aria-label="Урих дуудлага" className="mb-4">
@@ -55,11 +60,31 @@ export function InvitatorySection({ section }: InvitatoryProps) {
         </button>
       </div>
 
+      {/* FR-160-B PR-9a R1 fix: directives surface even when the
+          invitatory body is collapsed (default `invitatoryCollapsed=true`).
+          Otherwise first-hour users would miss a fired skip/substitute
+          rubric and see only the paired opening versicle. */}
+      {collapsed && hasDirectives && (
+        <div data-role="invitatory-directives-collapsed">
+          <DirectiveBlock directives={prepends} />
+          {hideBody && (
+            <DirectiveBlock directives={hasSubstitute ? substitutes : skips} />
+          )}
+          <DirectiveBlock directives={appends} />
+        </div>
+      )}
+
       {!collapsed && (
         <div id="invitatory-body">
-          {section.rubric && (
+          <DirectiveBlock directives={prepends} />
+          {hideBody && (
+            <DirectiveBlock directives={hasSubstitute ? substitutes : skips} />
+          )}
+          {section.rubric && !hideBody && (
             <p className="mt-1 text-xs italic text-red-700/80 dark:text-red-400/80">{section.rubric}</p>
           )}
+          {!hideBody && (
+          <>
           <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">{section.versicle}</p>
           <p className="font-serif text-stone-800 dark:text-stone-200">
             <span className="text-red-700 dark:text-red-400">- </span>
@@ -149,6 +174,9 @@ export function InvitatorySection({ section }: InvitatoryProps) {
             <p className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">{section.gloryBe}</p>
           </div>
           <AntiphonBox text={section.antiphon} page={activePage} />
+          </>
+          )}
+          <DirectiveBlock directives={appends} />
         </div>
       )}
     </section>
