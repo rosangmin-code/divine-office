@@ -1,11 +1,14 @@
+import fs from 'node:fs'
+import path from 'node:path'
 import { describe, it, expect, beforeEach } from 'vitest'
 import {
   applyPageRedirects,
+  hydrateRedirectBody,
   loadOrdinariumKeyCatalog,
   _resetOrdinariumCatalogCache,
   type OrdinariumIndex,
 } from '../page-redirect-resolver'
-import type { HourPropers, PageRedirect } from '../../types'
+import type { HourPropers, PageRedirect, PageRedirectOrdinariumKey } from '../../types'
 
 beforeEach(() => {
   _resetOrdinariumCatalogCache()
@@ -122,7 +125,7 @@ describe('applyPageRedirects — validation', () => {
   })
 
   // @fr FR-160-B-2
-  it('PR-1: keeps propers byte-equal under valid redirects (deferred hydration)', () => {
+  it('PR-1: keeps propers byte-equal under valid redirects (existing fields preserved)', () => {
     const redirect: PageRedirect = {
       redirectId: 'r-1',
       ordinariumKey: 'benedictus',
@@ -142,5 +145,228 @@ describe('applyPageRedirects — validation', () => {
     expect(out.propers.gospelCanticleAntiphon).toBe('antiphon body')
     expect(out.propers.pageRedirects).toBeDefined()
     expect(out.redirectsApplied.length).toBe(1)
+  })
+})
+
+// FR-160-B PR-10 — inline body hydrate.
+//
+// Each ordinariumKey has a `sourcePath` in the catalog (e.g.
+// `src/data/loth/ordinarium/canticles.json#benedictus`). The resolver
+// loads the file once (mtime-cached), navigates the dot-pointer, and
+// pins the resulting JSON value to `propers.pageRedirectBodies` so the
+// assembler / e2e / audit can byte-equal verify the rendered section
+// against the ordinarium source.
+
+const REPO_ROOT = process.cwd()
+
+function readJson<T = unknown>(rel: string): T {
+  return JSON.parse(fs.readFileSync(path.join(REPO_ROOT, rel), 'utf-8')) as T
+}
+
+function makeRedirect(
+  key: PageRedirectOrdinariumKey,
+  page: number,
+  appliesAt: PageRedirect['appliesAt'] = 'gospelCanticle',
+): PageRedirect {
+  return {
+    redirectId: `r-${key}`,
+    ordinariumKey: key,
+    page,
+    label: `${key}: х. ${page}`,
+    appliesAt,
+    evidencePdf: { page, text: `${key} marker` },
+  }
+}
+
+interface KeyExpectation {
+  key: PageRedirectOrdinariumKey
+  page: number
+  appliesAt: PageRedirect['appliesAt']
+  /** Resolves the canonical body from raw repo JSON for byte-equal compare */
+  expectedBody: () => unknown
+}
+
+const KEY_EXPECTATIONS: KeyExpectation[] = [
+  {
+    key: 'benedictus',
+    page: 34,
+    appliesAt: 'gospelCanticle',
+    expectedBody: () =>
+      (readJson<Record<string, unknown>>('src/data/loth/ordinarium/canticles.json'))['benedictus'],
+  },
+  {
+    key: 'magnificat',
+    page: 40,
+    appliesAt: 'gospelCanticle',
+    expectedBody: () =>
+      (readJson<Record<string, unknown>>('src/data/loth/ordinarium/canticles.json'))['magnificat'],
+  },
+  {
+    key: 'nunc-dimittis',
+    page: 515,
+    appliesAt: 'gospelCanticle',
+    expectedBody: () =>
+      (readJson<Record<string, unknown>>('src/data/loth/ordinarium/canticles.json'))['nuncDimittis'],
+  },
+  {
+    key: 'dismissal-blessing',
+    page: 879,
+    appliesAt: 'dismissal',
+    expectedBody: () =>
+      (readJson<Record<string, unknown>>('src/data/loth/ordinarium/common-prayers.json'))['dismissal'],
+  },
+  {
+    key: 'compline-responsory',
+    page: 515,
+    appliesAt: 'responsory',
+    expectedBody: () =>
+      (readJson<Record<string, unknown>>('src/data/loth/ordinarium/compline.json'))['responsory'],
+  },
+  {
+    key: 'common-prayers',
+    page: 22,
+    appliesAt: 'concludingPrayer',
+    expectedBody: () => readJson('src/data/loth/ordinarium/common-prayers.json'),
+  },
+  {
+    key: 'gloria-patri',
+    page: 22,
+    appliesAt: 'psalmody',
+    expectedBody: () => {
+      const ov = (readJson<Record<string, unknown>>('src/data/loth/ordinarium/common-prayers.json'))[
+        'openingVersicle'
+      ] as Record<string, unknown>
+      return ov['gloryBe']
+    },
+  },
+  {
+    key: 'invitatory-psalms',
+    page: 28,
+    appliesAt: 'invitatory',
+    expectedBody: () => readJson('src/data/loth/ordinarium/invitatory.json'),
+  },
+  {
+    key: 'hymns',
+    page: 883,
+    appliesAt: 'hymn',
+    expectedBody: () => readJson('src/data/loth/ordinarium/hymns.json'),
+  },
+]
+
+describe('hydrateRedirectBody — single key resolution', () => {
+  for (const exp of KEY_EXPECTATIONS) {
+    // @fr FR-160-B-6
+    it(`hydrates "${exp.key}" body byte-equal to ordinarium source`, () => {
+      const catalog = loadOrdinariumKeyCatalog()
+      const redirect = makeRedirect(exp.key, exp.page, exp.appliesAt)
+      const hydrated = hydrateRedirectBody(redirect, catalog)
+      expect(hydrated.ordinariumKey).toBe(exp.key)
+      expect(hydrated.body).toEqual(exp.expectedBody())
+      expect(hydrated.catalog.sourcePath).toMatch(/^src\/data\/loth\/ordinarium\//)
+      expect(hydrated.catalog.kind).toMatch(/^(fixed|variable)$/)
+    })
+  }
+
+  // @fr FR-160-B-6
+  it('throws when sourcePath is missing from a catalog entry', () => {
+    const stubCatalog: OrdinariumIndex = {
+      ...loadOrdinariumKeyCatalog(),
+      benedictus: { kind: 'fixed', page: 34, label: 'B' /* no sourcePath */ },
+    }
+    const redirect = makeRedirect('benedictus', 34)
+    expect(() => hydrateRedirectBody(redirect, stubCatalog)).toThrow(
+      /no sourcePath in catalog/,
+    )
+  })
+
+  // @fr FR-160-B-6
+  it('throws when sourcePath pointer references a missing object key', () => {
+    const stubCatalog: OrdinariumIndex = {
+      ...loadOrdinariumKeyCatalog(),
+      benedictus: {
+        kind: 'fixed',
+        page: 34,
+        label: 'B',
+        sourcePath: 'src/data/loth/ordinarium/canticles.json#nonExistentKey',
+      },
+    }
+    const redirect = makeRedirect('benedictus', 34)
+    expect(() => hydrateRedirectBody(redirect, stubCatalog)).toThrow(
+      /pointer segment "nonExistentKey" not found/,
+    )
+  })
+
+  // @fr FR-160-B-6
+  it('throws when sourcePath references a missing file', () => {
+    const stubCatalog: OrdinariumIndex = {
+      ...loadOrdinariumKeyCatalog(),
+      benedictus: {
+        kind: 'fixed',
+        page: 34,
+        label: 'B',
+        sourcePath: 'src/data/loth/ordinarium/does-not-exist.json',
+      },
+    }
+    const redirect = makeRedirect('benedictus', 34)
+    expect(() => hydrateRedirectBody(redirect, stubCatalog)).toThrow(
+      /ordinarium body file not found/,
+    )
+  })
+})
+
+describe('applyPageRedirects — body hydrate integration', () => {
+  // @fr FR-160-B-6
+  it('attaches hydrated bodies onto propers.pageRedirectBodies', () => {
+    const redirects: PageRedirect[] = [
+      makeRedirect('invitatory-psalms', 28, 'invitatory'),
+      makeRedirect('dismissal-blessing', 877, 'dismissal'),
+    ]
+    const propers: HourPropers = { pageRedirects: redirects }
+    const catalog = loadOrdinariumKeyCatalog()
+    const out = applyPageRedirects(propers, catalog)
+    expect(out.bodiesHydrated.length).toBe(2)
+    expect(out.propers.pageRedirectBodies?.length).toBe(2)
+    expect(out.propers.pageRedirectBodies?.[0].ordinariumKey).toBe('invitatory-psalms')
+    expect(out.propers.pageRedirectBodies?.[1].ordinariumKey).toBe('dismissal-blessing')
+  })
+
+  // @fr FR-160-B-6
+  it('preserves existing propers fields untouched (additive write only)', () => {
+    const propers: HourPropers = {
+      concludingPrayer: 'cp body',
+      hymn: 'hy body',
+      gospelCanticleAntiphon: 'gca',
+      pageRedirects: [makeRedirect('benedictus', 34)],
+    }
+    const catalog = loadOrdinariumKeyCatalog()
+    const out = applyPageRedirects(propers, catalog)
+    expect(out.propers.concludingPrayer).toBe('cp body')
+    expect(out.propers.hymn).toBe('hy body')
+    expect(out.propers.gospelCanticleAntiphon).toBe('gca')
+    expect(out.propers.pageRedirectBodies?.length).toBe(1)
+  })
+
+  // @fr FR-160-B-6
+  it('returns referentially-equal propers when no redirects (no shallow-copy churn)', () => {
+    const propers: HourPropers = { concludingPrayer: 'unchanged' }
+    const catalog = loadOrdinariumKeyCatalog()
+    const out = applyPageRedirects(propers, catalog)
+    expect(out.propers).toBe(propers)
+    expect(out.propers.pageRedirectBodies).toBeUndefined()
+  })
+
+  // @fr FR-160-B-6
+  it('determinism: hydrating the same propers twice yields deep-equal results', () => {
+    const propers: HourPropers = {
+      pageRedirects: [
+        makeRedirect('invitatory-psalms', 28, 'invitatory'),
+        makeRedirect('dismissal-blessing', 879, 'dismissal'),
+      ],
+    }
+    const catalog = loadOrdinariumKeyCatalog()
+    const a = applyPageRedirects(propers, catalog)
+    const b = applyPageRedirects(propers, catalog)
+    expect(a.propers.pageRedirectBodies).toEqual(b.propers.pageRedirectBodies)
+    expect(a.bodiesHydrated).toEqual(b.bodiesHydrated)
   })
 })

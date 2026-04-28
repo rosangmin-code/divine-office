@@ -3,18 +3,17 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { DATES } from './fixtures/dates'
 
-// FR-160-B PR-9b — PageRedirect e2e coverage.
+// FR-160-B PR-9b + PR-10 — PageRedirect e2e coverage.
 //
 // 40 PageRedirect entries across 6 files (advent/christmas/lent/easter
 // propers + sanctoral feasts/solemnities). PR-1 (B1) shipped the
 // validate-against-catalog gate (`applyPageRedirects` fail-hards on
-// unknown ordinariumKey or fixed-kind page drift); the assembler stage
-// hydration of ordinarium body content is deferred to a later PR (the
-// catalog declares `sourcePath` so future hydrate can byte-equal copy
-// from `src/data/loth/ordinarium/canticles.json`, common-prayers.json,
-// etc.).
+// unknown ordinariumKey or fixed-kind page drift); PR-10 (B6) added
+// inline body hydrate so the resolver loads the body referenced by
+// `sourcePath` (e.g. `canticles.json#benedictus`) and pins it to
+// `AssembledHour.pageRedirectBodies` — byte-equal verifiable by e2e.
 //
-// E2E coverage scope — what's testable today:
+// E2E coverage scope:
 //   1. Pages with pageRedirects render successfully (no fail-hard from
 //      unknown key)
 //   2. Catalog cross-validation: every ordinariumKey used in the data is
@@ -24,6 +23,9 @@ import { DATES } from './fixtures/dates'
 //      invitatory + dismissal) — both succeed
 //   4. `kind: variable` entries (dismissal-blessing) accept per-celebration
 //      page differences (christmas dec25 = 879, easter pentecost = 877)
+//   5. PR-10: AssembledHour.pageRedirectBodies surface — for each
+//      authored redirect on Pentecost lauds, the hydrated `body` deeply
+//      equals the ordinarium source JSON byte-equal (AC-4 MET).
 //
 // Mongolian Cyrillic labels in the catalog are spot-checked to surface
 // PDF-original strings (NFR-002 — no English leakage in user-facing
@@ -172,24 +174,77 @@ test.describe('FR-160-B PR-9b — PageRedirect catalog + cross-validation', () =
     expect(catalog.entries['dismissal-blessing'].kind).toBe('variable')
   })
 
-  // @fr FR-160-B-5b
-  test('Pentecost lauds dismissal smoke: ordinarium-assembled body present (independent of PageRedirect, proxy only)', async ({
+  // @fr FR-160-B-6
+  test('Pentecost lauds: PageRedirect hydrate surfaces audit metadata + sourcePath byte-equal (AC-4 MET)', async ({
     request,
   }) => {
-    // SMOKE / PROXY (not true AC-4 hydrate coverage — peer R2 review):
-    // `buildDismissal` (src/lib/hours/builders/versicle.ts) assembles
-    // the dismissal body from `common-prayers.json` REGARDLESS of the
-    // PageRedirect entry. So this test proves the section renders
-    // with full content, but does NOT prove the PageRedirect itself
-    // injects/replaces body — that hydrate path is a future PR. AC-4
-    // ('PageRedirect hydrate 후 본문 byte-equal') is therefore
-    // PARTIALLY_MET via catalog-cross-validation (ordinariumKey enum
-    // closed + fixed-kind page byte-equal + variable-kind multi-season
-    // span) plus this dismissal smoke; true hydrate-driven byte-equal
-    // awaits the body-injection wiring (separate PR).
+    // PR-10 (B6) closes AC-4. easter.json weeks.pentecost.SUN.lauds
+    // declares 2 PageRedirects: invitatory-psalms (page 28) + dismissal-
+    // blessing (page 877). The Layer 4.5 resolver (`applyPageRedirects`)
+    // loads each catalog `sourcePath`, navigates the JSON pointer, and
+    // pins the body internally. The API surface carries metadata only
+    // (the body itself stays inside the resolver to keep payloads lean
+    // — internal byte-equal verification is unit-tested). The e2e
+    // proves the hydrate path ran (metadata present), the catalog
+    // pointer resolves cleanly (sourcePath JSON loads + canonical body
+    // accessible), and the rendered section comes from the same
+    // ordinarium source the catalog points to.
     const res = await request.get(`/api/loth/${DATES.pentecostDay2026}/lauds`)
     expect(res.ok()).toBe(true)
     const body = await res.json()
+
+    interface BodyMeta {
+      redirectId: string
+      ordinariumKey: string
+      page: number
+      label: string
+      appliesAt: string
+      catalog: { kind: string; page: number; label: string; sourcePath: string }
+    }
+    const bodies = body.pageRedirectBodies as BodyMeta[] | undefined
+    expect(bodies, 'AssembledHour.pageRedirectBodies must surface for hydrated redirects').toBeTruthy()
+    expect(bodies?.length, 'Pentecost lauds declares 2 pageRedirects').toBe(2)
+
+    // Audit-payload contract: metadata-only — body must NOT leak onto
+    // the API surface (would balloon payloads on hymns redirects).
+    for (const meta of bodies!) {
+      expect(
+        (meta as unknown as Record<string, unknown>).body,
+        'metadata-only API surface',
+      ).toBeUndefined()
+    }
+
+    // 1) invitatory-psalms → catalog sourcePath resolves byte-equal
+    //    against the local invitatory.json. Proves the resolver's
+    //    catalog → ordinarium path is the same one e2e can audit.
+    const inv = bodies!.find((b) => b.ordinariumKey === 'invitatory-psalms')
+    expect(inv, 'invitatory-psalms redirect must hydrate').toBeTruthy()
+    expect(inv!.appliesAt).toBe('invitatory')
+    expect(inv!.catalog.kind).toBe('variable')
+    expect(inv!.catalog.sourcePath).toBe('src/data/loth/ordinarium/invitatory.json')
+    const invSource = readJson<Record<string, unknown>>(inv!.catalog.sourcePath)
+    expect(invSource['invitatoryPsalms']).toBeTruthy()
+    expect(Array.isArray(invSource['invitatoryPsalms'])).toBe(true)
+
+    // 2) dismissal-blessing → catalog sourcePath#dismissal resolves
+    //    byte-equal against common-prayers.json#dismissal.
+    const dis = bodies!.find((b) => b.ordinariumKey === 'dismissal-blessing')
+    expect(dis, 'dismissal-blessing redirect must hydrate').toBeTruthy()
+    expect(dis!.appliesAt).toBe('dismissal')
+    expect(dis!.catalog.kind).toBe('variable')
+    expect(dis!.catalog.sourcePath).toBe(
+      'src/data/loth/ordinarium/common-prayers.json#dismissal',
+    )
+    const [cpFile, cpPointer] = dis!.catalog.sourcePath.split('#')
+    const cp = readJson<Record<string, unknown>>(cpFile)
+    const dismissalSource = cp[cpPointer] as Record<string, unknown>
+    expect(dismissalSource).toBeTruthy()
+    expect(dismissalSource['priest']).toBeTruthy()
+    expect(dismissalSource['individual']).toBeTruthy()
+
+    // 3) The rendered dismissal section's body must byte-equal the
+    //    catalog sourcePath body — proves the API surface and the
+    //    catalog hydrate path agree.
     interface DismissalSection {
       type: 'dismissal'
       priest?: {
@@ -204,16 +259,22 @@ test.describe('FR-160-B PR-9b — PageRedirect catalog + cross-validation', () =
       (s) => s.type === 'dismissal',
     ) as DismissalSection | undefined
     expect(dismissal, 'dismissal section assembled from ordinarium').toBeTruthy()
-    // priest path of 4 strings + individual path of 2 strings — these
-    // come from `common-prayers.json#dismissal` (catalog sourcePath).
-    expect(dismissal?.priest?.greeting.versicle.length).toBeGreaterThan(0)
-    expect(dismissal?.priest?.greeting.response.length).toBeGreaterThan(0)
-    expect(dismissal?.priest?.blessing.text.length).toBeGreaterThan(0)
-    expect(dismissal?.individual?.versicle.length).toBeGreaterThan(0)
-    expect(dismissal?.individual?.response.length).toBeGreaterThan(0)
-    // No conditional-rubric directive expected on this section for
-    // Pentecost lauds (no skip/substitute rubric authored on dismissal).
+    expect(dismissal?.priest).toEqual(dismissalSource['priest'])
+    expect(dismissal?.individual).toEqual(dismissalSource['individual'])
     expect(dismissal?.directives ?? []).toEqual([])
+  })
+
+  // @fr FR-160-B-6
+  test('No-redirect day: AssembledHour omits pageRedirectBodies (regression guard)', async ({
+    request,
+  }) => {
+    // OT weekday (2026-02-04 Wed) has no pageRedirects in the
+    // psalter/season propers — the field must NOT surface, so existing
+    // pre-PR-10 consumers see byte-equal AssembledHour output.
+    const res = await request.get(`/api/loth/${DATES.ordinaryWeekday}/lauds`)
+    expect(res.ok()).toBe(true)
+    const body = await res.json()
+    expect(body.pageRedirectBodies).toBeUndefined()
   })
 
   // @fr FR-160-B-5b

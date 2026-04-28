@@ -248,6 +248,15 @@ export interface HourPropers {
   // the section body — without re-running upstream ordinarium loaders.
   // Empty / undefined = noop. additive only.
   sectionOverrides?: SectionOverrideMap
+
+  // FR-160-B PR-10: ordinarium-body inline hydrate. After Layer 4.5
+  // resolves `pageRedirects`, the resolver loads the body referenced by
+  // each redirect's catalog `sourcePath` and stores it here. Existing
+  // section builders are unaffected (they continue to load from the
+  // ordinarium index directly); this field is the canonical record so
+  // downstream callers can byte-equal verify what got rendered against
+  // the ordinarium source. Empty / undefined = noop. additive only.
+  pageRedirectBodies?: HydratedPageRedirect[]
 }
 
 // FR-160-B PR-8: applied conditional-rubric record. Captures the
@@ -499,6 +508,63 @@ export interface PageRedirect {
   evidencePdf: ConditionalRubricEvidencePdf
 }
 
+/**
+ * FR-160-B PR-10: hydrated ordinarium body, attached after Layer 4.5
+ * resolves a `PageRedirect`. The resolver loads the body referenced by
+ * the catalog `sourcePath` (e.g. `canticles.json#benedictus`) and pins
+ * it to the propers so unit tests / verifiers can byte-equal compare
+ * the rendered section against the ordinarium source.
+ *
+ * `body` is the raw JSON value at the catalog's `sourcePath`. The shape
+ * is determined by the source file (e.g. canticle object, dismissal
+ * struct, invitatory whole-file, hymns array). The closed enum
+ * `ordinariumKey` discriminates the consumer's expected shape.
+ *
+ * Internal only — this type carries the full body and is attached to
+ * `HourPropers.pageRedirectBodies`. The HTTP / `AssembledHour` surface
+ * uses `PageRedirectBodyMeta` instead so audit metadata reaches
+ * downstream consumers without paying the body-size cost (e.g. the
+ * `hymns` source is ~134KB; we don't ship that to every API caller).
+ */
+export interface HydratedPageRedirect {
+  redirectId: string
+  ordinariumKey: PageRedirectOrdinariumKey
+  page: number
+  label: string
+  appliesAt: PageRedirectSection
+  /** Catalog metadata snapshot — `kind`, canonical `page`, `label`, `sourcePath` */
+  catalog: {
+    kind: 'fixed' | 'variable'
+    page: number
+    label: string
+    sourcePath: string
+  }
+  /** Raw JSON value at sourcePath. byte-equal to the ordinarium source. */
+  body: unknown
+}
+
+/**
+ * Public mirror of `HydratedPageRedirect` without the `body` payload.
+ * Surfaces on `AssembledHour.pageRedirectBodies` for audit/debug
+ * consumers (e2e, telemetry) — the body lives only in the internal
+ * `HourPropers.pageRedirectBodies` resolver record. Slimming the API
+ * surface avoids shipping multi-KB ordinarium bodies (especially
+ * hymns.json at ~134KB) to every client request.
+ */
+export interface PageRedirectBodyMeta {
+  redirectId: string
+  ordinariumKey: PageRedirectOrdinariumKey
+  page: number
+  label: string
+  appliesAt: PageRedirectSection
+  catalog: {
+    kind: 'fixed' | 'variable'
+    page: number
+    label: string
+    sourcePath: string
+  }
+}
+
 // FR-160-C — psalm-header preface (rubric red metadata above the psalm
 // body in the Mongolian LOTH PDF). Two kinds: patristic Father preface
 // (Хэсихиус / Августин / Касиодор / Арнобиус / Кацен / Ориген) or NT
@@ -596,4 +662,15 @@ export interface AssembledHour {
   liturgicalDay: LiturgicalDayInfo
   psalterWeek: 1 | 2 | 3 | 4
   sections: HourSection[]
+  /**
+   * FR-160-B PR-10: hydrated ordinarium audit metadata for any
+   * `pageRedirects` declared on this hour's propers. The full body is
+   * intentionally NOT included here — clients render section content
+   * via the existing builders, and shipping the raw ordinarium source
+   * (e.g. ~134KB hymns.json) on every API response is wasteful.
+   * Internal byte-equal verification uses
+   * `HourPropers.pageRedirectBodies` (full body) inside the resolver.
+   * Absent when the hour declares no PageRedirect.
+   */
+  pageRedirectBodies?: PageRedirectBodyMeta[]
 }

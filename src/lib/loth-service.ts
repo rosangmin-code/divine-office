@@ -486,6 +486,25 @@ export async function assembleHour(
     liturgicalDay: day,
     psalterWeek: day.psalterWeek,
     sections,
+    // FR-160-B PR-10: surface hydrated audit metadata (no body). The
+    // body itself lives only in the internal resolver record — clients
+    // render via section builders, so we strip it from the API surface
+    // to keep payloads lean (hymns.json alone is ~134KB). Absent when
+    // no PageRedirect declared.
+    ...(mergedPropers.pageRedirectBodies && mergedPropers.pageRedirectBodies.length > 0
+      ? {
+          pageRedirectBodies: mergedPropers.pageRedirectBodies.map(
+            ({ redirectId, ordinariumKey, page, label, appliesAt, catalog }) => ({
+              redirectId,
+              ordinariumKey,
+              page,
+              label,
+              appliesAt,
+              catalog,
+            }),
+          ),
+        }
+      : {}),
   }
 }
 
