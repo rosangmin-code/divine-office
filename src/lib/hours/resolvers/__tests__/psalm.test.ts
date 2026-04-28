@@ -18,6 +18,7 @@ vi.mock('../../loaders', () => ({
 vi.mock('../../../prayers/rich-overlay', () => ({
   loadPsalterTextRich: () => null,
   loadPsalterTextPsalmPrayerRich: () => null,
+  loadPsalterHeaderRich: () => null,
 }))
 
 vi.mock('../../../bible-loader', () => ({

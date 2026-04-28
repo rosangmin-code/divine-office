@@ -6,6 +6,7 @@ import type {
   DayOfWeek,
   HourType,
   PrayerText,
+  PsalterHeaderRich,
 } from '../types'
 import { resolveSpecialKey } from '../propers-loader'
 
@@ -294,7 +295,77 @@ export function loadPsalterTextPsalmPrayerRich(ref: string): PrayerText | null {
   return entry?.psalmPrayerRich ?? null
 }
 
+// ── psalter-headers 카탈로그 로더 (FR-160-C) ───────────────────────────
+//
+// 시편 머리 빨간글씨 metadata (patristic Father preface / NT typological
+// citation) 를 단일 카탈로그 `prayers/commons/psalter-headers.rich.json`
+// 에서 로드. ref 당 다중 entries 가능 (한 시편이 4주 cycle 에서 여러 주차에
+// 등장하면서 다른 patristic/typological preface 와 매핑). 현재 구현은
+// 첫번째 entry 를 반환하는 간단한 lookup; 페이지 컨텍스트로 disambiguate
+// 하는 확장은 후속 (UI 가 모든 entries 를 노출하거나 page-aware 매칭).
+
+type PsalterHeadersCatalog = {
+  refs?: Record<string, { entries?: PsalterHeaderRich[] }>
+  unmatched?: Record<string, unknown>
+}
+type PsalterHeadersCacheEntry = {
+  mtimeMs: number
+  catalog: PsalterHeadersCatalog | null
+}
+const psalterHeadersCache = new Map<string, PsalterHeadersCacheEntry>()
+
+function loadPsalterHeadersCatalog(): PsalterHeadersCatalog | null {
+  const filePath = path.join(
+    process.cwd(),
+    'src/data/loth/prayers/commons/psalter-headers.rich.json',
+  )
+  let mtimeMs = 0
+  try {
+    mtimeMs = fs.statSync(filePath).mtimeMs
+  } catch (error) {
+    if (isEnoent(error)) {
+      psalterHeadersCache.set(filePath, { mtimeMs: 0, catalog: null })
+      return null
+    }
+    console.error(`[rich-overlay] stat failed for ${filePath}:`, error)
+    return null
+  }
+  const cached = psalterHeadersCache.get(filePath)
+  if (cached && cached.mtimeMs === mtimeMs) return cached.catalog
+  try {
+    const raw = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
+    if (raw == null || typeof raw !== 'object' || Array.isArray(raw)) {
+      console.error(`[rich-overlay] ${filePath} is not a JSON object`)
+      psalterHeadersCache.set(filePath, { mtimeMs, catalog: null })
+      return null
+    }
+    const catalog = raw as PsalterHeadersCatalog
+    psalterHeadersCache.set(filePath, { mtimeMs, catalog })
+    return catalog
+  } catch (error) {
+    console.error(`[rich-overlay] failed to load ${filePath}:`, error)
+    return null
+  }
+}
+
+/**
+ * Look up the FR-160-C psalter-header preface metadata for a given
+ * canonical psalter ref (e.g. "Psalm 149:1-9"). Returns the first
+ * recorded entry (patristic Father preface or NT typological citation)
+ * or null when no header is authored. The catalog can have multiple
+ * entries per ref when the same psalm appears in different liturgical
+ * positions; the loader currently surfaces the first.
+ */
+export function loadPsalterHeaderRich(ref: string): PsalterHeaderRich | null {
+  const catalog = loadPsalterHeadersCatalog()
+  if (!catalog?.refs) return null
+  const entry = catalog.refs[ref]
+  if (!entry?.entries || entry.entries.length === 0) return null
+  return entry.entries[0]
+}
+
 export function __resetRichOverlayCache(): void {
   overlayCache.clear()
   psalterTextsCache.clear()
+  psalterHeadersCache.clear()
 }

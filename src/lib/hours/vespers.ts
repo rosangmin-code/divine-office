@@ -1,20 +1,20 @@
 import type { HourSection } from '../types'
 import type { HourAssembler } from './types'
-import { buildOpeningVersicle, buildDismissal, resolveShortReading, resolveGospelCanticle } from './shared'
+import { buildOpeningVersicle, buildDismissal, resolveShortReading, resolveGospelCanticle, attachSectionDirectives } from './shared'
 import { parseIntercessions } from './intercessions'
 
 export const assembleVespers: HourAssembler = (ctx) => {
   const sections: HourSection[] = []
 
   // 1. Opening Versicle (Deus, in adiutorium)
-  sections.push(buildOpeningVersicle(ctx.ordinarium, ctx.liturgicalDay.season))
+  sections.push(attachSectionDirectives(buildOpeningVersicle(ctx.ordinarium, ctx.liturgicalDay.season), ctx.mergedPropers))
 
   // 2. Hymn
   sections.push({ type: 'hymn', text: ctx.mergedPropers.hymn ?? '', page: ctx.mergedPropers.hymnPage, candidates: ctx.hymnCandidates, selectedIndex: ctx.hymnSelectedIndex, textRich: ctx.mergedPropers.hymnRich })
 
   // 2. Psalmody
   if (ctx.assembledPsalms.length > 0) {
-    sections.push({ type: 'psalmody', psalms: ctx.assembledPsalms })
+    sections.push(attachSectionDirectives({ type: 'psalmody', psalms: ctx.assembledPsalms }, ctx.mergedPropers))
   }
 
   // 3. Short Reading
@@ -51,7 +51,7 @@ export const assembleVespers: HourAssembler = (ctx) => {
   // 6. Intercessions
   if (ctx.mergedPropers.intercessions) {
     const parsed = parseIntercessions(ctx.mergedPropers.intercessions)
-    sections.push({
+    sections.push(attachSectionDirectives({
       type: 'intercessions',
       intro: '',
       items: ctx.mergedPropers.intercessions,
@@ -61,7 +61,7 @@ export const assembleVespers: HourAssembler = (ctx) => {
       closing: parsed.closing,
       page: ctx.mergedPropers.intercessionsPage,
       rich: ctx.mergedPropers.intercessionsRich,
-    })
+    }, ctx.mergedPropers))
   }
 
   // 7. Our Father
@@ -80,7 +80,7 @@ export const assembleVespers: HourAssembler = (ctx) => {
   }
 
   // 9. Dismissal
-  sections.push(buildDismissal(ctx.ordinarium))
+  sections.push(attachSectionDirectives(buildDismissal(ctx.ordinarium), ctx.mergedPropers))
 
   return sections
 }

@@ -29,7 +29,21 @@
           "concludingPrayerPage": 588,
           "alternativeConcludingPrayerPage": 588,
           "gospelCanticleAntiphonPage": 586,
-          "intercessionsPage": 587
+          "intercessionsPage": 587,
+          "pageRedirects": [
+            {
+              "redirectId": "christmas-dec25-sun-vespers-dismissal",
+              "ordinariumKey": "dismissal-blessing",
+              "page": 874,
+              "label": "Магтуу: х. 874-875",
+              "appliesAt": "dismissal",
+              "evidencePdf": {
+                "page": 583,
+                "line": 20164,
+                "text": "Магтуу: х. 874-875."
+              }
+            }
+          ]
         },
         "lauds": {
           "shortReading": {
@@ -56,7 +70,60 @@
           "concludingPrayerPage": 591,
           "alternativeConcludingPrayerPage": 592,
           "gospelCanticleAntiphonPage": 590,
-          "intercessionsPage": 589
+          "intercessionsPage": 589,
+          "pageRedirects": [
+            {
+              "redirectId": "christmas-dec25-sun-lauds-invitatory",
+              "ordinariumKey": "invitatory-psalms",
+              "page": 28,
+              "label": "Урих дуудлагын дуулал: х. 28",
+              "appliesAt": "invitatory",
+              "evidencePdf": {
+                "page": 589,
+                "line": 20373,
+                "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+              }
+            },
+            {
+              "redirectId": "christmas-dec25-sun-lauds-dismissal",
+              "ordinariumKey": "dismissal-blessing",
+              "page": 874,
+              "label": "Магтуу: х. 874-875",
+              "appliesAt": "dismissal",
+              "evidencePdf": {
+                "page": 589,
+                "line": 20381,
+                "text": "Магтуу: х. 874-875."
+              }
+            }
+          ],
+          "conditionalRubrics": [
+            {
+              "rubricId": "christmas-dec25-sun-lauds-psalmody-substitute",
+              "when": {
+                "season": [
+                  "CHRISTMAS"
+                ],
+                "dateRange": {
+                  "from": "12-25",
+                  "to": "12-25"
+                }
+              },
+              "action": "substitute",
+              "target": {
+                "text": "Дууллууд ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна. х. 58."
+              },
+              "appliesTo": {
+                "section": "psalmody"
+              },
+              "evidencePdf": {
+                "page": 589,
+                "line": 20388,
+                "text": "Дууллууд ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна. х. 58."
+              },
+              "liturgicalBasis": "Christmas Day Lauds psalmody is drawn from psalter Week 1 Sunday (page 58)."
+            }
+          ]
         },
         "vespers2": {
           "shortReading": {
@@ -84,7 +151,21 @@
           "concludingPrayerPage": 598,
           "alternativeConcludingPrayerPage": 598,
           "gospelCanticleAntiphonPage": 596,
-          "intercessionsPage": 596
+          "intercessionsPage": 596,
+          "pageRedirects": [
+            {
+              "redirectId": "christmas-dec25-sun-vespers2-dismissal",
+              "ordinariumKey": "dismissal-blessing",
+              "page": 874,
+              "label": "Магтуу: х. 874-875",
+              "appliesAt": "dismissal",
+              "evidencePdf": {
+                "page": 592,
+                "line": 20496,
+                "text": "Магтуу: х. 874-875."
+              }
+            }
+          ]
         }
       }
     },
@@ -113,7 +194,21 @@
           "concludingPrayer": "Аяа, төгс хүчит Тэнгэрбурхан минь, хүмүүнийн дундах Таны Хүүгийн мэндлэлт биднийг гэм нүглийн боолчлолоос чөлөөлж, шинэ амьдралыг хайрлан соёрхох болтугай. Үүнийг бид Эзэн Христээр уламжлан залбиран гуйж байна. Тэрээр Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг цорын ганц Тэнгэрбурхан билээ.",
           "concludingPrayerPage": 603,
           "gospelCanticleAntiphonPage": 602,
-          "intercessionsPage": 602
+          "intercessionsPage": 602,
+          "pageRedirects": [
+            {
+              "redirectId": "christmas-octave-sun-lauds-invitatory",
+              "ordinariumKey": "invitatory-psalms",
+              "page": 28,
+              "label": "Урих дуудлагын дуулал: х. 28",
+              "appliesAt": "invitatory",
+              "evidencePdf": {
+                "page": 601,
+                "line": 20807,
+                "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+              }
+            }
+          ]
         },
         "vespers": {
           "shortReading": {
@@ -150,7 +245,21 @@
           "alternativeConcludingPrayer": "Аяа, бүхнийг бүтээгч, Тэнгэр дэх Эцэг минь, Та дэлхийд амь амьдралыг үүсгэхийг захирч зарлигдсан бөгөөд амь амьдралын сайн сайхныг хүмүүний гэр бүлийг бүтээхээр өргөмжилсөн билээ. Бүх зүйл бэлэн болсон түүхэн цаг мөчид Та Өөрийн Хүүгээ цаг хугацааны дотор амьдруулахаар илгээсэн бөгөөд Тэрээр манай дэлхий ертөнцийн амьдралын жам хуульд дуулгавартай байсан. Та хүний ариун нандин хайр сэтгэлийг бидэнд зааж, гэр бүлийн амьдралын үнэ цэнийг үзүүлж, биднийг хамаг хүмүүстэй хамт амар тайван амьдрахад тусална уу. Ингэснээр бид Таны амьдралыг үүрд мөнхөд хуваалцах болно.",
           "concludingPrayerPage": 600,
           "alternativeConcludingPrayerPage": 600,
-          "gospelCanticleAntiphonPage": 599
+          "gospelCanticleAntiphonPage": 599,
+          "pageRedirects": [
+            {
+              "redirectId": "christmas-holyfamily-sun-lauds-invitatory",
+              "ordinariumKey": "invitatory-psalms",
+              "page": 28,
+              "label": "Урих дуудлагын дуулал: х. 28",
+              "appliesAt": "invitatory",
+              "evidencePdf": {
+                "page": 599,
+                "line": 20742,
+                "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+              }
+            }
+          ]
         },
         "vespers2": {
           "gospelCanticleAntiphon": "Хүү минь, Чи юунд бидэнд ингэж хандав? Эцэг бид хоёр чинь санаа зовон Чамайг ямар их эрж хайсныг боддоо. Та нар юунд Намайг хайсан юм бэ? Эцэгийнхээ гэрт байх ёстойг минь Та нар мэдсэнгүй гэж үү?",
@@ -253,7 +362,21 @@
           "alternativeConcludingPrayer": "Аяа, бүх үе дэх гэрлийн эх үүсвэр болсон Эцэг минь, Цэвэр Ариун Охин Мариа Хүчит Тэнгэрбурхан, Энхийн Жонон гэж нэрлэгдсэн Таны Хүүг тээсэн ба төрүүлсэн билээ. Эхийн хайрын бэлэг болсон түүний залбирал үеийн үед Таны ард түмний баяр баясгалан болох болтугай. Эгэл даруу зангаас гарсан түүний хариулт сүнсийг тань Таны ард түмэн дээр үлдээхэд чиглүүлэх болтугай. Үүнийг бид Эзэн Христээр уламжлан залбиран гуйж байна. Тэрээр Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг цорын ганц Тэнгэрбурхан билээ.",
           "concludingPrayerPage": 607,
           "alternativeConcludingPrayerPage": 608,
-          "gospelCanticleAntiphonPage": 607
+          "gospelCanticleAntiphonPage": 607,
+          "pageRedirects": [
+            {
+              "redirectId": "christmas-jan1-sun-lauds-invitatory",
+              "ordinariumKey": "invitatory-psalms",
+              "page": 28,
+              "label": "Урих дуудлагын дуулал: х. 28",
+              "appliesAt": "invitatory",
+              "evidencePdf": {
+                "page": 607,
+                "line": 21004,
+                "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+              }
+            }
+          ]
         }
       }
     },
@@ -284,7 +407,21 @@
           "concludingPrayerPage": 613,
           "alternativeConcludingPrayerPage": 610,
           "gospelCanticleAntiphonPage": 611,
-          "intercessionsPage": 612
+          "intercessionsPage": 612,
+          "pageRedirects": [
+            {
+              "redirectId": "christmas-epiphany-sun-lauds-invitatory",
+              "ordinariumKey": "invitatory-psalms",
+              "page": 28,
+              "label": "Урих дуудлагын дуулал: х. 28",
+              "appliesAt": "invitatory",
+              "evidencePdf": {
+                "page": 609,
+                "line": 21069,
+                "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+              }
+            }
+          ]
         },
         "vespers": {
           "shortReading": {
@@ -324,7 +461,21 @@
           "alternativeConcludingPrayer": "Аяа, тэнгэр дэх Эцэг минь, Иордан голын дээрээс өгүүлсэн дуу хоолойгоор Христийг Өөрийн Хүүгээ хэмээн илчилсэн билээ. Христийн хүүгийн мөн чанарт хамаг хуваалцагчид хүн төрөлхтөнд үйлчлэх Түүний замаар даган явж, дэлхийн хязгаар хүртэл Түүний хаанчлалын цог жавхланг тусгах болтугай. Тэрээр үүрд мөнх оршин хаанчилдаг билээ.",
           "concludingPrayerPage": 616,
           "alternativeConcludingPrayerPage": 617,
-          "gospelCanticleAntiphonPage": 616
+          "gospelCanticleAntiphonPage": 616,
+          "pageRedirects": [
+            {
+              "redirectId": "christmas-baptism-sun-lauds-invitatory",
+              "ordinariumKey": "invitatory-psalms",
+              "page": 28,
+              "label": "Урих дуудлагын дуулал: х. 28",
+              "appliesAt": "invitatory",
+              "evidencePdf": {
+                "page": 616,
+                "line": 21308,
+                "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+              }
+            }
+          ]
         },
         "vespers": {
           "gospelCanticleAntiphon": "Бидний Аврагч Ариун угаалыг хүртэхээр ирсэн бөгөөд ингэснээр Ариун угаалын ариусгах усаар дамжуулан Тэр хуучин хүнийг шинэ амьдралд сэргээн, бидний нүгэлт мөн чанарыг эдгээж, биднийг цэвэр ариун байдлын хувцсаар хувцаслах болно.",
@@ -425,7 +576,21 @@
           "alternativeConcludingPrayer": "Аяа, гэрлийн Эцэг, хувиршгүй Тэнгэрбурхан минь, өнөөдөр Та Үг нь бие махбод болсон гайхамшигт их үйлсийг итгэлт хүн төрөлхтөнд илчилсэн билээ. Таны гэрэл хүчтэй, Таны хайр ойрхон байгаа тул биднийг манай энэ ертөнцийн хязгаараас чөлөөлж, Таны Ариун Сүнс бүх амьдралыг төгс болгодог энэхүү амьдралын газар руу хөтөлнө үү. Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан Есүс Христ бидний Эзэн, Таны Хүүгээр уламжлан тийн болтугай.",
           "concludingPrayerPage": 609,
           "alternativeConcludingPrayerPage": 610,
-          "gospelCanticleAntiphonPage": 607
+          "gospelCanticleAntiphonPage": 607,
+          "pageRedirects": [
+            {
+              "redirectId": "christmas-epiphanyweek-sun-lauds-invitatory",
+              "ordinariumKey": "invitatory-psalms",
+              "page": 28,
+              "label": "Урих дуудлагын дуулал: х. 28",
+              "appliesAt": "invitatory",
+              "evidencePdf": {
+                "page": 611,
+                "line": 21130,
+                "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
+              }
+            }
+          ]
         },
         "vespers": {
           "gospelCanticleAntiphon": "Аяа Христ минь, дэлхий ертөнцийн Аврагч ба Эзэн минь, Таныг тээсэн хэвлий, Таныг хөхүүлсэн хөх нь ерөөлтэй еэ! Аллэлуяа!",

@@ -2,6 +2,7 @@ import type { HourSection } from '../types'
 import type { HourAssembler } from './types'
 import { buildInvitatory, resolveInvitatoryAntiphon, buildOpeningVersicle, buildDismissal, resolveShortReading, resolveGospelCanticle } from './shared'
 import { parseIntercessions } from './intercessions'
+import { attachSectionDirectives } from './shared'
 
 export const assembleLauds: HourAssembler = (ctx) => {
   const sections: HourSection[] = []
@@ -18,14 +19,17 @@ export const assembleLauds: HourAssembler = (ctx) => {
       ctx.dayOfWeek,
       ctx.dateStr,
     )
-    sections.push(buildInvitatory(ctx.ordinarium, antiphon))
+    sections.push(attachSectionDirectives(buildInvitatory(ctx.ordinarium, antiphon), ctx.mergedPropers))
     sections.push(
-      buildOpeningVersicle(ctx.ordinarium, ctx.liturgicalDay.season, {
-        pairedWithInvitatory: true,
-      }),
+      attachSectionDirectives(
+        buildOpeningVersicle(ctx.ordinarium, ctx.liturgicalDay.season, {
+          pairedWithInvitatory: true,
+        }),
+        ctx.mergedPropers,
+      ),
     )
   } else {
-    sections.push(buildOpeningVersicle(ctx.ordinarium, ctx.liturgicalDay.season))
+    sections.push(attachSectionDirectives(buildOpeningVersicle(ctx.ordinarium, ctx.liturgicalDay.season), ctx.mergedPropers))
   }
 
   // 2. Hymn
@@ -33,7 +37,7 @@ export const assembleLauds: HourAssembler = (ctx) => {
 
   // 3. Psalmody
   if (ctx.assembledPsalms.length > 0) {
-    sections.push({ type: 'psalmody', psalms: ctx.assembledPsalms })
+    sections.push(attachSectionDirectives({ type: 'psalmody', psalms: ctx.assembledPsalms }, ctx.mergedPropers))
   }
 
   // 4. Short Reading
@@ -70,7 +74,7 @@ export const assembleLauds: HourAssembler = (ctx) => {
   // 7. Intercessions
   if (ctx.mergedPropers.intercessions) {
     const parsed = parseIntercessions(ctx.mergedPropers.intercessions)
-    sections.push({
+    sections.push(attachSectionDirectives({
       type: 'intercessions',
       intro: '',
       items: ctx.mergedPropers.intercessions,
@@ -80,7 +84,7 @@ export const assembleLauds: HourAssembler = (ctx) => {
       closing: parsed.closing,
       page: ctx.mergedPropers.intercessionsPage,
       rich: ctx.mergedPropers.intercessionsRich,
-    })
+    }, ctx.mergedPropers))
   }
 
   // 8. Our Father
@@ -99,7 +103,7 @@ export const assembleLauds: HourAssembler = (ctx) => {
   }
 
   // 10. Dismissal
-  sections.push(buildDismissal(ctx.ordinarium))
+  sections.push(attachSectionDirectives(buildDismissal(ctx.ordinarium), ctx.mergedPropers))
 
   return sections
 }

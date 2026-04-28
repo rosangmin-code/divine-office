@@ -24,6 +24,19 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
         {psalm.title && (
           <p className="text-xs italic text-stone-500 dark:text-stone-500">{psalm.title}</p>
         )}
+        {/* FR-160-C: psalm-header preface (patristic Father / NT typological) */}
+        {psalm.headerRich && (
+          <p
+            data-role="psalm-header-rich"
+            data-kind={psalm.headerRich.kind}
+            className="mt-1 text-xs italic text-red-700 dark:text-red-400"
+          >
+            {psalm.headerRich.preface_text}
+            {' ('}
+            <span data-role="psalm-header-attribution">{psalm.headerRich.attribution}</span>
+            {')'}
+          </p>
+        )}
       </div>
 
       {/* Stanzas (PDF source) or Verses (fallback) */}

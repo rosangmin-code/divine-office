@@ -134,6 +134,151 @@ export const HymnsIndexFileSchema = z
   })
   .loose()
 
+// --- FR-160-B: Conditional rubric + page redirect ---
+
+const MMDD_RE = /^\d{2}-\d{2}$/
+
+const ConditionalRubricSectionEnum = z.enum([
+  'invitatory',
+  'openingVersicle',
+  'hymn',
+  'psalmody',
+  'shortReading',
+  'responsory',
+  'gospelCanticle',
+  'intercessions',
+  'concludingPrayer',
+  'dismissal',
+])
+
+const PageRedirectSectionEnum = z.enum([
+  'invitatory',
+  'hymn',
+  'psalmody',
+  'shortReading',
+  'responsory',
+  'gospelCanticle',
+  'intercessions',
+  'concludingPrayer',
+  'dismissal',
+])
+
+export const PageRedirectOrdinariumKeyEnum = z.enum([
+  'benedictus',
+  'magnificat',
+  'nunc-dimittis',
+  'dismissal-blessing',
+  'compline-responsory',
+  'common-prayers',
+  'gloria-patri',
+  'invitatory-psalms',
+  'hymns',
+])
+
+const EvidencePdfSchema = z.object({
+  page: z.number().int().min(1),
+  line: z.number().int().min(0).optional(),
+  text: z.string().min(1),
+})
+
+const ConditionalRubricWhenSchema = z
+  .object({
+    season: z
+      .array(z.enum(['ADVENT', 'CHRISTMAS', 'LENT', 'EASTER', 'ORDINARY_TIME']))
+      .min(1)
+      .optional(),
+    dayOfWeek: z
+      .array(z.enum(['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']))
+      .min(1)
+      .optional(),
+    dateRange: z
+      .object({
+        from: z.string().regex(MMDD_RE, 'MM-DD format required'),
+        to: z.string().regex(MMDD_RE, 'MM-DD format required'),
+      })
+      .optional(),
+    predicate: z
+      .enum(['isFirstHourOfDay', 'isVigil', 'isObligatoryMemorial'])
+      .optional(),
+  })
+  .refine(
+    (when) =>
+      when.season != null ||
+      when.dayOfWeek != null ||
+      when.dateRange != null ||
+      when.predicate != null,
+    { message: 'when must specify at least one match field' },
+  )
+
+const ConditionalRubricTargetSchema = z.object({
+  ref: z.string().min(1).optional(),
+  text: z.string().min(1).optional(),
+  textRich: z.unknown().optional(),
+  ordinariumKey: PageRedirectOrdinariumKeyEnum.optional(),
+})
+
+const ConditionalRubricLocatorSchema = z.object({
+  section: ConditionalRubricSectionEnum,
+  index: z.number().int().min(0).optional(),
+})
+
+export const ConditionalRubricSchema = z
+  .object({
+    rubricId: z.string().min(1),
+    when: ConditionalRubricWhenSchema,
+    action: z.enum(['skip', 'substitute', 'prepend', 'append']),
+    target: ConditionalRubricTargetSchema.optional(),
+    appliesTo: ConditionalRubricLocatorSchema,
+    evidencePdf: EvidencePdfSchema,
+    liturgicalBasis: z.string().min(1).optional(),
+  })
+  .refine(
+    (rubric) =>
+      rubric.action === 'skip' ||
+      (rubric.target != null &&
+        (rubric.target.ref != null ||
+          rubric.target.text != null ||
+          rubric.target.textRich != null ||
+          rubric.target.ordinariumKey != null)),
+    { message: 'non-skip actions require target with at least one resolvable field' },
+  )
+
+export const PageRedirectSchema = z.object({
+  redirectId: z.string().min(1),
+  ordinariumKey: PageRedirectOrdinariumKeyEnum,
+  page: z.number().int().min(1).max(969),
+  label: z.string().min(1),
+  appliesAt: PageRedirectSectionEnum,
+  evidencePdf: EvidencePdfSchema,
+})
+
+export const ConditionalRubricArraySchema = z.array(ConditionalRubricSchema)
+export const PageRedirectArraySchema = z.array(PageRedirectSchema)
+
+// Ordinarium catalog: closed-enum key → PDF page mapping. Build-time
+// validated; runtime hydration trusts the parsed shape.
+//
+// `kind` distinguishes ordinarium sections whose body lives at one
+// canonical page (fixed — Benedictus, Magnificat, Nunc Dimittis,
+// Compline responsory, common prayers, Gloria Patri) from those whose
+// body is laid out across many pages keyed by celebration / hymn
+// number / season (variable — dismissal-blessing "Магтуу: х. NNN",
+// hymns 883–961, invitatory-psalms 95/94/100). For fixed keys, both
+// the verifier and runtime resolver enforce `redirect.page ===
+// entry.page` so a typo in a marked redirect is caught instead of
+// silently surfacing a wrong page in the UI.
+export const OrdinariumKeyCatalogSchema = z.object({
+  entries: z.record(
+    PageRedirectOrdinariumKeyEnum,
+    z.object({
+      kind: z.enum(['fixed', 'variable']),
+      page: z.number().int().min(1).max(969),
+      label: z.string().min(1),
+      sourcePath: z.string().min(1).optional(),
+    }),
+  ),
+})
+
 // --- Helpers ---
 
 /**

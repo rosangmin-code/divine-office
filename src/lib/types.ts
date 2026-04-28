@@ -229,7 +229,61 @@ export interface HourPropers {
   concludingPrayerRich?: PrayerText
   alternativeConcludingPrayerRich?: PrayerText
   hymnRich?: PrayerText
+
+  // FR-160-B: inline rubric directives. Both arrays are additive — the
+  // Layer 4.5 hydrate step evaluates them against runtime context and
+  // mutates the surrounding fields (skip/substitute/prepend/append for
+  // conditional, ordinarium body inlining for redirect). Empty arrays
+  // and `undefined` are equivalent (noop).
+  conditionalRubrics?: ConditionalRubric[]
+  pageRedirects?: PageRedirect[]
+
+  // FR-160-B PR-8 (B4): per-section rubric overrides surfaced for the
+  // 5 sections whose printed body lives outside HourPropers
+  // (psalmody/intercessions/invitatory/dismissal/openingVersicle).
+  // PR-1 already handles concludingPrayer/hymn/shortReading by mutating
+  // the corresponding HourPropers fields directly. For the 5 PR-8
+  // sections the resolver records the matched directive in this map so
+  // the assembler/UI (PR-9) can render it alongside (or in place of)
+  // the section body — without re-running upstream ordinarium loaders.
+  // Empty / undefined = noop. additive only.
+  sectionOverrides?: SectionOverrideMap
+
+  // FR-160-B PR-10: ordinarium-body inline hydrate. After Layer 4.5
+  // resolves `pageRedirects`, the resolver loads the body referenced by
+  // each redirect's catalog `sourcePath` and stores it here. Existing
+  // section builders are unaffected (they continue to load from the
+  // ordinarium index directly); this field is the canonical record so
+  // downstream callers can byte-equal verify what got rendered against
+  // the ordinarium source. Empty / undefined = noop. additive only.
+  pageRedirectBodies?: HydratedPageRedirect[]
 }
+
+// FR-160-B PR-8: applied conditional-rubric record. Captures the
+// resolved action so the assembler can decide *how* to surface the
+// directive (skip = hide the section; substitute = show only the
+// directive; prepend/append = render directive before/after the body).
+// `text` is the resolved target.text (post-resolveTargetText). `ref`
+// and `ordinariumKey` propagate the rubric's target hints when present
+// for downstream resolvers (e.g. ordinarium body inlining in B5).
+export interface SectionOverride {
+  rubricId: string
+  mode: ConditionalRubricAction
+  text?: string
+  ref?: string
+  ordinariumKey?: PageRedirectOrdinariumKey
+  /**
+   * Propagated from `ConditionalRubric.appliesTo.index` so the
+   * assembler / UI can target an item-level override (e.g. psalmody[1]
+   * specifically). Absent when the rubric applies to the whole
+   * section.
+   */
+  index?: number
+}
+
+export type SectionOverrideMap = Partial<
+  Record<ConditionalRubricSection, SectionOverride[]>
+>
 
 export interface HymnCandidate {
   number: number
@@ -349,6 +403,182 @@ export interface CelebrationOptionsResult {
   options: CelebrationOption[]
 }
 
+// FR-160-B — Inline conditional + page-redirect rubric data model
+// (PR-1: schema + types + Zod + Layer 4.5 hydrate). Two new sibling
+// fields land on `HourPropers` outside the existing PrayerText AST
+// because semantics (when/action/redirect) differ from presentation
+// (rubric span). Layer 4 of `assembleHour` merges these alongside
+// rich overlays; Layer 4.5 hydrates them against runtime context
+// (season/dayOfWeek/dateStr/hour) and the ordinarium catalog.
+
+export type ConditionalRubricAction = 'skip' | 'substitute' | 'prepend' | 'append'
+
+export type ConditionalRubricSection =
+  | 'invitatory'
+  | 'openingVersicle'
+  | 'hymn'
+  | 'psalmody'
+  | 'shortReading'
+  | 'responsory'
+  | 'gospelCanticle'
+  | 'intercessions'
+  | 'concludingPrayer'
+  | 'dismissal'
+
+export interface ConditionalRubricLocator {
+  section: ConditionalRubricSection
+  /** Optional ordinal — e.g. psalmody[1] = the second psalm */
+  index?: number
+}
+
+export interface ConditionalRubricWhen {
+  season?: LiturgicalSeason[]
+  dayOfWeek?: DayOfWeek[]
+  /** Inclusive MM-DD range, both ends required when present */
+  dateRange?: { from: string; to: string }
+  /** Built-in predicates evaluated against HourContext */
+  predicate?: 'isFirstHourOfDay' | 'isVigil' | 'isObligatoryMemorial'
+}
+
+export interface ConditionalRubricTarget {
+  /** Bible/canticle ref that the directive points to (e.g. "Psalm 95:1-11") */
+  ref?: string
+  /** Inline plain text */
+  text?: string
+  /** Inline rich AST (rare) */
+  textRich?: PrayerText
+  /** Closed-enum lookup into the ordinarium catalog */
+  ordinariumKey?: PageRedirectOrdinariumKey
+}
+
+export interface ConditionalRubricEvidencePdf {
+  page: number
+  line?: number
+  text: string
+}
+
+export interface ConditionalRubric {
+  /** Unique identifier — stable across rebuilds (e.g. "easter-sun-lauds-skip-ps2") */
+  rubricId: string
+  when: ConditionalRubricWhen
+  action: ConditionalRubricAction
+  /** Mandatory for non-skip actions (validated by Zod refinement) */
+  target?: ConditionalRubricTarget
+  appliesTo: ConditionalRubricLocator
+  evidencePdf: ConditionalRubricEvidencePdf
+  /** GILH § / liturgical reference */
+  liturgicalBasis?: string
+}
+
+/**
+ * Closed enum of ordinarium catalog keys. Adding a new key is a schema
+ * change and requires updating both Zod + the ordinarium-key-catalog
+ * JSON in the same PR.
+ */
+export type PageRedirectOrdinariumKey =
+  | 'benedictus'
+  | 'magnificat'
+  | 'nunc-dimittis'
+  | 'dismissal-blessing'
+  | 'compline-responsory'
+  | 'common-prayers'
+  | 'gloria-patri'
+  | 'invitatory-psalms'
+  | 'hymns'
+
+export type PageRedirectSection =
+  | 'invitatory'
+  | 'hymn'
+  | 'psalmody'
+  | 'shortReading'
+  | 'responsory'
+  | 'gospelCanticle'
+  | 'intercessions'
+  | 'concludingPrayer'
+  | 'dismissal'
+
+export interface PageRedirect {
+  redirectId: string
+  ordinariumKey: PageRedirectOrdinariumKey
+  /** PDF page (1..969 — outside the printed book is rejected at parse time) */
+  page: number
+  /** PDF label as printed (e.g. "Магтуу: х. 879") */
+  label: string
+  appliesAt: PageRedirectSection
+  evidencePdf: ConditionalRubricEvidencePdf
+}
+
+/**
+ * FR-160-B PR-10: hydrated ordinarium body, attached after Layer 4.5
+ * resolves a `PageRedirect`. The resolver loads the body referenced by
+ * the catalog `sourcePath` (e.g. `canticles.json#benedictus`) and pins
+ * it to the propers so unit tests / verifiers can byte-equal compare
+ * the rendered section against the ordinarium source.
+ *
+ * `body` is the raw JSON value at the catalog's `sourcePath`. The shape
+ * is determined by the source file (e.g. canticle object, dismissal
+ * struct, invitatory whole-file, hymns array). The closed enum
+ * `ordinariumKey` discriminates the consumer's expected shape.
+ *
+ * Internal only — this type carries the full body and is attached to
+ * `HourPropers.pageRedirectBodies`. The HTTP / `AssembledHour` surface
+ * uses `PageRedirectBodyMeta` instead so audit metadata reaches
+ * downstream consumers without paying the body-size cost (e.g. the
+ * `hymns` source is ~134KB; we don't ship that to every API caller).
+ */
+export interface HydratedPageRedirect {
+  redirectId: string
+  ordinariumKey: PageRedirectOrdinariumKey
+  page: number
+  label: string
+  appliesAt: PageRedirectSection
+  /** Catalog metadata snapshot — `kind`, canonical `page`, `label`, `sourcePath` */
+  catalog: {
+    kind: 'fixed' | 'variable'
+    page: number
+    label: string
+    sourcePath: string
+  }
+  /** Raw JSON value at sourcePath. byte-equal to the ordinarium source. */
+  body: unknown
+}
+
+/**
+ * Public mirror of `HydratedPageRedirect` without the `body` payload.
+ * Surfaces on `AssembledHour.pageRedirectBodies` for audit/debug
+ * consumers (e2e, telemetry) — the body lives only in the internal
+ * `HourPropers.pageRedirectBodies` resolver record. Slimming the API
+ * surface avoids shipping multi-KB ordinarium bodies (especially
+ * hymns.json at ~134KB) to every client request.
+ */
+export interface PageRedirectBodyMeta {
+  redirectId: string
+  ordinariumKey: PageRedirectOrdinariumKey
+  page: number
+  label: string
+  appliesAt: PageRedirectSection
+  catalog: {
+    kind: 'fixed' | 'variable'
+    page: number
+    label: string
+    sourcePath: string
+  }
+}
+
+// FR-160-C — psalm-header preface (rubric red metadata above the psalm
+// body in the Mongolian LOTH PDF). Two kinds: patristic Father preface
+// (Хэсихиус / Августин / Касиодор / Арнобиус / Кацен / Ориген) or NT
+// typological citation pointing to a NT verse that prefigures the psalm
+// (Үйлс / Матай / Иохан / Лук / Марк / Ром / Еврей / Ефес / Галат /
+// Илчлэл / Филиппой). Catalog: src/data/loth/prayers/commons/
+// psalter-headers.rich.json. Loader: loadPsalterHeaderRich(ref).
+export interface PsalterHeaderRich {
+  kind: 'patristic_preface' | 'nt_typological'
+  attribution: string       // e.g. "Хэсихиус", "Гэгээн Августин", "Үйлс 2:42"
+  preface_text: string      // The full preface body (the citation/quote text)
+  page?: number             // Book page where this header appears
+}
+
 // --- Assembled Hour (output of loth-service) ---
 
 export interface AssembledPsalm {
@@ -359,6 +589,7 @@ export interface AssembledPsalm {
   verses: { verse: number; text: string }[]  // fallback when stanzas unavailable
   stanzas?: string[][]                        // poetic lines grouped by stanza (from PDF source)
   stanzasRich?: PrayerText       // FR-153f: rich AST overlay for stanzas (indent 0/1/2 + refrain role)
+  headerRich?: PsalterHeaderRich // FR-160-C: psalm-header preface (patristic Father / NT typological citation)
   gloriaPatri: boolean
   psalmPrayer?: string           // Дууллыг төгсгөх залбирал — post-Gloria Patri oratio
   psalmPrayerRich?: PrayerText   // FR-153h: rich AST overlay for psalmPrayer (prose blocks + rubric spans)
@@ -378,10 +609,11 @@ export type HourSection =
       gloryBe: string
       rubric?: string
       page?: number
+      directives?: SectionOverride[]
     }
-  | { type: 'openingVersicle'; versicle: string; response: string; gloryBe: string; alleluia?: string; pairedWithInvitatory?: boolean }
+  | { type: 'openingVersicle'; versicle: string; response: string; gloryBe: string; alleluia?: string; pairedWithInvitatory?: boolean; directives?: SectionOverride[] }
   | { type: 'hymn'; text: string; page?: number; candidates?: HymnCandidate[]; selectedIndex?: number; textRich?: PrayerText }
-  | { type: 'psalmody'; psalms: AssembledPsalm[] }
+  | { type: 'psalmody'; psalms: AssembledPsalm[]; directives?: SectionOverride[] }
   | { type: 'shortReading'; ref: string; bookMn: string; verses: { verse: number; text: string }[]; page?: number; textRich?: PrayerText }
   | { type: 'responsory'; fullResponse: string; versicle: string; shortResponse: string; page?: number; rich?: PrayerText }
   | {
@@ -414,10 +646,11 @@ export type HourSection =
       closing?: string
       page?: number
       rich?: PrayerText
+      directives?: SectionOverride[]
     }
   | { type: 'ourFather' }
   | { type: 'concludingPrayer'; text: string; page?: number; alternateText?: string; textRich?: PrayerText; alternateTextRich?: PrayerText }
-  | { type: 'dismissal'; priest: { greeting: { versicle: string; response: string }; blessing: { text: string; response: string }; dismissalVersicle: { versicle: string; response: string } }; individual: { versicle: string; response: string } }
+  | { type: 'dismissal'; priest: { greeting: { versicle: string; response: string }; blessing: { text: string; response: string }; dismissalVersicle: { versicle: string; response: string } }; individual: { versicle: string; response: string }; directives?: SectionOverride[] }
   | { type: 'examen'; text: string; page?: number }
   | { type: 'blessing'; text: string; response: string; page?: number }
   | { type: 'marianAntiphon'; title: string; text: string; page?: number; candidates?: MarianAntiphonCandidate[]; selectedIndex?: number }
@@ -429,4 +662,15 @@ export interface AssembledHour {
   liturgicalDay: LiturgicalDayInfo
   psalterWeek: 1 | 2 | 3 | 4
   sections: HourSection[]
+  /**
+   * FR-160-B PR-10: hydrated ordinarium audit metadata for any
+   * `pageRedirects` declared on this hour's propers. The full body is
+   * intentionally NOT included here — clients render section content
+   * via the existing builders, and shipping the raw ordinarium source
+   * (e.g. ~134KB hymns.json) on every API response is wasteful.
+   * Internal byte-equal verification uses
+   * `HourPropers.pageRedirectBodies` (full body) inside the resolver.
+   * Absent when the hour declares no PageRedirect.
+   */
+  pageRedirectBodies?: PageRedirectBodyMeta[]
 }

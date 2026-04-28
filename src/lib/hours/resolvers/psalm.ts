@@ -2,7 +2,11 @@ import type { AssembledPsalm, DayOfWeek, LiturgicalSeason, PsalmEntry } from '..
 import { parseScriptureRef } from '../../scripture-ref-parser'
 import { lookupRef } from '../../bible-loader'
 import { loadPsalterTexts } from '../loaders'
-import { loadPsalterTextRich, loadPsalterTextPsalmPrayerRich } from '../../prayers/rich-overlay'
+import {
+  loadPsalterTextRich,
+  loadPsalterTextPsalmPrayerRich,
+  loadPsalterHeaderRich,
+} from '../../prayers/rich-overlay'
 import { applySeasonalAntiphon, pickSeasonalVariant } from '../seasonal-antiphon'
 
 /**
@@ -54,6 +58,7 @@ export async function resolvePsalm(
   if (psalmText && psalmText.stanzas.length > 0) {
     const stanzasRich = loadPsalterTextRich(entry.ref) ?? undefined
     const psalmPrayerRich = loadPsalterTextPsalmPrayerRich(entry.ref) ?? undefined
+    const headerRich = loadPsalterHeaderRich(entry.ref) ?? undefined
     return {
       psalmType: entry.type,
       reference: entry.ref,
@@ -61,6 +66,7 @@ export async function resolvePsalm(
       antiphon,
       stanzas: psalmText.stanzas,
       stanzasRich,
+      headerRich,
       verses: [],
       gloriaPatri: entry.gloria_patri,
       psalmPrayer: psalmText.psalmPrayer,
@@ -105,5 +111,6 @@ export async function resolvePsalm(
     psalmPrayerRich: loadPsalterTextPsalmPrayerRich(entry.ref) ?? undefined,
     psalmPrayerPage: psalmText?.psalmPrayerPage,
     page: entry.page,
+    headerRich: loadPsalterHeaderRich(entry.ref) ?? undefined,
   }
 }
