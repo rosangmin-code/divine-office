@@ -93,6 +93,48 @@ function renderBlock(block: PrayerBlock, key: number): JSX.Element {
     )
   }
   if (block.kind === 'stanza') {
+    // FR-161 R-4: phrase-render path. Same contract as psalm-block.tsx —
+    // when `phrases?: PhraseGroup[]` is present + non-empty, group lines
+    // by `lineRange` (inclusive both ends), join their text spans with a
+    // space, and emit one viewport-wrappable block per phrase. role
+    // ('refrain'/'doxology') maps to colour/italic. Falls back to legacy
+    // line-by-line render when phrases are absent.
+    if (block.phrases && block.phrases.length > 0) {
+      return (
+        <p key={key} className={BODY_CLASS} data-render-mode="phrase">
+          {block.phrases.map((phrase, pi) => {
+            const [start, end] = phrase.lineRange
+            const phraseSpans = block.lines.slice(start, end + 1).flatMap((l) => l.spans)
+            const indent = indentClassFor(phrase.indent)
+            const isRefrain = phrase.role === 'refrain'
+            const isDoxology = phrase.role === 'doxology'
+            const roleClass = isRefrain
+              ? RUBRIC_CLASS
+              : isDoxology
+              ? 'italic'
+              : ''
+            const dataRole = isRefrain
+              ? 'psalm-phrase-refrain'
+              : isDoxology
+              ? 'psalm-phrase-doxology'
+              : 'psalm-phrase'
+            const cls = ['block', indent, roleClass].filter(Boolean).join(' ')
+            // Insert spaces between joined lines' span sequences.
+            const joined: JSX.Element[] = []
+            const groups = block.lines.slice(start, end + 1)
+            for (let gi = 0; gi < groups.length; gi++) {
+              if (gi > 0) joined.push(<span key={`sep-${gi}`}>{' '}</span>)
+              joined.push(...groups[gi].spans.map((s, si) => renderSpan(s, gi * 100 + si)))
+            }
+            return (
+              <span key={pi} data-role={dataRole} className={cls}>
+                {joined}
+              </span>
+            )
+          })}
+        </p>
+      )
+    }
     return (
       <p key={key} className={BODY_CLASS}>
         {block.lines.map((line, li) => {

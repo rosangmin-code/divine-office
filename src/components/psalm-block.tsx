@@ -44,6 +44,55 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
         <div className="space-y-5 pl-3 md:space-y-4 md:pl-2">
           {psalm.stanzasRich.blocks.map((block, bi) => {
             if (block.kind !== 'stanza') return null
+            // FR-161 R-4: phrase-render path. When the stanza carries
+            // `phrases?: PhraseGroup[]`, group `lines[]` by `lineRange`
+            // (inclusive both ends), join with a space, and emit one
+            // viewport-wrappable phrase per group. The outer `<p>` drops
+            // `whitespace-pre-line` because phrases now own the wrapping
+            // policy. Falls back to the legacy line-by-line render when
+            // `phrases` is absent or empty (regression-safe additive).
+            if (block.phrases && block.phrases.length > 0) {
+              return (
+                <p
+                  key={bi}
+                  data-role="psalm-stanza"
+                  data-render-mode="phrase"
+                  className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200"
+                >
+                  {block.phrases.map((phrase, pi) => {
+                    const [start, end] = phrase.lineRange
+                    const phraseText = block.lines
+                      .slice(start, end + 1)
+                      .map((l) => l.spans.map((sp) => sp.text ?? '').join(''))
+                      .join(' ')
+                    const indent = phrase.indent ?? 0
+                    const indentClass =
+                      indent === 0 ? '' : indent === 1 ? 'pl-6' : 'pl-12'
+                    const isRefrain = phrase.role === 'refrain'
+                    const isDoxology = phrase.role === 'doxology'
+                    const roleClass = isRefrain
+                      ? ' text-red-700 dark:text-red-400'
+                      : isDoxology
+                      ? ' italic'
+                      : ''
+                    const dataRole = isRefrain
+                      ? 'psalm-phrase-refrain'
+                      : isDoxology
+                      ? 'psalm-phrase-doxology'
+                      : 'psalm-phrase'
+                    return (
+                      <span
+                        key={pi}
+                        data-role={dataRole}
+                        className={`block${indentClass ? ' ' + indentClass : ''}${roleClass}`}
+                      >
+                        {phraseText}
+                      </span>
+                    )
+                  })}
+                </p>
+              )
+            }
             return (
               <p
                 key={bi}
