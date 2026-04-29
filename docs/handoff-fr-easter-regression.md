@@ -299,3 +299,97 @@ A 가 PASS 했으므로 audit 의 "사용자 reported 증상이 _재현 안 됨_
 테스트는 `assembleHour` 결과만 검증, prayer page (`/pray/[date]/[hour]`)
 컴포넌트 레이어가 textRich vs plain 우선순위를 어떻게 처리하는지는 별도 audit
 필요.
+
+---
+
+## 9. Priority C renderer audit 결과 (task #204)
+
+audit 출처: divine-researcher #204 (commit `9f3a0a7` base)
+
+### 9.1 Route 구조
+
+| 항목 | 상태 |
+|---|---|
+| `src/app/pray/[date]/[hour]/page.tsx` | Server Component, dynamic SSR (params Promise), no revalidate / no force-static / no cache directive |
+| `src/app/api/loth/[date]/[hour]/route.ts` | GET handler, `assembleHour` 직접 호출, no NextResponse cache headers |
+| Verdict | Vercel build cache / SSR static generation 으로 ordinary content frozen 가능성 NOT_REPRODUCED — page 는 매 요청마다 동적 SSR |
+
+### 9.2 4 main propers + antiphon section 분기
+
+| section | renderer 분기 | assembler | verdict |
+|---|---|---|---|
+| `shortReading` | `textRich.blocks.length > 0` 우선, verses fallback | lauds/vespers/compline 모두 `mergedPropers.shortReadingRich` pickup | ✓ 정상 |
+| `responsory` | `section.rich.blocks.length > 0` 우선, fullResponse fallback | 3 hour 모두 `mergedPropers.responsoryRich` pickup | ✓ 정상 |
+| `intercessions` | `section.rich.blocks.length > 0` 우선, structured petitions fallback | lauds/vespers `mergedPropers.intercessionsRich` pickup, compline 없음 | ✓ 정상 |
+| `concludingPrayer` | `activeRich.blocks.length > 0` 우선, displayText fallback | 3 hour 모두 `mergedPropers.concludingPrayerRich` + alternative pickup | ✓ 정상 |
+| `gospelCanticleAntiphon` | plain `section.antiphon` 만 (rich branch 없음) | `resolveGospelCanticle` 에 plain antiphon string | ⚠️ rich pipeline 부재 (gap) — plain Layer2 가 Easter wk1 으로 채워지므로 화면 표시 정상. 회귀 아님 |
+| `psalm.antiphon` | `AntiphonBox` plain only (rich branch 없음) | `resolvePsalm` → `applySeasonalAntiphon` (Layer5) Easter Alleluia 자동 append | ✓ 정상 |
+| **`marianAntiphon`** | **plain `displayText` 만 (rich branch 없음, rich 데이터도 없음)** | **`compline.ts` L105-115: `marian = ctx.complineData.marianAntiphon[0]` + `selectedIndex: 0` 하드코드** | **❌ ROOT CAUSE 후보** |
+
+### 9.3 Antiphon path tracing
+
+| antiphon path | chain | Easter handling |
+|---|---|---|
+| 시편 후렴 | easter.json 시편 → psalter-loader → resolvePsalm → applySeasonalAntiphon → AssembledPsalm.antiphon → AntiphonBox | applySeasonalAntiphon 이 season=EASTER 시 Alleluia 접미. 정상 |
+| 성모찬송 후렴 (lauds/vespers) | easter.json `weeks[1].day.{lauds,vespers}.gospelCanticleAntiphon` (plain) → Layer2 → mergedPropers → resolveGospelCanticle → section.antiphon → AntiphonBox | Layer2 Easter wk1 plain + Layer5 Alleluia 접미 (loth-service.ts L418-422). 정상 |
+| **Compline Marian 후렴** | `compline.json anteMarian` → psalter-loader `getFullComplineData` → marianOptions = `[salveRegina, ...alternatives]` → ctx.complineData.marianAntiphon → **compline.ts L106 `marianAntiphon[0]`** → MarianAntiphonSection | **NO season check anywhere. selectedIndex=0 hardcoded** |
+
+### 9.4 회귀 hypothesis 검증
+
+| Hypothesis | Verdict |
+|---|---|
+| h1 renderer Layer1 leak | NOT_VERIFIED — 4 main propers 분기 모두 일관 |
+| h2 SSR/Vercel build cache | NOT_REPRODUCED — page.tsx + route.ts 모두 dynamic, no cache directive |
+| h3 gospel canticle rich gap | PARTIAL — rich 분기 부재 (gap) 이지만 plain antiphon 정상. 회귀 원인 아님 |
+| **h4 NEW — Compline Marian seasonal default missing** | **VERIFIED — compline.ts L106 + L113 `selectedIndex=0` 하드코드, src 전역 grep `EASTER.*marian` / `marian.*EASTER` 0 매치** |
+
+### 9.5 Compline data coverage 보충
+
+- 5 season propers JSON (advent/christmas/easter/lent/ordinary-time) 모두 lauds/vespers/vespers2 만 author. **compline 슬롯 없음**.
+- 모든 시즌의 compline content 는 `ordinarium/compline.json` 의 per-day 고정 데이터 사용.
+- Roman Rite 전통상 Compline 은 non-seasonal (요일 기반만) — PDF spec 과 일치.
+- **다만 Marian antiphon 만 4 시즌 변형** (Salve / Alma / Ave / Regina Caeli) — 이 변형이 selectedIndex=0 고정으로 무시됨.
+
+### 9.6 NOT a regression — never-implemented feature
+
+- `compline.ts` git log (61f2be9, f604835, 62be8d4, 845be73, 536e7ce, 648aab5, f6249b9, b58c8cb, 24686a9) 에서 어느 commit 도 seasonal Marian 도입/제거 흔적 없음.
+- 사용자 기억 "지난번에도 수정했던 건데" 는 별개 fix (task #12 Easter antiphon Alleluia / task #54 rich-overlay wk1 fallback) — 이번 audit 의 Compline Marian default 는 둘 어느 쪽도 cover 하지 않음.
+
+### 9.7 Backend probe 결과 (leader 측 vitest probe)
+
+leader 가 별도 동적 reproduction 시도 — `assembleHour('2026-04-29','lauds')` psalms[0/1/2].antiphon:
+
+| psalm | antiphon (backend resolve) |
+|---|---|
+| Psalm 108:2-7 | "Тэнгэрбурхан тэнгэрсээс дээгүүр өргөмжлөгдөх болтугай. Аллэлуяа!" (PDF Easter wk1 variant) |
+| Isaiah 61:10-62:5 | "Эзэн Тэнгэрбурхан бүх үндэстний өмнө шударга ёс ба магтаалыг дэлгэрүүлнэ. Аллэлуяа!" |
+| Psalm 146:1-10 | "Сион оо, чиний Тэнгэрбурхан болох Эзэн бүх үеийнхний туршид, мөнхөд захирна. Аллэлуяа!" |
+
+즉 backend 에서 **시편 후렴은 PDF Easter variant 으로 정확히 resolve**. 사용자가 본 "시편 후렴 ordinary" 가 backend layer 가 아닌 사용자 단말 / Vercel CDN cache 에서 발생 가능성 (또는 사용자가 "후렴" 으로 통칭한 게 실제로는 Compline Marian antiphon 일 가능성).
+
+### 9.8 Fix 권고
+
+#### Priority C-1 (HIGH) — Compline Marian seasonal default
+
+- target: `src/lib/hours/compline.ts` L105-115
+- scope: `selectedIndex` 를 season 기반 selector 로 교체
+- 새 헬퍼 `selectSeasonalMarianIndex(season, candidates)`:
+  - EASTER → "Тэнгэрийн Хатан" / "Regina Caeli" / "Аллэлуяа" 포함 후보 우선 매치
+  - ADVENT|CHRISTMAS → "Аврагчийн хайрт эх" / "Alma" 매치
+  - LENT → "Ave Regina" 매치 (없으면 0)
+  - 그 외 → 0 (Salve Regina)
+- title 매칭은 includes 기반 permissive (PDF 표기 변형 흡수)
+- compline.ts L106 `marian = candidates[idx]`, L113 `selectedIndex: idx`
+- testability: vitest unit `assembleCompline(easterDate, MON-SUN)` → marianAntiphon section title 이 Regina Caeli 인지 assert. e2e: 2026-04-29 compline 페이지에서 Marian section default 가 "Тэнгэрийн Хатан" 인지 assert
+
+#### Priority C-2 (MEDIUM) — Lent Marian data audit
+
+`compline.json anteMarian.alternatives` 에서 Lent 용 Ave Regina Caelorum 데이터 확인.
+
+#### Priority C-3 (LOW) — gospel canticle rich gap
+
+`resolveGospelCanticle` 시그니처 + 호출 + section 컴포넌트에 antiphonRich 추가 (현재 plain only). 데이터 측 authoring 필요.
+
+#### Priority C-4 (LOW-MEDIUM) — compline seasonal propers coverage
+
+`propers/{advent,christmas,easter,lent,ordinary-time}.json` 에 compline 슬롯 추가 audit. Roman Rite 전통상 non-seasonal 이므로 spec 확인 후 결정.
