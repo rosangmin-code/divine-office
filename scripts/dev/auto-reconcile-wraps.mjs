@@ -35,6 +35,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { execFileSync } from 'node:child_process'
 import { resolve } from 'node:path'
 import { bookPageToPhysical } from '../parsers/book-page-mapper.mjs'
+import { stripPageHeaders } from './page-header-filter.mjs'
 
 const TARGET = 'src/data/loth/prayers/commons/psalter-texts.rich.json'
 const MAX_JOIN_DEPTH = 6
@@ -114,6 +115,19 @@ function flattenExtractor(stanzas) {
   return flat
 }
 
+// FR-161 R-9.D — multi-page extractor scope.
+//
+// `reconcileOneRef` originally extracts only `(page, page+1)` of the same
+// physical PDF page. Some psalms (Psalm 33 v9 → block 2 on book page 98,
+// Psalm 41 block 1, Psalm 21 block 2) spill BEYOND that single physical
+// page. The handler now extracts up to MULTI_PAGE_DEPTH consecutive book
+// pages whenever the initial alignment cannot find a rich block's first
+// line. Each extra page is appended to the flat stream (with its own
+// page-header noise filtered via shared `page-header-filter.mjs` so a wrap
+// pair sitting on either side of a page boundary is treated as one
+// logical sequence) and alignment is retried.
+const MULTI_PAGE_DEPTH = 4 // pages beyond the start page
+
 /**
  * Find the start index in `extLines` where `richLines[0]` begins. Returns
  * the first match by 12-char prefix (after normalisation) — rich line may
@@ -192,64 +206,112 @@ function applySplits(block, splits) {
   return { ...block, lines: newLines }
 }
 
+/**
+ * FR-161 R-9.D — extract a flat extractor stream covering one or more
+ * book-page pairs (left + right of each physical page that hosts the
+ * relevant book pages). Pages are walked starting at `startBookPage` and
+ * include every book page from `startBookPage` to `startBookPage + extraDepth`.
+ *
+ * Page-header noise (running headers like "Даваа гарагийн орой ... 85") is
+ * filtered automatically — the lexically interleaved header is what blocks
+ * the line aligner from joining a wrap pair across the page boundary.
+ *
+ * @param {string} pdfPath
+ * @param {number} startBookPage
+ * @param {number} extraDepth — additional book pages beyond start (0 = just page+1)
+ * @returns {string[]} flat, noise-filtered extractor lines in book order
+ */
+function extractFlatStream(pdfPath, startBookPage, extraDepth = 0) {
+  const flat = []
+  const seen = new Set() // dedupe physical pages — book N + N+1 share one physical
+  for (let bp = startBookPage; bp <= startBookPage + 1 + extraDepth; bp++) {
+    const phys = bookPageToPhysical(bp)
+    if (seen.has(`${phys.physical}:${phys.half}`)) continue
+    seen.add(`${phys.physical}:${phys.half}`)
+    try {
+      const out = runExtractor(pdfPath, bp, phys.half)
+      flat.push(...out.stanzas.flatMap((s) => s.lines))
+    } catch {
+      // Some pages are blank or don't exist — ignore.
+    }
+  }
+  return stripPageHeaders(flat)
+}
+
 function reconcileOneRef(refMeta, pdfPath, richData) {
   const { ref, page } = refMeta
   const ref0 = richData[ref]
   if (!ref0 || !ref0.stanzasRich || !Array.isArray(ref0.stanzasRich.blocks)) {
     return { ref, page, verdict: 'NO_RICH_BLOCKS' }
   }
-  const start = bookPageToPhysical(page)
-  const startCol = start.half
-  const otherCol = startCol === 'left' ? 'right' : 'left'
-  let extStanzas = []
-  try {
-    extStanzas.push(...runExtractor(pdfPath, page, startCol).stanzas)
-  } catch (e) {
-    return { ref, page, verdict: 'EXTRACTOR_FAIL', detail: e.message.split('\n')[0] }
-  }
-  try {
-    extStanzas.push(...runExtractor(pdfPath, page + 1, otherCol).stanzas)
-  } catch {}
-  const extLines = flattenExtractor(extStanzas)
 
   const blocks = ref0.stanzasRich.blocks
   const stanzaSlots = blocks
     .map((b, i) => ({ b, i }))
     .filter((x) => x.b.kind === 'stanza')
-  let cursor = 0
-  const blockSplits = [] // [{ blockIndex, splits, applyTo }]
-  for (const slot of stanzaSlots) {
-    const richLines = slot.b.lines.map((l) => l.spans?.[0]?.text || '')
-    const startJ = findRichStart(richLines, extLines.slice(cursor))
-    if (startJ < 0) {
+
+  // FR-161 R-9.D — adaptive multi-page extraction. Start with the same
+  // 1-physical-page scope R-8 used; if alignment fails, retry with more
+  // pages until success or depth ceiling.
+  let lastFailure = null
+  for (let depth = 0; depth <= MULTI_PAGE_DEPTH; depth++) {
+    const extLines = extractFlatStream(pdfPath, page, depth)
+    if (extLines.length === 0) {
+      return { ref, page, verdict: 'EXTRACTOR_FAIL', detail: 'no extractor lines' }
+    }
+
+    let cursor = 0
+    const blockSplits = []
+    let failure = null
+    for (const slot of stanzaSlots) {
+      const richLines = slot.b.lines.map((l) => l.spans?.[0]?.text || '')
+      const startJ = findRichStart(richLines, extLines.slice(cursor))
+      if (startJ < 0) {
+        failure = {
+          blockIndex: slot.i,
+          kind: 'NO_START_FROM_CURSOR',
+          detail: `block ${slot.i}: rich first line "${richLines[0]?.slice(0, 40)}" not found in extractor stream (depth=${depth}, cursor=${cursor})`,
+        }
+        break
+      }
+      const absStart = cursor + startJ
+      const align1 = align(richLines, extLines, absStart)
+      if (!align1.ok) {
+        failure = {
+          blockIndex: slot.i,
+          kind: 'ALIGN_DRIFT',
+          detail: `block ${slot.i}: align failed at rich line ${align1.failAtRichIndex} ("${align1.richSample}") — ${align1.reason}`,
+        }
+        break
+      }
+      blockSplits.push({ blockIndex: slot.i, splits: align1.splits })
+      cursor = align1.finalJ
+    }
+
+    if (failure === null) {
+      const totalSplits = blockSplits.reduce((acc, x) => acc + x.splits.length, 0)
       return {
         ref,
         page,
-        verdict: 'NOVEL_EDGE',
-        detail: `block ${slot.i}: rich first line "${richLines[0]?.slice(0, 40)}" not found in extractor stream from cursor ${cursor}`,
+        verdict: totalSplits === 0 ? 'NO_SPLITS_NEEDED' : 'RECONCILABLE',
+        blockSplits,
+        splitCount: totalSplits,
+        depthUsed: depth,
       }
     }
-    const absStart = cursor + startJ
-    const align1 = align(richLines, extLines, absStart)
-    if (!align1.ok) {
-      return {
-        ref,
-        page,
-        verdict: 'NOVEL_EDGE',
-        detail: `block ${slot.i}: align failed at rich line ${align1.failAtRichIndex} ("${align1.richSample}") — ${align1.reason}`,
-      }
-    }
-    blockSplits.push({ blockIndex: slot.i, splits: align1.splits })
-    cursor = align1.finalJ
+
+    lastFailure = failure
+    // Only retry deeper if the failure was a missing-start (suggests
+    // multi-page spillover); ALIGN_DRIFT inside an already-found block is
+    // a content-shape mismatch that more pages won't fix.
+    if (failure.kind !== 'NO_START_FROM_CURSOR') break
   }
 
-  const totalSplits = blockSplits.reduce((acc, x) => acc + x.splits.length, 0)
   return {
     ref,
     page,
-    verdict: totalSplits === 0 ? 'NO_SPLITS_NEEDED' : 'RECONCILABLE',
-    blockSplits,
-    splitCount: totalSplits,
+    verdict: 'NOVEL_EDGE',
+    detail: lastFailure ? lastFailure.detail : 'unknown alignment failure',
   }
 }
 

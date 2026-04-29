@@ -28,6 +28,13 @@ import { execFileSync } from 'node:child_process'
 import { resolve } from 'node:path'
 import { bookPageToPhysical } from '../parsers/book-page-mapper.mjs'
 import { injectPhrasesIntoRichData, renderDryRun } from '../build-phrases-into-rich.mjs'
+import { stripPageHeadersFromStanzas } from './page-header-filter.mjs'
+
+// FR-161 R-9.D — extra book pages beyond `(page, page+1)` to scan when a
+// rich block's first line is missing from the initial scope. Mirrors the
+// MULTI_PAGE_DEPTH constant in `auto-reconcile-wraps.mjs` so the dry-run
+// classification and the auto-reconciler agree on what's reachable.
+const MULTI_PAGE_DEPTH = 4
 
 const TARGET = 'src/data/loth/prayers/commons/psalter-texts.rich.json'
 
@@ -120,51 +127,85 @@ function classifyDryRunVerdict(result, ref) {
   return { verdict: 'OTHER', detail: firstKind || 'unknown' }
 }
 
-function processOne(refMeta, pdfPath, richData) {
-  const { ref, page } = refMeta
-  // Map book → physical + half. The psalm starts on `page` (book), but
-  // commonly continues onto book+1 (the opposite half of the same physical
-  // PDF page) — verse 6 of Psalm 110 lived on book 69 (right col).
-  const start = bookPageToPhysical(page)
-  const startCol = start.half
-  const endCol = startCol === 'left' ? 'right' : 'left'
-
-  let extractorStanzas = []
-  // Run the start-column extractor first.
-  try {
-    const startOut = runExtractor(pdfPath, page, startCol)
-    extractorStanzas.push(...startOut.stanzas)
-  } catch (err) {
-    return {
-      ref,
-      page,
-      verdict: 'EXTRACTOR_FAILED',
-      detail: `start col=${startCol}: ${err.message.split('\n')[0]}`,
+/**
+ * Build the extractor stanzas list for a ref, expanding the page scope
+ * incrementally (page → page+1 of the same physical page → next physical
+ * page → ...) up to MULTI_PAGE_DEPTH. Each fetched page goes through the
+ * shared `stripPageHeadersFromStanzas` filter so a wrap pair sitting on
+ * either side of a page boundary survives the builder's window match
+ * (FR-161 R-9.D — page-header noise + multi-page spillover).
+ *
+ * Pages already seen at `(physical, half)` are deduped (book N + N+1
+ * share one physical page in 2-up landscape).
+ */
+function gatherStanzas(pdfPath, startBookPage, depth) {
+  const seen = new Set()
+  const out = []
+  for (let bp = startBookPage; bp <= startBookPage + 1 + depth; bp++) {
+    const phys = bookPageToPhysical(bp)
+    const key = `${phys.physical}:${phys.half}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    try {
+      const json = runExtractor(pdfPath, bp, phys.half)
+      out.push(...stripPageHeadersFromStanzas(json.stanzas))
+    } catch {
+      // missing / blank page — ignore
     }
   }
-  // Always also fetch the opposite column on the SAME physical page —
-  // cheap and covers continuation. (page+1 maps to the other half of the
-  // same physical page when the next book page is the right side.)
-  try {
-    const otherOut = runExtractor(pdfPath, page + 1, endCol)
-    extractorStanzas.push(...otherOut.stanzas)
-  } catch (err) {
-    // Opposite column may not have content; ignore.
+  return out
+}
+
+function processOne(refMeta, pdfPath, richData) {
+  const { ref, page } = refMeta
+  const start = bookPageToPhysical(page)
+
+  // Adaptive scope: start at depth 0 (just `(page, page+1)` mapped to the
+  // same physical page). On a NO_MATCHING_EXTRACTOR_STANZA / INCOMPLETE_COVERAGE
+  // failure, expand depth and retry. Stop on PASS, on a non-recoverable
+  // failure (LINE_COUNT_MISMATCH = drift inside an already-found block —
+  // more pages won't help), or when MULTI_PAGE_DEPTH is exhausted.
+  let lastResult = null
+  let lastVerdict = null
+  let extractorStanzaCount = 0
+  for (let depth = 0; depth <= MULTI_PAGE_DEPTH; depth++) {
+    let extractorStanzas
+    try {
+      extractorStanzas = gatherStanzas(pdfPath, page, depth)
+    } catch (err) {
+      return {
+        ref,
+        page,
+        verdict: 'EXTRACTOR_FAILED',
+        detail: err.message.split('\n')[0],
+      }
+    }
+    extractorStanzaCount = extractorStanzas.length
+    const batch = [{ ref, stanzas: extractorStanzas }]
+    const result = injectPhrasesIntoRichData(richData, batch)
+    const verdictInfo = classifyDryRunVerdict(result, ref)
+    lastResult = result
+    lastVerdict = verdictInfo
+    if (verdictInfo.verdict === 'PASS') break
+    // Only retry deeper for missing-stanza failures; LINE_COUNT_MISMATCH
+    // is a content-shape drift that more pages won't fix.
+    if (
+      verdictInfo.verdict !== 'DRIFT_NO_MATCH' &&
+      verdictInfo.verdict !== 'INCOMPLETE_COVERAGE'
+    ) {
+      break
+    }
   }
 
-  const batch = [{ ref, stanzas: extractorStanzas }]
-  // Use the in-process builder API so we don't shell-out for dry-run.
-  const result = injectPhrasesIntoRichData(richData, batch)
-  const verdictInfo = classifyDryRunVerdict(result, ref)
   return {
     ref,
     page,
     physicalPage: start.physical,
-    startCol,
-    extractorStanzaCount: extractorStanzas.length,
-    verdict: verdictInfo.verdict,
-    detail: verdictInfo.detail,
-    plan: result.plan?.find((p) => p.ref === ref) ?? null,
+    startCol: start.half,
+    extractorStanzaCount,
+    verdict: lastVerdict.verdict,
+    detail: lastVerdict.detail,
+    plan: lastResult.plan?.find((p) => p.ref === ref) ?? null,
   }
 }
 
@@ -185,25 +226,17 @@ function main() {
     results.push(r)
   }
 
-  // Build batch atomic inject if requested.
+  // Build batch atomic inject if requested. Re-gather extractor stanzas
+  // using the SAME adaptive depth + page-header filter the dry-run pass
+  // used so the inject batch sees the identical line stream the verdict
+  // was based on.
   if (args.inject) {
     const batches = results
       .filter((r) => r.verdict === 'PASS' && r.plan)
-      .map((r) => {
-        // Rebuild plan-aware extractor stanzas via re-extraction (the in-
-        // memory dry-run discarded them). Cheap relative to PDF size.
-        const start = bookPageToPhysical(r.page)
-        const stanzas = runExtractor(pdfPath, r.page, start.half).stanzas
-        try {
-          const otherStanzas = runExtractor(
-            pdfPath,
-            r.page + 1,
-            start.half === 'left' ? 'right' : 'left',
-          ).stanzas
-          stanzas.push(...otherStanzas)
-        } catch {}
-        return { ref: r.ref, stanzas }
-      })
+      .map((r) => ({
+        ref: r.ref,
+        stanzas: gatherStanzas(pdfPath, r.page, MULTI_PAGE_DEPTH),
+      }))
     if (batches.length === 0) {
       process.stderr.write('refusing to inject: no PASS refs in batch\n')
       process.exit(3)

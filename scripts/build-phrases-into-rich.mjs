@@ -160,19 +160,67 @@ function translatePhrases(window, extractorStanzas) {
   const phrases = []
   for (let s = 0; s < extractorStanzas.length; s++) {
     for (const phrase of extractorStanzas[s].phrases) {
-      const startIdx = lookup.get(`${s}:${phrase.lineRange[0]}`)
-      const endIdx = lookup.get(`${s}:${phrase.lineRange[1]}`)
-      if (startIdx === undefined || endIdx === undefined) continue
-      // Phrase MUST be contiguous in the window (otherwise it crossed a
-      // window boundary — drop it).
-      if (endIdx - startIdx !== phrase.lineRange[1] - phrase.lineRange[0]) continue
+      // FR-161 R-9.D — coverage repair for boundary-crossing phrases.
+      // When a rich block starts at a wrap-continuation line (Psalm 147
+      // v12 starts mid-sentence "хөндлүүдийг бэхжүүлэн"), the matching
+      // extractor phrase straddles the window's leading edge: lineRange
+      // [k-1, k] in extractor, but k-1 lives BEFORE the window start.
+      // Old behaviour dropped the entire phrase, leaving rich line 0
+      // uncovered → R-6 verifier coverage gap. New behaviour: clip the
+      // phrase to the window's intersection so coverage is preserved.
+      const origStart = phrase.lineRange[0]
+      const origEnd = phrase.lineRange[1]
+      let firstInWindow = -1
+      let lastInWindow = -1
+      for (let li = origStart; li <= origEnd; li++) {
+        const wi = lookup.get(`${s}:${li}`)
+        if (wi === undefined) continue
+        if (firstInWindow === -1) firstInWindow = wi
+        lastInWindow = wi
+      }
+      if (firstInWindow === -1) continue // phrase outside window entirely
+      // Verify clipped range is contiguous in the window (i.e. all
+      // intermediate window indices between firstInWindow..lastInWindow
+      // come from the same logical phrase).
+      if (lastInWindow - firstInWindow !== /* line count - 1 */ (function () {
+        let n = 0
+        for (let li = origStart; li <= origEnd; li++) {
+          if (lookup.has(`${s}:${li}`)) n++
+        }
+        return n - 1
+      })()) {
+        continue // discontiguous — drop
+      }
       phrases.push({
         ...phrase,
-        lineRange: [startIdx, endIdx],
+        lineRange: [firstInWindow, lastInWindow],
       })
     }
   }
   // Sort by start index for stable output.
+  phrases.sort((a, b) => a.lineRange[0] - b.lineRange[0])
+  // FR-161 R-9.D — final coverage backfill. R-6 verifier demands every
+  // line index is covered by at least one phrase. After the contiguous
+  // clip pass, a window index can be uncovered when the source phrase
+  // crossed the window's leading or trailing edge and was either dropped
+  // (no surviving lookup) or clipped (kept neighbours). Backfill each
+  // uncovered index as its own single-line phrase. SKIP backfill when the
+  // extractor stream had zero phrases overall — that path means "no
+  // phrase data available", and the caller (`injectPhrasesIntoRichData`)
+  // wants to strip the `phrases` field so legacy line-render takes over.
+  const totalExtractorPhrases = extractorStanzas.reduce(
+    (acc, s) => acc + (s.phrases?.length ?? 0),
+    0,
+  )
+  if (totalExtractorPhrases === 0) return []
+  const covered = new Set()
+  for (const p of phrases) {
+    for (let i = p.lineRange[0]; i <= p.lineRange[1]; i++) covered.add(i)
+  }
+  for (let i = 0; i < window.length; i++) {
+    if (covered.has(i)) continue
+    phrases.push({ lineRange: [i, i], indent: 0 })
+  }
   phrases.sort((a, b) => a.lineRange[0] - b.lineRange[0])
   return phrases
 }
