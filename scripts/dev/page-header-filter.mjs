@@ -1,18 +1,27 @@
-// FR-161 R-9.D — shared page-header noise filter for the auto-reconciler
+// FR-161 R-9.D / R-9.C — shared noise filter for the auto-reconciler
 // and the per-week processor.
 //
-// `pdftotext -layout` emits the running page header (e.g. "Даваа гарагийн
-// орой            85") in the middle of a column stream when a psalm
-// spans the page boundary. Both the alignment pass (auto-reconciler) and
-// the builder window match (process-week-phrases) need to skip these
-// headers so a wrap pair sitting on either side of the boundary is
-// treated as one logical sequence.
+// `pdftotext -layout` emits two classes of mid-body noise that block
+// the line-by-line aligner:
 //
-// Heuristics (Mongolian psalter PDF):
-//   1. Weekday + part-of-day phrase + trailing book-page number:
-//      "<Weekday> гарагийн (өглөө|орой|...)  <NN>"
-//   2. "<NN> N дугаар/дүгээр/дэх/дахь долоо хоног" (week marker)
-//   3. Bare 2-3 digit number flanked by tabs / large whitespace.
+//   1. Page-header running text — printed at the top of every PDF
+//      page when a psalm spans a boundary. Patterns (R-9.D):
+//        a. "<Weekday> гарагийн (өглөө|орой|...)  <NN>"
+//           e.g. "Даваа гарагийн орой            85"
+//        b. "<NN> N дугаар/дүгээр/дэх/дахь долоо хоног"
+//           (week marker with leading book page)
+//        c. Bare 2-4 digit number on its own line.
+//
+//   2. Section-title tokens — single-word section dividers printed
+//      mid-page when a section transition occurs (R-9.C). These appear
+//      INSIDE psalm body extractor streams and trip alignment:
+//        - "Магтаал" (Canticle / Praise title)
+//        - "Уншлага" (Short reading title)
+//        - "Шад дуулал" / "Шад магтаал" (Antiphon-psalm / -canticle marker)
+//        - "Дууллыг төгсгөх залбирал" (Concluding-prayer title)
+//      Filtered ONLY when the title stands ALONE on the line (no body
+//      text alongside) — a body verse like "Магтаалыг өргөгтүн" must
+//      remain visible.
 
 const PAGE_HEADER_WEEKDAYS = ['Ням', 'Даваа', 'Мягмар', 'Лхагва', 'Пүрэв', 'Баасан', 'Бямба']
 const WEEKDAY_HEADER_RE = new RegExp(
@@ -21,12 +30,26 @@ const WEEKDAY_HEADER_RE = new RegExp(
 const NUMBERED_WEEK_HEADER_RE = /^\s*\d{1,4}\s+\d+\s+(?:дугаар|дүгээр|дэх|дахь)\s+долоо\s+хоног/
 const BARE_PAGE_NUMBER_RE = /^\s*\d{1,4}\s*$/
 
+const SECTION_TITLE_TOKENS = [
+  'Магтаал',
+  'Уншлага',
+  'Шад дуулал',
+  'Шад магтаал',
+  'Дууллыг төгсгөх залбирал',
+]
+// Multi-word entries match their internal whitespace flexibly (PDF
+// occasionally introduces extra spaces between tokens of a title).
+const SECTION_TITLE_RE = new RegExp(
+  `^\\s*(?:${SECTION_TITLE_TOKENS.map((t) => t.replace(/\s+/g, '\\s+')).join('|')})\\s*$`,
+)
+
 export function isPageHeaderLine(text) {
   const t = (text || '').trim()
   if (!t) return false
   if (WEEKDAY_HEADER_RE.test(t)) return true
   if (NUMBERED_WEEK_HEADER_RE.test(t)) return true
   if (BARE_PAGE_NUMBER_RE.test(t)) return true
+  if (SECTION_TITLE_RE.test(t)) return true
   return false
 }
 
