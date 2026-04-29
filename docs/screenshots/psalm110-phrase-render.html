@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FR-161 R-7 pilot — Psalm 110:1-5, 7 phrase-render evidence</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { padding: 2rem; max-width: 412px; margin: 0 auto; }  /* Pixel 7 viewport width */
+    .label { font-size: 0.75rem; color: #888; margin: 1rem 0 0.5rem; text-transform: uppercase; }
+    .container { border: 1px solid #ddd; padding: 1rem; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1 class="text-lg font-semibold mb-2">Psalm 110:1-5, 7 — phrase-render (Pixel 7 viewport, 412px)</h1>
+  <p class="text-sm text-stone-600 mb-4">
+    FR-161 R-7 pilot evidence. Each <code>&lt;span data-role="psalm-phrase"&gt;</code>
+    block is one PhraseGroup, joined from PDF-visual lines via
+    <code>lineRange [s,e]</code> (inclusive). Viewport-wrap is now free
+    (no <code>whitespace-pre-line</code>).
+  </p>
+
+  <div class="label">Stanza block 0 (16 PDF lines → 14 phrases)</div>
+  <div class="container">
+<p data-role="psalm-stanza" data-render-mode="phrase" class="font-serif text-base leading-relaxed text-stone-800">
+  <span data-role="psalm-phrase" class="block">ЭЗЭН миний Эзэнд</span>
+  <span data-role="psalm-phrase" class="block">“Би чиний дайснуудыг</span>
+  <span data-role="psalm-phrase" class="block">Хөлийн чинь гишгүүр болготол</span>
+  <span data-role="psalm-phrase" class="block">Миний баруун гарт залрагтун” гэв.</span>
+  <span data-role="psalm-phrase" class="block">ЭЗЭН, Сионоос</span>
+  <span data-role="psalm-phrase" class="block">Хүч чадлын очирт таягийг чинь сунгана.</span>
+  <span data-role="psalm-phrase" class="block">Дайснуудынхаа дунд захирагтун.</span>
+  <span data-role="psalm-phrase" class="block">Чиний хүчний өдөр</span>
+  <span data-role="psalm-phrase" class="block">Ариун хүмүүсийн сүр жавхлан дотор</span>
+  <span data-role="psalm-phrase" class="block">Ноён зэрэг чамд бий.</span>
+  <span data-role="psalm-phrase" class="block">Үүр цайхаас өмнө</span>
+  <span data-role="psalm-phrase" class="block">Би чамайг хэвлийгээсээ төрүүлсэн билээ.</span>
+  <span data-role="psalm-phrase" class="block">Эзэн тангарагласан бөгөөд санаагаа өөрчлөхгүй.</span>
+  <span data-role="psalm-phrase" class="block">“Мелхизедекийн хэргэмийн дагуу Чи мөнхийн тахилч юм” гэв.</span>
+</p>
+  </div>
+
+  <div class="label">Stanza block 1 (5 PDF lines → 4 phrases)</div>
+  <div class="container">
+<p data-role="psalm-stanza" data-render-mode="phrase" class="font-serif text-base leading-relaxed text-stone-800">
+  <span data-role="psalm-phrase" class="block">Баруун гар талд чинь Эзэн байна.</span>
+  <span data-role="psalm-phrase" class="block">Хилэнгийнхээ өдөр Тэрээр хаадыг бут цохино.</span>
+  <span data-role="psalm-phrase" class="block">Тэрээр зам дахь горхиноос ундаална.</span>
+  <span data-role="psalm-phrase" class="block">Тиймээс Тэрээр тэргүүнээ дээш өргөх болно.</span>
+</p>
+  </div>
+</body>
+</html>
