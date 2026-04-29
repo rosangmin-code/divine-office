@@ -60,8 +60,34 @@ function parseArgs(argv) {
 function normalizeQuotes(s) {
   return s.replace(/[“”„‟]/g, '"').replace(/[‘’‚‛]/g, "'")
 }
+
+// FR-161 R-9.B — strip leading versicle/response prefix.
+//
+// rich.json sometimes prefixes a response line with "Х. " (Cyrillic
+// hariu/response) or "В. " (Cyrillic versicle), and occasionally the
+// same prefix appears bracketed: "(Х. ...)" / "(В. ...)" — see
+// Revelation 19:1-7 lines 3 / 6 etc. The PDF body emits the same
+// content WITHOUT the prefix (the visual prefix is a render decoration
+// in the prayer book that pdftotext drops). Stripping it during
+// alignment-time normalisation lets a rich line like "Х. Аллэлуяа!
+// (аллэлуяа!)." match an extractor line "Аллэлуяа! (аллэлуяа!)."
+//
+// In current rich.json (post R-9.A/C), the only V/R prefix lines are
+// in Revelation 19:1-7 — and that ref is ALREADY phrase-injected via
+// R-9.D's coverage-backfill (every uncovered line becomes a single-
+// line phrase). So this strip is **defensive infrastructure**: it
+// ensures auto-reconciler reports NO_SPLITS_NEEDED rather than NOVEL_EDGE
+// for V/R-prefix lines, prevents drift if future refs add such prefixes,
+// and keeps the verdict stream honest. Net inject gain in current data
+// state: 0. See evidence doc §2 for full cost-model trace.
+const VR_PREFIX_RE = /^\s*\(?\s*[ХВ]\.\s+/
+
+function stripVrPrefix(s) {
+  return s.replace(VR_PREFIX_RE, '')
+}
+
 function norm(s) {
-  return normalizeQuotes((s || '').trim()).replace(/\s+/g, ' ')
+  return normalizeQuotes(stripVrPrefix((s || '').trim())).replace(/\s+/g, ' ')
 }
 
 function discoverRefs(weekFile) {
