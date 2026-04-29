@@ -87,10 +87,39 @@ export type PrayerSpan =
   | { kind: 'versicle'; text: string }         // V.
   | { kind: 'response'; text: string }         // R.
 
+/**
+ * FR-161 R-3 — Phrase-unit grouping (Option B, additive).
+ *
+ * 시편/기도문 PDF 의 phrase (시구) 단위를 보존하기 위한 메타데이터.
+ * `PrayerBlock` `kind: 'stanza'` 위에 `phrases?: PhraseGroup[]` 으로 얹는다.
+ *
+ * - `lineRange = [start, end]` — 같은 stanza 의 `lines[]` 배열 인덱스 범위
+ *   (inclusive both ends). `lineRange[0] <= lineRange[1]` 가 정상.
+ * - `indent` — phrase 자체의 visual indent (0/1/2). `lines[].indent` 와 별개 차원.
+ * - `role` — phrase 단위로 격상해야 할 의미(`refrain`, `doxology`). `lines[].role`
+ *   와 정합 필요 시 phrase 로 끌어올린다.
+ *
+ * Renderer 계약: `phrases` 가 비어있지 않으면 phrase 단위 `<p>` 로 emit (각
+ * `lineRange` 의 line 들을 공백으로 join 후 viewport wrap 자유). `phrases`
+ * 부재 또는 빈 배열이면 legacy line-단위 hard-break 렌더 (회귀 0).
+ *
+ * 자세한 설계 근거는 docs/fr-161-phrase-unit-pivot-plan.md §4 (Option B) 참조.
+ */
+export type PhraseGroup = {
+  lineRange: [number, number]
+  indent?: 0 | 1 | 2
+  role?: 'refrain' | 'doxology'
+}
+
 export type PrayerBlock =
   | { kind: 'para'; spans: PrayerSpan[]; indent?: 0 | 1 | 2 }
   | { kind: 'rubric-line'; text: string }      // 단독 루브릭 줄(섹션 제목 등)
-  | { kind: 'stanza'; lines: { spans: PrayerSpan[]; indent: 0 | 1 | 2; role?: 'refrain' | 'doxology' }[] }
+  | {
+      kind: 'stanza'
+      lines: { spans: PrayerSpan[]; indent: 0 | 1 | 2; role?: 'refrain' | 'doxology' }[]
+      /** FR-161 R-3 — phrase grouping (additive, optional). 부재/빈 배열 → legacy line-render fallback. */
+      phrases?: PhraseGroup[]
+    }
   | { kind: 'divider' }
 
 export type CommonPrayerSource = { kind: 'common'; id: string }

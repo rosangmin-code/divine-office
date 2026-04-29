@@ -10,8 +10,11 @@ import {
   ConditionalRubricSchema,
   PageRedirectSchema,
   OrdinariumKeyCatalogSchema,
+  PhraseGroupSchema,
+  PhraseGroupArraySchema,
   safeParse,
 } from '../schemas'
+import type { PrayerBlock } from '../types'
 
 function load(relPath: string): unknown {
   const full = path.join(process.cwd(), relPath)
@@ -253,6 +256,130 @@ describe('FR-160-B OrdinariumKeyCatalog schema', () => {
     for (const key of expected) {
       expect(data.entries[key]).toBeDefined()
     }
+  })
+})
+
+describe('FR-161 R-3 PrayerBlock stanza phrases shape', () => {
+  // Type-level coverage: each constructed object below must satisfy
+  // `PrayerBlock` (compile-time enforcement). The runtime assertions
+  // exist only to keep vitest from optimizing the values away.
+
+  // @fr FR-161
+  it('accepts stanza with lines only (legacy, phrases absent)', () => {
+    const block: PrayerBlock = {
+      kind: 'stanza',
+      lines: [
+        { spans: [{ kind: 'text', text: 'Магтацгаая Эзэнийг' }], indent: 0 },
+        { spans: [{ kind: 'text', text: 'Тэр сайн билээ' }], indent: 1 },
+      ],
+    }
+    expect(block.kind).toBe('stanza')
+    if (block.kind === 'stanza') {
+      expect(block.phrases).toBeUndefined()
+      expect(block.lines).toHaveLength(2)
+    }
+  })
+
+  // @fr FR-161
+  it('accepts stanza with lines + phrases (transition / additive Phase 1)', () => {
+    const block: PrayerBlock = {
+      kind: 'stanza',
+      lines: [
+        { spans: [{ kind: 'text', text: 'Line A' }], indent: 0 },
+        { spans: [{ kind: 'text', text: 'Line B' }], indent: 1 },
+        { spans: [{ kind: 'text', text: 'Line C' }], indent: 0 },
+      ],
+      phrases: [
+        { lineRange: [0, 1] },
+        { lineRange: [2, 2], indent: 0, role: 'doxology' },
+      ],
+    }
+    if (block.kind === 'stanza') {
+      expect(block.phrases).toHaveLength(2)
+      expect(block.phrases?.[0].lineRange).toEqual([0, 1])
+      expect(block.phrases?.[1].role).toBe('doxology')
+    }
+  })
+
+  // @fr FR-161
+  it('accepts stanza with empty lines + phrases array (degenerate Phase 3 future)', () => {
+    // Phase 3 (phrases-only) under Option B keeps lines as the raw text
+    // source — even when migration leaves it empty. Schema must permit
+    // this shape so downstream code can detect & migrate.
+    const block: PrayerBlock = {
+      kind: 'stanza',
+      lines: [],
+      phrases: [{ lineRange: [0, 0], role: 'refrain' }],
+    }
+    if (block.kind === 'stanza') {
+      expect(block.lines).toEqual([])
+      expect(block.phrases?.[0].role).toBe('refrain')
+    }
+  })
+
+  // @fr FR-161
+  it('accepts stanza with empty lines and no phrases (edge / placeholder)', () => {
+    const block: PrayerBlock = {
+      kind: 'stanza',
+      lines: [],
+    }
+    if (block.kind === 'stanza') {
+      expect(block.lines).toEqual([])
+      expect(block.phrases).toBeUndefined()
+    }
+  })
+})
+
+describe('FR-161 R-3 PhraseGroupSchema runtime validation', () => {
+  // @fr FR-161
+  it('accepts a minimal phrase group with lineRange only', () => {
+    const ok = PhraseGroupSchema.safeParse({ lineRange: [0, 2] })
+    expect(ok.success).toBe(true)
+  })
+
+  // @fr FR-161
+  it('accepts a phrase group with indent and role', () => {
+    const ok = PhraseGroupSchema.safeParse({
+      lineRange: [3, 5],
+      indent: 1,
+      role: 'doxology',
+    })
+    expect(ok.success).toBe(true)
+  })
+
+  // @fr FR-161
+  it('rejects role outside the enum', () => {
+    const bad = PhraseGroupSchema.safeParse({
+      lineRange: [0, 0],
+      role: 'antiphon',
+    })
+    expect(bad.success).toBe(false)
+  })
+
+  // @fr FR-161
+  it('rejects indent outside 0/1/2', () => {
+    const bad = PhraseGroupSchema.safeParse({
+      lineRange: [0, 0],
+      indent: 5,
+    })
+    expect(bad.success).toBe(false)
+  })
+
+  // @fr FR-161
+  it('rejects negative or non-integer lineRange entries', () => {
+    expect(PhraseGroupSchema.safeParse({ lineRange: [-1, 2] }).success).toBe(false)
+    expect(PhraseGroupSchema.safeParse({ lineRange: [0, 1.5] }).success).toBe(false)
+    expect(PhraseGroupSchema.safeParse({ lineRange: [0] }).success).toBe(false)
+  })
+
+  // @fr FR-161
+  it('accepts an array of phrase groups via PhraseGroupArraySchema', () => {
+    const ok = PhraseGroupArraySchema.safeParse([
+      { lineRange: [0, 1] },
+      { lineRange: [2, 4], role: 'refrain' },
+    ])
+    expect(ok.success).toBe(true)
+    expect(ok.success && ok.data).toHaveLength(2)
   })
 })
 

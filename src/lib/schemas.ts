@@ -279,6 +279,26 @@ export const OrdinariumKeyCatalogSchema = z.object({
   ),
 })
 
+// --- FR-161 R-3 PhraseGroup (rich AST phrase grouping) ---
+//
+// `PrayerBlock` `kind: 'stanza'` 위에 얹는 `phrases?: PhraseGroup[]` 의
+// 런타임 검증용 스키마. types.ts 의 `PhraseGroup` 와 1:1 정합.
+// Loader 가 rich JSON 을 파싱할 때 phrase 메타데이터의 형태를 검증하기 위해 사용.
+// 자세한 의미는 docs/fr-161-phrase-unit-pivot-plan.md §4 (Option B) 참조.
+
+export const PhraseGroupSchema = z
+  .object({
+    // Tuple of two non-negative integers — inclusive both ends, indexes into the parent stanza's lines[].
+    lineRange: z.tuple([z.number().int().nonnegative(), z.number().int().nonnegative()]),
+    // Phrase 자체의 visual indent (lines[].indent 와 별개 차원).
+    indent: z.union([z.literal(0), z.literal(1), z.literal(2)]).optional(),
+    // line.role 와 정합 필요 시 phrase 로 격상.
+    role: z.enum(['refrain', 'doxology']).optional(),
+  })
+  .loose()
+
+export const PhraseGroupArraySchema = z.array(PhraseGroupSchema)
+
 // --- Helpers ---
 
 /**
