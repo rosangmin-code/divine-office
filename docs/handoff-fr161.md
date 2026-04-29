@@ -1,21 +1,25 @@
-# FR-161 Handoff (2026-04-29)
+# FR-161 Handoff (2026-04-29, updated)
 
 시편 / 기도문 phrase-unit-aware 줄바꿈 reform 의 진행 상태 + 다음 작업자가 이어받기 위한 컨텍스트.
 
 ## 현재 main HEAD
 
 ```
+9e80fcb feat(fr-161): R-16 sentence-mode boundary refinement (task #197)
+b364b64 feat(fr-161): R-15 sentence-mode flow — 전체 마침 기도문 문장 단위 grouping (#196 / #197 amend)
+8f44847 feat(fr-161): R-15 RichContent flow mode — 마침 기도문 + 짧은 독서 자연 wrap (task #196)
+c5cf5f3 docs(fr-161): handoff for next session
 869dc9d docs(fr-161): R-14 PDF indent inconsistency audit (task #191)
 4dba0dc feat(fr-161): R-13 hanging indent — phrase wrap continuation 들여쓰기 (task #190)
 ```
 
-origin/main 동기화 완료 (R-13 push: 4dba0dc, R-14 push 진행 필요 — 869dc9d 가 origin 보다 1 commit ahead).
+origin/main 동기화 완료 (`9e80fcb` push 완료, Vercel 재배포 트리거됨).
 
-## 검증 baseline (main, 2026-04-29 R-14 직후)
+## 검증 baseline (main, 2026-04-29 R-16 직후)
 
 | 항목 | 값 |
 |---|---|
-| vitest | 648 PASS / 0 FAIL |
+| vitest | **663 PASS** / 0 FAIL |
 | tsc | 0 errors |
 | verify-phrase-coverage (NFR-009j) | OK 215 stanzas / 0 violations |
 | 6 page verifier | 무회귀 (page 필드 무수정) |
@@ -50,6 +54,8 @@ origin/main 동기화 완료 (R-13 push: 4dba0dc, R-14 push 진행 필요 — 86
 | R-12.3 | deep wrap depth 6→10 (defensive) | 9a466be |
 | R-13 | hanging indent (wrap continuation 들여쓰기) | 4dba0dc |
 | R-14 | PDF indent inconsistency audit | 869dc9d |
+| R-15 | RichContent flow mode `'natural' \| 'sentence'` | 8f44847 + b364b64 |
+| R-16 | sentence-mode boundary refinement (colon + look-ahead capital + 'legacy' literal) | 9e80fcb |
 
 **핵심 자동화 도구 (재사용 가능)**
 
@@ -60,30 +66,51 @@ origin/main 동기화 완료 (R-13 push: 4dba0dc, R-14 push 진행 필요 — 86
 - `scripts/dev/page-header-filter.mjs` — 공유 모듈 (page-header + section-title token)
 - `scripts/verify-phrase-coverage.js` — 4 invariant CI gate
 
+## RichContent flow mode (R-15 + R-16, land 완료)
+
+`src/components/prayer-sections/rich-content.tsx` 의 `flow` prop:
+
+```ts
+flow?: 'legacy' | 'natural' | 'sentence'
+```
+
+- **`'legacy'`** (default, undefined 와 동작 동일) — 현재 line-by-line `<span class="block">`. psalm 본문 + line-구조 컨텍스트 (responsory / intercessions / hymn) 보존.
+- **`'natural'`** — stanza INTERNAL lines 를 inline join. 단일 paragraph 자연 wrap. 시편 마침 기도문 + 짧은 독서.
+- **`'sentence'`** — stanza lines 를 문장 경계 detection 으로 grouping. 각 문장 = 별도 `<p data-role="sentence">`. 전체 마침 기도문.
+
+**caller 적용**:
+- `psalm-block.tsx` `psalmPrayerRich` → `flow="natural"`
+- `prayer-sections/short-reading-section.tsx` → `flow="natural"`
+- `concluding-prayer-section.tsx` → `flow="sentence"`
+- `prayer-sections/responsory-section.tsx` → 변경 없음 (V/R 구조 보존)
+- `prayer-sections/intercessions-section.tsx` → 변경 없음 (petition 구조 보존)
+- `hymn-section.tsx` → 변경 없음 (시 line 보존 의도)
+
+**sentence boundary detection (R-16)**:
+- line trailing punctuation `[.!?…:]` (콜론 포함 — 몽골어 liturgical 에서 흔함) + optional closing quote/paren
+- next-line look-ahead: 다음 line 첫 글자가 Cyrillic 대문자 `\p{Lu}` 일 때만 boundary → `vs.` / `Mr.` 약어 false positive 방지
+- 마지막 line 무조건 boundary (trailing fragment 보존)
+
+**알려진 한계 (의도적)**: 약어 false positive 가능성은 next-line look-ahead capital 로 대부분 해소. 몽골어 기도문 cohort 에서 사실상 미발생 — 추가 정교화는 R-16+ 후속 후보.
+
+**flow="natural" multi-block 한계 (R-17 진행 중 #198)**: 현재 `flow="natural"` 가 stanza INTERNAL 만 inline join. RichContent 가 multi-block (para + stanza 혼합) 이면 블록 경계에 hard break 남음. 사용자 reported (페이지 458 시편 마침 기도문 "ариун 과 нэр" / "гай 과 зовлон" 줄바꿈) — R-17 fix 진행 중.
+
 ## 진행 중 (in_progress)
 
-### #196 FR-161 R-15: RichContent flow mode (시편 마침 기도문 + 짧은 독서 + 전체 마침 기도문)
+### #198 FR-161 R-17: flow="natural" multi-block 합치기
 
-- **owner**: member-01 (worktree-196-member-01, base 869dc9d)
+- **owner**: member-01 (worktree-198-member-01, base `b364b64` 가 dispatched, main 은 #197 R-16 land 후 `9e80fcb` advance — rebase 필요)
 - **type**: workitem
-- **사용자 reported gap**: 시편 본문이 아닌 다른 prose section 들도 PDF 줄바꿈 보존 → 이중 줄바꿈
-- **spec**:
-  - 시편 마침 기도문 (concludingPrayer) + 짧은 독서 (shortReading) → `flow="natural"` (한 paragraph 자연 wrap)
-  - **전체 마침 기도문** → `flow="sentence"` (문장 단위 grouping, 문장 경계 줄바꿈) — 사용자 추가 instruction
-  - 시편 본문 → 변경 없음 (R-13 hanging indent 유지)
-- **3 flow mode 신설**:
-  - `'legacy'` (default) — 현재 line-by-line `<span class="block">`
-  - `'natural'` — 한 paragraph spans inline
-  - `'sentence'` — 문장 단위 grouping
+- **사용자 reported gap**: 페이지 458 시편 마침 기도문 — `flow="natural"` 가 stanza INTERNAL 만 합쳐서 multi-block 경계 hard break 남음. 사용자 spec: "기도문 전체를 한 단위로 해서 일반적인 성경 구절처럼 줄에 맞게 줄바꿈"
+- **fix**: RichContent 의 `flow="natural"` 시 entire content 를 single `<p>` 로 모든 blocks (para + stanza) inline join. `flow="sentence"` 도 multi-block 대비 — blocks 합쳐서 sentence detection.
 - **다음**: 보고 받은 후 leader merge + push → Vercel 재배포 → 모바일 시각 검증
 
 ## 후속 작업 큐
 
-### 1. R-14 audit doc push (R-15 머지 후 또는 별도)
+### 1. R-17 (#198) merge + push (R-17 land 즉시)
 
-- 현재 main (`869dc9d`) 가 origin 보다 1 commit ahead
-- `git push origin main` 으로 audit doc 도 origin 반영
-- R-15 (#196) merge 후 같이 push 가능
+- multi-block flow fix 완료 후 즉시 merge + push → Vercel 재배포
+- 사용자 reported 페이지 458 시편 마침 기도문 hard break fix 적용
 
 ### 2. R-14a — rich.json data-quality batch (Cat A + C + D + E ~10 refs)
 
@@ -175,13 +202,14 @@ handoff-fr160 §2 의 refrain 분류 — Tobit 13:1-8, Isaiah 38:10-14/17-20 의
 - `docs/fr-161-r12-1-column-merge-evidence.md` — extractor column boundary fix
 - `docs/fr-161-r12-3-deep-wrap-evidence.md` — depth raise (defensive)
 - `docs/fr-161-r14-pdf-indent-inconsistency.md` — 7-category audit (R-14)
+- `src/components/prayer-sections/__tests__/rich-content-flow.test.ts` — flow mode 15 unit case (6 natural + 6 sentence + 3 R-16 refinement)
 - `docs/handoff-fr160.md` — FR-160 phase A/B/C/D 진행 상태 (선행 작업)
 
 ## 검증 명령 (재현)
 
 ```bash
 cd "/home/min/myproject/divine office"
-npx vitest run                                              # 648 PASS
+npx vitest run                                              # 663 PASS
 npx tsc --noEmit                                            # 0 errors
 node scripts/verify-phrase-coverage.js --check              # 215 stanzas, 0 violations
 npm run verify:phrase-coverage                              # CI script (동일)
@@ -194,7 +222,9 @@ git diff HEAD -- public/sw.js                               # empty
 
 ## 사용자 권고 수동 검증 (CLAUDE.md self-review)
 
-- iOS Safari / Android Chrome 모바일에서 시편 본문 phrase wrap + hanging indent 시각 확인 (Sun Vespers I → Psalm 110)
-- 시편 마침 기도문 + 짧은 독서 + 전체 마침 기도문 자연 wrap 확인 (R-15 #196 머지 후)
+- iOS Safari / Android Chrome 모바일에서 시편 본문 phrase wrap + hanging indent 시각 확인 (Sun Vespers I → Psalm 110, R-13)
+- 시편 마침 기도문 + 짧은 독서 → 한 paragraph 자연 wrap 확인 (R-15 natural mode, R-17 land 후 multi-block hard break 0)
+- 전체 마침 기도문 → 두 문장 visible 분리 + 각 자연 wrap 확인 (R-15 sentence + R-16 boundary refinement)
+- 페이지 458 시편 마침 기도문 → "ариун нэр" / "гай зовлон" 단어 사이 hard break 0 (R-17 #198 land 후)
 - 이전 배포 HTML 캐시된 상태에서 새 페이지 클릭 정상 (sw.js untouched 이므로 안전 예상)
-- A2HS 설치된 PWA 재실행 시 새 phrase-render path 반영
+- A2HS 설치된 PWA 재실행 시 새 phrase-render + flow path 반영
