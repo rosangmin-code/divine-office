@@ -61,6 +61,41 @@ function normalizeQuotes(s) {
   return s.replace(/[“”„‟]/g, '"').replace(/[‘’‚‛]/g, "'")
 }
 
+// FR-161 R-9.E — typography drift normalization.
+//
+// rich.json frequently appends a trailing em-dash `–` (U+2013) to a line
+// (e.g. "Эмтэрсэн, гэмшсэн зүрхийг –", "Уулс болон толгод оо, –") as a
+// poetic-pause / continuation marker that the PDF body extractor never
+// sees. The em-dash may be preceded by a space (`зүрхийг –`) or
+// concatenated to the prior word (`цутгасан.–`). Stripping it during
+// `norm()` lets the rich line match the same content in the extractor
+// stream. Display is NOT affected — the em-dash stays in rich.json and
+// the renderer emits it; only alignment-time comparison ignores it.
+//
+// Other typography variants normalised here:
+//   - inner em-dash `–` / em-dash `—` → ASCII hyphen `-` (rare but
+//     defensive — covers the few mid-sentence hyphenations the
+//     extractor flattens)
+//   - non-breaking space ` ` → regular space (so trim/split work)
+//   - ellipsis `…` (U+2026) → `...` ASCII (parity with PDF text mode)
+//
+// Em-dash strip survey (rich.json scan): 8+ lines across week-3/4 refs
+// (Psalm 51 / 92 / 118 / 135 / 144 / Daniel 3 / Isaiah 45 etc.).
+// See evidence doc §2 for full breakdown.
+// Strip-FIRST regex matches em/en-dash (U+2013/U+2014) AND ASCII
+// hyphen with surrounding whitespace at end-of-string. Run BEFORE the
+// inner-dash conversion so a trailing em-dash is removed outright
+// rather than first downgraded to a hyphen and then preserved.
+const TRAILING_EM_DASH_RE = /\s*[-–—]\s*$/
+
+function normalizeTypography(s) {
+  return s
+    .replace(/[ ]/g, ' ') // NBSP -> space
+    .replace(TRAILING_EM_DASH_RE, '') // trailing em/en/hyphen + ws strip — RUN FIRST
+    .replace(/[–—]/g, '-') // inner em/en-dash -> hyphen (defensive)
+    .replace(/…/g, '...') // ellipsis -> ASCII
+}
+
 // FR-161 R-9.B — strip leading versicle/response prefix.
 //
 // rich.json sometimes prefixes a response line with "Х. " (Cyrillic
@@ -87,7 +122,9 @@ function stripVrPrefix(s) {
 }
 
 function norm(s) {
-  return normalizeQuotes(stripVrPrefix((s || '').trim())).replace(/\s+/g, ' ')
+  return normalizeTypography(
+    normalizeQuotes(stripVrPrefix((s || '').trim())),
+  ).replace(/\s+/g, ' ')
 }
 
 function discoverRefs(weekFile) {

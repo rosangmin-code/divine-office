@@ -79,12 +79,16 @@ function stanzaFirstLineMatches(a, b) {
   const bt = (b || '').trim()
   if (!at || !bt) return false
   if (at === bt) return true
-  // Normalise smart/curly quotes to straight ASCII before prefix comparison
-  // — rich.json sometimes carries `“`/`”`/`’` while the extractor preserves
-  // PDF straight quotes (or vice versa). Without this, a leading-quote
-  // line never prefix-matches.
-  const normA = normalizeQuotes(at)
-  const normB = normalizeQuotes(bt)
+  // FR-161 R-9.E — normalise typography (quotes + dashes + NBSP +
+  // ellipsis + trailing em-dash strip) before prefix comparison.
+  // rich.json sometimes carries `“`/`”`/`’` while the extractor preserves
+  // PDF straight quotes (or vice versa). It also commonly appends a
+  // trailing em-dash `–` to a line that the PDF body extractor never
+  // sees (Psalm 51 / 92 / 118 / 135 / Daniel 3 etc.). Mirroring the
+  // auto-reconciler's `norm()` keeps the alignment-time and window-
+  // match-time matchers in lockstep.
+  const normA = normalizeTypography(normalizeQuotes(at))
+  const normB = normalizeTypography(normalizeQuotes(bt))
   if (normA === normB) return true
   const prefixLen = Math.min(12, normA.length, normB.length)
   return normA.slice(0, prefixLen) === normB.slice(0, prefixLen)
@@ -92,6 +96,16 @@ function stanzaFirstLineMatches(a, b) {
 
 function normalizeQuotes(s) {
   return s.replace(/[“”„‟]/g, '"').replace(/[‘’‚‛]/g, "'")
+}
+
+const TRAILING_EM_DASH_RE = /\s*[-–—]\s*$/
+
+function normalizeTypography(s) {
+  return s
+    .replace(/[ ]/g, ' ') // NBSP -> space
+    .replace(TRAILING_EM_DASH_RE, '') // trailing em/en/hyphen + ws strip — RUN FIRST
+    .replace(/[–—]/g, '-') // inner em/en-dash -> hyphen (defensive)
+    .replace(/…/g, '...') // ellipsis -> ASCII
 }
 
 /**
