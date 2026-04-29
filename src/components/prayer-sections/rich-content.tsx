@@ -212,14 +212,81 @@ function flattenForNaturalFlow(content: PrayerText): JSX.Element[] {
   return out
 }
 
-// FR-161 R-17: flatten the entire `PrayerText` into a unified line list
-// for `flow="sentence"`. Each stanza line stays as its own line; each
-// para block contributes a single line whose `spans` is the full para
-// content; each rubric-line contributes one synthesised rubric span;
-// dividers are skipped. The flattened list is then sentence-grouped
-// (boundary = trailing `.|!|?|…|:` + next-line uppercase). This means
-// sentences can span block boundaries — a para sentence that bleeds
-// into the following stanza joins continuously.
+// FR-161 R-18: inline sentence boundary regex — same shape as R-16's
+// line-level SENTENCE_END_RE but operates anywhere inside a text span.
+// Captures: (1) punct cluster + optional closing quote/paren, (2) the
+// whitespace separator. Lookahead `\p{Lu}` requires the next non-space
+// character to be uppercase (Cyrillic / Latin / any Unicode Lu) — same
+// false-positive defence as R-16 (약어 `vs.` / `Mr.` followed by
+// lowercase do NOT split).
+const INLINE_SENTENCE_BOUNDARY_RE =
+  /([.!?…:]+["»'')\]]*)(\s+)(?=\p{Lu})/gu
+
+// FR-161 R-18: split a span sequence into sub-line buckets at inline
+// sentence boundaries. Used by `flattenForSentenceFlow` for `para`
+// blocks whose text spans frequently carry multiple sentences in one
+// string (concluding-prayer doxology pattern: "...хандана уу. Учир нь
+// Тэрээр Тантай..." — single span, two sentences).
+//
+// Behaviour:
+//   - Text spans split AT inline boundaries; the punct cluster stays
+//     with the preceding sentence, the trailing whitespace is dropped,
+//     and the next sentence starts at the uppercase letter.
+//   - Non-text spans (rubric / versicle / response) are opaque — they
+//     never introduce a boundary, but they pass through to whichever
+//     sub-line is currently being built.
+//   - Empty / boundary-free text spans are preserved as-is.
+//   - Returns at least one bucket when input is non-empty (single
+//     bucket if no boundary anywhere — equivalent to R-17 behaviour).
+function splitSpansByInlineSentence(spans: PrayerSpan[]): PrayerSpan[][] {
+  const buckets: PrayerSpan[][] = []
+  let current: PrayerSpan[] = []
+
+  for (const span of spans) {
+    if (span.kind !== 'text') {
+      current.push(span)
+      continue
+    }
+    const text = span.text ?? ''
+    if (text.length === 0) {
+      current.push(span)
+      continue
+    }
+    const matches = [...text.matchAll(INLINE_SENTENCE_BOUNDARY_RE)]
+    let lastIdx = 0
+    for (const m of matches) {
+      const matchIdx = m.index ?? 0
+      const splitEnd = matchIdx + m[1].length
+      const headText = text.slice(lastIdx, splitEnd)
+      if (headText.length > 0) {
+        current.push({ ...span, text: headText })
+      }
+      buckets.push(current)
+      current = []
+      lastIdx = matchIdx + m[0].length
+    }
+    if (lastIdx < text.length) {
+      current.push({ ...span, text: text.slice(lastIdx) })
+    }
+  }
+
+  if (current.length > 0) buckets.push(current)
+  return buckets
+}
+
+// FR-161 R-17 / R-18: flatten the entire `PrayerText` into a unified
+// line list for `flow="sentence"`.
+//   - stanza → each line stays as its own line (line-level boundary
+//     detection by `groupBySentence` still applies)
+//   - para → text spans are inline-split at sentence boundaries (R-18);
+//     each split fragment becomes its own line, so multi-sentence
+//     paras (concluding-prayer doxology pattern) are properly grouped
+//   - rubric-line → synthesised single-rubric line
+//   - divider → skipped
+// The flattened list is then sentence-grouped (boundary = trailing
+// `.|!|?|…|:` + next-line uppercase). Sentences can span block
+// boundaries — a para sentence that bleeds into the next stanza joins
+// continuously.
 function flattenForSentenceFlow(
   content: PrayerText,
 ): { spans: PrayerSpan[] }[] {
@@ -227,7 +294,11 @@ function flattenForSentenceFlow(
   for (const block of content.blocks) {
     if (block.kind === 'divider') continue
     if (block.kind === 'para') {
-      lines.push({ spans: block.spans })
+      // FR-161 R-18: split inline sentence boundaries within the para
+      // spans before pushing. R-17 used to push `block.spans` as a
+      // single line, hiding inline boundaries from `groupBySentence`.
+      const subLines = splitSpansByInlineSentence(block.spans)
+      for (const subSpans of subLines) lines.push({ spans: subSpans })
     } else if (block.kind === 'stanza') {
       for (const line of block.lines) lines.push({ spans: line.spans })
     } else if (block.kind === 'rubric-line') {

@@ -480,3 +480,164 @@ describe('RichContent — flow="sentence" (FR-161 R-15 sentence-mode)', () => {
   })
 })
 
+// @fr FR-161
+describe('RichContent — flow="sentence" inline para split (FR-161 R-18)', () => {
+  // R-17 회귀: para block 의 single text span 안에 두 문장 (concluding-prayer
+  // doxology 패턴 — "...хандана уу. Учир нь Тэрээр Тантай...") 이 들어 있을
+  // 때 `flattenForSentenceFlow` 가 single line 으로 평탄화 → R-16 line-level
+  // boundary detection 이 inline 경계 못 잡음 → 두 문장 한 `<p>` 합쳐짐.
+  // R-18 fix: para spans 를 inline boundary 로 split 후 multi-line 평탄화.
+
+  it('splits a single-para multi-sentence text into separate <p> elements', () => {
+    const content: PrayerText = {
+      blocks: [
+        {
+          kind: 'para',
+          spans: [
+            {
+              kind: 'text',
+              text: 'First sentence ends here. Second sentence begins now.',
+            },
+          ],
+        } as PrayerBlock,
+      ],
+    }
+    const html = render(
+      createElement(RichContent, { content, flow: 'sentence' }),
+    )
+    expect(html).toContain('data-render-mode="sentence"')
+    const sentencePs = (html.match(/data-role="sentence"/g) ?? []).length
+    expect(sentencePs).toBe(2)
+    const stripped = html.replace(/<[^>]+>/g, '')
+    expect(stripped).toContain('First sentence ends here.')
+    expect(stripped).toContain('Second sentence begins now.')
+    // Sentence-1 punctuation MUST stay attached to sentence 1 (not the
+    // boundary between paragraphs as a stray ".").
+    expect(stripped).not.toMatch(/First sentence ends here\s+Second/)
+  })
+
+  it('splits inline at colon ":" + capital (R-16 colon rule honoured inline)', () => {
+    const content: PrayerText = {
+      blocks: [
+        {
+          kind: 'para',
+          spans: [
+            {
+              kind: 'text',
+              text: 'Гуйж байна: Хайрт Эцэг минь, биднийг хайрла.',
+            },
+          ],
+        } as PrayerBlock,
+      ],
+    }
+    const html = render(
+      createElement(RichContent, { content, flow: 'sentence' }),
+    )
+    const sentencePs = (html.match(/data-role="sentence"/g) ?? []).length
+    expect(sentencePs).toBe(2)
+    const stripped = html.replace(/<[^>]+>/g, '')
+    expect(stripped).toContain('Гуйж байна:')
+    expect(stripped).toContain('Хайрт Эцэг минь, биднийг хайрла.')
+  })
+
+  it('does NOT split inline when the punct is followed by lowercase (abbreviation safe)', () => {
+    const content: PrayerText = {
+      blocks: [
+        {
+          kind: 'para',
+          spans: [
+            {
+              kind: 'text',
+              text: 'See section 3 vs. subsequent material that follows.',
+            },
+          ],
+        } as PrayerBlock,
+      ],
+    }
+    const html = render(
+      createElement(RichContent, { content, flow: 'sentence' }),
+    )
+    // No inline split: "vs." is followed by lowercase `s` → boundary
+    // suppressed. Last-line-always-boundary rule emits the whole string
+    // as a single sentence.
+    const sentencePs = (html.match(/data-role="sentence"/g) ?? []).length
+    expect(sentencePs).toBe(1)
+    const stripped = html.replace(/<[^>]+>/g, '')
+    expect(stripped).toContain('See section 3 vs. subsequent material that follows.')
+  })
+
+  // 사용자 reported case (Lent W6 Friday vespers concludingPrayerRich).
+  // The exact data shape from src/data/loth/prayers/seasonal/lent/
+  // w6-FRI-vespers.rich.json — single para, single text span, two
+  // sentences ending at "...хандана уу." and "...Тэнгэрбурхан билээ.".
+  it('splits the user-reported Lent W6-FRI-vespers doxology pattern', () => {
+    const content: PrayerText = {
+      blocks: [
+        {
+          kind: 'para',
+          spans: [
+            {
+              kind: 'text',
+              text:
+                'Аяа, Эцэг минь, Есүс Өөрийгөө муу хүмүүсээс гэтэлгэж, ' +
+                'загалмай дээр амь тэмцэх үедээ бидэнд үзүүлсэн энэхүү ' +
+                'хайраар Та Өөрийн ард түмнээ хайрлаж хандана уу. ' +
+                'Учир нь Тэрээр Тантай, Ариун Сүнсний нэгдэлтэй, үүрд ' +
+                'мөнх оршин хаанчилдаг цорын ганц Тэнгэрбурхан билээ.',
+            },
+          ],
+        } as PrayerBlock,
+      ],
+    }
+    const html = render(
+      createElement(RichContent, { content, flow: 'sentence' }),
+    )
+    const sentencePs = (html.match(/data-role="sentence"/g) ?? []).length
+    expect(sentencePs).toBe(2)
+    const stripped = html.replace(/<[^>]+>/g, '')
+    // Sentence 1 ends at "хандана уу.".
+    expect(stripped).toMatch(/хайрлаж хандана уу\./)
+    // Sentence 2 starts at "Учир нь Тэрээр Тантай" (user-quoted prefix).
+    expect(stripped).toMatch(/Учир нь Тэрээр Тантай/)
+  })
+
+  it('splits multiple inline boundaries (3+ sentences in one para)', () => {
+    const content: PrayerText = {
+      blocks: [
+        {
+          kind: 'para',
+          spans: [
+            {
+              kind: 'text',
+              text: 'Sentence one. Sentence two. Sentence three.',
+            },
+          ],
+        } as PrayerBlock,
+      ],
+    }
+    const html = render(
+      createElement(RichContent, { content, flow: 'sentence' }),
+    )
+    const sentencePs = (html.match(/data-role="sentence"/g) ?? []).length
+    expect(sentencePs).toBe(3)
+  })
+
+  it('falls back gracefully when no inline boundary exists (single <p>)', () => {
+    const content: PrayerText = {
+      blocks: [
+        {
+          kind: 'para',
+          spans: [
+            { kind: 'text', text: 'A single sentence with no inline split.' },
+          ],
+        } as PrayerBlock,
+      ],
+    }
+    const html = render(
+      createElement(RichContent, { content, flow: 'sentence' }),
+    )
+    const sentencePs = (html.match(/data-role="sentence"/g) ?? []).length
+    expect(sentencePs).toBe(1)
+  })
+})
+
