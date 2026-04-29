@@ -276,5 +276,64 @@ describe('RichContent — flow="sentence" (FR-161 R-15 sentence-mode)', () => {
     const sentencePs = (html.match(/data-role="sentence"/g) ?? []).length
     expect(sentencePs).toBe(1)
   })
+
+  // FR-161 R-16: explicit `'legacy'` literal — accepted as alias for
+  // undefined / default. Caller code can write `flow="legacy"` to make
+  // the intent explicit rather than relying on omission.
+  it('accepts flow="legacy" as explicit alias for default behavior', () => {
+    const content = makeContent([
+      makeStanzaBlock(['line A', 'line B']),
+    ])
+    const html = render(
+      createElement(RichContent, { content, flow: 'legacy' }),
+    )
+    expect(html).not.toContain('data-render-mode="flow"')
+    expect(html).not.toContain('data-render-mode="sentence"')
+    const blockSpans = (html.match(/<span class="block[^"]*"/g) ?? []).length
+    expect(blockSpans).toBe(2)
+  })
+
+  // FR-161 R-16: look-ahead capital detection — punctuation alone is
+  // NOT enough. The next line must begin with an uppercase letter.
+  // Guards against false positives at abbreviations or rare mid-clause
+  // periods where the continuation starts lowercase.
+  it('does not split when next line starts with lowercase (abbreviation safe)', () => {
+    const content = makeContent([
+      makeStanzaBlock([
+        'See section 3 vs.',
+        'subsequent material that follows.',
+      ]),
+    ])
+    const html = render(
+      createElement(RichContent, { content, flow: 'sentence' }),
+    )
+    // Period after `vs.` — but next line begins with lowercase `s`
+    // → no split. Last-line-always-boundary rule still emits a single
+    // grouping that contains both lines.
+    const sentencePs = (html.match(/data-role="sentence"/g) ?? []).length
+    expect(sentencePs).toBe(1)
+    const stripped = html.replace(/<[^>]+>/g, '')
+    expect(stripped).toContain('See section 3 vs. subsequent material that follows.')
+  })
+
+  // FR-161 R-16: colon `:` is a sentence terminator — clauses introduced
+  // by colons in liturgical Mongolian frequently start a new
+  // capitalized sentence.
+  it('treats colon ":" as a sentence boundary when next line starts uppercase', () => {
+    const content = makeContent([
+      makeStanzaBlock([
+        'Гуйж байна:',
+        'Хайрт Эцэг минь, биднийг хайрла.',
+      ]),
+    ])
+    const html = render(
+      createElement(RichContent, { content, flow: 'sentence' }),
+    )
+    const sentencePs = (html.match(/data-role="sentence"/g) ?? []).length
+    expect(sentencePs).toBe(2)
+    const stripped = html.replace(/<[^>]+>/g, '')
+    expect(stripped).toContain('Гуйж байна:')
+    expect(stripped).toContain('Хайрт Эцэг минь, биднийг хайрла.')
+  })
 })
 

@@ -83,7 +83,8 @@ function renderSpans(spans: PrayerSpan[]): JSX.Element[] {
   return spans.map((s, i) => renderSpan(s, i))
 }
 
-// FR-161 R-15: flow mode contract.
+// FR-161 R-15 / R-16: flow mode contract.
+//   - `'legacy'`   → line-by-line `<span class="block">` render (default)
 //   - `'natural'`  → all stanza lines joined in a single `<p>` (자연 wrap)
 //                    — used by 시편 마침 기도문 / 짧은 독서 (single-paragraph
 //                    prose where PDF line-break is meaningless typesetting).
@@ -93,14 +94,22 @@ function renderSpans(spans: PrayerSpan[]): JSX.Element[] {
 //                    doxology — 2-3 sentences, hard break only at sentence
 //                    boundary). 사용자 spec: "각 문장을 한 단위씩 묶고
 //                    문장이 바뀌는 데서는 줄바꿈을 하면 돼".
-//   - undefined    → legacy line-by-line render (psalm body, hymn, etc.).
-type FlowMode = 'natural' | 'sentence' | undefined
+//   - undefined    → equivalent to `'legacy'` (psalm body, hymn, etc.).
+type FlowMode = 'legacy' | 'natural' | 'sentence' | undefined
 
-const SENTENCE_END_RE = /[.!?…]+["»'')\]]*\s*$/u
+// FR-161 R-16: sentence-end punctuation. Includes `.`, `!`, `?`, `…`,
+// AND `:` (colon) — colons close a clause and the following text in
+// liturgical Mongolian frequently begins a new sentence. Optional
+// closing quote / paren after the punctuation is allowed.
+const SENTENCE_END_RE = /[.!?…:]+["»'')\]]*\s*$/u
 
-// Pull the trailing text from a line's last span. Used to detect
-// sentence boundaries in sentence flow-mode. rubric/versicle/response
-// spans also carry a `text` field, so this is uniform across span kinds.
+// FR-161 R-16: next-line first non-whitespace must be uppercase to
+// confirm a sentence boundary. Guards against false positives at
+// abbreviations (`vs.`, `Mr.`, `e.g.`) and rare mid-clause colons
+// where the continuation starts with a lowercase word.
+const STARTS_UPPERCASE_RE = /^\s*\p{Lu}/u
+
+// Pull the trailing text from a line's last non-empty span.
 function lineTrailingText(line: { spans: PrayerSpan[] }): string {
   if (!line.spans || line.spans.length === 0) return ''
   for (let i = line.spans.length - 1; i >= 0; i--) {
@@ -110,23 +119,41 @@ function lineTrailingText(line: { spans: PrayerSpan[] }): string {
   return ''
 }
 
-function lineEndsSentence(line: { spans: PrayerSpan[] }): boolean {
-  return SENTENCE_END_RE.test(lineTrailingText(line))
+// Pull the leading text from a line's first non-empty span.
+function lineLeadingText(line: { spans: PrayerSpan[] }): string {
+  if (!line.spans || line.spans.length === 0) return ''
+  for (let i = 0; i < line.spans.length; i++) {
+    const t = (line.spans[i] as { text?: string }).text ?? ''
+    if (t.length > 0) return t
+  }
+  return ''
 }
 
-// Group stanza lines into sentence-bounded buckets. A line whose
-// trailing text matches `SENTENCE_END_RE` closes the current bucket;
-// the next line starts a new one. The final unterminated bucket (no
-// closing punctuation) is still emitted so trailing fragments are
-// never dropped.
+// FR-161 R-16: a line is a sentence boundary when EITHER
+//   (a) it is the last line in the stanza (no `nextLine`) — always
+//       boundary so trailing fragments are never dropped, OR
+//   (b) it ends with sentence punctuation AND the next line begins
+//       with an uppercase letter (Cyrillic / Latin / any Unicode Lu).
+function isSentenceBoundary(
+  currentLine: { spans: PrayerSpan[] },
+  nextLine: { spans: PrayerSpan[] } | undefined,
+): boolean {
+  if (!nextLine) return true
+  if (!SENTENCE_END_RE.test(lineTrailingText(currentLine))) return false
+  return STARTS_UPPERCASE_RE.test(lineLeadingText(nextLine))
+}
+
+// Group stanza lines into sentence-bounded buckets. The final
+// unterminated bucket is always emitted so trailing fragments are
+// never dropped (last-line-is-always-boundary rule).
 function groupBySentence<L extends { spans: PrayerSpan[] }>(
   lines: L[],
 ): L[][] {
   const groups: L[][] = []
   let current: L[] = []
-  for (const line of lines) {
-    current.push(line)
-    if (lineEndsSentence(line)) {
+  for (let i = 0; i < lines.length; i++) {
+    current.push(lines[i])
+    if (isSentenceBoundary(lines[i], lines[i + 1])) {
       groups.push(current)
       current = []
     }
@@ -265,15 +292,17 @@ export function RichContent({
 }: {
   content: PrayerText
   className?: string
-  // FR-161 R-15:
+  // FR-161 R-15 / R-16:
+  //   `'legacy'`   → legacy line-by-line `display: block` rendering
+  //                  (default — psalm body, hymn, responsory, intercessions).
   //   `'natural'`  → all stanza lines joined into a single `<p>`
   //                  (시편 마침 기도문 / 짧은 독서, single-paragraph prose).
   //   `'sentence'` → stanza lines grouped by sentence boundary; each
   //                  sentence emits its own `<p>` (전체 마침 기도문 —
-  //                  본문 petition + Trinitarian doxology).
-  //   undefined    → legacy line-by-line `display: block` rendering
-  //                  (psalm body, hymn, responsory, intercessions).
-  flow?: 'natural' | 'sentence'
+  //                  본문 petition + Trinitarian doxology). Boundary =
+  //                  trailing `.|!|?|…|:` + next-line capital.
+  //   undefined    → equivalent to `'legacy'`.
+  flow?: 'legacy' | 'natural' | 'sentence'
 }): JSX.Element {
   return (
     <div className={className ? `space-y-2 ${className}` : 'space-y-2'}>
