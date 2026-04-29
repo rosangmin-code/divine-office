@@ -66,8 +66,21 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
                       .map((l) => l.spans.map((sp) => sp.text ?? '').join(''))
                       .join(' ')
                     const indent = phrase.indent ?? 0
+                    // FR-161 R-13: hanging indent — preserve the legacy
+                    // phrase first-line indent (0 / 6 / 12 spacing units)
+                    // and add a uniform 6-unit hang for wrap continuation
+                    // lines via `text-indent: -1.5rem` (-indent-6). The
+                    // resulting visual: phrase start matches the prior
+                    // baseline; viewport-wrapped continuation lines are
+                    // pushed in by an additional 1.5rem so wrap is
+                    // visually distinguishable from the next phrase
+                    // boundary (user spec: "구문 wrap 시 들여쓰기 적용").
                     const indentClass =
-                      indent === 0 ? '' : indent === 1 ? 'pl-6' : 'pl-12'
+                      indent === 0
+                        ? 'pl-6 -indent-6'
+                        : indent === 1
+                        ? 'pl-12 -indent-6'
+                        : 'pl-18 -indent-6'
                     const isRefrain = phrase.role === 'refrain'
                     const isDoxology = phrase.role === 'doxology'
                     const roleClass = isRefrain

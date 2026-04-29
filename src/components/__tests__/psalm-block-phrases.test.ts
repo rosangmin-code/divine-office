@@ -94,7 +94,7 @@ describe('PsalmBlock — phrase render branch (FR-161 R-4)', () => {
     ).toBe(1)
   })
 
-  it('renders multiple PhraseGroups with correct indent classes', () => {
+  it('renders multiple PhraseGroups with correct hanging indent classes (FR-161 R-13)', () => {
     const psalm = makePsalm([
       makeStanzaBlock(['Phrase A start', 'Phrase A wrap', 'Phrase B start'], {
         phrases: [
@@ -107,10 +107,36 @@ describe('PsalmBlock — phrase render branch (FR-161 R-4)', () => {
     // Two phrase spans.
     const phraseSpans = (html.match(/data-role="psalm-phrase[a-z-]*"/g) ?? []).length
     expect(phraseSpans).toBe(2)
-    // First phrase joins lines 0+1 (indent 0 → no pl-* class).
+    // First phrase joins lines 0+1 (indent=0 → hanging: `pl-6 -indent-6`).
     expect(html).toContain('Phrase A start Phrase A wrap')
-    // Second phrase has indent=1 → `pl-6` class on the block span.
-    expect(html).toMatch(/class="block pl-6"[^>]*>Phrase B start</)
+    expect(html).toMatch(/class="block pl-6 -indent-6"[^>]*>Phrase A start Phrase A wrap</)
+    // Second phrase indent=1 → hanging: `pl-12 -indent-6`.
+    expect(html).toMatch(/class="block pl-12 -indent-6"[^>]*>Phrase B start</)
+  })
+
+  // FR-161 R-13: hanging indent — wrap continuation lines indent further
+  // than the phrase first-line via `text-indent: -1.5rem` (-indent-6).
+  // Visual contract: first-line position preserved at legacy indents
+  // (0 / 6 / 12 spacing units); viewport-wrapped continuation lines push
+  // in by an additional 1.5rem so wrap is distinguishable from the next
+  // phrase boundary. User spec: "구문 wrap 시 들여쓰기".
+  it('applies hanging indent classes for all three indent levels (FR-161 R-13)', () => {
+    const psalm = makePsalm([
+      makeStanzaBlock(['Level 0', 'Level 1', 'Level 2'], {
+        phrases: [
+          { lineRange: [0, 0], indent: 0 },
+          { lineRange: [1, 1], indent: 1 },
+          { lineRange: [2, 2], indent: 2 },
+        ],
+      }),
+    ])
+    const html = render(createElement(PsalmBlock, { psalm }))
+    // indent=0 → pl-6 -indent-6 (first line at 0, wrap +6)
+    expect(html).toMatch(/class="block pl-6 -indent-6"[^>]*>Level 0</)
+    // indent=1 → pl-12 -indent-6 (first line at 6, wrap +6 = 12)
+    expect(html).toMatch(/class="block pl-12 -indent-6"[^>]*>Level 1</)
+    // indent=2 → pl-18 -indent-6 (first line at 12, wrap +6 = 18)
+    expect(html).toMatch(/class="block pl-18 -indent-6"[^>]*>Level 2</)
   })
 
   it('marks phrase.role refrain with data-role + red text class', () => {

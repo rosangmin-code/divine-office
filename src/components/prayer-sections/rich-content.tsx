@@ -19,6 +19,17 @@ function indentClassFor(level: 0 | 1 | 2 | undefined): string {
   return 'pl-12'
 }
 
+// FR-161 R-13: hanging indent for phrase wrap continuation lines.
+// First-line position matches the legacy phrase indent (0 / 6 / 12
+// spacing units); viewport-wrapped continuation lines indent +6 further
+// via `text-indent: -1.5rem` (-indent-6). User spec: "구문 wrap 시 들여쓰기".
+function phraseHangingIndentClass(level: 0 | 1 | 2 | undefined): string {
+  const lv = level ?? 0
+  if (lv === 0) return 'pl-6 -indent-6'
+  if (lv === 1) return 'pl-12 -indent-6'
+  return 'pl-18 -indent-6'
+}
+
 // V. / R. 접두어는 몽골어 관례에 맞춰 하드코딩한다: В. (Вэрсикл) / Х. (Хариу).
 // responsory-section.tsx 는 접두어 대신 "- " 하이픈만 사용하지만, Rich AST 가
 // 기도문 전반을 담당하면서 versicle/response 를 명시 태깅하므로 더 명확한
@@ -105,7 +116,8 @@ function renderBlock(block: PrayerBlock, key: number): JSX.Element {
           {block.phrases.map((phrase, pi) => {
             const [start, end] = phrase.lineRange
             const phraseSpans = block.lines.slice(start, end + 1).flatMap((l) => l.spans)
-            const indent = indentClassFor(phrase.indent)
+            // FR-161 R-13: hanging indent for phrase wrap continuation.
+            const indent = phraseHangingIndentClass(phrase.indent)
             const isRefrain = phrase.role === 'refrain'
             const isDoxology = phrase.role === 'doxology'
             const roleClass = isRefrain
