@@ -38,6 +38,9 @@ jobs:
       - name: Traceability matrix drift check
         run: node scripts/generate-test-fr-map.mjs --check
 
+      - name: Phrase coverage gate (NFR-009j)
+        run: npm run verify:phrase-coverage:check
+
   e2e-smoke:
     name: Playwright API smoke
     runs-on: ubuntu-latest
