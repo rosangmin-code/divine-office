@@ -83,7 +83,73 @@ function renderSpans(spans: PrayerSpan[]): JSX.Element[] {
   return spans.map((s, i) => renderSpan(s, i))
 }
 
-function renderBlock(block: PrayerBlock, key: number, flow: boolean): JSX.Element {
+// FR-161 R-15: flow mode contract.
+//   - `'natural'`  → all stanza lines joined in a single `<p>` (자연 wrap)
+//                    — used by 시편 마침 기도문 / 짧은 독서 (single-paragraph
+//                    prose where PDF line-break is meaningless typesetting).
+//   - `'sentence'` → stanza lines grouped by sentence boundaries; each
+//                    sentence becomes its own `<p>` (자연 wrap inside).
+//                    Used by 전체 마침 기도문 (보통 본문 petition + Trinitarian
+//                    doxology — 2-3 sentences, hard break only at sentence
+//                    boundary). 사용자 spec: "각 문장을 한 단위씩 묶고
+//                    문장이 바뀌는 데서는 줄바꿈을 하면 돼".
+//   - undefined    → legacy line-by-line render (psalm body, hymn, etc.).
+type FlowMode = 'natural' | 'sentence' | undefined
+
+const SENTENCE_END_RE = /[.!?…]+["»'')\]]*\s*$/u
+
+// Pull the trailing text from a line's last span. Used to detect
+// sentence boundaries in sentence flow-mode. rubric/versicle/response
+// spans also carry a `text` field, so this is uniform across span kinds.
+function lineTrailingText(line: { spans: PrayerSpan[] }): string {
+  if (!line.spans || line.spans.length === 0) return ''
+  for (let i = line.spans.length - 1; i >= 0; i--) {
+    const t = (line.spans[i] as { text?: string }).text ?? ''
+    if (t.length > 0) return t
+  }
+  return ''
+}
+
+function lineEndsSentence(line: { spans: PrayerSpan[] }): boolean {
+  return SENTENCE_END_RE.test(lineTrailingText(line))
+}
+
+// Group stanza lines into sentence-bounded buckets. A line whose
+// trailing text matches `SENTENCE_END_RE` closes the current bucket;
+// the next line starts a new one. The final unterminated bucket (no
+// closing punctuation) is still emitted so trailing fragments are
+// never dropped.
+function groupBySentence<L extends { spans: PrayerSpan[] }>(
+  lines: L[],
+): L[][] {
+  const groups: L[][] = []
+  let current: L[] = []
+  for (const line of lines) {
+    current.push(line)
+    if (lineEndsSentence(line)) {
+      groups.push(current)
+      current = []
+    }
+  }
+  if (current.length > 0) groups.push(current)
+  return groups
+}
+
+function renderJoinedSpans(
+  lines: { spans: PrayerSpan[] }[],
+  keyPrefix: string,
+): JSX.Element[] {
+  const joined: JSX.Element[] = []
+  for (let li = 0; li < lines.length; li++) {
+    if (li > 0) joined.push(<span key={`${keyPrefix}-sep-${li}`}>{' '}</span>)
+    joined.push(
+      ...lines[li].spans.map((s, si) => renderSpan(s, li * 100 + si)),
+    )
+  }
+  return joined
+}
+
+function renderBlock(block: PrayerBlock, key: number, flow: FlowMode): JSX.Element {
   if (block.kind === 'para') {
     const indent = indentClassFor(block.indent)
     const cls = [BODY_CLASS, indent].filter(Boolean).join(' ')
@@ -104,27 +170,31 @@ function renderBlock(block: PrayerBlock, key: number, flow: boolean): JSX.Elemen
     )
   }
   if (block.kind === 'stanza') {
-    // FR-161 R-15: flow mode — when the caller marks the content as
-    // prose-like (시편 마침 기도문 / 짧은 독서), join all line spans into
-    // a single `<p>` with inline spans so the browser wraps naturally
-    // at viewport width. PDF 의 line break 는 단순 typesetting wrap 이고
-    // 의미 있는 hard break 가 아니므로 `display: block` per line 을
-    // 제거해 이중 줄바꿈을 방지한다. 사용자 spec: "전체를 한 구절로
-    // 해서 들여쓰기 하지 말고 자연스럽게 줄바꿈을 해서 넣어줘". flow
-    // mode 는 phrase / hanging-indent 정책을 우회한다 — flow 컨텍스트
-    // 에선 phrase 가 주입되지 않으나, 데이터 사고 방어 차원에서 우선순위.
-    if (flow) {
-      const joined: JSX.Element[] = []
-      for (let li = 0; li < block.lines.length; li++) {
-        if (li > 0) joined.push(<span key={`sep-${li}`}>{' '}</span>)
-        joined.push(
-          ...block.lines[li].spans.map((s, si) => renderSpan(s, li * 100 + si)),
-        )
-      }
+    // FR-161 R-15: flow mode — natural / sentence. Both paths bypass
+    // phrase + hanging-indent policy (flow contexts don't carry phrases,
+    // but defensive priority guards against data slips that would
+    // reintroduce hard `display: block` breaks).
+    if (flow === 'natural') {
       return (
         <p key={key} className={BODY_CLASS} data-render-mode="flow">
-          {joined}
+          {renderJoinedSpans(block.lines, 'flow')}
         </p>
+      )
+    }
+    if (flow === 'sentence') {
+      const groups = groupBySentence(block.lines)
+      return (
+        <div
+          key={key}
+          data-render-mode="sentence"
+          className="space-y-2"
+        >
+          {groups.map((group, gi) => (
+            <p key={gi} className={BODY_CLASS} data-role="sentence">
+              {renderJoinedSpans(group, `s${gi}`)}
+            </p>
+          ))}
+        </div>
       )
     }
     // FR-161 R-4: phrase-render path. Same contract as psalm-block.tsx —
@@ -195,16 +265,19 @@ export function RichContent({
 }: {
   content: PrayerText
   className?: string
-  // FR-161 R-15: when true, stanza blocks render as natural-wrap prose
-  // (single `<p>` with inline spans). Default false preserves the
-  // existing line-by-line `display: block` rendering for psalm body
-  // and other line-structured contexts.
-  flow?: boolean
+  // FR-161 R-15:
+  //   `'natural'`  → all stanza lines joined into a single `<p>`
+  //                  (시편 마침 기도문 / 짧은 독서, single-paragraph prose).
+  //   `'sentence'` → stanza lines grouped by sentence boundary; each
+  //                  sentence emits its own `<p>` (전체 마침 기도문 —
+  //                  본문 petition + Trinitarian doxology).
+  //   undefined    → legacy line-by-line `display: block` rendering
+  //                  (psalm body, hymn, responsory, intercessions).
+  flow?: 'natural' | 'sentence'
 }): JSX.Element {
-  const flowMode = flow ?? false
   return (
     <div className={className ? `space-y-2 ${className}` : 'space-y-2'}>
-      {content.blocks.map((b, i) => renderBlock(b, i, flowMode))}
+      {content.blocks.map((b, i) => renderBlock(b, i, flow))}
     </div>
   )
 }

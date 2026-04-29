@@ -21,8 +21,11 @@ export function ConcludingPrayerSection({ section }: ConcludingPrayerSectionProp
         Төгсгөлийн даатгал залбирал <PageRef page={section.page} />
       </p>
       {activeRich && activeRich.blocks.length > 0 ? (
-        // FR-161 R-15: 마침 기도문은 산문 — 자연 wrap.
-        <RichContent content={activeRich} className="mt-2" flow />
+        // FR-161 R-15: 전체 마침 기도문은 본문 petition + Trinitarian
+        // doxology 의 다중 문장 구성 — sentence flow 로 문장 단위 grouping.
+        // 사용자 spec: "각 문장을 한 단위씩 묶고 문장이 바뀌는 데서는
+        // 줄바꿈을 하면 돼".
+        <RichContent content={activeRich} className="mt-2" flow="sentence" />
       ) : (
         <p className="mt-2 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
           {displayText}
