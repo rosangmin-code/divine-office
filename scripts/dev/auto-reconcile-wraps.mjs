@@ -38,7 +38,25 @@ import { bookPageToPhysical } from '../parsers/book-page-mapper.mjs'
 import { stripPageHeaders } from './page-header-filter.mjs'
 
 const TARGET = 'src/data/loth/prayers/commons/psalter-texts.rich.json'
-const MAX_JOIN_DEPTH = 6
+
+// FR-161 R-12.3 — raised from 6 → 10 to catch deep wraps where the
+// extractor produced 7-10 visual lines that one rich line concatenated.
+// The original ceiling 6 was sized for typical psalm wraps (1-3 visual
+// lines per logical line). Refs with very long verses (e.g. Daniel 3
+// canticle stress test, Psalm 119 sections, prophetic / wisdom-literature
+// canticles) occasionally exceed 6. Raising to 10 widens coverage at
+// negligible runtime cost (each rich line tries up to 10 extractor
+// joins instead of 6 — bounded linear).
+//
+// Risk assessment (false-positive over-join): a deeper depth could
+// theoretically merge unrelated extractor lines if their concatenation
+// happens to equal a rich line. In practice the per-line text in the
+// Mongolian psalter is unique enough (Cyrillic content + punctuation)
+// that a 7-10 line accidental match is vanishingly improbable; the
+// concrete patterns this depth catches are all genuine wraps verified
+// in evidence doc §2. If a regression surfaces, lower to 8 (bisects
+// the risk) or restore 6 with the spot-fix only.
+const MAX_JOIN_DEPTH = 10
 
 function parseArgs(argv) {
   const args = {}
