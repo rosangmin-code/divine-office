@@ -118,7 +118,11 @@ describe('RichContent — flow="natural" (FR-161 R-15)', () => {
     expect(stripped).toContain('Phrase A Phrase A wrap')
   })
 
-  it('preserves para blocks unchanged (already natural wrap)', () => {
+  // FR-161 R-17: para block content is INLINED into the natural-flow
+  // `<p>` (not rendered as a separate paragraph). This is the key fix —
+  // multi-block content (para + stanza) wraps as one continuous prose
+  // unit with no `display: block` hard breaks at block boundaries.
+  it('inlines para block content into the single natural-flow <p>', () => {
     const content: PrayerText = {
       blocks: [
         {
@@ -130,14 +134,21 @@ describe('RichContent — flow="natural" (FR-161 R-15)', () => {
     const html = render(
       createElement(RichContent, { content, flow: 'natural' }),
     )
-    // Para renders as <p> with body class — no flow marker (only stanza
-    // is affected by flow), no block-span wrapper.
     expect(html).toContain('A paragraph that wraps naturally.')
-    expect(html).not.toContain('data-render-mode="flow"')
+    // Now wrapped by the flow `<p>` — the marker IS present (was absent
+    // pre-R-17 because flow used to apply only to stanza blocks).
+    expect(html).toContain('data-render-mode="flow"')
     expect(html).not.toMatch(/<span class="block"/)
+    // Exactly one `<p>` containing all flattened spans.
+    const pCount = (html.match(/<p\b/g) ?? []).length
+    expect(pCount).toBe(1)
   })
 
-  it('preserves rubric-line blocks unchanged', () => {
+  // FR-161 R-17: rubric-line blocks become inline rubric spans inside
+  // the natural flow `<p>`. The red colour is preserved (RUBRIC_CLASS
+  // applied as a span className), and the text appears inline rather
+  // than as a heading paragraph.
+  it('inlines rubric-line blocks as coloured rubric spans', () => {
     const content: PrayerText = {
       blocks: [
         {
@@ -151,6 +162,8 @@ describe('RichContent — flow="natural" (FR-161 R-15)', () => {
     )
     expect(html).toContain('Залбирах нь')
     expect(html).toMatch(/text-red-700/)
+    // Inlined under the natural-flow `<p>`.
+    expect(html).toContain('data-render-mode="flow"')
   })
 
   it('joins lines with single space (not double)', () => {
@@ -165,6 +178,83 @@ describe('RichContent — flow="natural" (FR-161 R-15)', () => {
     const stripped = html.replace(/<[^>]+>/g, '')
     expect(stripped).toContain('first second third')
     expect(stripped).not.toContain('first  second')
+  })
+
+  // FR-161 R-17: multi-block natural flow — para + stanza in the same
+  // `PrayerText` collapse into ONE `<p>` so wrap is purely viewport-driven
+  // and no `display: block` hard break appears at the block boundary.
+  // 사용자 reported case (page 458 시편 마침 기도문): "ариун 과 нэр" /
+  // "гай 와 зовлон" 사이 hard break 0.
+  it('multi-block (para + stanza) flattens into a single <p> with no block-boundary break', () => {
+    const content: PrayerText = {
+      blocks: [
+        {
+          kind: 'para',
+          spans: [{ kind: 'text', text: 'Хайрт Эцэг ээ, Таны ариун' }],
+        } as PrayerBlock,
+        makeStanzaBlock(['нэр гай зовлон болгоныг ариусгана.']),
+      ],
+    }
+    const html = render(
+      createElement(RichContent, { content, flow: 'natural' }),
+    )
+    // Single <p> wraps the whole flow.
+    expect(html).toContain('data-render-mode="flow"')
+    const pCount = (html.match(/<p\b/g) ?? []).length
+    expect(pCount).toBe(1)
+    // No <p> nesting between the para and the stanza, no block spans.
+    expect(html).not.toMatch(/<span class="block"/)
+    // Joined text spans the block boundary — "ариун нэр" appears as
+    // contiguous text (separated only by a single-space `<span>`).
+    const stripped = html.replace(/<[^>]+>/g, '')
+    expect(stripped).toContain('Таны ариун нэр гай зовлон болгоныг ариусгана.')
+  })
+
+  it('multi-block flow joins blocks with single space (no double space)', () => {
+    const content: PrayerText = {
+      blocks: [
+        {
+          kind: 'para',
+          spans: [{ kind: 'text', text: 'block A end.' }],
+        } as PrayerBlock,
+        {
+          kind: 'para',
+          spans: [{ kind: 'text', text: 'block B start' }],
+        } as PrayerBlock,
+      ],
+    }
+    const html = render(
+      createElement(RichContent, { content, flow: 'natural' }),
+    )
+    const stripped = html.replace(/<[^>]+>/g, '')
+    expect(stripped).toContain('block A end. block B start')
+    expect(stripped).not.toContain('block A end.  block B start')
+  })
+
+  it('multi-block flow skips divider blocks (no whitespace artifact)', () => {
+    const content: PrayerText = {
+      blocks: [
+        {
+          kind: 'para',
+          spans: [{ kind: 'text', text: 'before divider' }],
+        } as PrayerBlock,
+        { kind: 'divider' } as PrayerBlock,
+        {
+          kind: 'para',
+          spans: [{ kind: 'text', text: 'after divider' }],
+        } as PrayerBlock,
+      ],
+    }
+    const html = render(
+      createElement(RichContent, { content, flow: 'natural' }),
+    )
+    // Divider's <div aria-hidden /> must NOT appear inside the flow `<p>`.
+    expect(html).not.toContain('aria-hidden')
+    const stripped = html.replace(/<[^>]+>/g, '')
+    expect(stripped).toContain('before divider after divider')
+    // Single space between the two paras — divider does not introduce
+    // an extra separator on top of the inter-block one.
+    expect(stripped).not.toContain('before divider  after divider')
   })
 })
 
@@ -334,6 +424,59 @@ describe('RichContent — flow="sentence" (FR-161 R-15 sentence-mode)', () => {
     const stripped = html.replace(/<[^>]+>/g, '')
     expect(stripped).toContain('Гуйж байна:')
     expect(stripped).toContain('Хайрт Эцэг минь, биднийг хайрла.')
+  })
+
+  // FR-161 R-17: sentence flow also operates on the entire content —
+  // sentences can span block boundaries (a para sentence that bleeds
+  // into the next stanza joins continuously). Block boundaries do NOT
+  // force a sentence split.
+  it('multi-block sentence flow groups across block boundaries', () => {
+    const content: PrayerText = {
+      blocks: [
+        // Sentence 1 starts in a para and continues into the stanza.
+        {
+          kind: 'para',
+          spans: [{ kind: 'text', text: 'First sentence starts here' }],
+        } as PrayerBlock,
+        makeStanzaBlock([
+          'and continues across the block boundary.',
+          'Second sentence then begins.',
+        ]),
+      ],
+    }
+    const html = render(
+      createElement(RichContent, { content, flow: 'sentence' }),
+    )
+    expect(html).toContain('data-render-mode="sentence"')
+    const sentencePs = (html.match(/data-role="sentence"/g) ?? []).length
+    expect(sentencePs).toBe(2)
+    const stripped = html.replace(/<[^>]+>/g, '')
+    // Sentence 1 spans the para → stanza boundary in the output.
+    expect(stripped).toContain('First sentence starts here and continues across the block boundary.')
+    expect(stripped).toContain('Second sentence then begins.')
+  })
+
+  it('multi-block sentence flow skips divider blocks', () => {
+    const content: PrayerText = {
+      blocks: [
+        {
+          kind: 'para',
+          spans: [{ kind: 'text', text: 'Sentence one ends here.' }],
+        } as PrayerBlock,
+        { kind: 'divider' } as PrayerBlock,
+        {
+          kind: 'para',
+          spans: [{ kind: 'text', text: 'Sentence two starts after divider.' }],
+        } as PrayerBlock,
+      ],
+    }
+    const html = render(
+      createElement(RichContent, { content, flow: 'sentence' }),
+    )
+    const sentencePs = (html.match(/data-role="sentence"/g) ?? []).length
+    expect(sentencePs).toBe(2)
+    // No divider's `aria-hidden` artifact inside the sentence wrapper.
+    expect(html).not.toContain('aria-hidden')
   })
 })
 

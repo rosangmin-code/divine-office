@@ -176,6 +176,69 @@ function renderJoinedSpans(
   return joined
 }
 
+// FR-161 R-17: flatten the entire `PrayerText` into a flat span list
+// for `flow="natural"`. Iterates every block in source order, joins
+// stanza lines and para spans with single-space separators, and inlines
+// rubric-line text as a coloured rubric span. Dividers are skipped.
+// The block boundary contributes only an inter-block space — no `<p>`,
+// no `display: block`, so wrap is purely viewport-driven (사용자 spec:
+// "기도문 전체를 한 단위로 해서 일반적인 성경 구절처럼 줄에 맞게 줄바꿈").
+function flattenForNaturalFlow(content: PrayerText): JSX.Element[] {
+  const out: JSX.Element[] = []
+  let keyCounter = 0
+  let firstEmitted = true
+  for (let bi = 0; bi < content.blocks.length; bi++) {
+    const block = content.blocks[bi]
+    if (block.kind === 'divider') continue
+    if (!firstEmitted) {
+      out.push(<span key={`bsep-${bi}`}>{' '}</span>)
+    }
+    firstEmitted = false
+    if (block.kind === 'para') {
+      block.spans.forEach((s) => out.push(renderSpan(s, keyCounter++)))
+    } else if (block.kind === 'stanza') {
+      block.lines.forEach((line, li) => {
+        if (li > 0) out.push(<span key={`lsep-${bi}-${li}`}>{' '}</span>)
+        line.spans.forEach((s) => out.push(renderSpan(s, keyCounter++)))
+      })
+    } else if (block.kind === 'rubric-line') {
+      out.push(
+        <span key={`rubric-${bi}`} className={RUBRIC_CLASS}>
+          {block.text}
+        </span>,
+      )
+    }
+  }
+  return out
+}
+
+// FR-161 R-17: flatten the entire `PrayerText` into a unified line list
+// for `flow="sentence"`. Each stanza line stays as its own line; each
+// para block contributes a single line whose `spans` is the full para
+// content; each rubric-line contributes one synthesised rubric span;
+// dividers are skipped. The flattened list is then sentence-grouped
+// (boundary = trailing `.|!|?|…|:` + next-line uppercase). This means
+// sentences can span block boundaries — a para sentence that bleeds
+// into the following stanza joins continuously.
+function flattenForSentenceFlow(
+  content: PrayerText,
+): { spans: PrayerSpan[] }[] {
+  const lines: { spans: PrayerSpan[] }[] = []
+  for (const block of content.blocks) {
+    if (block.kind === 'divider') continue
+    if (block.kind === 'para') {
+      lines.push({ spans: block.spans })
+    } else if (block.kind === 'stanza') {
+      for (const line of block.lines) lines.push({ spans: line.spans })
+    } else if (block.kind === 'rubric-line') {
+      lines.push({
+        spans: [{ kind: 'rubric', text: block.text } as PrayerSpan],
+      })
+    }
+  }
+  return lines
+}
+
 function renderBlock(block: PrayerBlock, key: number, flow: FlowMode): JSX.Element {
   if (block.kind === 'para') {
     const indent = indentClassFor(block.indent)
@@ -197,33 +260,10 @@ function renderBlock(block: PrayerBlock, key: number, flow: FlowMode): JSX.Eleme
     )
   }
   if (block.kind === 'stanza') {
-    // FR-161 R-15: flow mode — natural / sentence. Both paths bypass
-    // phrase + hanging-indent policy (flow contexts don't carry phrases,
-    // but defensive priority guards against data slips that would
-    // reintroduce hard `display: block` breaks).
-    if (flow === 'natural') {
-      return (
-        <p key={key} className={BODY_CLASS} data-render-mode="flow">
-          {renderJoinedSpans(block.lines, 'flow')}
-        </p>
-      )
-    }
-    if (flow === 'sentence') {
-      const groups = groupBySentence(block.lines)
-      return (
-        <div
-          key={key}
-          data-render-mode="sentence"
-          className="space-y-2"
-        >
-          {groups.map((group, gi) => (
-            <p key={gi} className={BODY_CLASS} data-role="sentence">
-              {renderJoinedSpans(group, `s${gi}`)}
-            </p>
-          ))}
-        </div>
-      )
-    }
+    // FR-161 R-15 / R-17: flow="natural" / "sentence" are now handled
+    // at RichContent level (entire-content flatten). renderBlock is the
+    // legacy-only path. Fall through to phrase / line-by-line.
+    void flow
     // FR-161 R-4: phrase-render path. Same contract as psalm-block.tsx —
     // when `phrases?: PhraseGroup[]` is present + non-empty, group lines
     // by `lineRange` (inclusive both ends), join their text spans with a
@@ -304,6 +344,33 @@ export function RichContent({
   //   undefined    → equivalent to `'legacy'`.
   flow?: 'legacy' | 'natural' | 'sentence'
 }): JSX.Element {
+  // FR-161 R-17: natural / sentence flow modes operate on the ENTIRE
+  // content (multi-block aware). The whole `PrayerText` becomes one
+  // flowing prose unit; block boundaries contribute only inter-block
+  // spaces and never trigger a `<p>` / `display: block` hard break.
+  if (flow === 'natural') {
+    const cls = [BODY_CLASS, className].filter(Boolean).join(' ')
+    return (
+      <p className={cls} data-render-mode="flow">
+        {flattenForNaturalFlow(content)}
+      </p>
+    )
+  }
+  if (flow === 'sentence') {
+    const lines = flattenForSentenceFlow(content)
+    const groups = groupBySentence(lines)
+    const cls = ['space-y-2', className].filter(Boolean).join(' ')
+    return (
+      <div className={cls} data-render-mode="sentence">
+        {groups.map((group, gi) => (
+          <p key={gi} className={BODY_CLASS} data-role="sentence">
+            {renderJoinedSpans(group, `s${gi}`)}
+          </p>
+        ))}
+      </div>
+    )
+  }
+  // Legacy / undefined: per-block rendering with `space-y-2` between blocks.
   return (
     <div className={className ? `space-y-2 ${className}` : 'space-y-2'}>
       {content.blocks.map((b, i) => renderBlock(b, i, flow))}
