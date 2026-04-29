@@ -161,7 +161,27 @@ export function splitColumns(txtContent, physicalPages) {
       // refrain/antiphon indent structure. When rightStart < cutColumn
       // (tight line), we cut at rightStart (no inner indent, but the line
       // is already fully flush in its column).
-      const splitAt = Math.min(cutColumn, rightStart)
+      //
+      // FR-161 R-12.1 — word-boundary safety. The naive `min(cutColumn,
+      // rightStart)` could land MID-WORD when the per-page cutColumn was
+      // detected too low (e.g. a hanging-indent cluster picked over the
+      // true right-col baseline). Even with the fixed `detectCutColumn`,
+      // pathological pages can still produce a cut that bisects a left-col
+      // word. Snap the cut to the nearest non-word position so the right
+      // slice never starts mid-word — this kills the "нтай" / "ээж" /
+      // single-char-fragment artefacts.
+      let splitAt = Math.min(cutColumn, rightStart)
+      if (
+        splitAt > 0 &&
+        splitAt < line.length &&
+        line.charCodeAt(splitAt - 1) !== 32 && // prior char is non-space
+        line.charCodeAt(splitAt) !== 32           // current char is non-space
+      ) {
+        // Mid-word — advance to the next whitespace (cap at rightStart).
+        let probe = splitAt
+        while (probe < line.length && probe < rightStart && line.charCodeAt(probe) !== 32) probe++
+        if (probe <= rightStart) splitAt = probe
+      }
       const rightPart = line.slice(splitAt)
 
       if (leftPart.length > 0 && !/^\s*$/.test(leftPart)) {
@@ -204,11 +224,25 @@ export function splitColumns(txtContent, physicalPages) {
  *
  * Algorithm: scan every line, collect the column at which text resumes after
  * every whitespace run of length >= MIN_GUTTER_SPACES. Those "resume
- * columns" cluster around two or three values per page (one for each
- * inner-indent level the right column uses). The **baseline** is the
- * smallest cluster's column (with >= 2 observations and >= 30 to reject
- * outliers from in-column bullets). Using the minimum lets later logic
- * identify rightward offsets as inner-column indent instead of gutter.
+ * columns" cluster around several values per page:
+ *   - left-column wrap-continuation columns (e.g. col 6 / 9 / 12) — TINY
+ *   - left-column hanging indent columns (e.g. col 39 in Isaiah 45 page 145
+ *     where "ивээлээр" wraps "ялалтын") — MID
+ *   - the actual right-column baseline (typically col ~50-55)
+ *
+ * The original heuristic ("smallest cluster ≥30 with ≥2 occurrences") was
+ * intended to reject narrow-gutter outliers but inadvertently picks the
+ * left-column hanging-indent cluster on pages where the left column has
+ * wrapped lines that resume in the col-30..col-45 range. That mis-pick
+ * causes splitColumns to slice mid-word in the right-column extraction
+ * (FR-161 R-12.1 column-merge artifact, evidence doc §2 — Isaiah 45
+ * page 145 ext[3] = "нтай           айлдаж байна.").
+ *
+ * Fix (FR-161 R-12.1): pick the cluster with the HIGHEST occurrence count
+ * among candidates ≥30. Right-col baseline is the most-frequent resume col
+ * because nearly every body line has its right-col content resume there.
+ * Tie-break: pick the LARGER col (right-col baselines tend to be deeper
+ * into the line than transient left-col wrap columns).
  *
  * Fallback: 54 (empirical average across the pilot pages).
  *
@@ -227,14 +261,25 @@ function detectCutColumn(pageLines) {
   }
   if (counts.size === 0) return 54
 
-  const sorted = [...counts.entries()].sort(([a], [b]) => a - b)
-  for (const [col, count] of sorted) {
-    if (count >= 2 && col >= 30) return col
-  }
-  let bestCol = Infinity
+  // Candidates with ≥2 occurrences and col ≥30 (rejects narrow gutters
+  // and very-deep outliers). Pick the one with HIGHEST occurrence count;
+  // tie-break prefers the LARGER column (right-col baselines are usually
+  // deeper than left-col wrap-continuation columns).
+  let bestCol = -1
   let bestCount = 0
   for (const [col, count] of counts) {
-    if (count > bestCount || (count === bestCount && col < bestCol)) {
+    if (count < 2 || col < 30) continue
+    if (count > bestCount || (count === bestCount && col > bestCol)) {
+      bestCol = col
+      bestCount = count
+    }
+  }
+  if (bestCol >= 0) return bestCol
+
+  // Last resort: same priority but without the count/col gates (rare —
+  // only for short pages with no clear right column).
+  for (const [col, count] of counts) {
+    if (count > bestCount || (count === bestCount && col > bestCol)) {
       bestCol = col
       bestCount = count
     }
