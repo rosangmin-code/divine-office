@@ -17,7 +17,8 @@ export function ShortReadingSection({
         {section.ref}
       </p>
       {section.textRich && section.textRich.blocks.length > 0 ? (
-        <RichContent content={section.textRich} className="mt-2" />
+        // FR-161 R-15: 짧은 독서는 산문 — 자연 wrap (사용자 spec).
+        <RichContent content={section.textRich} className="mt-2" flow />
       ) : (
         <div className="mt-2 space-y-1">
           {section.verses.map((v, i) => (

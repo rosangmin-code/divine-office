@@ -21,7 +21,8 @@ export function ConcludingPrayerSection({ section }: ConcludingPrayerSectionProp
         Төгсгөлийн даатгал залбирал <PageRef page={section.page} />
       </p>
       {activeRich && activeRich.blocks.length > 0 ? (
-        <RichContent content={activeRich} className="mt-2" />
+        // FR-161 R-15: 마침 기도문은 산문 — 자연 wrap.
+        <RichContent content={activeRich} className="mt-2" flow />
       ) : (
         <p className="mt-2 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
           {displayText}

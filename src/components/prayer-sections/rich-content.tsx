@@ -83,7 +83,7 @@ function renderSpans(spans: PrayerSpan[]): JSX.Element[] {
   return spans.map((s, i) => renderSpan(s, i))
 }
 
-function renderBlock(block: PrayerBlock, key: number): JSX.Element {
+function renderBlock(block: PrayerBlock, key: number, flow: boolean): JSX.Element {
   if (block.kind === 'para') {
     const indent = indentClassFor(block.indent)
     const cls = [BODY_CLASS, indent].filter(Boolean).join(' ')
@@ -104,6 +104,29 @@ function renderBlock(block: PrayerBlock, key: number): JSX.Element {
     )
   }
   if (block.kind === 'stanza') {
+    // FR-161 R-15: flow mode — when the caller marks the content as
+    // prose-like (시편 마침 기도문 / 짧은 독서), join all line spans into
+    // a single `<p>` with inline spans so the browser wraps naturally
+    // at viewport width. PDF 의 line break 는 단순 typesetting wrap 이고
+    // 의미 있는 hard break 가 아니므로 `display: block` per line 을
+    // 제거해 이중 줄바꿈을 방지한다. 사용자 spec: "전체를 한 구절로
+    // 해서 들여쓰기 하지 말고 자연스럽게 줄바꿈을 해서 넣어줘". flow
+    // mode 는 phrase / hanging-indent 정책을 우회한다 — flow 컨텍스트
+    // 에선 phrase 가 주입되지 않으나, 데이터 사고 방어 차원에서 우선순위.
+    if (flow) {
+      const joined: JSX.Element[] = []
+      for (let li = 0; li < block.lines.length; li++) {
+        if (li > 0) joined.push(<span key={`sep-${li}`}>{' '}</span>)
+        joined.push(
+          ...block.lines[li].spans.map((s, si) => renderSpan(s, li * 100 + si)),
+        )
+      }
+      return (
+        <p key={key} className={BODY_CLASS} data-render-mode="flow">
+          {joined}
+        </p>
+      )
+    }
     // FR-161 R-4: phrase-render path. Same contract as psalm-block.tsx —
     // when `phrases?: PhraseGroup[]` is present + non-empty, group lines
     // by `lineRange` (inclusive both ends), join their text spans with a
@@ -168,13 +191,20 @@ function renderBlock(block: PrayerBlock, key: number): JSX.Element {
 export function RichContent({
   content,
   className,
+  flow,
 }: {
   content: PrayerText
   className?: string
+  // FR-161 R-15: when true, stanza blocks render as natural-wrap prose
+  // (single `<p>` with inline spans). Default false preserves the
+  // existing line-by-line `display: block` rendering for psalm body
+  // and other line-structured contexts.
+  flow?: boolean
 }): JSX.Element {
+  const flowMode = flow ?? false
   return (
     <div className={className ? `space-y-2 ${className}` : 'space-y-2'}>
-      {content.blocks.map((b, i) => renderBlock(b, i))}
+      {content.blocks.map((b, i) => renderBlock(b, i, flowMode))}
     </div>
   )
 }

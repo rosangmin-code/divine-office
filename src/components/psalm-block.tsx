@@ -186,9 +186,11 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
             Дууллыг төгсгөх залбирал <PageRef page={psalm.psalmPrayerPage} />
           </p>
           {psalm.psalmPrayerRich && psalm.psalmPrayerRich.blocks.length > 0 ? (
+            // FR-161 R-15: 시편 마침 기도문은 산문 — 자연 wrap (사용자 spec).
             <RichContent
               content={psalm.psalmPrayerRich}
               className="mt-1"
+              flow
             />
           ) : (
             <p className="mt-1 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
