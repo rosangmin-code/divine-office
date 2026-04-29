@@ -5,18 +5,17 @@
 ## 현재 main HEAD
 
 ```
+091a72b Merge 200-member-01 (WI: 200) — R-14a land
+1209482 feat(fr-161): R-14a rich.json data-quality batch — Cat A+C+D edits (task #200)
+db999d7 docs(fr-161): R-14c page-mapping audit findings — zero data change (task #201)
+24bc7ad docs(fr-161): handoff R-18 land + push 반영
 681c30e Merge 199-member-01 (WI: 199) — R-18 land
 2a2e714 feat(fr-161): R-18 flow="sentence" inline para split — R-17 회귀 fix (task #199)
-3f932a2 docs(fr-161): handoff R-17 land + push 반영
-e6b5b15 Merge 198-member-01 (WI: 198) — R-17 land
-63bdefe feat(fr-161): R-17 multi-block flow flatten — 전체 RichContent 를 한 단위로 (task #198)
-7913ffd docs(fr-161): handoff 갱신 — R-15/R-16 land + R-17 in-flight + flow mode 절 신설
-9e80fcb feat(fr-161): R-16 sentence-mode boundary refinement (task #197)
 ```
 
-origin/main 동기화 완료 (`681c30e` push 완료, Vercel 재배포 트리거됨).
+origin/main 동기화 완료 (`091a72b` push 완료, Vercel 재배포 트리거됨).
 
-## 검증 baseline (main, 2026-04-29 R-18 land 직후)
+## 검증 baseline (main, 2026-04-29 R-14a + R-14c land 직후)
 
 | 항목 | 값 |
 |---|---|
@@ -121,16 +120,26 @@ flow?: 'legacy' | 'natural' | 'sentence'
 - **짧은 독서** (`flow="natural"` caller): multi-block hard break 0
 - **전체 마침 기도문** (`flow="sentence"` caller): 두 문장 visible 분리 + 각 자연 wrap (single para 의 inline doxology 분리 포함)
 
-### 2. R-14a — rich.json data-quality batch (Cat A + C + D + E ~10 refs)
+### 2. R-14a — rich.json data-quality batch (Cat A + C + D + E) [완료, #200 091a72b]
 
-audit (#191) 권고 첫 번째 dispatch.
+audit (#191) 권고 첫 번째 dispatch — member-01 처리. 4 데이터 정정 (`src/data/loth/prayers/commons/psalter-texts.rich.json` +30 -17):
 
-- Cat A (cross-page typesetting variance 6 refs): Revelation 4/11, Ephesians 1, Colossians 1, Psalm 117/135 — rich.json 의 더 detailed split 을 canonical 로 통일
-- Cat C (column-merge 잔재 1+ refs): Ephesians 1:3-10 line 3 split
-- Cat D (cross-block contamination 1 ref): Psalm 137:1-6 Trinity formula 오염 line 제거
-- Cat E (mid-line truncation ~3 refs): Psalm 81 / 137 / 144 truncated lines 복원
-- 예상 coverage: 96 → ~104-106 refs
-- 멤버: member-01 (rich.json + auto-reconciler 도구 작성자)
+- Ephesians 1:3-10 block 0 line 12 (Cat A): 'Үрчлэгдсэн... билээ.' → 2 lines (canonical-detailed)
+- Ephesians 1:3-10 block 1 line 3 (Cat C): column-merge artifact → 좌/우 col 분리
+- Psalm 81:2-11 block 1 line 0 (Cat A): 'Хүч маань... баярлан дуул.' → 2 lines (PDF wrap)
+- Psalm 137:1-6 block 0 (Cat D): Trinity prayer 오염 block 통째 삭제
+
+**처리 안 한 케이스 + reasoning** (member-01 분석):
+- Cat A 다른 4 refs (Revelation 4:11, Revelation 11:17, Colossians, Psalm 117/135): rich.json 이 이미 canonical split form 유지 / 1차 NOVEL_EDGE 원인이 Cat B (translation drift, R-14b 보류)
+- Cat E: audit 의 Psalm 81/137 truncation 분류는 truncated display 오독, 실제 full text 보유 → Cat A/D overlap 으로 흡수
+- Psalm 144 (R-14c 처리 후 별도): R-14c 가 zero data change 였으므로 본 작업 범위 초과 — 추가 정정 불필요 확인
+
+**Coverage expectation 미달 (audit cost-model 한계)**:
+- 기대치: 96 → ~104-106 refs
+- 실제: phrase coverage 215 stanzas / 0 violations 그대로 (변동 없음)
+- 원인: 데이터 품질 정정만으로는 NOVEL_EDGE 직접 감소 미흡. 구조적 column-major reading order vs rich.json block 분할 mismatch 가 더 깊은 원인 (member-01 진단)
+- 시각적 정합성 측면에서는 column merge / Trinity prayer 오염 제거 등 명확한 개선 ✓
+- coverage 의미 있는 증가는 R-12.5 (extractor heuristic 보강) 또는 block 구조 reform 필요 — 후속 후보
 
 ### 3. R-14b — content/translation drift audit (Cat B ~5 refs) (FR-161 scope 외)
 
@@ -139,11 +148,11 @@ audit (#191) 권고 첫 번째 dispatch.
 - 영향 refs: Colossians 1:12-20, Psalm 135:1-12, Daniel 3:57-88, Jeremiah 31:10-14, Wisdom/Psalm 117/119
 - FR-161 scope 외 (translation review track)
 
-### 4. R-14c — page-mapping audit (Cat G ~3 refs) (FR-161 scope 외)
+### 4. R-14c — page-mapping audit (Cat G ~3 refs) [완료, #201 db999d7]
 
-- `scripts/audit-psalter-ref-consistency.js` 재실행 (NFR-009c)
-- 영향 refs: Psalm 30:2-13, Psalm 21:2-8/14, Psalm 144:1-10
-- divine-tester 또는 divine-researcher fit
+solver 가 audit 수행 — 3 suspects 모두 false positive 확정. week-*.json 변경 0건. 자세한 finding 은 `docs/handoff-fr161-r14c.md` 참고.
+
+**R-14d (optional, low ROI)** — audit-psalter-ref-consistency.js 의 firstStanzaTokens 를 verify-psalter-pages.js 의 stanzaFingerprint 와 align (false positive 0). solver 가 "low ROI, defer" 권장 — CI noise 발생 시 우선순위 상향.
 
 ### 5. R-12.5 — extractor wrap-inference heuristic (Cat F ~minority)
 
