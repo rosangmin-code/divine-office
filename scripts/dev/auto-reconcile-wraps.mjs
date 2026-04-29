@@ -129,22 +129,78 @@ function flattenExtractor(stanzas) {
 const MULTI_PAGE_DEPTH = 4 // pages beyond the start page
 
 /**
- * Find the start index in `extLines` where `richLines[0]` begins. Returns
- * the first match by 12-char prefix (after normalisation) — rich line may
- * be a join of multiple consecutive extractor lines, so we don't require
- * length equality here, just prefix.
+ * Collect every candidate start index in `extLines` where `richLines[0]`
+ * could begin — both EXACT first-line matches and PREFIX-only matches
+ * (where the extractor line is a join of richLines[0] + something else,
+ * commonly a "header preview" line in canticle PDFs). Caller picks the
+ * best one by trial-aligning each candidate.
+ *
+ * Returns `[{ index, kind: 'exact' | 'prefix' }, ...]` with exact matches
+ * listed before prefix matches at the same index.
+ *
+ * @param {string[]} richLines
+ * @param {string[]} extLines
  */
-function findRichStart(richLines, extLines) {
-  if (richLines.length === 0) return -1
+function findRichStartCandidates(richLines, extLines) {
+  if (richLines.length === 0) return []
   const richFirstNorm = norm(richLines[0])
   const prefixLen = Math.min(12, richFirstNorm.length)
+  const candidates = []
   for (let i = 0; i < extLines.length; i++) {
     const extNorm = norm(extLines[i])
-    if (richFirstNorm === extNorm) return i
-    const ePrefix = extNorm.slice(0, Math.min(prefixLen, extNorm.length))
-    if (ePrefix && richFirstNorm.startsWith(ePrefix)) return i
+    if (richFirstNorm === extNorm) {
+      candidates.push({ index: i, kind: 'exact' })
+    } else {
+      const ePrefix = extNorm.slice(0, Math.min(prefixLen, extNorm.length))
+      if (ePrefix && richFirstNorm.startsWith(ePrefix)) {
+        candidates.push({ index: i, kind: 'prefix' })
+      }
+    }
   }
-  return -1
+  // Stable order: exact-first by index, then prefix-only by index.
+  return [
+    ...candidates.filter((c) => c.kind === 'exact').sort((a, b) => a.index - b.index),
+    ...candidates.filter((c) => c.kind === 'prefix').sort((a, b) => a.index - b.index),
+  ]
+}
+
+/**
+ * Backwards-compat shim — picks the first candidate (legacy semantics).
+ * Used only when the caller doesn't want the multi-candidate trial path.
+ */
+function findRichStart(richLines, extLines) {
+  const cands = findRichStartCandidates(richLines, extLines)
+  return cands.length > 0 ? cands[0].index : -1
+}
+
+/**
+ * FR-161 R-9.A — try every candidate start and return the FIRST one that
+ * yields a fully successful `align()`. This handles the canonical Pattern
+ * A trap: the PDF emits a "header preview" line at the start of a
+ * canticle (e.g. Daniel 3 "Эзэний хамаг бүтээлүүд ээ, Эзэнийг магтагтун"
+ * at ext[12]) that prefix-matches rich.line[0] but is actually a join of
+ * lines [0]+[1]; the body proper begins later (ext[15]). The legacy
+ * `findRichStart` returned ext[12] and bailed. The new flow trials each
+ * candidate and accepts the first that aligns through to the end of the
+ * block — typically ext[15] for header-preview canticles.
+ *
+ * Returns `{ startJ, alignment }` on success, or `null` if no candidate
+ * yields a complete alignment.
+ *
+ * @param {string[]} richLines
+ * @param {string[]} extLines
+ * @param {number} cursor — minimum extLines index to consider (callers
+ *   pre-filter the slice when needed; this lets us validate cursor-bound
+ *   semantics for sequential block alignment)
+ */
+function trialAlign(richLines, extLines, cursor) {
+  const candidates = findRichStartCandidates(richLines, extLines.slice(cursor))
+  for (const c of candidates) {
+    const absStart = cursor + c.index
+    const a = align(richLines, extLines, absStart)
+    if (a.ok) return { startJ: absStart, alignment: a, candidateKind: c.kind }
+  }
+  return null
 }
 
 /**
@@ -265,27 +321,37 @@ function reconcileOneRef(refMeta, pdfPath, richData) {
     let failure = null
     for (const slot of stanzaSlots) {
       const richLines = slot.b.lines.map((l) => l.spans?.[0]?.text || '')
-      const startJ = findRichStart(richLines, extLines.slice(cursor))
-      if (startJ < 0) {
+      // FR-161 R-9.A — multi-candidate trial alignment. The legacy
+      // `findRichStart` returned the first prefix match, which traps on
+      // canticle "header preview" lines (Daniel 3 ext[12] joins block 0
+      // lines [0]+[1]). `trialAlign` walks every candidate and accepts
+      // the first that yields a complete align — typically the body
+      // proper a few lines later.
+      const tried = trialAlign(richLines, extLines, cursor)
+      if (tried !== null) {
+        blockSplits.push({ blockIndex: slot.i, splits: tried.alignment.splits })
+        cursor = tried.alignment.finalJ
+        continue
+      }
+      // Diagnostic: distinguish "first line absent entirely" from "found
+      // but every candidate drifted" so the operator can surface a
+      // novel-edge case in the right pattern bucket.
+      const candidates = findRichStartCandidates(richLines, extLines.slice(cursor))
+      if (candidates.length === 0) {
         failure = {
           blockIndex: slot.i,
           kind: 'NO_START_FROM_CURSOR',
           detail: `block ${slot.i}: rich first line "${richLines[0]?.slice(0, 40)}" not found in extractor stream (depth=${depth}, cursor=${cursor})`,
         }
-        break
-      }
-      const absStart = cursor + startJ
-      const align1 = align(richLines, extLines, absStart)
-      if (!align1.ok) {
+      } else {
+        const firstAttempt = align(richLines, extLines, cursor + candidates[0].index)
         failure = {
           blockIndex: slot.i,
           kind: 'ALIGN_DRIFT',
-          detail: `block ${slot.i}: align failed at rich line ${align1.failAtRichIndex} ("${align1.richSample}") — ${align1.reason}`,
+          detail: `block ${slot.i}: align failed at rich line ${firstAttempt.failAtRichIndex} ("${firstAttempt.richSample}") — ${firstAttempt.reason} (tried ${candidates.length} candidate start(s))`,
         }
-        break
       }
-      blockSplits.push({ blockIndex: slot.i, splits: align1.splits })
-      cursor = align1.finalJ
+      break
     }
 
     if (failure === null) {
@@ -301,10 +367,18 @@ function reconcileOneRef(refMeta, pdfPath, richData) {
     }
 
     lastFailure = failure
-    // Only retry deeper if the failure was a missing-start (suggests
-    // multi-page spillover); ALIGN_DRIFT inside an already-found block is
-    // a content-shape mismatch that more pages won't fix.
-    if (failure.kind !== 'NO_START_FROM_CURSOR') break
+    // FR-161 R-9.A — retry deeper for BOTH NO_START_FROM_CURSOR and
+    // ALIGN_DRIFT. R-9.D originally restricted retry to NO_START to skip
+    // expensive re-extraction when the failure was a content-shape
+    // mismatch (more pages can't fix typography drift). However, Pattern
+    // A canticles (Daniel 3 / Tobit / Jeremiah / Exodus) hit ALIGN_DRIFT
+    // when a refrain block straddles a page boundary — the rich block's
+    // late lines exist on the NEXT physical page that wasn't yet
+    // extracted. Allow ALIGN_DRIFT to widen too; the depth ceiling (4)
+    // keeps the cost bounded. If drift persists at max depth, the failure
+    // is genuinely a content-shape edge (Patterns C/B/D-edge) and the
+    // verdict-NOVEL_EDGE return path documents it.
+    // (No early break — let the loop reach its depth ceiling.)
   }
 
   return {

@@ -11808,6 +11808,13 @@
             {
               "lineRange": [
                 4,
+                4
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                5,
                 5
               ],
               "indent": 0
@@ -11815,6 +11822,13 @@
             {
               "lineRange": [
                 6,
+                6
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                7,
                 7
               ],
               "indent": 0
@@ -12110,13 +12124,6 @@
             {
               "lineRange": [
                 0,
-                0
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                1,
                 1
               ],
               "indent": 0
@@ -12124,13 +12131,6 @@
             {
               "lineRange": [
                 2,
-                2
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                3,
                 3
               ],
               "indent": 0
@@ -12138,13 +12138,6 @@
             {
               "lineRange": [
                 4,
-                4
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                5,
                 5
               ],
               "indent": 0
@@ -12231,13 +12224,6 @@
             {
               "lineRange": [
                 0,
-                0
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                1,
                 1
               ],
               "indent": 0
@@ -12252,13 +12238,6 @@
             {
               "lineRange": [
                 3,
-                3
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                4,
                 4
               ],
               "indent": 0
@@ -12266,13 +12245,6 @@
             {
               "lineRange": [
                 5,
-                5
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                6,
                 6
               ],
               "indent": 0
@@ -13178,7 +13150,7 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "ЭЗЭН аугаа бөгөөд үлэмж ихээр магтагдана."
+                  "text": "ЭЗЭН аугаа бөгөөд"
                 }
               ],
               "indent": 0
@@ -13187,7 +13159,25 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Үзэсгэлэнт өндөрлөг, бүх дэлхийн баяр хөөр"
+                  "text": "үлэмж ихээр магтагдана."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Үзэсгэлэнт өндөрлөг,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "бүх дэлхийн баяр хөөр"
                 }
               ],
               "indent": 0
@@ -13254,6 +13244,71 @@
                 }
               ],
               "indent": 1
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                4
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                5,
+                6
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                7,
+                7
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                8,
+                8
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                9,
+                9
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                10,
+                10
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                11,
+                11
+              ],
+              "indent": 0
             }
           ]
         },
@@ -13473,6 +13528,176 @@
                   "kind": "text",
                   "text": "Үхэн үхтэл минь биднийг Тэр хөтөлнө."
                 }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                4,
+                4
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                5,
+                5
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                6,
+                6
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                7,
+                7
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                8,
+                8
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                9,
+                9
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                10,
+                10
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                11,
+                11
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                12,
+                12
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                13,
+                13
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                14,
+                14
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                15,
+                15
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                16,
+                16
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                17,
+                17
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                18,
+                18
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                19,
+                19
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                20,
+                20
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                21,
+                21
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                22,
+                22
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                23,
+                23
               ],
               "indent": 0
             }
@@ -17047,7 +17272,16 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Далайн зүрх рүү уулс нуран ороход ч бид айхгүй."
+                  "text": "Далайн зүрх рүү уулс нуран ороход ч"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "бид айхгүй."
                 }
               ],
               "indent": 0
@@ -17103,7 +17337,16 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Хамгийн Дээд Нэгэний Ариун оршихуйг баясгадаг урсгалт гол бий."
+                  "text": "Хамгийн Дээд Нэгэний Ариун оршихуйг"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "баясгадаг урсгалт гол бий."
                 }
               ],
               "indent": 0
@@ -17195,7 +17438,16 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Тэрээр дэлхийн хязгаарт хүртэл дайныг зогсоосон."
+                  "text": "Тэрээр дэлхийн хязгаарт хүртэл"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "дайныг зогсоосон."
                 }
               ],
               "indent": 0
@@ -17254,6 +17506,211 @@
               ],
               "indent": 0
             }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                4,
+                4
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                5,
+                5
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                6,
+                6
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                7,
+                7
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                8,
+                8
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                9,
+                9
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                10,
+                10
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                11,
+                11
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                12,
+                12
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                13,
+                13
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                14,
+                14
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                15,
+                15
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                16,
+                16
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                17,
+                17
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                18,
+                18
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                19,
+                19
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                20,
+                20
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                21,
+                21
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                22,
+                22
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                23,
+                23
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                24,
+                24
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                25,
+                25
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                26,
+                26
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                27,
+                27
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                28,
+                28
+              ],
+              "indent": 0
+            }
           ]
         },
         {
@@ -17278,6 +17735,22 @@
               ],
               "indent": 0,
               "role": "refrain"
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
             }
           ]
         }
@@ -29095,13 +29568,6 @@
             {
               "lineRange": [
                 14,
-                14
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                15,
                 15
               ],
               "indent": 0
@@ -29109,13 +29575,6 @@
             {
               "lineRange": [
                 16,
-                16
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                17,
                 17
               ],
               "indent": 0
@@ -53796,7 +54255,16 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Аяа Тэнгэрбурхан, намайг судлан зүрхийг минь мэдээч."
+                  "text": "Аяа Тэнгэрбурхан,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "намайг судлан зүрхийг минь мэдээч."
                 }
               ],
               "indent": 0
@@ -53825,6 +54293,36 @@
                   "kind": "text",
                   "text": "Мөнхийн замаар намайг удирдаач!"
                 }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                4,
+                4
               ],
               "indent": 0
             }
