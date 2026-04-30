@@ -1,25 +1,29 @@
-# FR-161 Handoff (2026-04-29, R-18 land 후 갱신)
+# FR-161 + FR-easter Handoff (2026-04-30, FR-easter-3 land 후 갱신)
 
-시편 / 기도문 phrase-unit-aware 줄바꿈 reform 의 진행 상태 + 다음 작업자가 이어받기 위한 컨텍스트.
+시편 / 기도문 phrase-unit-aware 줄바꿈 reform (FR-161) + 부활시기 propers 회귀 진단/fix (FR-easter) 의 진행 상태 + 다음 작업자가 이어받기 위한 컨텍스트.
 
 ## 현재 main HEAD
 
 ```
+c8d468d Merge 205-dev (WI: 205) — FR-easter-3 land (Compline Marian seasonal default)
+272bc40 feat(fr-easter): C-1 Compline Marian seasonal default selector (task #205)
+36d933e docs(easter-regression): Priority C renderer audit findings — Compline Marian root cause (task #204)
+9f3a0a7 Merge 203-member-01 (WI: 203) — FR-easter-1 land (vitest anchor + rich 필드 sweep)
+1e88ec9 test(fr-easter-1): vitest anchor — Easter wk1 fallback dynamic reproduction (task #203)
+9fa4ceb docs(easter-regression): root cause audit findings (task #202)
+0f406ef docs(fr-161): handoff R-14a + R-14c land 반영
 091a72b Merge 200-member-01 (WI: 200) — R-14a land
 1209482 feat(fr-161): R-14a rich.json data-quality batch — Cat A+C+D edits (task #200)
 db999d7 docs(fr-161): R-14c page-mapping audit findings — zero data change (task #201)
-24bc7ad docs(fr-161): handoff R-18 land + push 반영
-681c30e Merge 199-member-01 (WI: 199) — R-18 land
-2a2e714 feat(fr-161): R-18 flow="sentence" inline para split — R-17 회귀 fix (task #199)
 ```
 
-origin/main 동기화 완료 (`091a72b` push 완료, Vercel 재배포 트리거됨).
+origin/main 동기화 완료 (`c8d468d` push 완료, Vercel 재배포 트리거됨).
 
-## 검증 baseline (main, 2026-04-29 R-14a + R-14c land 직후)
+## 검증 baseline (main, 2026-04-30 FR-easter-3 land 직후)
 
 | 항목 | 값 |
 |---|---|
-| vitest | **674 PASS** / 0 FAIL (R-17 668 + R-18 신규 6 case) |
+| vitest | **718 PASS** / 0 FAIL (R-18 674 + #203 anchor 24 + #205 Compline Marian 20) |
 | tsc | 0 errors |
 | verify-phrase-coverage (NFR-009j) | OK 215 stanzas / 0 violations |
 | 6 page verifier | 무회귀 (page 필드 무수정) |
@@ -106,19 +110,61 @@ flow?: 'legacy' | 'natural' | 'sentence'
 - renderBlock 의 natural / sentence 분기는 unreachable 화 (per-block path 는 legacy / phrase / line-by-line 만)
 - divider skip, rubric-line 색 보존 (`<span class="text-red-700">` inline)
 
+## FR-easter (부활시기 회귀 진단 + Compline Marian fix) — 2026-04-29 ~ 30
+
+사용자 reported (2026-04-29): "부활시기 propers 가 연중시기로 폴백" — 시편 후렴 / 독서 / 응송 / 성모찬송 후렴 / 청원기도 / 마침기도. PDF p.700 GILH rubric 명문 ("부활 1주 분량만 author + 시즌 전체 반복") 기준.
+
+| Sub-WI | task | 산출 | commit | 결론 |
+|---|---|---|---|---|
+| FR-easter (audit) | #202 | docs/handoff-fr-easter-regression.md (199 lines) | 9fa4ceb | 정적 분석상 resolver chain (propers-loader wk1 fallback + rich-overlay 3-tier + 5-layer merge + Layer5 Alleluia) 모두 정상. 정적 reproduction 안 됨 |
+| FR-easter-1 | #203 | src/lib/__tests__/easter-week-fallback.test.ts (vitest 24 anchor) | 9f3a0a7 (Merge) ← 1e88ec9 | 6 anchor (wk2 MON / wk3 SAT / wk4 WED / wk5 SUN / wk6 FRI / wk7 TUE) all PASS. 동적 reproduction 도 안 됨. easter w1-*.rich.json 필드 coverage = advent/lent 와 IDENTICAL (gospelCanticleAntiphonRich 부재는 의도적 시즌 전반 omission) |
+| FR-easter-2 (renderer audit) | #204 | docs/handoff-fr-easter-regression.md §9 (94 lines 추가) | 36d933e | renderer 4 main propers 분기 정상. **★ Compline Marian seasonal default missing — never-implemented feature** 발견 (compline.ts L106 selectedIndex=0 하드코드) |
+| FR-easter-3 (Compline Marian fix) | #205 | src/lib/hours/compline.ts (+62 -6) + 신규 selectSeasonalMarianIndex | c8d468d (Merge) ← 272bc40 | EASTER → "Тэнгэрийн Хатан" / "Regina Caeli" / "Аллэлуяа" 매치, ADVENT|CHRISTMAS → Alma, LENT → Ave Regina, 외 → Salve Regina. 30 vitest case (10 → 30) |
+
+**Backend 진단 결과** (leader 동적 probe `assembleHour('2026-04-29','lauds')`):
+- psalms[0] Psalm 108:2-7 antiphon = "Тэнгэрбурхан тэнгэрсээс дээгүүр өргөмжлөгдөх болтугай. Аллэлуяа!" (PDF Easter wk1 variant 정상)
+- psalms[1] Isaiah 61:10-62:5 / psalms[2] Psalm 146:1-10 도 PDF Easter variant 정상
+- 즉 **시편 후렴 자체는 backend 에서 정확히 resolve** — 사용자 화면의 "ordinary" 는 frontend / Vercel CDN cache / 사용자 단말 cache 의심
+
+**핵심 audit 문서**: `docs/handoff-fr-easter-regression.md` (commit 36d933e 기준 §1-§9 완성)
+- §1 PDF p.700 rubric 원문
+- §2 propers/easter.json + seasonal/easter rich 데이터 구조
+- §3 resolver chain trace (propers-loader + rich-overlay + loth-service)
+- §4 git log archaeology (회귀 commit hypothesis = none confirmed)
+- §5 reproduction 시도
+- §6 Priority A/B/C/D/E fix 권고
+- §7 (Compline data coverage) §8 (NOT a regression — Compline Marian never implemented)
+- §9 Priority C renderer audit 결과 (★ root cause)
+- §9.7 backend probe 결과 (시편 후렴 backend 정상)
+
 ## 진행 중
 
-(현재 in_progress 작업 없음 — FR-161 R-17 까지 land + push 완료)
+(현재 in_progress 작업 없음 — FR-easter-3 land + push 완료)
 
 ## 후속 작업 큐
 
-### 1. 사용자 모바일 시각 검증 (R-17 + R-18 결과 확인) — 권고
+### 1. 사용자 모바일 시각 검증 — 권고 (대기 중)
 
-- iOS Safari / Android Chrome — Vercel 재배포 (681c30e) 적용 후 확인
+#### 1a. FR-161 R-17 + R-18 결과 확인 (Vercel 재배포 681c30e 후)
+
+- iOS Safari / Android Chrome
 - **페이지 458 시편 마침 기도문** (R-17): "ариун нэр" / "гай зовлон" 단어 사이 hard break 없음 + 기도문 전체 한 단위로 viewport-driven wrap
 - **Lent W6 Friday Vespers 마침기도** (R-18): "Учир нь Тэрээр Тантай..." doxology 가 새 paragraph 으로 분리
 - **짧은 독서** (`flow="natural"` caller): multi-block hard break 0
-- **전체 마침 기도문** (`flow="sentence"` caller): 두 문장 visible 분리 + 각 자연 wrap (single para 의 inline doxology 분리 포함)
+- **전체 마침 기도문** (`flow="sentence"` caller): 두 문장 visible 분리 + 각 자연 wrap
+
+#### 1b. FR-easter-3 Compline Marian 결과 확인 (Vercel 재배포 c8d468d 후)
+
+- 2026-04-29 / 04-30 Compline 페이지 — Marian section default 가 "Тэнгэрийн Хатан" (Regina Caeli) 인지 확인
+- 사용자가 dropdown 으로 다른 antiphon 변경 가능한지 (candidates 보존)
+- Advent / Christmas 시즌 진입 시 Alma 매치, Lent 진입 시 Ave Regina 매치 (실제 시즌 도래 시 검증)
+
+#### 1c. 시편 후렴 frontend cache 검증 (사용자 reported "시편 후렴만 ordinary" — backend 정상 확인됨)
+
+- **Hard reload** (Ctrl+F5 / Cmd+Shift+R) — browser cache 무시 강제 fresh fetch
+- **Incognito/Private mode** 재방문
+- 모바일: 사이트 데이터 완전 삭제 후 A2HS 재설치
+- 그래도 회귀 발견 시 → Priority B (loth-service Layer 트레이서 dev-only) 후속 dispatch + 정확 date / hour / element / screenshot 사용자 정보 추가
 
 ### 2. R-14a — rich.json data-quality batch (Cat A + C + D + E) [완료, #200 091a72b]
 
@@ -159,10 +205,17 @@ solver 가 audit 수행 — 3 suspects 모두 false positive 확정. week-*.json
 - 사용자 reported Psalm 108:2-7 "гэв." 케이스 같은 PDF wrap 누락 처리
 - expected delivery: 1-2 refs (cost-model framework 예측)
 - R-14a/c 후 잔여 cohort 재조사 후 결정 (defer)
+- **R-14a 의 진짜 lever 발견** — "구조적 column-major reading order vs rich.json block 분할 mismatch" (member-01 진단). 단순 heuristic 보강 넘어 block 구조 reform 영역으로 확장 가능성
 
 ### 6. NEEDS_USER 결정 (FR-160 handoff 에서 이월)
 
 handoff-fr160 §2 의 refrain 분류 — Tobit 13:1-8, Isaiah 38:10-14/17-20 의 allowlist vs denylist. PDF + GILH 권위 참조 필요. 사용자 직접 결정.
+
+### 7. Compline Marian audit follow-up (FR-easter-2 §9.8 Priority C-2/C-3/C-4)
+
+- **C-2** (MEDIUM) — Lent Ave Regina 데이터 audit. `compline.json anteMarian.alternatives` 에 Ave Regina Caelorum 데이터 존재 여부 확인. Lent 시즌 도래 시 회귀 가능성 (현재 code 는 fallback 0 → Salve Regina, Lent 의 정확한 antiphon 부재 시 visible regression)
+- **C-3** (LOW) — gospel canticle rich gap. `resolveGospelCanticle` 시그니처 + 호출 + section 컴포넌트에 antiphonRich 추가. 현재 plain only, rich 변형 데이터 부재. 사용자 reported 회귀 아니지만 architectural gap
+- **C-4** (LOW-MEDIUM) — compline seasonal propers coverage. `propers/{advent,christmas,easter,lent,ordinary-time}.json` 에 compline 슬롯 추가 audit. Roman Rite 전통상 non-seasonal 이지만 PDF 가 시즌별 author 했는지 확인 필요
 
 ## 운영 메모
 
@@ -192,16 +245,17 @@ handoff-fr160 §2 의 refrain 분류 — Tobit 13:1-8, Isaiah 38:10-14/17-20 의
 
 ## 팀 멤버 (divineoffice)
 
-모두 6명, 활성/idle 상태:
+모두 7명, 활성/idle 상태:
 
 | 멤버 | profile | 적합 task |
 |---|---|---|
-| divine-researcher | researcher / Explore (read-only) | research, codebase audit, PDF inspection |
+| divine-researcher | researcher / Explore (read-only) | research, codebase audit, PDF inspection. **정정 작업 dispatch 시 fitness pushback** (memory: feedback_dispatch_role_permission_check) — audit-only / read-only finding artifact 산출만 가능 |
 | divine-review | adversarial-reviewer | review, peer audit |
 | divine-tester | tester | e2e, vitest, AC verification, verifier 작성 |
 | member-01 | implementer | renderer, builder, extractor, data migration |
+| dev | implementer | (FR-easter-3 첫 dispatch 성공) renderer / hours assembler / fix |
 | planer | planner | plan, decompose, traceability |
-| solver | problem-solver | bug fix, infrastructure (단 venv 수정은 user 직접 승인 필요, #171 deferred) |
+| solver | problem-solver | bug fix, infrastructure (단 venv 수정은 user 직접 승인 필요, #171 deferred). **shared mode fallback 시 main 직접 commit 자제** (memory: feedback_worktree_isolation) |
 
 ## 참고 문서
 
@@ -220,19 +274,23 @@ handoff-fr160 §2 의 refrain 분류 — Tobit 13:1-8, Isaiah 38:10-14/17-20 의
 - `docs/fr-161-r12-1-column-merge-evidence.md` — extractor column boundary fix
 - `docs/fr-161-r12-3-deep-wrap-evidence.md` — depth raise (defensive)
 - `docs/fr-161-r14-pdf-indent-inconsistency.md` — 7-category audit (R-14)
-- `src/components/prayer-sections/__tests__/rich-content-flow.test.ts` — flow mode 15 unit case (6 natural + 6 sentence + 3 R-16 refinement)
+- `src/components/prayer-sections/__tests__/rich-content-flow.test.ts` — flow mode 26 unit case (6 natural + 6 sentence + 3 R-16 + 5 R-17 + 6 R-18)
+- `docs/handoff-fr161-r14c.md` — R-14c page-mapping audit findings (zero data change)
+- `docs/handoff-fr-easter-regression.md` — FR-easter audit (#202 §1-§8) + Priority C renderer audit (#204 §9). Compline Marian root cause + fix 권고
+- `src/lib/__tests__/easter-week-fallback.test.ts` — FR-easter-1 vitest 24 anchor (Easter wk2-7 평일 / 주일 dynamic reproduction)
+- `src/lib/hours/compline.ts` — FR-easter-3 selectSeasonalMarianIndex (L105-115)
+- `src/lib/__tests__/hours/compline.test.ts` — FR-easter-3 30 unit case (이전 10 + 신규 20)
 - `docs/handoff-fr160.md` — FR-160 phase A/B/C/D 진행 상태 (선행 작업)
 
 ## 검증 명령 (재현)
 
 ```bash
 cd "/home/min/myproject/divine office"
-npx vitest run                                              # 663 PASS
+npx vitest run                                              # 718 PASS
 npx tsc --noEmit                                            # 0 errors
 node scripts/verify-phrase-coverage.js --check              # 215 stanzas, 0 violations
 npm run verify:phrase-coverage                              # CI script (동일)
-node scripts/build-phrases-into-rich.mjs --extractor-out <json> --target src/data/loth/prayers/commons/psalter-texts.rich.json --dry-run
-node scripts/dev/process-week-phrases.mjs --week 1          # batch dry-run
+node scripts/audit-psalter-ref-consistency.js               # 3 suspects (FP confirmed, R-14c)
 for v in psalter hymn compline propers psalter-body sanctoral; \
   do node scripts/verify-${v}-pages.js; done                # baseline 무회귀
 git diff HEAD -- public/sw.js                               # empty
@@ -241,9 +299,10 @@ git diff HEAD -- public/sw.js                               # empty
 ## 사용자 권고 수동 검증 (CLAUDE.md self-review)
 
 - iOS Safari / Android Chrome 모바일에서 시편 본문 phrase wrap + hanging indent 시각 확인 (Sun Vespers I → Psalm 110, R-13)
-- 시편 마침 기도문 + 짧은 독서 → 한 paragraph 자연 wrap 확인 (R-15 natural + R-17 multi-block flatten 적용 후)
-- 전체 마침 기도문 → 두 문장 visible 분리 + 각 자연 wrap 확인 (R-15 sentence + R-16 boundary refinement + R-17 multi-block aware)
+- 시편 마침 기도문 + 짧은 독서 → 한 paragraph 자연 wrap 확인 (R-15 natural + R-17 multi-block flatten)
+- 전체 마침 기도문 → 두 문장 visible 분리 + 각 자연 wrap 확인 (R-15 sentence + R-16 boundary refinement + R-17 multi-block aware + R-18 inline para split)
 - 페이지 458 시편 마침 기도문 → "ариун нэр" / "гай зовлон" 단어 사이 hard break 0 (R-17 #198 e6b5b15 land 후)
 - Lent W6 Friday Vespers 마침기도 → "Учир нь Тэрээр Тантай..." doxology 새 paragraph 분리 (R-18 #199 681c30e land 후)
+- **Compline Marian section default = "Тэнгэрийн Хатан"** (Regina Caeli, FR-easter-3 #205 c8d468d land 후) — 부활시기 동안
 - 이전 배포 HTML 캐시된 상태에서 새 페이지 클릭 정상 (sw.js untouched 이므로 안전 예상)
-- A2HS 설치된 PWA 재실행 시 새 phrase-render + flow path 반영
+- A2HS 설치된 PWA 재실행 시 새 phrase-render + flow path + Compline Marian seasonal default 반영
