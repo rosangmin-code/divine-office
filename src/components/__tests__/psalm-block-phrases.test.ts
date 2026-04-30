@@ -19,11 +19,11 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { createElement } from 'react'
 import { PsalmBlock } from '../psalm-block'
 import { SettingsProvider } from '@/lib/settings'
-import type { AssembledPsalm, PrayerBlock, PrayerText } from '@/lib/types'
+import type { AssembledPsalm, PhraseGroup, PrayerBlock, PrayerText } from '@/lib/types'
 
 function makeStanzaBlock(
   lineTexts: string[],
-  options: { phrases?: any[]; lineIndents?: (0 | 1 | 2)[] } = {},
+  options: { phrases?: PhraseGroup[]; lineIndents?: (0 | 1 | 2)[] } = {},
 ): PrayerBlock {
   const lineIndents = options.lineIndents ?? lineTexts.map(() => 0 as const)
   return {

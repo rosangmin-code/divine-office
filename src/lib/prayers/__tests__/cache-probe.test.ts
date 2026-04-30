@@ -9,14 +9,21 @@ describe('FR-153f catalog mtime-cache probe', () => {
     const origStat = fs.statSync
     let catalogReads = 0
     let catalogStats = 0
-    ;(fs as any).readFileSync = function (p: fs.PathOrFileDescriptor, ...rest: any[]) {
+    const fsMut = fs as unknown as {
+      readFileSync: typeof fs.readFileSync
+      statSync: typeof fs.statSync
+    }
+    fsMut.readFileSync = function (
+      p: fs.PathOrFileDescriptor,
+      ...rest: unknown[]
+    ) {
       if (typeof p === 'string' && p.endsWith('psalter-texts.rich.json')) catalogReads++
-      return origRead.call(fs, p as any, ...(rest as [any]))
-    }
-    ;(fs as any).statSync = function (p: fs.PathLike, ...rest: any[]) {
+      return (origRead as (...a: unknown[]) => unknown).call(fs, p, ...rest)
+    } as typeof fs.readFileSync
+    fsMut.statSync = function (p: fs.PathLike, ...rest: unknown[]) {
       if (typeof p === 'string' && p.endsWith('psalter-texts.rich.json')) catalogStats++
-      return origStat.call(fs, p as any, ...(rest as [any]))
-    }
+      return (origStat as (...a: unknown[]) => unknown).call(fs, p, ...rest)
+    } as typeof fs.statSync
     try {
       // 10 rapid calls across different refs
       const refs = [
@@ -37,8 +44,8 @@ describe('FR-153f catalog mtime-cache probe', () => {
       expect(catalogReads).toBe(1) // single parse
       expect(catalogStats).toBe(refs.length) // stat each call (mtime check)
     } finally {
-      ;(fs as any).readFileSync = origRead
-      ;(fs as any).statSync = origStat
+      fsMut.readFileSync = origRead
+      fsMut.statSync = origStat
     }
   })
 })

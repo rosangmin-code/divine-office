@@ -232,7 +232,7 @@ describe('OpeningVersicleSection — directive surface', () => {
       directives: [{ rubricId: 'sub-ov', mode: 'substitute', text: 'Замилалын удиртгал' } as SectionOverride],
     }
     const out = html(
-      createElement(SettingsProvider, { children: createElement(OpeningVersicleSection, { section }) }),
+      createElement(SettingsProvider, null, createElement(OpeningVersicleSection, { section })),
     )
     expect(out).toContain('Замилалын удиртгал')
     expect(out).toContain('data-mode="substitute"')
@@ -246,7 +246,7 @@ describe('OpeningVersicleSection — directive surface', () => {
       directives: [{ rubricId: 'app-ov', mode: 'append', text: 'POST' } as SectionOverride],
     }
     const out = html(
-      createElement(SettingsProvider, { children: createElement(OpeningVersicleSection, { section }) }),
+      createElement(SettingsProvider, null, createElement(OpeningVersicleSection, { section })),
     )
     expect(out).toContain('Тэнгэрбурхан минь')
     expect(out).toContain('POST')
@@ -255,7 +255,7 @@ describe('OpeningVersicleSection — directive surface', () => {
   // @fr FR-160-B-5a (regression)
   it('without directives: original openingVersicle body unchanged', () => {
     const out = html(
-      createElement(SettingsProvider, { children: createElement(OpeningVersicleSection, { section: baseOV }) }),
+      createElement(SettingsProvider, null, createElement(OpeningVersicleSection, { section: baseOV })),
     )
     expect(out).toContain('Тэнгэрбурхан минь')
     expect(out).toContain('Жавхлан Эцэгт')
@@ -280,7 +280,7 @@ describe('InvitatorySection — directive surface (R1 fix: collapsed-aware)', ()
       directives: [{ rubricId: 'sub-inv', mode: 'substitute', text: 'INVITATORY-SUB' } as SectionOverride],
     }
     const out = html(
-      createElement(SettingsProvider, { children: createElement(InvitatorySection, { section }) }),
+      createElement(SettingsProvider, null, createElement(InvitatorySection, { section })),
     )
     // With default invitatoryCollapsed=true, the body would be hidden;
     // R1 fix surfaces directives in a separate collapsed-aware block.
@@ -296,7 +296,7 @@ describe('InvitatorySection — directive surface (R1 fix: collapsed-aware)', ()
       directives: [{ rubricId: 'skip-inv', mode: 'skip' } as SectionOverride],
     }
     const out = html(
-      createElement(SettingsProvider, { children: createElement(InvitatorySection, { section }) }),
+      createElement(SettingsProvider, null, createElement(InvitatorySection, { section })),
     )
     expect(out).toContain('data-mode="skip"')
   })
@@ -304,7 +304,7 @@ describe('InvitatorySection — directive surface (R1 fix: collapsed-aware)', ()
   // @fr FR-160-B-5a (regression)
   it('without directives, no collapsed-directive block rendered', () => {
     const out = html(
-      createElement(SettingsProvider, { children: createElement(InvitatorySection, { section: baseInvitatory }) }),
+      createElement(SettingsProvider, null, createElement(InvitatorySection, { section: baseInvitatory })),
     )
     expect(out).not.toContain('data-role="invitatory-directives-collapsed"')
     expect(out).not.toContain('conditional-rubric-directive')

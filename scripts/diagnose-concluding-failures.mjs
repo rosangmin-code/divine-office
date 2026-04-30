@@ -7,14 +7,10 @@
  * 스크롤 출력은 `scripts/out/concluding-failure-diagnose.md` 로 저장.
  */
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import {
-  buildProsePrayer,
-  normaliseWhitespace,
-  flattenBlocksToPlainText,
-} from './parsers/rich-builder.mjs'
+import { buildProsePrayer } from './parsers/rich-builder.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = resolve(HERE, '..')

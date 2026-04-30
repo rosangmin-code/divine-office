@@ -27,11 +27,11 @@ import { describe, it, expect } from 'vitest'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { createElement } from 'react'
 import { RichContent } from '../rich-content'
-import type { PrayerBlock, PrayerText } from '@/lib/types'
+import type { PhraseGroup, PrayerBlock, PrayerText } from '@/lib/types'
 
 function makeStanzaBlock(
   lineTexts: string[],
-  options: { phrases?: any[]; lineIndents?: (0 | 1 | 2)[] } = {},
+  options: { phrases?: PhraseGroup[]; lineIndents?: (0 | 1 | 2)[] } = {},
 ): PrayerBlock {
   const lineIndents = options.lineIndents ?? lineTexts.map(() => 0 as const)
   return {

@@ -3,7 +3,7 @@
  * diagnose-alt-concluding-failures.mjs — alt-concluding 실패 full-dump.
  */
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { buildProsePrayer } from './parsers/rich-builder.mjs'

@@ -27,11 +27,11 @@ if (!ps110) {
 // Render markup mirroring psalm-block.tsx phrase + legacy branches without
 // importing React (keeps this script dependency-free; the real renderer is
 // covered by src/components/__tests__/psalm-block-phrases.test.ts).
-function renderStanza(block, blockIndex) {
+function renderStanza(block) {
   if (block.kind !== 'stanza') return ''
   if (block.phrases && block.phrases.length > 0) {
     const phraseSpans = block.phrases
-      .map((phrase, pi) => {
+      .map((phrase) => {
         const [start, end] = phrase.lineRange
         const text = block.lines
           .slice(start, end + 1)
