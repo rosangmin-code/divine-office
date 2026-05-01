@@ -1,10 +1,13 @@
-# FR-161 + FR-easter + Compline Sweep Handoff (2026-05-01, gospel canticle rich + C-4 audit + lint cleanup land 후 갱신)
+# FR-161 + FR-easter + Compline Sweep Handoff (2026-05-01, F-1/F-2 land 후 갱신)
 
-시편 / 기도문 phrase-unit-aware 줄바꿈 reform (FR-161) + 부활시기 propers 회귀 진단/fix (FR-easter) + Compline Marian/canticle sweep (C-2/C-3/C-4) 의 진행 상태 + 다음 작업자가 이어받기 위한 컨텍스트.
+시편 / 기도문 phrase-unit-aware 줄바꿈 reform (FR-161) + 부활시기 propers 회귀 진단/fix (FR-easter) + Compline Marian/canticle sweep (C-2/C-3/C-4) + Compline rubric 자동 분기 (F-1 Easter responsory variant + F-2 Solemnity-not-on-Sun concluding swap) 의 진행 상태 + 다음 작업자가 이어받기 위한 컨텍스트.
 
 ## 현재 main HEAD
 
 ```
+d6a55eb feat(fr-NEW): #214 F-2 — concluding-prayer Solemnity-not-on-Sunday auto-swap
+459c06b fix(fr-easter-NEW): #212 — Compline Easter responsory rich source-aware guard
+4a38689 docs(handoff): main HEAD 25f8fae 갱신 — wi-001/wi-002/wi-003 + #206 lint + 5 follow-up findings
 25f8fae fix(fr-161-c-3b): #208 — gospel canticle rich data path + renderer revisions per #207 review
 2716795 docs(c-4): compline seasonal propers coverage audit — close (no gap)
 157dc4e feat(fr-161-c-3a): gospel canticle antiphonRich wiring (wi-001)
@@ -12,20 +15,17 @@
 41f0414 chore(lint): clean no-explicit-any + no-children-prop + no-unused-vars (task #206)
 f944aca docs(fr-161): handoff 통합 갱신 — FR-161 R-13~R-18 + R-14a/c + FR-easter-1/2/3 land 반영
 c8d468d Merge 205-dev (WI: 205) — FR-easter-3 land (Compline Marian seasonal default)
-272bc40 feat(fr-easter): C-1 Compline Marian seasonal default selector (task #205)
-36d939e docs(easter-regression): Priority C renderer audit findings — Compline Marian root cause (task #204)
-9f3a0a7 Merge 203-member-01 (WI: 203) — FR-easter-1 land (vitest anchor + rich 필드 sweep)
 ```
 
-origin/main 미push (사용자 결정 대기 — 6 commits ahead of c8d468d).
+origin/main 미push (사용자 결정 대기 — 9 commits ahead of c8d468d).
 
-## 검증 baseline (main, 2026-05-01 wi-001/wi-002/wi-003 + #206 lint 통합 후)
+## 검증 baseline (main, 2026-05-01 F-1/F-2 + #206 lint 통합 후)
 
 | 항목 | 값 |
 |---|---|
-| vitest | **738 PASS** / 0 FAIL (이전 baseline 718 + wi-001 +2 + wi-002 revision +18) |
+| vitest | **781 PASS** / 0 FAIL (이전 738 + F-1 #210/#212 +18 + F-2 #214 +25) |
 | tsc | 0 errors |
-| eslint | 0 errors (target scope, 16 unrelated warning 잔존 — first-vespers / hymn-rotation / pdf-lexer.poc 등 out-of-scope) |
+| eslint | 0 errors (target scope) |
 | verify-phrase-coverage (NFR-009j) | OK 215 stanzas / 0 violations |
 | 6 page verifier | 무회귀 (page 필드 무수정) |
 | sw.js | untouched (CACHE_VERSION bump 불필요) |
@@ -213,7 +213,7 @@ solver 가 audit 수행 — 3 suspects 모두 false positive 확정. week-*.json
 
 handoff-fr160 §2 의 refrain 분류 — Tobit 13:1-8, Isaiah 38:10-14/17-20 의 allowlist vs denylist. PDF + GILH 권위 참조 필요. 사용자 직접 결정.
 
-### 7. Compline sweep follow-up (FR-easter-2 §9.8 Priority C-1~C-4 — 2026-05-01 정리)
+### 7. Compline sweep follow-up (FR-easter-2 §9.8 Priority C-1~C-4 + F-series — 2026-05-01 정리)
 
 **완료 (4건)**:
 - **C-1** (HIGH, FR-easter-3 #205) — Compline Marian seasonal default selector. land `c8d468d`.
@@ -222,11 +222,13 @@ handoff-fr160 §2 의 refrain 분류 — Tobit 13:1-8, Isaiah 38:10-14/17-20 의
 - **C-3b** (MEDIUM, wi-002 → #208 revision member-01) — gospel canticle rich renderer + Nunc Dimittis data. Renderer (`gospel-canticle-section.tsx` shouldRender gate fix + rubric not-italic + 10 cases coverage) + Option A 데이터 재배치 (`src/data/loth/prayers/commons/compline/{SUN,MON,TUE,WED,THU,FRI,SAT}.rich.json` 7 신규 파일) + integration test (compline.test.ts +89 — actual on-disk file load + assembleCompline). land `25f8fae`. 10 files +600 -15. #207 review FAIL → #208 fix → #209 review PASS. peer codex (quality_auditor) APPROVED_WITH_ISSUES.
 - **C-4** (LOW, wi-003 divine-researcher) — compline seasonal propers coverage audit. **close**: 5 propers/*.json (7,425 lines) sweep 결과 compline override 키 ZERO. Schema/loader/merger 모두 DayPropers.compline 지원하나 데이터 의도적 omit (Roman Rite 전통: compline = weekly cycle, 비-시즌). land `2716795`. audit doc `docs/handoff-compline-c4-audit.md` (181 lines). peer codex AGREE r2 consensus.
 
-**bonus follow-up findings (2건, C-4 audit §5)**:
-- **F-1** (Easter Responsory Alleluia 미전파) — PDF p.515 line 17821 marker `Амилалтын улирал:` 더블-Alleluia variant. 구현 후보: `mergeComplineDefaults` (compline.ts:63-83) 또는 어셈블러 (compline.ts:114-124) season=EASTER 분기. 데이터: `compline.json::responsory.easterAlternate` 또는 `easter.json::compline.responsory` 시즌 오버라이드 (#205 Marian 패턴 후자에 가까움).
-- **F-2** (SUN alternate concluding prayer 렌더 노출 X) — 데이터 이미 존재 (`compline.json::days.SUN.concludingPrayer.alternate` L25), 어셈블러도 `alternateText` 필드 emit (compline.ts:140-145). 미확인: 렌더링 layer (`/pray/[date]/[hour]` concluding prayer section) — alternate 토글 UI 또는 자동 분기 (Solemnity not-on-Sunday) 필요.
+**완료 (F-series, 2건)**:
+- **F-1** (Easter Compline Responsory variant, #210/#212) — Eastertide 'Аллэлуяа, аллэлуяа!' 더블-Alleluia + Octave 단순 single-line. land `459c06b` (#212 source-aware guard fix per #211 review). 6 files +614 -9. seasonal/eastertide + eastertideOctave map in `compline.json`. selectSeasonalCompResponsory (weekOfSeason===1 || (weekOfSeason===2 && SUN)) octave 판정. source-aware guard `(source.id === 'compline-responsory')` 가 Layer-4 default 만 교체.
+- **F-2** (Compline/Lauds/Vespers concluding prayer Solemnity-not-on-Sun auto-swap, #214) — PDF `Эсвэл: Ням гарагт үл тохиох Их баярын өдөр` rubric. land `d6a55eb`. 7 files +542 -23. 새 helper `src/lib/hours/concluding-prayer.ts::shouldUseAlternateConcludingPrayer` (rank===SOLEMNITY && dayOfWeek!==SUN, Easter Octave wk1 weekday 제외 sister rubric) + buildConcludingPrayerFields 3 hour 일관 적용. 사용자 visible: 평일 대축일 (예: 2026-08-15 성모승천 Friday) Compline default = alternate, 토글 그대로.
 
-**bonus follow-up findings (3건, #209 re-review)**:
+**bonus follow-up findings (4건 — defer 가능, 사용자 reported 회귀 0)**:
+
+- **F-2c** (#216, #215 review major finding) — F-2 × FR-156 first-Vespers promotion 통합 gap. `HourContext` (loth-service.ts:472-484) 가 civil dayOfWeek + today liturgicalDay 사용, first-Vespers branch (loth-service.ts:137-202,245) 의 effective 값 무시 → 1st Vespers of weekday-Solemnity 가 swap 발동 안 함. 영향 게이트: 1st Vespers propers 가 concludingPrayer + alternativeConcludingPrayer 둘 다 author 한 경우만 visible. 후속 fix: ctx 에 effective day/rank 전달 + L2 integration test. 또는 swap 을 non-firstVespers path 로 scope 제한.
 - **F-3** (Minor/bug) — rich.page propagation gap. `compline.ts:127`: `mergeComplineDefaults` 가 `nuncDimittisAntiphon → gospelCanticleAntiphon` 만 매핑, page 필드 미전파. ComplineData 가 `nuncDimittisAntiphonPage` 부재 + psalter-loader.ts:124 가 `{antiphon}` 만 추출. RichOverlay (Pick) 도 `gospelCanticleAntiphonPage` 미포함. Net: production 에서 compline canticle.page = undefined unless 시즌/sanctoral overlay 가 명시 set. **pre-existing — wi-002 land 무관**. 후속 fix: ComplineData.nuncDimittisAntiphonPage 추가 + propagate, 또는 resolveGospelCanticle 가 antiphonRich.page 우선.
 - **F-4** (Minor/design) — `source.kind: 'compline-commons'` 가 `PrayerSourceRef` union (types.ts:125) 부재. 7 신규 rich.json 파일 + 기존 `shortReadingRich` 가 `'compline-commons'` 사용, 같은 파일의 `responsoryRich` 는 `{kind:'common', id:'compline-responsory'}` 사용 — 혼합 vocabulary. **pre-existing**. TS narrowing 에서 fail. 후속 fix: union 확장 `{kind:'compline-commons'; dayKey: DayOfWeek}` 또는 `'common'` + `id:compline-commons-${day}` 통합.
 - **F-5** (Minor/design) — `hasRich = blocks.length > 0` content validation 부재 (gospel-canticle-section.tsx:132). all-divider blocks 또는 all-empty para/stanza 가 `hasRich=true` 라 prefix 만 + 빈 본문 렌더링 가능, legacy fallback 무력화. **edge case — extractor + verifier 무결성에 의존**. 후속 fix: hasContent walk 또는 renderAntiphonRich 가 nothing-emitted 시 null return.
