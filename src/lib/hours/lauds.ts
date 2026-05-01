@@ -68,6 +68,7 @@ export const assembleLauds: HourAssembler = (ctx) => {
     ctx.ordinarium.canticles,
     ctx.mergedPropers.gospelCanticleAntiphon ?? '',
     ctx.mergedPropers.gospelCanticleAntiphonPage,
+    ctx.mergedPropers.gospelCanticleAntiphonRich,
   )
   if (canticle) sections.push(canticle)
 

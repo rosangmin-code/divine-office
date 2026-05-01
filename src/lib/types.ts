@@ -258,6 +258,11 @@ export interface HourPropers {
   concludingPrayerRich?: PrayerText
   alternativeConcludingPrayerRich?: PrayerText
   hymnRich?: PrayerText
+  // Gospel canticle antiphon rich overlay (FR-161 C-3a/wi-001). 존재하면
+  // resolveGospelCanticle 가 HourSection.antiphonRich 로 그대로 전달, 없으면
+  // 기존 plain `gospelCanticleAntiphon` 문자열 경로로 fallback. 데이터 주입
+  // (overlay JSON authoring) 은 C-3b/wi-002 에서 수행한다.
+  gospelCanticleAntiphonRich?: PrayerText
 
   // FR-160-B: inline rubric directives. Both arrays are additive — the
   // Layer 4.5 hydrate step evaluates them against runtime context and
@@ -664,6 +669,11 @@ export type HourSection =
       // knows where to find the body text in the printed book.
       bodyPage?: number
       textRich?: PrayerText
+      // FR-161 C-3a (wi-001): rich overlay for the seasonal antiphon. When
+      // present, the renderer (C-3b/wi-002) prefers this AST over the plain
+      // `antiphon` string. Sourced from
+      // `HourPropers.gospelCanticleAntiphonRich` via assembler wiring.
+      antiphonRich?: PrayerText
     }
   | {
       type: 'intercessions'

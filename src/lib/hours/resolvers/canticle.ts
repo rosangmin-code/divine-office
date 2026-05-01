@@ -1,9 +1,14 @@
-import type { HourSection, HourType } from '../../types'
+import type { HourSection, HourType, PrayerText } from '../../types'
 import { parseScriptureRef } from '../../scripture-ref-parser'
 import { lookupRef } from '../../bible-loader'
 
 /**
  * Resolve the gospel canticle (Benedictus, Magnificat, or Nunc Dimittis).
+ *
+ * `antiphonRich` (FR-161 C-3a/wi-001) — optional rich overlay for the
+ * seasonal antiphon. Passed straight through to the returned HourSection so
+ * the renderer (C-3b/wi-002) can prefer the AST over the plain `antiphon`
+ * string. `undefined` is the legacy path (plain antiphon only).
  */
 export function resolveGospelCanticle(
   hour: HourType,
@@ -13,6 +18,7 @@ export function resolveGospelCanticle(
   >,
   antiphon: string,
   page?: number,
+  antiphonRich?: PrayerText,
 ): HourSection | null {
   let canticleKey: 'benedictus' | 'magnificat' | 'nuncDimittis'
 
@@ -41,6 +47,7 @@ export function resolveGospelCanticle(
       doxology: canticleInfo.doxology,
       page,
       bodyPage,
+      antiphonRich,
     }
   }
 
@@ -60,5 +67,6 @@ export function resolveGospelCanticle(
     text,
     page,
     bodyPage,
+    antiphonRich,
   }
 }

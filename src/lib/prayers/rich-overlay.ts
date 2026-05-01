@@ -17,6 +17,7 @@ export type RichOverlay = Partial<Pick<HourPropers,
   | 'concludingPrayerRich'
   | 'alternativeConcludingPrayerRich'
   | 'hymnRich'
+  | 'gospelCanticleAntiphonRich'
 >>
 
 const SEASON_KEBAB: Record<LiturgicalSeason, string> = {

@@ -86,6 +86,44 @@ describe('assembleCompline', () => {
     expect(sections.some((s) => s.type === 'intercessions')).toBe(false)
     expect(sections.some((s) => s.type === 'ourFather')).toBe(false)
   })
+
+  // @fr FR-161
+  it('passes mergedPropers.gospelCanticleAntiphonRich into the gospelCanticle section (C-3a/wi-001)', () => {
+    const sampleAntiphonRich = {
+      blocks: [
+        {
+          kind: 'para' as const,
+          spans: [{ kind: 'text' as const, text: 'Аллэлүяа, Аллэлүяа.' }],
+        },
+      ],
+    }
+    const sections = assembleCompline(
+      makeContext({
+        mergedPropers: {
+          gospelCanticleAntiphon: 'Аллэлүяа, Аллэлүяа.',
+          gospelCanticleAntiphonPage: 545,
+          gospelCanticleAntiphonRich: sampleAntiphonRich,
+        } as HourPropers,
+      }),
+    )
+    const canticle = sections.find((s) => s.type === 'gospelCanticle')
+    if (!canticle || canticle.type !== 'gospelCanticle') {
+      throw new Error('gospelCanticle section missing')
+    }
+    expect(canticle.antiphonRich).toBe(sampleAntiphonRich)
+    // Plain antiphon path still populated for legacy renderer fallback.
+    expect(canticle.antiphon).toBe('Аллэлүяа, Аллэлүяа.')
+  })
+
+  // @fr FR-161
+  it('leaves canticle.antiphonRich undefined when no rich overlay is present (legacy path)', () => {
+    const sections = assembleCompline(makeContext())
+    const canticle = sections.find((s) => s.type === 'gospelCanticle')
+    if (!canticle || canticle.type !== 'gospelCanticle') {
+      throw new Error('gospelCanticle section missing')
+    }
+    expect(canticle.antiphonRich).toBeUndefined()
+  })
 })
 
 describe('mergeComplineDefaults', () => {
