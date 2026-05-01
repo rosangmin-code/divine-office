@@ -1,4 +1,5 @@
-import type { HourSection } from '@/lib/types'
+import type { JSX } from 'react'
+import type { HourSection, PrayerSpan, PrayerText } from '@/lib/types'
 import { PageRef } from '../page-ref'
 import { AntiphonBox } from './antiphon-box'
 
@@ -8,12 +9,152 @@ const CANTICLE_NAMES: Record<string, string> = {
   nuncDimittis: 'Сайнмэдээний айлдлын магтаал',
 }
 
+// Small inline renderer for antiphon-grade rich content. Antiphons in the
+// Mongolian LOTH are short prose lines (often a single para block, single
+// text span); future seasonal propers may carry inline rubrics or emphasis.
+// We render flat inline spans so the parent's amber-italic styling
+// (text-sm italic text-amber-800) cascades — using <RichContent> directly
+// would inject BODY_CLASS (font-serif text-base text-stone-800) and
+// override the visual identity that distinguishes antiphons from body
+// prose. Rubric spans get an explicit red + `not-italic` (PDF rubric is
+// red and upright, not italic — the parent wrapper's `italic` would
+// otherwise leak in via inheritance).
+function renderAntiphonSpan(span: PrayerSpan, key: number): JSX.Element {
+  if (span.kind === 'rubric') {
+    return (
+      <span
+        key={key}
+        className="not-italic text-red-700 dark:text-red-400"
+      >
+        {span.text}
+      </span>
+    )
+  }
+  if (span.kind === 'versicle') {
+    return (
+      <span key={key}>
+        <span className="font-semibold not-italic">В. </span>
+        {span.text}
+      </span>
+    )
+  }
+  if (span.kind === 'response') {
+    return (
+      <span key={key}>
+        <span className="font-semibold not-italic">Х. </span>
+        {span.text}
+      </span>
+    )
+  }
+  // text — preserve emphasis if declared (italic is already inherited from
+  // the AntiphonBox wrapper, so 'italic' emphasis is a no-op visually; we
+  // still pass the class to keep semantic intent).
+  const emphasis = span.emphasis ?? []
+  const cls: string[] = []
+  if (emphasis.includes('italic')) cls.push('italic')
+  if (emphasis.includes('bold')) cls.push('font-semibold')
+  if (cls.length === 0) return <span key={key}>{span.text}</span>
+  return (
+    <span key={key} className={cls.join(' ')}>
+      {span.text}
+    </span>
+  )
+}
+
+function renderAntiphonRich(content: PrayerText): JSX.Element[] {
+  const out: JSX.Element[] = []
+  let keyCounter = 0
+  let firstEmitted = true
+  for (let bi = 0; bi < content.blocks.length; bi++) {
+    const block = content.blocks[bi]
+    if (block.kind === 'divider') continue
+    if (!firstEmitted) {
+      out.push(<span key={`bsep-${bi}`}>{' '}</span>)
+    }
+    firstEmitted = false
+    if (block.kind === 'para') {
+      block.spans.forEach((s) => out.push(renderAntiphonSpan(s, keyCounter++)))
+    } else if (block.kind === 'stanza') {
+      block.lines.forEach((line, li) => {
+        if (li > 0) out.push(<span key={`lsep-${bi}-${li}`}>{' '}</span>)
+        line.spans.forEach((s) => out.push(renderAntiphonSpan(s, keyCounter++)))
+      })
+    } else if (block.kind === 'rubric-line') {
+      // PDF rubric line: red + upright (NOT italic). Parent wrapper
+      // is italic, so explicit `not-italic` is required to escape the
+      // amber-italic AntiphonBox styling.
+      out.push(
+        <span
+          key={`rubric-${bi}`}
+          className="not-italic text-red-700 dark:text-red-400"
+        >
+          {block.text}
+        </span>,
+      )
+    }
+  }
+  return out
+}
+
+function AntiphonRichBox({
+  content,
+  page,
+  className = 'my-3',
+}: {
+  content: PrayerText
+  page?: number
+  className?: string
+}): JSX.Element {
+  return (
+    <div
+      data-role="antiphon"
+      data-render-mode="rich"
+      className={`${className} text-sm italic text-amber-800 dark:text-amber-300`}
+    >
+      <span className="font-semibold not-italic">Шад магтаал: </span>
+      {renderAntiphonRich(content)}
+      <PageRef page={page} />
+    </div>
+  )
+}
+
 export function GospelCanticleSection({
   section,
 }: {
   section: Extract<HourSection, { type: 'gospelCanticle' }>
 }) {
   const name = CANTICLE_NAMES[section.canticle] ?? section.canticle
+  // FR-161 wi-002 (revised #208): branch on antiphonRich presence. When
+  // the rich AST is present + non-empty, render the inline rich path that
+  // preserves the amber/italic antiphon visual while honouring
+  // rubric/emphasis spans. Otherwise fall through to the legacy plain
+  // AntiphonBox so existing data renders unchanged.
+  const hasRich = !!(
+    section.antiphonRich &&
+    section.antiphonRich.blocks &&
+    section.antiphonRich.blocks.length > 0
+  )
+  // Gate is `section.antiphon || hasRich` (per #207 review fix): rich
+  // overlays can ship without the plain string companion (sanctoral
+  // propers may author Rich-only seasonal antiphons), and gating purely
+  // on `section.antiphon` would silently swallow them.
+  const shouldRender = !!section.antiphon || hasRich
+  const renderAntiphon = (className: string) =>
+    hasRich && section.antiphonRich ? (
+      <AntiphonRichBox
+        content={section.antiphonRich}
+        page={section.page}
+        className={className}
+      />
+    ) : (
+      <AntiphonBox
+        text={section.antiphon}
+        label="canticle"
+        page={section.page}
+        className={className}
+      />
+    )
+
   return (
     <section aria-label={name} className="mb-4">
       {/*
@@ -27,13 +168,7 @@ export function GospelCanticleSection({
         {name} <PageRef page={section.bodyPage} />
       </p>
 
-      {section.antiphon && (
-        <AntiphonBox
-          text={section.antiphon}
-          label="canticle"
-          page={section.page}
-        />
-      )}
+      {shouldRender && renderAntiphon('my-3')}
 
       {section.verses && section.verses.length > 0 ? (
         <div className="space-y-1 pl-2">
@@ -71,13 +206,7 @@ export function GospelCanticleSection({
         </p>
       )}
 
-      {section.antiphon && (
-        <AntiphonBox
-          text={section.antiphon}
-          label="canticle"
-          page={section.page}
-        />
-      )}
+      {shouldRender && renderAntiphon('my-3')}
     </section>
   )
 }

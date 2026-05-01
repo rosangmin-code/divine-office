@@ -70,5 +70,23 @@
       "kind": "common",
       "id": "compline-responsory"
     }
+  },
+  "gospelCanticleAntiphonRich": {
+    "blocks": [
+      {
+        "kind": "para",
+        "spans": [
+          {
+            "kind": "text",
+            "text": "Эзэн минь, биднийг сэрүүн байхад ч хамгаалж, унтаж байхад ч сахин хамгаална уу. Тиймээс сэрүүн байхдаа бид Христтэй хамт сэрэмжтэй байж, унтаж байхдаа Түүний амар амгаланд нойрсож болно."
+          }
+        ]
+      }
+    ],
+    "page": 515,
+    "source": {
+      "kind": "compline-commons",
+      "dayKey": "SAT"
+    }
   }
 }

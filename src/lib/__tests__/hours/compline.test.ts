@@ -258,6 +258,95 @@ describe('selectSeasonalMarianIndex (FR-easter-3, #205)', () => {
   })
 })
 
+// FR-161 #208 — end-to-end wiring: commons/compline/{DAY}.rich.json data
+// flows through resolveRichOverlay → mergedPropers.gospelCanticleAntiphonRich
+// → assembleCompline → canticle.antiphonRich. Reads the ACTUAL on-disk
+// rich files (no fs mock) so we catch the production "DEAD DATA" regression
+// reported in #207 — where the renderer was wired correctly but no overlay
+// data ever reached it because the field was authored in the wrong file.
+//
+// @fr FR-161
+describe('compline commons rich overlay → assembleCompline (#208 end-to-end)', () => {
+  it.each(['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'] as const)(
+    'reads gospelCanticleAntiphonRich from commons/compline/%s.rich.json + propagates to canticle.antiphonRich',
+    async (day) => {
+      // Reset module cache so resolveRichOverlay actually re-reads the
+      // file each test iteration (mtime cache hold over from earlier
+      // tests would otherwise mask data drift).
+      const richOverlayMod = await import('../../prayers/rich-overlay')
+      richOverlayMod.__resetRichOverlayCache()
+      const { resolveRichOverlay } = await import('../../prayers/resolver')
+      const overlay = resolveRichOverlay({
+        season: 'ORDINARY_TIME',
+        weekKey: '1',
+        day,
+        hour: 'compline',
+      })
+      // Authored data presence — the critical fix vs #207 DEAD DATA
+      // finding (review verdict FAIL).
+      expect(overlay.gospelCanticleAntiphonRich).toBeDefined()
+      expect(overlay.gospelCanticleAntiphonRich!.blocks.length).toBeGreaterThan(0)
+      // Page matches ordinarium nuncDimittis page (515) — proves the
+      // file carries the expected default antiphon, not stale data.
+      expect(overlay.gospelCanticleAntiphonRich!.page).toBe(515)
+      // Source tag identifies the commons-compline origin so future
+      // overlay-attribution UIs can label the antiphon source.
+      const src = overlay.gospelCanticleAntiphonRich!.source as
+        | { kind: string; dayKey?: string }
+        | undefined
+      expect(src?.kind).toBe('compline-commons')
+      expect(src?.dayKey).toBe(day)
+
+      // Feed the overlay into assembleCompline via mergedPropers — this
+      // mirrors the loth-service Layer 4 spread that runs in production.
+      // The assembler must surface antiphonRich on the gospelCanticle
+      // section (wi-001 wired) so the renderer (this WI / #208) can
+      // detect + render the rich path.
+      const sections = assembleCompline(
+        makeContext({
+          dayOfWeek: day,
+          mergedPropers: {
+            gospelCanticleAntiphon: 'plain antiphon for fallback',
+            gospelCanticleAntiphonPage: 515,
+            gospelCanticleAntiphonRich: overlay.gospelCanticleAntiphonRich,
+          } as HourPropers,
+        }),
+      )
+      const canticle = sections.find((s) => s.type === 'gospelCanticle')
+      if (!canticle || canticle.type !== 'gospelCanticle') {
+        throw new Error('gospelCanticle section missing')
+      }
+      expect(canticle.antiphonRich).toBeDefined()
+      expect(canticle.antiphonRich!.blocks.length).toBeGreaterThan(0)
+      // Plain `antiphon` still populated for legacy fallback — both
+      // paths carry the same logical content.
+      expect(canticle.antiphon).toBe('plain antiphon for fallback')
+    },
+  )
+
+  // The reverse: when the overlay JSON ships without the rich field,
+  // canticle.antiphonRich must be undefined so the renderer falls back
+  // to the legacy plain AntiphonBox. We synthesize this by injecting a
+  // mergedPropers without the rich field — equivalent to a hypothetical
+  // future overlay that drops the field.
+  it('canticle.antiphonRich stays undefined when overlay lacks the field (legacy fallback)', () => {
+    const sections = assembleCompline(
+      makeContext({
+        mergedPropers: {
+          gospelCanticleAntiphon: 'plain only',
+          // gospelCanticleAntiphonRich intentionally absent
+        } as HourPropers,
+      }),
+    )
+    const canticle = sections.find((s) => s.type === 'gospelCanticle')
+    if (!canticle || canticle.type !== 'gospelCanticle') {
+      throw new Error('gospelCanticle section missing')
+    }
+    expect(canticle.antiphonRich).toBeUndefined()
+    expect(canticle.antiphon).toBe('plain only')
+  })
+})
+
 describe('assembleCompline — seasonal Marian selection (FR-easter-3, #205)', () => {
   function withMarians(season: LiturgicalSeason): HourContext {
     const seasonalComplineData: ComplineData = {
