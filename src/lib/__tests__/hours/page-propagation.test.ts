@@ -131,6 +131,7 @@ describe('page number propagation', () => {
         psalms: [],
         shortReading: { ref: 'Rev 22:4-5', text: 'Text', page: 100 },
         responsory: { fullResponse: 'FR', versicle: 'V', shortResponse: 'SR', page: 101 },
+        seasonalResponsory: null,
         nuncDimittisAntiphon: 'Ant',
         concludingPrayer: { primary: 'Prayer', page: 102 },
         examen: 'Examen text',

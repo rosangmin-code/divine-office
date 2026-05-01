@@ -1,13 +1,19 @@
 import { describe, it, expect } from 'vitest'
-import { assembleCompline, mergeComplineDefaults, selectSeasonalMarianIndex } from '../../hours/compline'
+import {
+  assembleCompline,
+  mergeComplineDefaults,
+  selectSeasonalMarianIndex,
+  selectSeasonalCompResponsory,
+} from '../../hours/compline'
 import type { HourContext } from '../../hours/types'
-import type { LiturgicalDayInfo, AssembledPsalm, HourPropers, MarianAntiphonCandidate, LiturgicalSeason } from '../../types'
-import type { ComplineData } from '../../psalter-loader'
+import type { LiturgicalDayInfo, AssembledPsalm, HourPropers, MarianAntiphonCandidate, LiturgicalSeason, DayOfWeek } from '../../types'
+import type { ComplineData, SeasonalComplineResponsoryMap } from '../../psalter-loader'
 
 const mockComplineData: ComplineData = {
   psalms: [],
   shortReading: { ref: 'Jeremiah 14:9', text: 'Direct text' },
   responsory: { fullResponse: 'CFR', versicle: 'CV', shortResponse: 'CSR' },
+  seasonalResponsory: null,
   nuncDimittisAntiphon: 'Nunc ant',
   concludingPrayer: { primary: 'Primary prayer' },
   examen: 'Examen text',
@@ -159,6 +165,272 @@ describe('mergeComplineDefaults', () => {
     expect(result.responsory!.versicle).toBe('CustomV')
     expect(result.gospelCanticleAntiphon).toBe('Custom ant')
     expect(result.concludingPrayer).toBe('Custom prayer')
+  })
+})
+
+// F-1 (task #210) — Easter Compline responsory seasonal variant selector.
+// Mirrors the production data shape from
+// src/data/loth/ordinarium/compline.json `seasonalResponsory`.
+const productionSeasonalResponsory: SeasonalComplineResponsoryMap = {
+  eastertideOctave: {
+    fullResponse: 'Энэ нь Эзэний бүтээсэн өдөр тул үүнд хөгжилдөн баярлацгаая. Аллэлуяа!',
+    versicle: '',
+    shortResponse: '',
+    page: 515,
+  },
+  eastertide: {
+    fullResponse: 'Эзэн минь, Таны гарт би сүнсээ даатгая. Аллэлуяа, аллэлуяа!',
+    versicle: 'Үнэний Тэнгэрбурхан Эзэн минь, Та биднийг зольсон.',
+    shortResponse: 'Аллэлуяа, аллэлуяа!',
+    page: 515,
+  },
+}
+
+describe('selectSeasonalCompResponsory (F-1, task #210)', () => {
+  // @fr FR-easter-NEW
+  it('returns null for non-Easter seasons', () => {
+    for (const season of ['ORDINARY_TIME', 'ADVENT', 'CHRISTMAS', 'LENT'] as LiturgicalSeason[]) {
+      expect(
+        selectSeasonalCompResponsory(productionSeasonalResponsory, season, 'WED', 1),
+      ).toBeNull()
+    }
+  })
+
+  // @fr FR-easter-NEW
+  it('returns null when seasonalResponsory map is null/undefined', () => {
+    expect(selectSeasonalCompResponsory(null, 'EASTER', 'WED', 1)).toBeNull()
+    expect(selectSeasonalCompResponsory(undefined, 'EASTER', 'WED', 1)).toBeNull()
+  })
+
+  // @fr FR-easter-NEW
+  it('returns null when dayOfWeek/weekOfSeason are missing', () => {
+    expect(
+      selectSeasonalCompResponsory(productionSeasonalResponsory, 'EASTER', undefined, 1),
+    ).toBeNull()
+    expect(
+      selectSeasonalCompResponsory(productionSeasonalResponsory, 'EASTER', 'WED', undefined),
+    ).toBeNull()
+  })
+
+  // @fr FR-easter-NEW
+  it('selects Octave variant for week 1 any day (Easter Sunday + 6 weekdays)', () => {
+    for (const day of ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'] as DayOfWeek[]) {
+      const variant = selectSeasonalCompResponsory(
+        productionSeasonalResponsory,
+        'EASTER',
+        day,
+        1,
+      )
+      expect(variant?.fullResponse).toContain('Энэ нь Эзэний бүтээсэн өдөр')
+    }
+  })
+
+  // @fr FR-easter-NEW
+  it('selects Octave variant for week 2 SUN (Octave Sunday / Divine Mercy Sunday — closing day of Octave)', () => {
+    const variant = selectSeasonalCompResponsory(
+      productionSeasonalResponsory,
+      'EASTER',
+      'SUN',
+      2,
+    )
+    expect(variant?.fullResponse).toContain('Энэ нь Эзэний бүтээсэн өдөр')
+  })
+
+  // @fr FR-easter-NEW
+  it('selects Eastertide (post-Octave) variant for week 2 weekdays through week 7', () => {
+    // 2026-04-29 = Eastertide week 4 Wed → double-Alleluia variant.
+    for (const [day, week] of [
+      ['MON', 2], ['TUE', 2], ['WED', 2], ['THU', 2], ['FRI', 2], ['SAT', 2],
+      ['WED', 4], // 2026-04-29 specific probe
+      ['SUN', 7], ['SAT', 7],
+    ] as [DayOfWeek, number][]) {
+      const variant = selectSeasonalCompResponsory(
+        productionSeasonalResponsory,
+        'EASTER',
+        day,
+        week,
+      )
+      expect(variant?.fullResponse).toContain('Аллэлуяа, аллэлуяа!')
+      expect(variant?.versicle).toContain('Үнэний Тэнгэрбурхан')
+      expect(variant?.shortResponse).toBe('Аллэлуяа, аллэлуяа!')
+    }
+  })
+
+  // @fr FR-easter-NEW
+  it('falls back to eastertide when eastertideOctave is unauthored (data degradation guard)', () => {
+    const partial: SeasonalComplineResponsoryMap = {
+      eastertide: productionSeasonalResponsory.eastertide,
+    }
+    const variant = selectSeasonalCompResponsory(partial, 'EASTER', 'WED', 1)
+    expect(variant?.fullResponse).toContain('Аллэлуяа, аллэлуяа!')
+  })
+})
+
+describe('mergeComplineDefaults — Easter responsory variants (F-1, task #210)', () => {
+  const mockWithSeasonal: ComplineData = {
+    ...mockComplineData,
+    seasonalResponsory: productionSeasonalResponsory,
+  }
+
+  // @fr FR-easter-NEW
+  it('Ordinary Time → uses default ordinarium responsory (no seasonal substitution)', () => {
+    const result = mergeComplineDefaults(
+      {},
+      mockWithSeasonal,
+      { season: 'ORDINARY_TIME', weekOfSeason: 14 },
+      'WED',
+    )
+    // Default ordinarium responsory, NOT Easter variant.
+    expect(result.responsory).toEqual(mockWithSeasonal.responsory)
+    expect(result.responsory!.fullResponse).toBe('CFR')
+  })
+
+  // @fr FR-easter-NEW
+  it('Easter Octave (week 1 WED) → substitutes Octave variant + rich overlay', () => {
+    const seasonalWithRich: ComplineData = {
+      ...mockComplineData,
+      seasonalResponsory: {
+        eastertideOctave: {
+          ...productionSeasonalResponsory.eastertideOctave!,
+          rich: { blocks: [{ kind: 'rubric-line', text: 'Амилалтын Найман хоногийн доторх өдрүүдэд:' }] },
+        },
+        eastertide: productionSeasonalResponsory.eastertide,
+      },
+    }
+    const result = mergeComplineDefaults(
+      {},
+      seasonalWithRich,
+      { season: 'EASTER', weekOfSeason: 1 },
+      'WED',
+    )
+    expect(result.responsory!.fullResponse).toContain('Энэ нь Эзэний бүтээсэн өдөр')
+    expect(result.responsory!.versicle).toBe('')
+    expect(result.responsoryRich).toBeDefined()
+    expect(result.responsoryRich!.blocks[0].kind).toBe('rubric-line')
+  })
+
+  // @fr FR-easter-NEW
+  it('Eastertide post-Octave (2026-04-29 = week 4 WED) → substitutes double-Alleluia variant', () => {
+    const result = mergeComplineDefaults(
+      {},
+      mockWithSeasonal,
+      { season: 'EASTER', weekOfSeason: 4 },
+      'WED',
+    )
+    expect(result.responsory!.fullResponse).toContain('Аллэлуяа, аллэлуяа!')
+    expect(result.responsory!.versicle).toContain('Үнэний Тэнгэрбурхан')
+    expect(result.responsory!.shortResponse).toBe('Аллэлуяа, аллэлуяа!')
+  })
+
+  // @fr FR-easter-NEW
+  it('explicit propers responsory (sanctoral / season override) still wins over seasonal substitution', () => {
+    const existing: HourPropers = {
+      responsory: {
+        fullResponse: 'OverrideFR',
+        versicle: 'OverrideV',
+        shortResponse: 'OverrideSR',
+      },
+    }
+    const result = mergeComplineDefaults(
+      existing,
+      mockWithSeasonal,
+      { season: 'EASTER', weekOfSeason: 1 },
+      'WED',
+    )
+    expect(result.responsory!.fullResponse).toBe('OverrideFR')
+  })
+
+  // @fr FR-easter-NEW
+  it('legacy callers (no liturgicalDay/dayOfWeek) get default ordinarium responsory (back-compat)', () => {
+    const result = mergeComplineDefaults({}, mockWithSeasonal)
+    expect(result.responsory!.fullResponse).toBe('CFR')
+  })
+
+  // F-1 source-aware guard (#212, post-#211 review) — Layer-4 rich-overlay
+  // unconditionally seeds `responsoryRich` from commons/compline default,
+  // tagged `source: { kind: 'common', id: 'compline-responsory' }`. Without
+  // a source-aware check, the seasonal Easter overlay loses every overwrite
+  // race in production (the bug #211 surfaced as AC-5 NOT_MET).
+  // @fr FR-easter-NEW
+  it('replaces commons-default responsoryRich (source.id="compline-responsory") with seasonal Easter rich', () => {
+    const seasonalRich = {
+      blocks: [{ kind: 'rubric-line' as const, text: 'Амилалтын улирал:' }],
+    }
+    const seasonalWithRich: ComplineData = {
+      ...mockComplineData,
+      seasonalResponsory: {
+        eastertide: { ...productionSeasonalResponsory.eastertide!, rich: seasonalRich },
+      },
+    }
+    // Simulate Layer-4 having pre-populated responsoryRich from
+    // commons/compline/{DAY}.rich.json — `kind: 'common', id: 'compline-responsory'`.
+    const propers: HourPropers = {
+      responsoryRich: {
+        blocks: [{ kind: 'para', spans: [{ kind: 'text', text: 'OLD common default' }] }],
+        source: { kind: 'common', id: 'compline-responsory' },
+      },
+    }
+    const result = mergeComplineDefaults(
+      propers,
+      seasonalWithRich,
+      { season: 'EASTER', weekOfSeason: 4 },
+      'WED',
+    )
+    // Seasonal Easter rich now wins over the common default (was the #211 bug).
+    expect(result.responsoryRich).toBe(seasonalRich)
+    expect(result.responsoryRich!.blocks[0].kind).toBe('rubric-line')
+  })
+
+  // @fr FR-easter-NEW
+  it('preserves a non-default responsoryRich (e.g. sanctoral kind="sanctoral") over seasonal Easter rich', () => {
+    const seasonalWithRich: ComplineData = {
+      ...mockComplineData,
+      seasonalResponsory: {
+        eastertide: {
+          ...productionSeasonalResponsory.eastertide!,
+          rich: { blocks: [{ kind: 'rubric-line' as const, text: 'Амилалтын улирал:' }] },
+        },
+      },
+    }
+    const sanctoralOverride = {
+      blocks: [{ kind: 'para' as const, spans: [{ kind: 'text' as const, text: 'sanctoral override' }] }],
+      source: { kind: 'sanctoral' as const, celebrationId: 'st-mark', hour: 'compline' as const },
+    }
+    const propers: HourPropers = { responsoryRich: sanctoralOverride }
+    const result = mergeComplineDefaults(
+      propers,
+      seasonalWithRich,
+      { season: 'EASTER', weekOfSeason: 4 },
+      'WED',
+    )
+    // Sanctoral source.kind !== 'common' → priority preserved.
+    expect(result.responsoryRich).toBe(sanctoralOverride)
+  })
+
+  // @fr FR-easter-NEW
+  it('preserves a common-but-non-default responsoryRich (different id) over seasonal Easter rich', () => {
+    const seasonalWithRich: ComplineData = {
+      ...mockComplineData,
+      seasonalResponsory: {
+        eastertide: {
+          ...productionSeasonalResponsory.eastertide!,
+          rich: { blocks: [{ kind: 'rubric-line' as const, text: 'Амилалтын улирал:' }] },
+        },
+      },
+    }
+    const otherCommon = {
+      blocks: [{ kind: 'para' as const, spans: [{ kind: 'text' as const, text: 'other common' }] }],
+      source: { kind: 'common' as const, id: 'some-other-common-id' },
+    }
+    const propers: HourPropers = { responsoryRich: otherCommon }
+    const result = mergeComplineDefaults(
+      propers,
+      seasonalWithRich,
+      { season: 'EASTER', weekOfSeason: 4 },
+      'WED',
+    )
+    // Different common id ⇒ guard does not match ⇒ existing rich preserved.
+    expect(result.responsoryRich).toBe(otherCommon)
   })
 })
 
@@ -429,5 +701,90 @@ describe('assembleCompline — seasonal Marian selection (FR-easter-3, #205)', (
     expect(m.candidates?.map((c) => c.title)).toEqual(
       productionMarians.map((c) => c.title),
     )
+  })
+})
+
+// ─── L2 Integration: production assembleHour() — F-1 source-aware guard (#212) ───
+//
+// Why integration-level — the F-1 bug (#211 AC-5 NOT_MET) only reproduces when
+// Layer-4 rich-overlay (loth-service.ts) actually loads
+// `src/data/loth/prayers/commons/compline/{DAY}.rich.json` and seeds
+// `responsoryRich` BEFORE `mergeComplineDefaults` runs. The original unit suite
+// passed mocked empty propers to `mergeComplineDefaults` directly and never
+// observed the Layer-4 → Layer-8b layering, so the silent overwrite skip was
+// invisible. These probes wire the real assembler with real liturgical-day
+// resolution and inspect the assembled `responsory` HourSection — the exact
+// shape `responsory-section.tsx:16` consumes.
+import { assembleHour } from '../../loth-service'
+import { isCommonSource as isCommonSrc } from '../../types'
+
+describe('assembleHour() — Compline responsory rich propagation (F-1 #212 L2)', () => {
+  const findResponsory = (sections: import('../../types').HourSection[]) =>
+    sections.find((s): s is Extract<import('../../types').HourSection, { type: 'responsory' }> =>
+      s.type === 'responsory',
+    )
+
+  // @fr FR-easter-NEW
+  it('Easter Octave (2026-04-08 WED) → rich carries Octave rubric, NOT compline-commons default', async () => {
+    const result = await assembleHour('2026-04-08', 'compline')
+    expect(result).not.toBeNull()
+    const responsory = findResponsory(result!.sections)
+    expect(responsory).toBeDefined()
+    // Plain text already substitutes correctly (the #211 partial-pass surface).
+    expect(responsory!.fullResponse).toContain('Энэ нь Эзэний бүтээсэн өдөр')
+    // The bug: rich was silently overwritten by Layer-4 commons default. After
+    // the source-aware guard in mergeComplineDefaults, rich now carries the
+    // Octave rubric block, not the default 5-block compline-responsory shape.
+    expect(responsory!.rich).toBeDefined()
+    expect(responsory!.rich!.blocks[0]).toMatchObject({ kind: 'rubric-line' })
+    // Distinguish from the default common rich (would have source.id="compline-responsory").
+    if (responsory!.rich!.source) {
+      const srcOk =
+        !isCommonSrc(responsory!.rich!.source) ||
+        responsory!.rich!.source.id !== 'compline-responsory'
+      expect(srcOk).toBe(true)
+    }
+  })
+
+  // @fr FR-easter-NEW
+  it('Eastertide post-Octave (2026-04-29 WED) → rich carries double-Alleluia variant, NOT compline-commons default', async () => {
+    const result = await assembleHour('2026-04-29', 'compline')
+    expect(result).not.toBeNull()
+    const responsory = findResponsory(result!.sections)
+    expect(responsory).toBeDefined()
+    expect(responsory!.fullResponse).toContain('Аллэлуяа, аллэлуяа!')
+    expect(responsory!.shortResponse).toBe('Аллэлуяа, аллэлуяа!')
+    expect(responsory!.rich).toBeDefined()
+    // Eastertide rich opens with "Амилалтын улирал:" rubric, then V/R blocks
+    // including the double-Alleluia full response. Must not be the default
+    // commons rich (5-block "Эзэн минь, Таны гарт..." Glory Be cue layout).
+    expect(responsory!.rich!.blocks[0]).toMatchObject({
+      kind: 'rubric-line',
+      text: expect.stringContaining('Амилалтын улирал'),
+    })
+    const allBodyText = JSON.stringify(responsory!.rich!.blocks)
+    expect(allBodyText).toContain('Аллэлуяа, аллэлуяа!')
+    if (responsory!.rich!.source) {
+      const srcOk =
+        !isCommonSrc(responsory!.rich!.source) ||
+        responsory!.rich!.source.id !== 'compline-responsory'
+      expect(srcOk).toBe(true)
+    }
+  })
+
+  // @fr FR-easter-NEW
+  it('non-Easter season (2026-08-12 WED, ORDINARY_TIME) → rich preserved as compline-commons default (no regression)', async () => {
+    const result = await assembleHour('2026-08-12', 'compline')
+    expect(result).not.toBeNull()
+    const responsory = findResponsory(result!.sections)
+    expect(responsory).toBeDefined()
+    // Default ordinarium responsory body — source-aware guard MUST NOT fire
+    // outside EASTER (selectSeasonalCompResponsory returns null).
+    expect(responsory!.rich).toBeDefined()
+    // Layer-4 commons rich is the authoritative non-Easter source.
+    expect(isCommonSrc(responsory!.rich!.source)).toBe(true)
+    if (isCommonSrc(responsory!.rich!.source)) {
+      expect(responsory!.rich!.source.id).toBe('compline-responsory')
+    }
   })
 })

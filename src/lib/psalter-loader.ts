@@ -102,10 +102,48 @@ export function getComplinePsalmody(day: DayOfWeek): PsalmEntry[] {
   return data.days[day]?.psalms ?? []
 }
 
+/**
+ * Seasonal compline responsory variant — replaces the default
+ * `compline.json::responsory` body during EASTER (and its 8-day Octave).
+ *
+ * Sourced from PDF physical p.258 (book p.515) right column. Two variants
+ * keyed off the calendar:
+ *   - `eastertideOctave` — PDF rubric "Амилалтын Найман хоногийн доторх
+ *     өдрүүдэд:" — single-line replacement (no V/R structure). Active for
+ *     the 8 days of Easter Octave (Easter Sunday + 6 weekdays + Octave
+ *     Sunday / Divine Mercy Sunday).
+ *   - `eastertide` — PDF rubric "Амилалтын улирал:" — full V/R/Glory Be
+ *     structure with Latin double-Alleluia ("Аллэлуяа, аллэлуяа!") in
+ *     fullResponse + shortResponse. Active for Eastertide post-Octave.
+ *
+ * `versicle` / `shortResponse` may be empty strings for the Octave variant
+ * (single-line form). The `rich` field carries the PDF-faithful AST so the
+ * renderer can bypass the standard Responsory shape (which always emits
+ * Glory Be cue + final response repeat — incorrect for the Octave line).
+ */
+export interface SeasonalComplineResponsoryVariant {
+  fullResponse: string
+  versicle: string
+  shortResponse: string
+  rich?: import('./types').PrayerText
+  page?: number
+}
+
+export interface SeasonalComplineResponsoryMap {
+  eastertideOctave?: SeasonalComplineResponsoryVariant
+  eastertide?: SeasonalComplineResponsoryVariant
+}
+
 export interface ComplineData {
   psalms: PsalmEntry[]
   shortReading: { ref: string; text: string; page?: number } | null
   responsory: { fullResponse: string; versicle: string; shortResponse: string; page?: number } | null
+  /**
+   * Season+Octave-keyed compline responsory overrides. Selected by
+   * `selectSeasonalCompResponsory(season, dayOfWeek, weekOfSeason)` —
+   * absent / null → renderer falls back to the default `responsory`.
+   */
+  seasonalResponsory: SeasonalComplineResponsoryMap | null
   nuncDimittisAntiphon: string
   concludingPrayer: { primary: string; alternate?: string; page?: number } | null
   examen: string
@@ -121,6 +159,7 @@ export function getFullComplineData(day: DayOfWeek): ComplineData {
   const dayData = days[day] ?? {}
 
   const globalResponsory = data.responsory as { fullResponse: string; versicle: string; shortResponse: string } | undefined
+  const seasonalResponsory = data.seasonalResponsory as SeasonalComplineResponsoryMap | undefined
   const nuncDimittis = data.nuncDimittis as { antiphon: string } | undefined
   const examen = data.examen as { text: string } | undefined
   const blessing = data.blessing as { text: string; response: string } | undefined
@@ -137,6 +176,7 @@ export function getFullComplineData(day: DayOfWeek): ComplineData {
     psalms: (dayData.psalms as PsalmEntry[]) ?? [],
     shortReading: (dayData.shortReading as { ref: string; text: string; page?: number }) ?? null,
     responsory: globalResponsory as { fullResponse: string; versicle: string; shortResponse: string; page?: number } | null ?? null,
+    seasonalResponsory: seasonalResponsory ?? null,
     nuncDimittisAntiphon: nuncDimittis?.antiphon ?? '',
     concludingPrayer: (dayData.concludingPrayer as { primary: string; alternate?: string; page?: number }) ?? null,
     examen: examen?.text ?? '',

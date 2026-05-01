@@ -1,5 +1,10 @@
-import type { HourSection, HourPropers, LiturgicalSeason, MarianAntiphonCandidate } from '../types'
-import type { ComplineData } from '../psalter-loader'
+import type { HourSection, HourPropers, LiturgicalSeason, MarianAntiphonCandidate, DayOfWeek } from '../types'
+import { isCommonSource } from '../types'
+import type {
+  ComplineData,
+  SeasonalComplineResponsoryMap,
+  SeasonalComplineResponsoryVariant,
+} from '../psalter-loader'
 import type { HourAssembler } from './types'
 import { buildOpeningVersicle, resolveShortReading, resolveGospelCanticle, attachSectionDirectives } from './shared'
 
@@ -57,20 +62,120 @@ export function selectSeasonalMarianIndex(
 }
 
 /**
+ * Pick the season-appropriate compline responsory variant from the
+ * `seasonalResponsory` map (F-1, task #210).
+ *
+ * Two PDF-authored variants exist (PDF physical p.258 / book p.515 right
+ * column):
+ *   - `eastertideOctave` — PDF rubric "Амилалтын Найман хоногийн
+ *     доторх өдрүүдэд:" (For days within Easter Octave). Single-line
+ *     replacement: "Энэ нь Эзэний бүтээсэн өдөр тул үүнд хөгжилдөн
+ *     баярлацгаая. Аллэлуяа!" (Ps 118:24, "This is the day the Lord has
+ *     made"). Active for the 8 days of Easter Octave.
+ *   - `eastertide` — PDF rubric "Амилалтын улирал:" (Easter season).
+ *     Latin double-Alleluia full V/R structure. Active for the rest of
+ *     Eastertide (post-Octave through Pentecost).
+ *
+ * Easter Octave detection — calendar.ts assigns `weekOfSeason: 1` for
+ * Easter Sunday + the 6 weekdays of Easter week, and `weekOfSeason: 2`
+ * starts on the following Sunday (Octave Sunday / Divine Mercy Sunday,
+ * which IS the closing day of the Octave). The Octave thus spans:
+ *   - week 1, any day, OR
+ *   - week 2, SUN
+ * Both branches map to `eastertideOctave`. All other Easter days
+ * (week 2 MON..SAT through week 7 SAT) map to `eastertide`.
+ *
+ * Returns `null` for non-Easter seasons OR when the requested variant
+ * is not authored — caller falls back to the default (`complineData.responsory`).
+ */
+export function selectSeasonalCompResponsory(
+  map: SeasonalComplineResponsoryMap | null | undefined,
+  season: LiturgicalSeason | undefined,
+  dayOfWeek: DayOfWeek | undefined,
+  weekOfSeason: number | undefined,
+): SeasonalComplineResponsoryVariant | null {
+  if (!map) return null
+  if (season !== 'EASTER') return null
+  if (typeof weekOfSeason !== 'number' || !dayOfWeek) return null
+
+  const isOctave =
+    weekOfSeason === 1 || (weekOfSeason === 2 && dayOfWeek === 'SUN')
+
+  if (isOctave) {
+    return map.eastertideOctave ?? map.eastertide ?? null
+  }
+  return map.eastertide ?? null
+}
+
+/**
  * Merge compline-specific defaults from complineData into propers
  * when not already overridden by season or sanctoral propers.
+ *
+ * `liturgicalDay` and `dayOfWeek` are optional for backward compat with
+ * legacy callers (tests / pre-F-1 wiring) — when absent, only the
+ * season-agnostic defaults apply (the legacy behavior). When present,
+ * `selectSeasonalCompResponsory` runs to substitute the Easter Octave /
+ * Eastertide responsory variant before falling back to the default.
  */
 export function mergeComplineDefaults(
   mergedPropers: HourPropers,
   complineData: ComplineData,
+  liturgicalDay?: { season: LiturgicalSeason; weekOfSeason: number },
+  dayOfWeek?: DayOfWeek,
 ): HourPropers {
   const result = { ...mergedPropers }
 
   if (!result.shortReading && complineData.shortReading) {
     result.shortReading = complineData.shortReading
   }
-  if (!result.responsory && complineData.responsory) {
-    result.responsory = complineData.responsory
+  if (!result.responsory) {
+    // Try seasonal Easter / Octave variant first; fall back to ordinarium default.
+    const seasonal = selectSeasonalCompResponsory(
+      complineData.seasonalResponsory,
+      liturgicalDay?.season,
+      dayOfWeek,
+      liturgicalDay?.weekOfSeason,
+    )
+    if (seasonal) {
+      result.responsory = {
+        fullResponse: seasonal.fullResponse,
+        versicle: seasonal.versicle,
+        shortResponse: seasonal.shortResponse,
+        page: seasonal.page,
+      }
+      // Layer rich overlay so the renderer can emit PDF-faithful AST
+      // (skipping the standard Glory Be cue + final response repeat that
+      // the responsory shape always synthesizes for the legacy 3-part
+      // path).
+      //
+      // Source-aware guard (#212, post-#211 review):
+      //   Layer-4 rich-overlay (loth-service.ts) runs BEFORE this merge
+      //   step and unconditionally seeds `responsoryRich` from
+      //   `commons/compline/{DAY}.rich.json` for every Compline assembly.
+      //   That default rich carries `source.id === 'compline-responsory'`.
+      //   The previous `!result.responsoryRich` check therefore never
+      //   evaluated true in production — the Easter Octave / Eastertide
+      //   variants silently lost the overwrite race and the renderer
+      //   showed default (non-Easter) blocks even when plain text was
+      //   correctly substituted (#211 AC-5 NOT_MET).
+      //
+      // Replace ONLY when the slot is empty OR the seeded rich is the
+      // common compline-responsory default. Real overrides
+      // (sanctoral / seasonal JSON / per-day propers) carry a different
+      // `source.id` and continue to win — priority preserved.
+      if (seasonal.rich) {
+        const existing = result.responsoryRich
+        const existingSource = existing?.source
+        const isComplineCommonsDefault =
+          isCommonSource(existingSource) &&
+          existingSource.id === 'compline-responsory'
+        if (!existing || isComplineCommonsDefault) {
+          result.responsoryRich = seasonal.rich
+        }
+      }
+    } else if (complineData.responsory) {
+      result.responsory = complineData.responsory
+    }
   }
   if (!result.gospelCanticleAntiphon && complineData.nuncDimittisAntiphon) {
     result.gospelCanticleAntiphon = complineData.nuncDimittisAntiphon

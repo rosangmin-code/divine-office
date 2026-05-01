@@ -422,11 +422,20 @@ export async function assembleHour(
     )
   }
 
-  // 8b. For Compline, fill propers from compline.json when not overridden
+  // 8b. For Compline, fill propers from compline.json when not overridden.
+  // Pass `day` and `dayOfWeek` so mergeComplineDefaults can apply the
+  // season+Octave-keyed responsory variant (F-1, task #210) — Easter
+  // Octave / Eastertide PDF p.515 variants override the default
+  // responsory body in the absence of explicit per-day propers.
   let complineData = null
   if (hour === 'compline') {
     complineData = getFullComplineData(dayOfWeek)
-    mergedPropers = mergeComplineDefaults(mergedPropers, complineData)
+    mergedPropers = mergeComplineDefaults(
+      mergedPropers,
+      complineData,
+      { season: day.season, weekOfSeason: day.weekOfSeason },
+      dayOfWeek,
+    )
   }
 
   // 8c. Fill hymn from seasonal assignments if not already set
