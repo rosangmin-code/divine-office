@@ -7,6 +7,7 @@ import type {
 } from '../psalter-loader'
 import type { HourAssembler } from './types'
 import { buildOpeningVersicle, resolveShortReading, resolveGospelCanticle, attachSectionDirectives } from './shared'
+import { shouldUseAlternateConcludingPrayer, buildConcludingPrayerFields } from './concluding-prayer'
 
 /**
  * Pick a season-appropriate Marian antiphon index from the compline
@@ -239,15 +240,23 @@ export const assembleCompline: HourAssembler = (ctx) => {
   if (canticle) sections.push(canticle)
 
   // 7. Concluding Prayer
+  // F-2 (#214) — PDF rubric "Эсвэл: Ням гарагт үл тохиох Их баярын өдөр"
+  // (Or: Solemnity not on Sunday) auto-swaps primary↔alternate so the
+  // alternate prayer becomes the default on weekday Solemnities. Easter
+  // Octave keeps the primary per the parallel Sunday/Octave rubric — see
+  // `shouldUseAlternateConcludingPrayer` for the full rubric mapping.
   if (ctx.mergedPropers.concludingPrayer || ctx.mergedPropers.concludingPrayerRich) {
-    sections.push({
-      type: 'concludingPrayer',
-      text: ctx.mergedPropers.concludingPrayer ?? '',
-      page: ctx.mergedPropers.concludingPrayerPage ?? ctx.complineData?.concludingPrayer?.page,
-      alternateText: ctx.mergedPropers.alternativeConcludingPrayer ?? ctx.complineData?.concludingPrayer?.alternate,
-      textRich: ctx.mergedPropers.concludingPrayerRich,
-      alternateTextRich: ctx.mergedPropers.alternativeConcludingPrayerRich,
-    })
+    const swap = shouldUseAlternateConcludingPrayer(ctx.liturgicalDay, ctx.dayOfWeek)
+    const fields = buildConcludingPrayerFields({
+      primaryText: ctx.mergedPropers.concludingPrayer,
+      primaryRich: ctx.mergedPropers.concludingPrayerRich,
+      primaryPage: ctx.mergedPropers.concludingPrayerPage ?? ctx.complineData?.concludingPrayer?.page,
+      alternateText:
+        ctx.mergedPropers.alternativeConcludingPrayer ?? ctx.complineData?.concludingPrayer?.alternate,
+      alternateRich: ctx.mergedPropers.alternativeConcludingPrayerRich,
+      alternatePage: ctx.mergedPropers.alternativeConcludingPrayerPage,
+    }, swap)
+    sections.push({ type: 'concludingPrayer', ...fields })
   }
 
   // 8. Blessing

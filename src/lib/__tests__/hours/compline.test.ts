@@ -788,3 +788,280 @@ describe('assembleHour() — Compline responsory rich propagation (F-1 #212 L2)'
     }
   })
 })
+
+// ─── F-2 (#214) — concluding-prayer Solemnity-not-on-Sunday auto-swap ───
+//
+// PDF rubric "Эсвэл: Ням гарагт үл тохиох Их баярын өдөр" (Or: Solemnity
+// not on Sunday) flips the alternate concluding prayer into the default slot
+// for weekday-Solemnities. Sister rubric "Ням гарагуудад болон амилалтын
+// найм хоногийн үеэр" (On Sundays AND during Easter Octave) keeps the
+// primary on Octave weekdays even though romcal flags each Octave day as
+// rank=SOLEMNITY.
+import {
+  shouldUseAlternateConcludingPrayer,
+  buildConcludingPrayerFields,
+} from '../../hours/concluding-prayer'
+
+describe('shouldUseAlternateConcludingPrayer (F-2, #214)', () => {
+  // @fr FR-NEW
+  it('Sunday Compline (rank=SOLEMNITY by mappings.ts: SUNDAY → SOLEMNITY) → primary (no swap)', () => {
+    expect(
+      shouldUseAlternateConcludingPrayer(
+        { rank: 'SOLEMNITY', season: 'ORDINARY_TIME', weekOfSeason: 14 } as LiturgicalDayInfo,
+        'SUN',
+      ),
+    ).toBe(false)
+  })
+
+  // @fr FR-NEW
+  it('Weekday (rank=WEEKDAY) → primary (no swap)', () => {
+    for (const day of ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'] as DayOfWeek[]) {
+      expect(
+        shouldUseAlternateConcludingPrayer(
+          { rank: 'WEEKDAY', season: 'ORDINARY_TIME', weekOfSeason: 14 } as LiturgicalDayInfo,
+          day,
+        ),
+      ).toBe(false)
+    }
+  })
+
+  // @fr FR-NEW
+  it('Weekday Solemnity (e.g. 2026-08-15 Assumption = Friday) → swap (alternate becomes default)', () => {
+    expect(
+      shouldUseAlternateConcludingPrayer(
+        { rank: 'SOLEMNITY', season: 'ORDINARY_TIME', weekOfSeason: 20 } as LiturgicalDayInfo,
+        'FRI',
+      ),
+    ).toBe(true)
+    // Same day-of-week with FEAST/MEMORIAL rank → no swap (rubric is rank-gated).
+    expect(
+      shouldUseAlternateConcludingPrayer(
+        { rank: 'FEAST', season: 'ORDINARY_TIME', weekOfSeason: 20 } as LiturgicalDayInfo,
+        'FRI',
+      ),
+    ).toBe(false)
+    expect(
+      shouldUseAlternateConcludingPrayer(
+        { rank: 'MEMORIAL', season: 'ORDINARY_TIME', weekOfSeason: 20 } as LiturgicalDayInfo,
+        'FRI',
+      ),
+    ).toBe(false)
+  })
+
+  // @fr FR-NEW
+  it('Easter Octave weekdays (week 1 MON-SAT, rank=SOLEMNITY) → primary (no swap; sister rubric)', () => {
+    for (const day of ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'] as DayOfWeek[]) {
+      expect(
+        shouldUseAlternateConcludingPrayer(
+          { rank: 'SOLEMNITY', season: 'EASTER', weekOfSeason: 1 } as LiturgicalDayInfo,
+          day,
+        ),
+      ).toBe(false)
+    }
+  })
+
+  // @fr FR-NEW
+  it('Eastertide post-Octave weekday Solemnity (e.g. 2026-04-29 Catherine of Siena, week 4) → swap', () => {
+    expect(
+      shouldUseAlternateConcludingPrayer(
+        { rank: 'SOLEMNITY', season: 'EASTER', weekOfSeason: 4 } as LiturgicalDayInfo,
+        'WED',
+      ),
+    ).toBe(true)
+  })
+
+  // @fr FR-NEW
+  it('Easter Sunday (week 1, rank=SOLEMNITY, dayOfWeek=SUN) → primary (Sunday rubric wins)', () => {
+    expect(
+      shouldUseAlternateConcludingPrayer(
+        { rank: 'SOLEMNITY', season: 'EASTER', weekOfSeason: 1 } as LiturgicalDayInfo,
+        'SUN',
+      ),
+    ).toBe(false)
+  })
+})
+
+describe('buildConcludingPrayerFields (F-2, #214)', () => {
+  const richA = { blocks: [{ kind: 'para' as const, spans: [{ kind: 'text' as const, text: 'AAA' }] }] }
+  const richB = { blocks: [{ kind: 'para' as const, spans: [{ kind: 'text' as const, text: 'BBB' }] }] }
+
+  // @fr FR-NEW
+  it('swap=false → primary in default slot, alternate preserved', () => {
+    const fields = buildConcludingPrayerFields({
+      primaryText: 'P', primaryRich: richA, primaryPage: 100,
+      alternateText: 'A', alternateRich: richB, alternatePage: 200,
+    }, false)
+    expect(fields.text).toBe('P')
+    expect(fields.textRich).toBe(richA)
+    expect(fields.page).toBe(100)
+    expect(fields.alternateText).toBe('A')
+    expect(fields.alternateTextRich).toBe(richB)
+  })
+
+  // @fr FR-NEW
+  it('swap=true with alternate authored → alternate ↔ primary swap (text + rich + page)', () => {
+    const fields = buildConcludingPrayerFields({
+      primaryText: 'P', primaryRich: richA, primaryPage: 100,
+      alternateText: 'A', alternateRich: richB, alternatePage: 200,
+    }, true)
+    expect(fields.text).toBe('A')
+    expect(fields.textRich).toBe(richB)
+    expect(fields.page).toBe(200)
+    expect(fields.alternateText).toBe('P')
+    expect(fields.alternateTextRich).toBe(richA)
+  })
+
+  // @fr FR-NEW
+  it('swap=true but no alternate authored → graceful fallback (primary stays primary)', () => {
+    const fields = buildConcludingPrayerFields({
+      primaryText: 'P', primaryRich: richA, primaryPage: 100,
+    }, true)
+    expect(fields.text).toBe('P')
+    expect(fields.textRich).toBe(richA)
+    expect(fields.page).toBe(100)
+    expect(fields.alternateText).toBeUndefined()
+    expect(fields.alternateTextRich).toBeUndefined()
+  })
+
+  // @fr FR-NEW
+  it('swap=true alternatePage missing but primaryPage present → falls back to primary page after swap', () => {
+    const fields = buildConcludingPrayerFields({
+      primaryText: 'P', primaryPage: 100,
+      alternateText: 'A',
+    }, true)
+    expect(fields.text).toBe('A')
+    expect(fields.page).toBe(100)
+  })
+})
+
+describe('assembleCompline — F-2 concluding-prayer auto-swap (#214)', () => {
+  function ctxWithPrayers(opts: {
+    rank: import('../../types').CelebrationRank
+    season: LiturgicalSeason
+    weekOfSeason: number
+    dayOfWeek: DayOfWeek
+  }): HourContext {
+    return makeContext({
+      dayOfWeek: opts.dayOfWeek,
+      liturgicalDay: {
+        season: opts.season,
+        psalterWeek: 1,
+        rank: opts.rank,
+        weekOfSeason: opts.weekOfSeason,
+      } as LiturgicalDayInfo,
+      mergedPropers: {
+        concludingPrayer: 'PRIMARY prayer body',
+        concludingPrayerPage: 516,
+        alternativeConcludingPrayer: 'ALTERNATE prayer body',
+        alternativeConcludingPrayerPage: 516,
+      } as HourPropers,
+    })
+  }
+
+  function getConcluding(ctx: HourContext) {
+    const sections = assembleCompline(ctx)
+    const cp = sections.find((s) => s.type === 'concludingPrayer')
+    if (!cp || cp.type !== 'concludingPrayer') {
+      throw new Error('concludingPrayer section missing')
+    }
+    return cp
+  }
+
+  // @fr FR-NEW
+  it('Sunday Compline (rank=SOLEMNITY, dayOfWeek=SUN) → primary stays primary', () => {
+    const cp = getConcluding(
+      ctxWithPrayers({ rank: 'SOLEMNITY', season: 'ORDINARY_TIME', weekOfSeason: 14, dayOfWeek: 'SUN' }),
+    )
+    expect(cp.text).toBe('PRIMARY prayer body')
+    expect(cp.alternateText).toBe('ALTERNATE prayer body')
+  })
+
+  // @fr FR-NEW
+  it('Plain weekday (rank=WEEKDAY) → primary stays primary', () => {
+    const cp = getConcluding(
+      ctxWithPrayers({ rank: 'WEEKDAY', season: 'ORDINARY_TIME', weekOfSeason: 14, dayOfWeek: 'WED' }),
+    )
+    expect(cp.text).toBe('PRIMARY prayer body')
+    expect(cp.alternateText).toBe('ALTERNATE prayer body')
+  })
+
+  // @fr FR-NEW
+  it('Weekday Solemnity (Friday, e.g. 2026-08-15 Assumption) → alternate becomes default; primary moves to alternate slot', () => {
+    const cp = getConcluding(
+      ctxWithPrayers({ rank: 'SOLEMNITY', season: 'ORDINARY_TIME', weekOfSeason: 20, dayOfWeek: 'FRI' }),
+    )
+    expect(cp.text).toBe('ALTERNATE prayer body')
+    expect(cp.alternateText).toBe('PRIMARY prayer body')
+  })
+
+  // @fr FR-NEW
+  it('Easter Octave weekday (week 1 WED, rank=SOLEMNITY) → primary stays primary (sister rubric)', () => {
+    const cp = getConcluding(
+      ctxWithPrayers({ rank: 'SOLEMNITY', season: 'EASTER', weekOfSeason: 1, dayOfWeek: 'WED' }),
+    )
+    expect(cp.text).toBe('PRIMARY prayer body')
+    expect(cp.alternateText).toBe('ALTERNATE prayer body')
+  })
+
+  // @fr FR-NEW
+  it('Eastertide post-Octave weekday Solemnity (week 4 WED, rank=SOLEMNITY) → swap fires', () => {
+    const cp = getConcluding(
+      ctxWithPrayers({ rank: 'SOLEMNITY', season: 'EASTER', weekOfSeason: 4, dayOfWeek: 'WED' }),
+    )
+    expect(cp.text).toBe('ALTERNATE prayer body')
+    expect(cp.alternateText).toBe('PRIMARY prayer body')
+  })
+
+  // @fr FR-NEW
+  it('Weekday Solemnity but only primary authored (no alternate) → graceful: primary stays as default (no empty section)', () => {
+    const ctx = makeContext({
+      dayOfWeek: 'FRI',
+      liturgicalDay: {
+        season: 'ORDINARY_TIME',
+        psalterWeek: 1,
+        rank: 'SOLEMNITY',
+        weekOfSeason: 20,
+      } as LiturgicalDayInfo,
+      mergedPropers: {
+        concludingPrayer: 'ONLY primary',
+        concludingPrayerPage: 100,
+        // no alternative*
+      } as HourPropers,
+    })
+    const sections = assembleCompline(ctx)
+    const cp = sections.find((s) => s.type === 'concludingPrayer')
+    if (!cp || cp.type !== 'concludingPrayer') throw new Error('missing')
+    expect(cp.text).toBe('ONLY primary')
+    expect(cp.alternateText).toBeUndefined()
+  })
+
+  // @fr FR-NEW
+  // Compline-specific: alternate flows from complineData.concludingPrayer.alternate
+  // when mergedPropers.alternativeConcludingPrayer is unset (legacy fallback).
+  it('compline alternate fallback from complineData.concludingPrayer.alternate participates in swap', () => {
+    const dataWithAlt: ComplineData = {
+      ...mockComplineData,
+      concludingPrayer: { primary: 'C-PRIMARY', alternate: 'C-ALT', page: 516 },
+    }
+    const sections = assembleCompline(
+      makeContext({
+        dayOfWeek: 'FRI',
+        liturgicalDay: {
+          season: 'ORDINARY_TIME',
+          psalterWeek: 1,
+          rank: 'SOLEMNITY',
+          weekOfSeason: 20,
+        } as LiturgicalDayInfo,
+        mergedPropers: {
+          concludingPrayer: 'C-PRIMARY',
+          // no alternativeConcludingPrayer — complineData fallback should win
+        } as HourPropers,
+        complineData: dataWithAlt,
+      }),
+    )
+    const cp = sections.find((s) => s.type === 'concludingPrayer')
+    if (!cp || cp.type !== 'concludingPrayer') throw new Error('missing')
+    expect(cp.text).toBe('C-ALT')
+    expect(cp.alternateText).toBe('C-PRIMARY')
+  })
+})

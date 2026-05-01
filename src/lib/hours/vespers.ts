@@ -2,6 +2,7 @@ import type { HourSection } from '../types'
 import type { HourAssembler } from './types'
 import { buildOpeningVersicle, buildDismissal, resolveShortReading, resolveGospelCanticle, attachSectionDirectives } from './shared'
 import { parseIntercessions } from './intercessions'
+import { shouldUseAlternateConcludingPrayer, buildConcludingPrayerFields } from './concluding-prayer'
 
 export const assembleVespers: HourAssembler = (ctx) => {
   const sections: HourSection[] = []
@@ -69,15 +70,19 @@ export const assembleVespers: HourAssembler = (ctx) => {
   sections.push({ type: 'ourFather' })
 
   // 8. Concluding Prayer
+  // F-2 (#214) — see compline.ts for the rubric. Vespers shares the same
+  // Solemnity-not-on-Sunday auto-swap behavior; helper applies uniformly.
   if (ctx.mergedPropers.concludingPrayer || ctx.mergedPropers.concludingPrayerRich) {
-    sections.push({
-      type: 'concludingPrayer',
-      text: ctx.mergedPropers.concludingPrayer ?? '',
-      page: ctx.mergedPropers.concludingPrayerPage,
+    const swap = shouldUseAlternateConcludingPrayer(ctx.liturgicalDay, ctx.dayOfWeek)
+    const fields = buildConcludingPrayerFields({
+      primaryText: ctx.mergedPropers.concludingPrayer,
+      primaryRich: ctx.mergedPropers.concludingPrayerRich,
+      primaryPage: ctx.mergedPropers.concludingPrayerPage,
       alternateText: ctx.mergedPropers.alternativeConcludingPrayer,
-      textRich: ctx.mergedPropers.concludingPrayerRich,
-      alternateTextRich: ctx.mergedPropers.alternativeConcludingPrayerRich,
-    })
+      alternateRich: ctx.mergedPropers.alternativeConcludingPrayerRich,
+      alternatePage: ctx.mergedPropers.alternativeConcludingPrayerPage,
+    }, swap)
+    sections.push({ type: 'concludingPrayer', ...fields })
   }
 
   // 9. Dismissal
