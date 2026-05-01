@@ -143,9 +143,11 @@ flow?: 'legacy' | 'natural' | 'sentence'
 
 ## 후속 작업 큐
 
-### 1. 사용자 모바일 시각 검증 — 권고 (대기 중)
+### 1. 사용자 모바일 시각 검증 — 완료 (2026-04-30)
 
-#### 1a. FR-161 R-17 + R-18 결과 확인 (Vercel 재배포 681c30e 후)
+**검증 결과**: 1a (R-17 multi-block flatten + R-18 paragraph 분리) + 1b (Compline Marian default "Тэнгэрийн Хатан" + dropdown 작동) + 1c (시편 후렴 부활시기 정상) 모두 PASS — 사용자 모바일 단말 직접 확인.
+
+#### 1a. FR-161 R-17 + R-18 결과 확인 (Vercel 재배포 681c30e 후) — PASS
 
 - iOS Safari / Android Chrome
 - **페이지 458 시편 마침 기도문** (R-17): "ариун нэр" / "гай зовлон" 단어 사이 hard break 없음 + 기도문 전체 한 단위로 viewport-driven wrap
@@ -153,13 +155,13 @@ flow?: 'legacy' | 'natural' | 'sentence'
 - **짧은 독서** (`flow="natural"` caller): multi-block hard break 0
 - **전체 마침 기도문** (`flow="sentence"` caller): 두 문장 visible 분리 + 각 자연 wrap
 
-#### 1b. FR-easter-3 Compline Marian 결과 확인 (Vercel 재배포 c8d468d 후)
+#### 1b. FR-easter-3 Compline Marian 결과 확인 (Vercel 재배포 c8d468d 후) — PASS
 
 - 2026-04-29 / 04-30 Compline 페이지 — Marian section default 가 "Тэнгэрийн Хатан" (Regina Caeli) 인지 확인
 - 사용자가 dropdown 으로 다른 antiphon 변경 가능한지 (candidates 보존)
 - Advent / Christmas 시즌 진입 시 Alma 매치, Lent 진입 시 Ave Regina 매치 (실제 시즌 도래 시 검증)
 
-#### 1c. 시편 후렴 frontend cache 검증 (사용자 reported "시편 후렴만 ordinary" — backend 정상 확인됨)
+#### 1c. 시편 후렴 frontend cache 검증 (사용자 reported "시편 후렴만 ordinary" — backend 정상 확인됨) — PASS (사용자 해결 확인)
 
 - **Hard reload** (Ctrl+F5 / Cmd+Shift+R) — browser cache 무시 강제 fresh fetch
 - **Incognito/Private mode** 재방문
@@ -213,7 +215,7 @@ handoff-fr160 §2 의 refrain 분류 — Tobit 13:1-8, Isaiah 38:10-14/17-20 의
 
 ### 7. Compline Marian audit follow-up (FR-easter-2 §9.8 Priority C-2/C-3/C-4)
 
-- **C-2** (MEDIUM) — Lent Ave Regina 데이터 audit. `compline.json anteMarian.alternatives` 에 Ave Regina Caelorum 데이터 존재 여부 확인. Lent 시즌 도래 시 회귀 가능성 (현재 code 는 fallback 0 → Salve Regina, Lent 의 정확한 antiphon 부재 시 visible regression)
+- **C-2** (MEDIUM) — Lent Ave Regina 데이터 audit. **2026-04-30 close**: PDF (`parsed_data/full_pdf.txt`) + 프로젝트 내 모든 데이터 (compline.json / common-prayers.json / gilh.json / ordinarium.json) sweep 결과 Ave Regina Caelorum 의 몽골어 번역 부재 확인. 현재 `compline.ts` 의 LENT → fallback idx=0 (Salve Regina) 동작이 PDF SSOT 한계를 정확히 반영. zero-data-change close. 추후 외부 자료 (몽골 가톨릭 별책 prayer book glossary 등) 가 import 되면 재오픈 가능.
 - **C-3** (LOW) — gospel canticle rich gap. `resolveGospelCanticle` 시그니처 + 호출 + section 컴포넌트에 antiphonRich 추가. 현재 plain only, rich 변형 데이터 부재. 사용자 reported 회귀 아니지만 architectural gap
 - **C-4** (LOW-MEDIUM) — compline seasonal propers coverage. `propers/{advent,christmas,easter,lent,ordinary-time}.json` 에 compline 슬롯 추가 audit. Roman Rite 전통상 non-seasonal 이지만 PDF 가 시즌별 author 했는지 확인 필요
 
