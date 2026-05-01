@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-04-22T14:28:09.275Z",
+  "generated": "2026-04-29T08:35:34.233Z",
   "entries": [
     {
       "file": "src/data/loth/psalter/week-1.json",
@@ -127,15 +127,6 @@
       "locator": "days.FRI.vespers.responsory",
       "declared": 275,
       "reason": "no-fingerprint-match"
-    },
-    {
-      "file": "src/data/loth/psalter/week-2.json",
-      "kind": "shortReading",
-      "locator": "days.SAT.vespers.shortReading",
-      "declared": 172,
-      "matched": 191,
-      "delta": 19,
-      "reason": "out-of-window"
     },
     {
       "file": "src/data/loth/psalter/week-2.json",
@@ -299,28 +290,10 @@
     },
     {
       "file": "src/data/loth/psalter/week-4.json",
-      "kind": "shortReading",
-      "locator": "days.FRI.lauds.shortReading",
-      "declared": 497,
-      "matched": 494,
-      "delta": -3,
-      "reason": "out-of-window"
-    },
-    {
-      "file": "src/data/loth/psalter/week-4.json",
       "kind": "responsory",
       "locator": "days.FRI.lauds.responsory",
       "declared": 498,
       "reason": "no-fingerprint-match"
-    },
-    {
-      "file": "src/data/loth/psalter/week-4.json",
-      "kind": "shortReading",
-      "locator": "days.FRI.vespers.shortReading",
-      "declared": 504,
-      "matched": 500,
-      "delta": -4,
-      "reason": "out-of-window"
     },
     {
       "file": "src/data/loth/psalter/week-4.json",
@@ -331,29 +304,11 @@
     },
     {
       "file": "src/data/loth/psalter/week-4.json",
-      "kind": "shortReading",
-      "locator": "days.SAT.lauds.shortReading",
-      "declared": 518,
-      "matched": 509,
-      "delta": -9,
-      "reason": "out-of-window"
-    },
-    {
-      "file": "src/data/loth/psalter/week-4.json",
       "kind": "responsory",
       "locator": "days.SAT.lauds.responsory",
       "declared": 519,
       "matched": 510,
       "delta": -9,
-      "reason": "out-of-window"
-    },
-    {
-      "file": "src/data/loth/psalter/week-4.json",
-      "kind": "shortReading",
-      "locator": "days.SAT.vespers.shortReading",
-      "declared": 404,
-      "matched": 420,
-      "delta": 16,
       "reason": "out-of-window"
     },
     {

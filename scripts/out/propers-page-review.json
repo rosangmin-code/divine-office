@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-04-23T08:17:58.683Z",
+  "generated": "2026-04-29T08:35:33.996Z",
   "entries": [
     {
       "file": "src/data/loth/propers/advent.json",
@@ -107,6 +107,24 @@
       "locator": "weeks.34.SUN.vespers2.gospelCanticleAntiphonPage",
       "declared": 816,
       "matched": 818,
+      "delta": 2,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/ordinary-time.json",
+      "kind": "gospelCanticleAntiphonPage",
+      "locator": "weeks.trinitySunday.SUN.firstVespers.gospelCanticleAntiphonPage",
+      "declared": 745,
+      "matched": 747,
+      "delta": 2,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/ordinary-time.json",
+      "kind": "concludingPrayerPage",
+      "locator": "weeks.trinitySunday.SUN.firstVespers.concludingPrayerPage",
+      "declared": 745,
+      "matched": 747,
       "delta": 2,
       "reason": "out-of-window"
     }

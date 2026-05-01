@@ -1,6 +1,59 @@
 {
   "version": 1,
-  "generated": "2026-04-23T08:17:58.683Z",
+  "generated": "2026-04-29T08:35:33.996Z",
   "source": "parsed_data/full_pdf.txt",
-  "files": {}
+  "files": {
+    "src/data/loth/propers/easter.json": [
+      {
+        "kind": "gospelCanticleAntiphonPage",
+        "locator": "weeks.ascension.SUN.firstVespers.gospelCanticleAntiphonPage",
+        "from": 730,
+        "to": 731,
+        "delta": 1,
+        "targetField": null
+      },
+      {
+        "kind": "concludingPrayerPage",
+        "locator": "weeks.ascension.SUN.firstVespers.concludingPrayerPage",
+        "from": 730,
+        "to": 731,
+        "delta": 1,
+        "targetField": null
+      },
+      {
+        "kind": "concludingPrayerPage",
+        "locator": "weeks.pentecost.SUN.firstVespers.concludingPrayerPage",
+        "from": 739,
+        "to": 738,
+        "delta": -1,
+        "targetField": null
+      },
+      {
+        "kind": "alternativeConcludingPrayerPage",
+        "locator": "weeks.pentecost.SUN.firstVespers.alternativeConcludingPrayerPage",
+        "from": 739,
+        "to": 738,
+        "delta": -1,
+        "targetField": null
+      }
+    ],
+    "src/data/loth/propers/ordinary-time.json": [
+      {
+        "kind": "gospelCanticleAntiphonPage",
+        "locator": "weeks.christTheKing.SUN.firstVespers.gospelCanticleAntiphonPage",
+        "from": 816,
+        "to": 817,
+        "delta": 1,
+        "targetField": null
+      },
+      {
+        "kind": "concludingPrayerPage",
+        "locator": "weeks.christTheKing.SUN.firstVespers.concludingPrayerPage",
+        "from": 816,
+        "to": 817,
+        "delta": 1,
+        "targetField": null
+      }
+    ]
+  }
 }

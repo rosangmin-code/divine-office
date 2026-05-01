@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-04-24T14:38:39.358Z",
+  "generated": "2026-04-29T08:35:33.385Z",
   "entries": [
     {
       "file": "src/data/loth/psalter/week-1.json",
@@ -11,31 +11,98 @@
     },
     {
       "file": "src/data/loth/psalter/week-2.json",
-      "locator": "days.MON.vespers.psalms[1]",
-      "ref": "Psalm 45:11-18",
-      "declared": 204,
-      "reason": "part-II-skipped"
-    },
-    {
-      "file": "src/data/loth/psalter/week-2.json",
-      "locator": "days.TUE.vespers.psalms[1]",
-      "ref": "Psalm 49:14-21",
-      "declared": 220,
-      "reason": "part-II-skipped"
-    },
-    {
-      "file": "src/data/loth/psalter/week-2.json",
       "locator": "days.THU.vespers.psalms[1]",
-      "ref": "Psalm 72:12-20",
+      "ref": "Psalm 72:1-11",
       "declared": 256,
-      "reason": "part-II-skipped"
-    },
-    {
-      "file": "src/data/loth/psalter/week-3.json",
-      "locator": "days.THU.vespers.psalms[1]",
-      "ref": "Psalm 132:11-18",
-      "declared": 368,
-      "reason": "part-II-skipped"
+      "reason": "no-HS-in-window",
+      "diag": {
+        "headerAll": [
+          254
+        ],
+        "stanzaAll": [
+          255
+        ],
+        "antiphonAll": [
+          51,
+          63,
+          69,
+          80,
+          86,
+          96,
+          103,
+          112,
+          118,
+          128,
+          134,
+          146,
+          152,
+          162,
+          168,
+          180,
+          186,
+          198,
+          204,
+          214,
+          220,
+          231,
+          238,
+          249,
+          256,
+          267,
+          273,
+          282,
+          289,
+          299,
+          306,
+          317,
+          323,
+          333,
+          338,
+          347,
+          353,
+          363,
+          368,
+          379,
+          385,
+          394,
+          400,
+          410,
+          416,
+          428,
+          433,
+          444,
+          450,
+          460,
+          476,
+          481,
+          492,
+          498,
+          508,
+          514,
+          532,
+          580,
+          584,
+          589,
+          593,
+          668,
+          672,
+          680,
+          684,
+          690,
+          694,
+          734,
+          739,
+          742,
+          848,
+          849,
+          855
+        ],
+        "window": [
+          255,
+          256,
+          257
+        ]
+      }
     },
     {
       "file": "src/data/loth/psalter/week-3.json",
@@ -63,13 +130,6 @@
       "locator": "days.THU.vespers.psalms[1]",
       "ref": "Psalm 144:11-15",
       "declared": 483,
-      "reason": "part-II-skipped"
-    },
-    {
-      "file": "src/data/loth/psalter/week-4.json",
-      "locator": "days.FRI.vespers.psalms[1]",
-      "ref": "Psalm 145:14-21",
-      "declared": 498,
       "reason": "part-II-skipped"
     },
     {
