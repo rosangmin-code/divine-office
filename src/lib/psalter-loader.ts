@@ -150,7 +150,7 @@ export interface ComplineData {
   examenPage?: number
   blessing: { text: string; response: string; page?: number } | null
   blessingPage?: number
-  marianAntiphon: { title: string; text: string; page?: number }[]
+  marianAntiphon: { title: string; text: string; page?: number; lines?: string[] }[]
 }
 
 export function getFullComplineData(day: DayOfWeek): ComplineData {
@@ -164,11 +164,11 @@ export function getFullComplineData(day: DayOfWeek): ComplineData {
   const examen = data.examen as { text: string } | undefined
   const blessing = data.blessing as { text: string; response: string } | undefined
   const anteMarian = data.anteMarian as {
-    salveRegina: { title: string; text: string }
-    alternatives: { title: string; text: string }[]
+    salveRegina: { title: string; text: string; page?: number; lines?: string[] }
+    alternatives: { title: string; text: string; page?: number; lines?: string[] }[]
   } | undefined
 
-  const marianOptions: { title: string; text: string }[] = []
+  const marianOptions: { title: string; text: string; page?: number; lines?: string[] }[] = []
   if (anteMarian?.salveRegina) marianOptions.push(anteMarian.salveRegina)
   if (anteMarian?.alternatives) marianOptions.push(...anteMarian.alternatives)
 

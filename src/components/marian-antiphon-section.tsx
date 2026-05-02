@@ -66,7 +66,15 @@ export function MarianAntiphonSection({ section }: MarianAntiphonSectionProps) {
   const displayTitle = current?.title ?? section.title
   const displayText = current?.text ?? section.text
   const displayPage = current?.page ?? section.page
-  const displayLines = splitMarianTextOnAlleluia(displayText)
+  // F-X1c (#225) — phrase-unit lines are the authoritative source when
+  // present. They are derived from PDF p.544-545 visual line layout in
+  // `compline.json` (4 anteMarian antiphons authored phrase-by-phrase).
+  // When `lines` is absent — sanctoral propers / hypothetical future
+  // Marian variants without the phrase decomposition — fall back to the
+  // legacy `splitMarianTextOnAlleluia(text)` path which still surfaces
+  // the Eastertide Аллэлуяа line break on the plain string.
+  const displayLines: string[] = (current?.lines ?? section.lines) ??
+    splitMarianTextOnAlleluia(displayText)
 
   return (
     <section aria-label={displayTitle} className="mb-4">
@@ -78,7 +86,18 @@ export function MarianAntiphonSection({ section }: MarianAntiphonSectionProps) {
         className="mt-2 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200"
       >
         {displayLines.map((line, i) => (
-          <p key={i} data-testid="marian-antiphon-line">
+          // F-X1c (#225) — hanging indent matches the FR-161 R-13 psalm
+          // phrase pattern. `pl-6 -indent-6` reserves a 1.5rem left
+          // gutter and pushes wrap-continuation lines IN by the same
+          // amount, so the phrase start sits at the baseline and any
+          // viewport-induced wrap lines become visually distinguishable
+          // from the next phrase boundary. The first phrase of an
+          // antiphon also sits at the gutter, matching the PDF visual.
+          <p
+            key={i}
+            data-testid="marian-antiphon-line"
+            className="pl-6 -indent-6"
+          >
             {line}
           </p>
         ))}
