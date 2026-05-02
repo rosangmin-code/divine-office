@@ -283,7 +283,8 @@ export const assembleCompline: HourAssembler = (ctx) => {
       type: 'marianAntiphon',
       title: marian.title,
       text: marian.text,
-      page: (marian as { title: string; text: string; page?: number }).page,
+      page: marian.page,
+      lines: marian.lines,
       candidates: ctx.complineData.marianAntiphon,
       selectedIndex: idx,
     })

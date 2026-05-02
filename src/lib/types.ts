@@ -340,6 +340,17 @@ export interface MarianAntiphonCandidate {
   title: string
   text: string
   page?: number
+  /**
+   * F-X1c (#225) — phrase-unit decomposition derived from PDF p.544-545
+   * visual line layout. Each entry is a single phrase line as authored
+   * in the source PDF; the renderer surfaces them as separate `<p>`
+   * with hanging indent (matching the FR-161 R-13 psalm phrase pattern).
+   * Optional — when absent, the renderer falls back to
+   * `splitMarianTextOnAlleluia(text)` which handles legacy Eastertide
+   * data and (for non-Eastertide antiphons) yields a single-line
+   * pass-through.
+   */
+  lines?: string[]
 }
 
 /**
@@ -702,7 +713,7 @@ export type HourSection =
   | { type: 'dismissal'; priest: { greeting: { versicle: string; response: string }; blessing: { text: string; response: string }; dismissalVersicle: { versicle: string; response: string } }; individual: { versicle: string; response: string }; directives?: SectionOverride[] }
   | { type: 'examen'; text: string; page?: number }
   | { type: 'blessing'; text: string; response: string; page?: number }
-  | { type: 'marianAntiphon'; title: string; text: string; page?: number; candidates?: MarianAntiphonCandidate[]; selectedIndex?: number }
+  | { type: 'marianAntiphon'; title: string; text: string; page?: number; candidates?: MarianAntiphonCandidate[]; selectedIndex?: number; lines?: string[] }
 
 export interface AssembledHour {
   hourType: HourType
