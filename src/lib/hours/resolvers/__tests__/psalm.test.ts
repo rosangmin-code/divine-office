@@ -12,6 +12,15 @@ vi.mock('../../loaders', () => ({
       psalmPrayer: undefined,
       psalmPrayerPage: undefined,
     },
+    // F-X2 Phase 1 (#219) anchor — Psalm 92:2-9 catalog default = 280
+    // (W2-SAT-Lauds, the first occurrence). The W4 occurrence carries
+    // its own `psalmPrayerPage: 506` on the week-4.json entry which the
+    // resolver's nullish-coalesce should prefer.
+    'Psalm 92:2-9': {
+      stanzas: [['ЭЗЭНд талархлыг өргөх нь сайн.']],
+      psalmPrayer: 'Эзэн минь, Та ичгүүрийг минь биднээс…',
+      psalmPrayerPage: 280,
+    },
   }),
 }))
 
@@ -170,5 +179,61 @@ describe('resolvePsalm — seasonal antiphon selection chain', () => {
     }
     const r2 = await resolvePsalm(bothPresent, undefined, 'EASTER', '2026-04-23', 'THU', 3)
     expect(r2.antiphon).toBe('Primary. Аллэлуяа!')
+  })
+})
+
+// @fr FR-NEW (F-X2 Phase 1) — task #219
+// Lean Option A: occurrence-specific psalmPrayerPage override on the
+// PsalmEntry (week-N.json) wins over the catalog default
+// (psalter-texts.json). Backward-compat: entries without override use
+// the catalog page unchanged.
+describe('resolvePsalm — F-X2 Phase 1 psalmPrayerPage occurrence override', () => {
+  // @fr FR-NEW (F-X2 Phase 1)
+  it('W4-SAT-Lauds Psalm 92:2-9 override picks page 506 over catalog default 280', async () => {
+    const entry: PsalmEntry = {
+      type: 'psalm',
+      ref: 'Psalm 92:2-9',
+      antiphon_key: 'w4-sat-lauds-ps1',
+      default_antiphon: '',
+      gloria_patri: true,
+      page: 505,
+      psalmPrayerPage: 506, // ← week-4.json occurrence override
+    }
+    const result = await resolvePsalm(entry, undefined)
+    expect(result.psalmPrayerPage).toBe(506)
+  })
+
+  // @fr FR-NEW (F-X2 Phase 1)
+  it('W2-SAT-Lauds Psalm 92:2-9 (no override) keeps catalog default 280 — regression guard', async () => {
+    // W2 entry has no `psalmPrayerPage` — resolver must fall back to
+    // psalter-texts.json default. Guards against accidentally
+    // promoting the W4 override to a global default.
+    const entry: PsalmEntry = {
+      type: 'psalm',
+      ref: 'Psalm 92:2-9',
+      antiphon_key: 'w2-sat-lauds-ps1',
+      default_antiphon: '',
+      gloria_patri: true,
+      page: 279,
+      // intentionally no psalmPrayerPage
+    }
+    const result = await resolvePsalm(entry, undefined)
+    expect(result.psalmPrayerPage).toBe(280)
+  })
+
+  // @fr FR-NEW (F-X2 Phase 1)
+  it('PsalmEntry without override leaves resolver using catalog default (backward-compat)', async () => {
+    // Generic backward-compat anchor — any pre-pilot PsalmEntry that
+    // does not declare psalmPrayerPage continues to surface the
+    // psalter-texts catalog page exactly as before.
+    const entry: PsalmEntry = {
+      type: 'psalm',
+      ref: 'Psalm 92:2-9',
+      antiphon_key: 'any-other-key',
+      default_antiphon: '',
+      gloria_patri: true,
+    }
+    const result = await resolvePsalm(entry, undefined)
+    expect(result.psalmPrayerPage).toBe(280)
   })
 })
