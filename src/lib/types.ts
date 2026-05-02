@@ -170,6 +170,16 @@ export interface PsalmEntry {
   title?: string                 // Psalm title (Mongolian)
   gloria_patri: boolean          // Include Glory Be
   page?: number                  // Source PDF page number
+  // F-X2 Phase 1 (#219): occurrence-specific psalmPrayer page override.
+  // Same psalm `ref` reused at multiple (week, dayKey, hour) positions in
+  // the 4-week LOTH cycle prints its prayer body on a different PDF page
+  // each time. The catalog (`psalter-texts.json.psalmPrayerPage`) stores
+  // a single default (= the first occurrence's page); when this entry-
+  // level field is set, the resolver prefers it via nullish-coalesce —
+  // letting per-occurrence pages live alongside the rest of the
+  // occurrence-bound metadata (page / antiphon_key) in week-N.json,
+  // which is already the SSOT for 4-week cycle data.
+  psalmPrayerPage?: number       // Override for catalog default (occurrence-specific)
   // PDF 의 각 시편 엔트리는 default 후렴 아래 rubric 행으로 시즌/날짜/주차별
   // variant 를 수록한다. Phase 2 (task #14) 에서 실제 PDF 텍스트를 주입하며,
   // 본 필드가 존재하면 resolver 가 이를 default_antiphon 보다 우선 선택한다

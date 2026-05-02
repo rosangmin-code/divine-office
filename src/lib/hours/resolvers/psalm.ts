@@ -71,7 +71,13 @@ export async function resolvePsalm(
       gloriaPatri: entry.gloria_patri,
       psalmPrayer: psalmText.psalmPrayer,
       psalmPrayerRich,
-      psalmPrayerPage: psalmText.psalmPrayerPage,
+      // F-X2 Phase 1 (#219): per-occurrence override wins over the
+      // catalog's single default page. Multi-occurrence psalms (e.g.
+      // Psalm 92:2-9 W2-SAT-lauds@280 vs W4-SAT-lauds@506) carry their
+      // own `psalmPrayerPage` on the week-N.json entry; nullish-coalesce
+      // falls back to the catalog default for the 80+ refs that have
+      // not been migrated yet.
+      psalmPrayerPage: entry.psalmPrayerPage ?? psalmText.psalmPrayerPage,
       page: entry.page,
     }
   }
@@ -109,7 +115,11 @@ export async function resolvePsalm(
     gloriaPatri: entry.gloria_patri,
     psalmPrayer: psalmText?.psalmPrayer,
     psalmPrayerRich: loadPsalterTextPsalmPrayerRich(entry.ref) ?? undefined,
-    psalmPrayerPage: psalmText?.psalmPrayerPage,
+    // F-X2 Phase 1 (#219): same per-occurrence override on the Bible
+    // fallback path — keeps semantics aligned across the two return
+    // sites in case a multi-occurrence psalm ever loses its catalog
+    // entry but retains its week-N.json mapping.
+    psalmPrayerPage: entry.psalmPrayerPage ?? psalmText?.psalmPrayerPage,
     page: entry.page,
     headerRich: loadPsalterHeaderRich(entry.ref) ?? undefined,
   }
