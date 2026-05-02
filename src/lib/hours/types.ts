@@ -58,6 +58,31 @@ export interface HourContext {
   dateStr: string
   dayOfWeek: DayOfWeek
   liturgicalDay: LiturgicalDayInfo
+  /**
+   * #230 F-X5 + #216 F-2c — effective liturgical identity for FR-156
+   * first-Vespers promotion paths (and the new firstVespers /
+   * firstCompline routes when they relocate the rendered identity).
+   *
+   * When a render BORROWS tomorrow's identity (eve-of-Solemnity URL
+   * `/pray/MonEve/vespers` showing Tuesday-Solemnity first vespers,
+   * or the Saturday→Sunday legacy fallback) the civil `liturgicalDay`
+   * is the eve's day (rank usually MEMORIAL or null) but the rendered
+   * propers belong to the next day. Without an explicit "effective"
+   * field, downstream rubric logic (e.g. compline F-2 primary↔alternate
+   * concluding-prayer swap, which checks `rank === 'SOLEMNITY'`)
+   * silently misses the promoted identity → #216 F-2c latent bug.
+   *
+   * For the new firstVespers / firstCompline routes (Q4=P), the URL
+   * date IS the Solemnity / Sunday, so `liturgicalDay` already
+   * carries the correct rank — we still set `effectiveLiturgicalDay`
+   * here (mirror of `liturgicalDay`) so consumers can read a single
+   * field and not branch on path.
+   *
+   * Absent (`undefined`) means the render is NOT borrowing — civil
+   * `liturgicalDay` is authoritative. Consumers SHOULD prefer
+   * `effectiveLiturgicalDay ?? liturgicalDay`.
+   */
+  effectiveLiturgicalDay?: LiturgicalDayInfo
   assembledPsalms: AssembledPsalm[]
   mergedPropers: HourPropers
   ordinarium: Ordinarium

@@ -102,4 +102,32 @@ test.describe('Homepage', () => {
       ).toBeVisible()
     }
   })
+
+  // @fr FR-NEW (#230 F-X5, Q4=P)
+  test('weekday Solemnity (Christmas Day Fri 2026-12-25) gets 5 cards including firstVespers + firstCompline', async ({ page }) => {
+    await page.goto(`/?date=${DATES.christmasDay2026}`)
+    const hourLinks = page.locator('a[href*="/pray/"]')
+    await expect(hourLinks).toHaveCount(5)
+    for (const hour of ['firstVespers', 'firstCompline', 'lauds', 'vespers', 'compline'] as const) {
+      await expect(
+        page.locator(`a[href="/pray/${DATES.christmasDay2026}/${hour}"]`),
+      ).toBeVisible()
+    }
+  })
+
+  // @fr FR-NEW (#230 F-X5, Q4=P)
+  test('weekday-eve-of-Solemnity (Christmas Eve Thu 2026-12-24) strips vespers + compline cards', async ({ page }) => {
+    await page.goto(`/?date=${DATES.christmasEve2026}`)
+    const hourLinks = page.locator('a[href*="/pray/"]')
+    await expect(hourLinks).toHaveCount(1)
+    await expect(
+      page.locator(`a[href="/pray/${DATES.christmasEve2026}/lauds"]`),
+    ).toBeVisible()
+    await expect(
+      page.locator(`a[href="/pray/${DATES.christmasEve2026}/vespers"]`),
+    ).toHaveCount(0)
+    await expect(
+      page.locator(`a[href="/pray/${DATES.christmasEve2026}/compline"]`),
+    ).toHaveCount(0)
+  })
 })

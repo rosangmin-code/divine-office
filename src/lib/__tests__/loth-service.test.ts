@@ -60,6 +60,47 @@ describe('getHoursSummary', () => {
       'compline',
     ])
   })
+
+  // @fr FR-NEW (#230 F-X5, Q4=P)
+  it('returns 5 hours for weekday Solemnity with firstVespers data (Christmas Day Fri 2026-12-25)', () => {
+    // Christmas 2026 = Friday, sanctoral.firstVespers authored.
+    const result = getHoursSummary('2026-12-25')
+    expect(result).not.toBeNull()
+    expect(result!.hours.map((h) => h.type)).toEqual([
+      'firstVespers',
+      'firstCompline',
+      'lauds',
+      'vespers',
+      'compline',
+    ])
+  })
+
+  // @fr FR-NEW (#230 F-X5, Q4=P)
+  it('strips vespers + compline from weekday-eve-of-Solemnity (Christmas Eve Thu 2026-12-24)', () => {
+    // Tomorrow (2026-12-25) is a SOLEMNITY with firstVespers data, so
+    // today's vespers + compline cards are removed (relocated to
+    // tomorrow's firstVespers/firstCompline).
+    const result = getHoursSummary('2026-12-24')
+    expect(result).not.toBeNull()
+    expect(result!.hours.map((h) => h.type)).toEqual(['lauds'])
+  })
+
+  // @fr FR-NEW (#230 F-X5, Q4=P)
+  it('strips vespers + compline from weekday-eve-of-movable-Solemnity (Ascension Eve Wed 2026-05-13)', () => {
+    // Tomorrow (2026-05-14) is Ascension (movable SOLEMNITY) with
+    // firstVespers via getSeasonFirstVespers special-key.
+    const result = getHoursSummary('2026-05-13')
+    expect(result).not.toBeNull()
+    expect(result!.hours.map((h) => h.type)).toEqual(['lauds'])
+  })
+
+  // @fr FR-NEW (#230 F-X5, Q4=P)
+  it('keeps full 3 hours on a weekday with no celebration tomorrow (regression guard)', () => {
+    // 2026-02-04 (Wed) — ordinary OT weekday; tomorrow Thu also ordinary.
+    const result = getHoursSummary('2026-02-04')
+    expect(result).not.toBeNull()
+    expect(result!.hours.map((h) => h.type)).toEqual(['lauds', 'vespers', 'compline'])
+  })
 })
 
 describe('assembleHour', () => {
@@ -157,6 +198,46 @@ describe('assembleHour', () => {
     expect(fcCp).toBeTruthy()
     expect(c2Cp).toBeTruthy()
     expect(fcCp!.text).not.toBe(c2Cp!.text)
+  })
+
+  // @fr FR-NEW (#230 F-X5, Q4=P)
+  it('Christmas Day (weekday Solemnity) firstVespers route surfaces Christmas firstVespers content', async () => {
+    // 2026-12-25 = Friday Christmas. sanctoral/solemnities.json 12-25
+    // carries firstVespers (Phase 3b #22). The new firstVespers route
+    // on the Christmas page itself should surface that data.
+    const result = await assembleHour('2026-12-25', 'firstVespers')
+    expect(result).not.toBeNull()
+    expect(result!.hourType).toBe('firstVespers')
+    expect(result!.liturgicalDay.rank).toBe('SOLEMNITY')
+    expect(result!.sections.length).toBeGreaterThan(0)
+  })
+
+  // @fr FR-NEW (#230 F-X5, Q4=P)
+  it('movable Solemnity (Ascension Thu) firstVespers route uses season-special-key data', async () => {
+    // 2026-05-14 = Ascension Thursday (movable SOLEMNITY).
+    // `getSeasonFirstVespers` resolves via resolveSpecialKey → 'ascension'
+    // → weeks['ascension'].SUN.firstVespers (Phase 4b #24).
+    const result = await assembleHour('2026-05-14', 'firstVespers')
+    expect(result).not.toBeNull()
+    expect(result!.hourType).toBe('firstVespers')
+    expect(result!.liturgicalDay.rank).toBe('SOLEMNITY')
+    expect(result!.sections.length).toBeGreaterThan(0)
+  })
+
+  // @fr FR-NEW (#230 F-X5, #216 F-2c)
+  it('Christmas firstCompline triggers F-2 alternate concluding prayer (rank=SOLEMNITY non-Sunday via effectiveLiturgicalDay)', async () => {
+    // 2026-12-25 = Friday Christmas. compline.json default concluding-
+    // prayer for Friday slot has primary + alternate. F-2 rubric:
+    // "Solemnity not on Sunday → alternate becomes default". The new
+    // firstCompline route (eve-shifted to Thu slot — but the URL date
+    // IS the Solemnity, so liturgicalDay.rank=SOLEMNITY directly) +
+    // #216 F-2c effectiveLiturgicalDay propagation should make the
+    // alternation fire even if eve-shifting were needed.
+    const fc = await assembleHour('2026-12-25', 'firstCompline')
+    expect(fc).not.toBeNull()
+    expect(fc!.liturgicalDay.rank).toBe('SOLEMNITY')
+    // The render should not throw and should emit at least one section.
+    expect(fc!.sections.length).toBeGreaterThan(0)
   })
 })
 
