@@ -182,7 +182,7 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
     expect(html).toContain('Сүнс хамт байх болтугай.')
   })
 
-  it('rich path renders stanza-block lines space-separated', () => {
+  it('rich path renders stanza-block lines with <br/> line breaks (#217 F-X1)', () => {
     const antiphonRich: PrayerText = {
       blocks: [
         {
@@ -198,8 +198,42 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
     const html = render(createElement(GospelCanticleSection, { section }))
     expect(html).toContain('Шад нэг')
     expect(html).toContain('Шад хоёр')
-    // The two stanza lines are joined by an inter-line whitespace span.
+    // F-X1 (#217): inter-stanza-line break is now `<br/>` (was inline space
+    // — flowed lines together inside the italic AntiphonBox wrapper).
+    expect(html).toMatch(/Шад нэг[\s\S]*?<br\s*\/?>[\s\S]*?Шад хоёр/)
     expect(html).toContain('data-render-mode="rich"')
+  })
+
+  it('rich path inserts <br/> between blocks (#217 F-X1)', () => {
+    // Multi-block antiphon AST (e.g. seasonal Eastertide overlay that
+    // appends a parenthetical Alleluia rubric, or sanctoral propers
+    // shipping a rubric-line + para combo) MUST render as visually
+    // distinct rows. The pre-fix renderer flowed blocks together with
+    // a single-space `<span>` separator — visible as run-on prose
+    // inside the amber-italic AntiphonBox wrapper. The fix swaps the
+    // separator for `<br/>`.
+    const antiphonRich: PrayerText = {
+      blocks: [
+        { kind: 'para', spans: [{ kind: 'text', text: 'Эхний хэсэг.' }] },
+        { kind: 'para', spans: [{ kind: 'text', text: 'Хоёр дахь хэсэг.' }] },
+        {
+          kind: 'para',
+          spans: [{ kind: 'rubric', text: '(Аллэлуяа!)' }],
+        },
+      ],
+    }
+    const section = makeSection({ antiphonRich })
+    const html = render(createElement(GospelCanticleSection, { section }))
+    expect(html).toContain('data-render-mode="rich"')
+    // Expect two `<br/>` between three rendered blocks (block separator
+    // is suppressed before the first emitted block).
+    const brCount = (html.match(/<br\s*\/?>/g) ?? []).length
+    expect(brCount).toBeGreaterThanOrEqual(2)
+    // Adjacency: block N text followed by `<br/>` followed by block N+1.
+    // Tolerant matcher — react-dom/server emits `</span><br/>` so we
+    // span any intermediate close-tags via [\s\S]*?.
+    expect(html).toMatch(/Эхний хэсэг\.[\s\S]*?<br\s*\/?>[\s\S]*?Хоёр дахь хэсэг\./)
+    expect(html).toMatch(/Хоёр дахь хэсэг\.[\s\S]*?<br\s*\/?>[\s\S]*?\(Аллэлуяа!\)/)
   })
 
   it('rich path skips divider blocks (no marker emitted)', () => {
@@ -214,9 +248,11 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
     const html = render(createElement(GospelCanticleSection, { section }))
     expect(html).toContain('Эхний хэсэг.')
     expect(html).toContain('Хоёр дахь хэсэг.')
-    // Divider should not insert any divider/aria-hidden marker — it just
-    // contributes an inter-block space (handled in renderAntiphonRich).
+    // Divider should not insert any divider/aria-hidden marker — it
+    // contributes an inter-block boundary that surfaces as the
+    // `<br/>` separator before the next emitted block (#217 F-X1).
     expect(html).not.toContain('aria-hidden')
+    expect(html).toMatch(/Эхний хэсэг\.[\s\S]*?<br\s*\/?>[\s\S]*?Хоёр дахь хэсэг\./)
   })
 
   it('renders rich path even when plain `antiphon` is empty (#207 gate fix)', () => {

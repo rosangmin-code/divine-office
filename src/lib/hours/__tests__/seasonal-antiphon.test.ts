@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { applySeasonalAntiphon, pickSeasonalVariant } from '../seasonal-antiphon'
-import type { PsalmEntry } from '../../types'
+import { applySeasonalAntiphon, applySeasonalAntiphonRich, pickSeasonalVariant } from '../seasonal-antiphon'
+import type { PrayerText, PsalmEntry } from '../../types'
 
 describe('applySeasonalAntiphon', () => {
   it('passes non-Easter seasons through unchanged', () => {
@@ -269,5 +269,132 @@ describe('pickSeasonalVariant', () => {
     expect(pickSeasonalVariant(entryAllThree, 'EASTER', '2026-04-19', 'SUN', 3)).toBe(
       'Per-Sunday win. Аллэлуяа!',
     )
+  })
+})
+
+// @fr FR-161 (F-X1 #217)
+describe('applySeasonalAntiphonRich', () => {
+  const baseRich: PrayerText = {
+    blocks: [
+      {
+        kind: 'para',
+        spans: [{ kind: 'text', text: 'Эзэн бол миний хүч.' }],
+      },
+    ],
+  }
+
+  it('passes through unchanged for non-EASTER seasons', () => {
+    expect(applySeasonalAntiphonRich(baseRich, 'ORDINARY_TIME')).toEqual(baseRich)
+    expect(applySeasonalAntiphonRich(baseRich, 'LENT')).toEqual(baseRich)
+    expect(applySeasonalAntiphonRich(baseRich, 'ADVENT')).toEqual(baseRich)
+    expect(applySeasonalAntiphonRich(baseRich, 'CHRISTMAS')).toEqual(baseRich)
+  })
+
+  it('passes through undefined input', () => {
+    expect(applySeasonalAntiphonRich(undefined, 'EASTER')).toBeUndefined()
+  })
+
+  it('passes through empty-blocks input', () => {
+    const empty: PrayerText = { blocks: [] }
+    expect(applySeasonalAntiphonRich(empty, 'EASTER')).toEqual(empty)
+  })
+
+  it('appends a rubric span "Аллэлуяа!" with leading space to the last para in EASTER', () => {
+    const out = applySeasonalAntiphonRich(baseRich, 'EASTER')
+    expect(out).toBeDefined()
+    const lastBlock = out!.blocks[0]
+    if (lastBlock.kind !== 'para') throw new Error('expected para')
+    expect(lastBlock.spans).toEqual([
+      { kind: 'text', text: 'Эзэн бол миний хүч.' },
+      { kind: 'text', text: ' ' },
+      { kind: 'rubric', text: 'Аллэлуяа!' },
+    ])
+  })
+
+  it('idempotent — already-Alleluia content (text span) is left alone', () => {
+    const already: PrayerText = {
+      blocks: [
+        {
+          kind: 'para',
+          spans: [
+            { kind: 'text', text: 'Эзэн бол миний хүч. Аллэлуяа!' },
+          ],
+        },
+      ],
+    }
+    expect(applySeasonalAntiphonRich(already, 'EASTER')).toEqual(already)
+  })
+
+  it('idempotent — already-Alleluia content (rubric span) is left alone', () => {
+    const already: PrayerText = {
+      blocks: [
+        {
+          kind: 'para',
+          spans: [
+            { kind: 'text', text: 'Эзэн бол миний хүч.' },
+            { kind: 'rubric', text: '(Аллэлуяа!)' },
+          ],
+        },
+      ],
+    }
+    expect(applySeasonalAntiphonRich(already, 'EASTER')).toEqual(already)
+  })
+
+  it('idempotent — already-Alleluia rubric-line block is left alone', () => {
+    const already: PrayerText = {
+      blocks: [
+        { kind: 'para', spans: [{ kind: 'text', text: 'body' }] },
+        { kind: 'rubric-line', text: 'Аллэлуяа.' },
+      ],
+    }
+    expect(applySeasonalAntiphonRich(already, 'EASTER')).toEqual(already)
+  })
+
+  it('appends to LAST para when multi-block (e.g. rubric-line preface + body)', () => {
+    const multi: PrayerText = {
+      blocks: [
+        { kind: 'rubric-line', text: 'Амилалтын улирал:' },
+        { kind: 'para', spans: [{ kind: 'text', text: 'first.' }] },
+        { kind: 'para', spans: [{ kind: 'text', text: 'last.' }] },
+      ],
+    }
+    const out = applySeasonalAntiphonRich(multi, 'EASTER')
+    expect(out).toBeDefined()
+    expect(out!.blocks).toHaveLength(3)
+    expect(out!.blocks[0]).toEqual({ kind: 'rubric-line', text: 'Амилалтын улирал:' })
+    expect((out!.blocks[1] as { spans: unknown }).spans).toEqual([
+      { kind: 'text', text: 'first.' },
+    ])
+    expect((out!.blocks[2] as { spans: unknown }).spans).toEqual([
+      { kind: 'text', text: 'last.' },
+      { kind: 'text', text: ' ' },
+      { kind: 'rubric', text: 'Аллэлуяа!' },
+    ])
+  })
+
+  it('returns input unchanged when no para block exists (stanza/rubric-line only)', () => {
+    const stanzaOnly: PrayerText = {
+      blocks: [
+        {
+          kind: 'stanza',
+          lines: [{ spans: [{ kind: 'text', text: 'a' }], indent: 0 }],
+        },
+      ],
+    }
+    expect(applySeasonalAntiphonRich(stanzaOnly, 'EASTER')).toEqual(stanzaOnly)
+  })
+
+  it('does not mutate the input object', () => {
+    const orig: PrayerText = {
+      blocks: [
+        {
+          kind: 'para',
+          spans: [{ kind: 'text', text: 'a.' }],
+        },
+      ],
+    }
+    const before = JSON.stringify(orig)
+    applySeasonalAntiphonRich(orig, 'EASTER')
+    expect(JSON.stringify(orig)).toBe(before)
   })
 })

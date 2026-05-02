@@ -772,6 +772,56 @@ describe('assembleHour() — Compline responsory rich propagation (F-1 #212 L2)'
     }
   })
 
+  // @fr FR-NEW (F-X1 #217)
+  // 사용자 모바일 검증 surface — Eastertide Saturday compline Nunc Dimittis
+  // antiphon must (a) carry Alleluia on the plain string path
+  // (post-`mergeComplineDefaults` re-augmentation) AND (b) carry an
+  // Alleluia rubric span in the rich AST (rich-side seasonal helper).
+  // Non-Eastertide variant follows in the next test to guard against
+  // over-augmentation.
+  it('Eastertide Saturday (2026-05-02 SAT) → Nunc Dimittis antiphon carries Alleluia on plain + rich paths', async () => {
+    const result = await assembleHour('2026-05-02', 'compline')
+    expect(result).not.toBeNull()
+    const gc = result!.sections.find((s): s is Extract<import('../../types').HourSection, { type: 'gospelCanticle' }> => s.type === 'gospelCanticle')
+    expect(gc).toBeDefined()
+    // Plain path — `mergeComplineDefaults` fills `gospelCanticleAntiphon`
+    // from compline.json (NO Alleluia in source) AFTER Layer 5; the
+    // post-merge re-augmentation must re-fire the helper so the plain
+    // string ends with Alleluia.
+    expect(gc!.antiphon).toMatch(/Аллэлуяа!\s*$/)
+    // Rich path — `applySeasonalAntiphonRich` appends a rubric span to
+    // the last para block. The renderer (`gospel-canticle-section.tsx`)
+    // surfaces this as red + upright (PDF parenthetical convention).
+    expect(gc!.antiphonRich).toBeDefined()
+    const lastBlock = gc!.antiphonRich!.blocks[gc!.antiphonRich!.blocks.length - 1]
+    expect(lastBlock.kind).toBe('para')
+    if (lastBlock.kind !== 'para') throw new Error('expected para')
+    const lastSpan = lastBlock.spans[lastBlock.spans.length - 1]
+    expect(lastSpan).toEqual({ kind: 'rubric', text: 'Аллэлуяа!' })
+    // The penultimate span is the leading-space text-span injected by
+    // `applySeasonalAntiphonRich` so the rubric does not run into the
+    // body.
+    const penult = lastBlock.spans[lastBlock.spans.length - 2]
+    expect(penult).toEqual({ kind: 'text', text: ' ' })
+  })
+
+  // @fr FR-NEW (F-X1 #217)
+  it('non-Easter Saturday compline (e.g. ORDINARY_TIME) → Nunc Dimittis antiphon does NOT carry Alleluia', async () => {
+    // 2026-08-15 falls in ORDINARY_TIME but is the Assumption Solemnity
+    // (Saturday) — pick a vanilla OT Saturday instead. 2026-08-29 is
+    // SAT in week 22 of OT (no movable feast typically).
+    const result = await assembleHour('2026-08-29', 'compline')
+    expect(result).not.toBeNull()
+    const gc = result!.sections.find((s): s is Extract<import('../../types').HourSection, { type: 'gospelCanticle' }> => s.type === 'gospelCanticle')
+    expect(gc).toBeDefined()
+    // Plain — should NOT have Alleluia appended.
+    expect(gc!.antiphon).not.toMatch(/Аллэлуяа/i)
+    // Rich — should be untouched (no rubric Alleluia span injected).
+    expect(gc!.antiphonRich).toBeDefined()
+    const allText = JSON.stringify(gc!.antiphonRich)
+    expect(allText).not.toMatch(/Аллэлуяа/i)
+  })
+
   // @fr FR-easter-NEW
   it('non-Easter season (2026-08-12 WED, ORDINARY_TIME) → rich preserved as compline-commons default (no regression)', async () => {
     const result = await assembleHour('2026-08-12', 'compline')
