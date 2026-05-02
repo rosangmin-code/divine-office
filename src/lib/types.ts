@@ -54,13 +54,29 @@ export interface ReadingText {
 
 // === LOTH-specific types ===
 
-export type HourType = 'lauds' | 'vespers' | 'compline'
+// FR-NEW (#230 F-X5) — Sunday I First Vespers / First Compline routing
+// promotion. The PDF (p.49 / p.512) labels these as
+// "1 дүгээр Оройн даатгал залбирал" and the Compline that follows
+// ("1 ДҮГЭЭР ОРОЙН ЗАЛБИРЛЫН ДАРАА. НЯМ ГАРАГУУДАД БОЛОН ИХ БАЯРУУДАД").
+// Pre-#230 these were rendered on the Saturday hour cards (Saturday vespers
+// / compline) via the Saturday→Sunday firstVespers branch in
+// `loth-service.ts`. #230 moves the rendering target to the Sunday page so
+// the URL identity matches the liturgical identity (`/pray/SUN/firstVespers`,
+// `/pray/SUN/firstCompline`).
+export type HourType =
+  | 'lauds'
+  | 'vespers'
+  | 'compline'
+  | 'firstVespers'
+  | 'firstCompline'
 export type DayOfWeek = 'SUN' | 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT'
 
 export const HOUR_NAMES_MN: Record<HourType, string> = {
   lauds: 'Өглөөний даатгал залбирал',
   vespers: 'Оройн даатгал залбирал',
   compline: 'Шөнийн даатгал залбирал',
+  firstVespers: '1 дүгээр Оройн даатгал залбирал',
+  firstCompline: '1 дүгээр Оройн залбирлын дараах Шөнийн даатгал залбирал',
 }
 
 export const DAY_NAMES_MN: Record<DayOfWeek, string> = {

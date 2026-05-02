@@ -7,7 +7,6 @@ import type {
   PsalmEntry,
   HourPropers,
   HourPsalmody,
-  HOUR_NAMES_MN,
   SanctoralEntry,
   CelebrationOption,
   FirstVespersPropers,
@@ -71,14 +70,68 @@ export async function assembleHour(
   const dayOfWeek = dateToDayOfWeek(dateStr)
   const ordinarium = loadOrdinarium()
 
+  // FR-NEW #230 (F-X5) — firstVespers / firstCompline data-lookup keying.
+  // The two new hours render on the Sunday page (URL identity) but their
+  // PDF data lives in eve-of-Sunday slots (firstVespers in Sunday's own
+  // `firstVespers` propers; firstCompline in compline.json's SAT slot
+  // which holds Sunday I Compline per existing convention). Compute the
+  // dayOfWeek to use for psalmody / propers lookups separately from the
+  // user-facing dayOfWeek.
+  //
+  //   firstVespers: data-key remains today's dayOfWeek (SUN). The
+  //     firstVespers propers are authored under
+  //     `weeks[N].SUN.firstVespers` in season-propers JSON, so SUN is
+  //     correct. Sunday-vespers psalter (week N, SUN, vespers) is the
+  //     base psalmody when the firstVespers entry omits its own
+  //     psalms[].
+  //   firstCompline: data-key shifts back one day (SUN → SAT) so
+  //     compline.json's Saturday slot (which contains Sunday I
+  //     Compline content per F-X4 #229) is fetched.
+  //
+  // `effectiveDayOfWeek` (the post-promotion key for seasonal-variant
+  // selection further below) handles a different concern (FR-156
+  // first-Vespers identity) — distinct from this lookup-key shift.
+  const isFirstVespers = hour === 'firstVespers'
+  const isFirstCompline = hour === 'firstCompline'
+  const isComplineLike = hour === 'compline' || isFirstCompline
+
+  // dayOfWeek used for compline/psalter lookups (eve-shift only for firstCompline)
+  let dataLookupDayOfWeek: DayOfWeek = dayOfWeek
+  if (isFirstCompline) {
+    const eveDate = new Date(dateStr + 'T00:00:00Z')
+    eveDate.setUTCDate(eveDate.getUTCDate() - 1)
+    const eMM = String(eveDate.getUTCMonth() + 1).padStart(2, '0')
+    const eDD = String(eveDate.getUTCDate()).padStart(2, '0')
+    const eveStr = `${eveDate.getUTCFullYear()}-${eMM}-${eDD}`
+    dataLookupDayOfWeek = dateToDayOfWeek(eveStr)
+  }
+
+  // hour key used for non-compline propers / psalter / rich-overlay lookups.
+  // firstVespers is structurally a vespers (Sunday vespers psalter as base);
+  // firstCompline is structurally a compline (compline.json fetch).
+  const dataLookupHour: HourType = isFirstVespers
+    ? 'vespers'
+    : isFirstCompline
+      ? 'compline'
+      : hour
+
   // 2. Get base psalmody from 4-week psalter
   let psalmEntries: PsalmEntry[] = []
 
-  if (hour === 'compline') {
-    psalmEntries = getComplinePsalmody(dayOfWeek)
+  if (isComplineLike) {
+    psalmEntries = getComplinePsalmody(dataLookupDayOfWeek)
   } else {
     try {
-      const basePsalmody = getPsalterPsalmody(day.psalterWeek, dayOfWeek, hour)
+      const basePsalmody = getPsalterPsalmody(
+        day.psalterWeek,
+        // firstVespers uses Sunday's vespers psalter as fallback base
+        // (existing data-key paths keep dayOfWeek=SUN; isFirstVespers is
+        // explicit for legibility — the assignment is a no-op when
+        // dayOfWeek === 'SUN' but documents intent if the function is
+        // ever reused for non-Sunday firstVespers (Q4=P expansion).
+        isFirstVespers ? 'SUN' : dayOfWeek,
+        dataLookupHour,
+      )
       psalmEntries = basePsalmody?.psalms ?? []
     } catch {
       psalmEntries = []
@@ -88,11 +141,14 @@ export async function assembleHour(
   // 3. Get season propers
   //    Saturday vespers = Sunday 1st Vespers per liturgical convention,
   //    so look up Sunday's vespers propers for concluding prayer / gospel canticle antiphon.
+  //    For firstVespers/firstCompline (FR-NEW #230) the lookup uses
+  //    `dataLookupHour` (vespers/compline respectively) since those data
+  //    files are still keyed by the canonical hour names.
   let seasonPropers = getSeasonHourPropers(
     day.season,
     day.weekOfSeason,
-    dayOfWeek,
-    hour,
+    isFirstCompline ? dataLookupDayOfWeek : dayOfWeek,
+    dataLookupHour,
     dateStr,
     day.name,
   )
@@ -203,6 +259,48 @@ export async function assembleHour(
     }
   }
 
+  // FR-NEW #230 (F-X5) — explicit firstVespers route resolution.
+  // When the URL is `/pray/SUN/firstVespers` we are looking at the
+  // Sunday's own First Vespers; the data lives in
+  // `weeks[N].SUN.firstVespers` (Phase 2 task #20) and overrides the
+  // initial Sunday-regular-vespers fetch above. Sunday's regular
+  // vespers acts as per-field backstop (the PDF's psalter First Vespers
+  // blocks reference seasonal Sunday propers verbatim — see the
+  // Saturday→Sunday branch below for the same merge pattern). NO
+  // effective-day promotion is needed because `dayOfWeek` is already
+  // SUN.
+  //
+  // For Solemnity/Feast Sundays (Q4=P expansion): a sanctoral entry
+  // carrying its own `firstVespers` (Path 1 in the FR-156 block above)
+  // takes precedence — handled by the sanctoral merge in step 4 below.
+  if (isFirstVespers) {
+    const firstVespersData = getSeasonFirstVespers(
+      day.season,
+      day.weekOfSeason,
+      dateStr,
+      day.name,
+    )
+    if (firstVespersData) {
+      // Compose: Sunday-regular (already in seasonPropers from initial
+      // fetch above) ⟩ firstVespers entry. This mirrors the
+      // Saturday→Sunday branch's `{ ...sundayRegular, ...firstVespers }`
+      // merge so per-field backstop semantics are identical.
+      seasonPropers = {
+        ...(seasonPropers ?? {}),
+        ...firstVespersData,
+      }
+      // First Vespers may carry its own psalm array (distinct from the
+      // 4-week psalter Sunday). Override so the resolver downstream
+      // resolves 1st-Vespers psalm antiphons + seasonal variants.
+      if (firstVespersData.psalms && firstVespersData.psalms.length > 0) {
+        psalmEntries = firstVespersData.psalms
+      }
+    }
+    // No firstVespers block authored → leave seasonPropers as Sunday
+    // regular vespers (already fetched above). Equivalent to the
+    // legacy Saturday→Sunday branch's "Pre-Phase-2 path" fallback.
+  }
+
   if (!seasonPropers && dayOfWeek === 'SAT' && hour === 'vespers') {
     // Next day is Sunday. FR-156: prefer the Sunday's dedicated
     // firstVespers propers when authored (Phase 2, task #20). Falls
@@ -261,10 +359,20 @@ export async function assembleHour(
       : null)
 
   // 5. Determine antiphon overrides (sanctoral > season)
-  //    For solemnities on the day itself, use vespers2 (Second Vespers) data
+  //    For solemnities on the day itself, use vespers2 (Second Vespers) data.
+  //    For firstVespers route, prefer sanctoral.firstVespers when authored;
+  //    for firstCompline route, fall back to sanctoral.compline (no
+  //    `firstCompline` field exists in SanctoralEntry per current schema).
   let hourPropers: HourPropers | undefined
   if (hour === 'vespers' && day.rank === 'SOLEMNITY' && sanctoral?.vespers2) {
     hourPropers = sanctoral.vespers2 as HourPropers
+  } else if (isFirstVespers && sanctoral?.firstVespers) {
+    hourPropers = sanctoral.firstVespers as HourPropers
+  } else if (isFirstCompline) {
+    // SanctoralEntry has no compline / firstCompline field by design —
+    // compline propers come from the ordinarium-level compline.json
+    // (per-day slot). Leave hourPropers undefined.
+    hourPropers = undefined
   } else {
     hourPropers = sanctoral?.[hour as keyof typeof sanctoral] as HourPropers | undefined
   }
@@ -275,7 +383,14 @@ export async function assembleHour(
 
   // 6. Check if sanctoral replaces psalter entirely
   if (sanctoral?.replacesPsalter && sanctoral.properPsalmody) {
-    const properPsalmody = sanctoral.properPsalmody[hour as keyof typeof sanctoral.properPsalmody] as HourPsalmody | undefined
+    const psalmodyKey: HourType = isFirstCompline
+      ? 'compline'
+      : isFirstVespers
+        ? 'vespers'
+        : hour
+    const properPsalmody = sanctoral.properPsalmody[
+      psalmodyKey as keyof typeof sanctoral.properPsalmody
+    ] as HourPsalmody | undefined
     if (properPsalmody) {
       psalmEntries = properPsalmody.psalms
     }
@@ -334,7 +449,15 @@ export async function assembleHour(
   //    come from the 4-week psalter cycle when no seasonal proper exists.
   let psalterCommons: ReturnType<typeof getPsalterCommons> = null
   try {
-    psalterCommons = getPsalterCommons(day.psalterWeek, dayOfWeek, hour)
+    // FR-NEW #230: psalter commons for firstCompline use Saturday slot
+    // (same eve-shift as the compline psalmody fetch above). For
+    // firstVespers, use Sunday slot + vespers (no shift; isFirstVespers
+    // explicit for legibility).
+    psalterCommons = getPsalterCommons(
+      day.psalterWeek,
+      isFirstCompline ? dataLookupDayOfWeek : isFirstVespers ? 'SUN' : dayOfWeek,
+      dataLookupHour,
+    )
   } catch {
     // psalter loading failed (e.g. unexpected week value); continue with season propers only
   }
@@ -373,12 +496,20 @@ export async function assembleHour(
   // (Solemnity/FEAST + Saturday→Sunday) 모두 promoteToFirstVespersIdentity
   // 로 effectiveDayOfWeek 을 다음 날(보통 SUN) 로 바꾸므로
   // `effectiveDayOfWeek !== dayOfWeek` 가 깔끔한 분기-활성 시그널.
-  const firstVespersBranchActive = effectiveDayOfWeek !== dayOfWeek
+  // FR-NEW #230: explicit firstVespers / firstCompline route also acts as
+  // a "branch active" signal even when no eve-promotion happened (so
+  // psalter commons rich shadowing is suppressed identically to the legacy
+  // Saturday→Sunday branch).
+  const firstVespersBranchActive =
+    effectiveDayOfWeek !== dayOfWeek || isFirstVespers || isFirstCompline
   const richOverlay = resolveRichOverlay({
     season: day.season,
     weekKey: String(day.weekOfSeason),
-    day: dayOfWeek,
-    hour,
+    // For firstCompline: rich overlay keyed on SAT slot (mirrors
+    // compline.json eve-shift). For firstVespers: keyed on SUN
+    // (today's dayOfWeek). For others: dayOfWeek.
+    day: isFirstCompline ? dataLookupDayOfWeek : dayOfWeek,
+    hour: dataLookupHour,
     sanctoralKey: sanctoral ? dateKey : null,
     psalterWeek: firstVespersBranchActive ? undefined : day.psalterWeek,
     celebrationName: day.name,
@@ -438,13 +569,18 @@ export async function assembleHour(
   // Octave / Eastertide PDF p.515 variants override the default
   // responsory body in the absence of explicit per-day propers.
   let complineData = null
-  if (hour === 'compline') {
-    complineData = getFullComplineData(dayOfWeek)
+  if (isComplineLike) {
+    // FR-NEW #230: firstCompline fetches the SAT-keyed compline slot
+    // (Sunday I Compline content per F-X4 #229). All other compline-
+    // defaults logic stays day-based — `dataLookupDayOfWeek` shifts only
+    // for firstCompline; `dayOfWeek` (today's civil day) stays for the
+    // rendered identity.
+    complineData = getFullComplineData(dataLookupDayOfWeek)
     mergedPropers = mergeComplineDefaults(
       mergedPropers,
       complineData,
       { season: day.season, weekOfSeason: day.weekOfSeason },
-      dayOfWeek,
+      dataLookupDayOfWeek,
     )
     // F-X1 #217 — re-augment AFTER compline defaults are merged so the
     // ordinarium-sourced `nuncDimittisAntiphon` (filled in by
@@ -464,13 +600,21 @@ export async function assembleHour(
   let hymnSelectedIndex: number | undefined
 
   if (!mergedPropers.hymn) {
-    const hymnData = getHymnForHour(day.season, day.weekOfSeason, dayOfWeek, hour)
+    // FR-NEW #230: hymn lookup uses the data-key (vespers / compline)
+    // and shifts the dayOfWeek only for firstCompline. firstVespers
+    // hymns live under SUN/vespers in season hymn data.
+    const hymnLookupDay: DayOfWeek = isFirstCompline
+      ? dataLookupDayOfWeek
+      : isFirstVespers
+        ? 'SUN'
+        : dayOfWeek
+    const hymnData = getHymnForHour(day.season, day.weekOfSeason, hymnLookupDay, dataLookupHour)
     if (hymnData) {
       mergedPropers.hymn = hymnData.text
       mergedPropers.hymnPage = hymnData.page
     }
     // Load all candidates for the hymn selection menu
-    const candidateData = getHymnCandidatesForHour(day.season, day.weekOfSeason, dayOfWeek, hour)
+    const candidateData = getHymnCandidatesForHour(day.season, day.weekOfSeason, hymnLookupDay, dataLookupHour)
     if (candidateData) {
       hymnCandidates = candidateData.candidates
       hymnSelectedIndex = candidateData.selectedIndex
@@ -504,7 +648,10 @@ export async function assembleHour(
     hymnSelectedIndex,
   }
 
-  const assembler = getAssembler(hour)
+  // FR-NEW #230: firstVespers/firstCompline reuse the vespers/compline
+  // assemblers respectively — section structure is identical, only the
+  // input data differs (handled above by dataLookup* keys).
+  const assembler = getAssembler(dataLookupHour)
   if (!assembler) return null
 
   const sections = assembler(ctx)
@@ -548,6 +695,24 @@ export async function getTodayHour(hour: HourType): Promise<AssembledHour | null
 
 /**
  * Get a summary of all hours available for a given date.
+ *
+ * FR-NEW #230 (F-X5) — per-day hour list:
+ *   - Saturday: lauds only. Vespers + Compline are NOT shown on
+ *     Saturday cards because their content is liturgically Sunday I
+ *     First Vespers / First Compline; users access those via the
+ *     Sunday page (`firstVespers`, `firstCompline` cards). The legacy
+ *     URLs `/pray/SAT/vespers` and `/pray/SAT/compline` still resolve
+ *     server-side for SW/cache backward-compat (existing first-Vespers
+ *     test suite anchors there) — they are simply removed from the
+ *     visible hour-card list.
+ *   - Sunday: firstVespers + firstCompline + lauds + vespers + compline
+ *     (5 hours, in that order; firstVespers/firstCompline render BEFORE
+ *     lauds because they belong liturgically to the Sunday's evening-
+ *     before, which precedes its morning).
+ *   - Other weekdays (Mon-Fri): lauds + vespers + compline (unchanged
+ *     from pre-#230). FR-156 weekday-eve Solemnity/Feast firstVespers
+ *     promotion (`/pray/MON/vespers` showing Tuesday-Solemnity firstVespers)
+ *     is preserved per Q4=Q decision.
  */
 export function getHoursSummary(dateStr: string): {
   date: string
@@ -557,11 +722,25 @@ export function getHoursSummary(dateStr: string): {
   const day = getLiturgicalDay(dateStr)
   if (!day) return null
 
-  const hours: { type: HourType; nameMn: string }[] = [
-    { type: 'lauds', nameMn: hourNamesMn.lauds },
-    { type: 'vespers', nameMn: hourNamesMn.vespers },
-    { type: 'compline', nameMn: hourNamesMn.compline },
-  ]
+  const dayOfWeek = dateToDayOfWeek(dateStr)
+  const hours: { type: HourType; nameMn: string }[] = []
+
+  if (dayOfWeek === 'SUN') {
+    // Sunday gains First Vespers / First Compline cards above lauds.
+    hours.push({ type: 'firstVespers', nameMn: hourNamesMn.firstVespers })
+    hours.push({ type: 'firstCompline', nameMn: hourNamesMn.firstCompline })
+    hours.push({ type: 'lauds', nameMn: hourNamesMn.lauds })
+    hours.push({ type: 'vespers', nameMn: hourNamesMn.vespers })
+    hours.push({ type: 'compline', nameMn: hourNamesMn.compline })
+  } else if (dayOfWeek === 'SAT') {
+    // Saturday loses Vespers + Compline cards (they moved to Sunday's
+    // firstVespers / firstCompline). Lauds remains.
+    hours.push({ type: 'lauds', nameMn: hourNamesMn.lauds })
+  } else {
+    hours.push({ type: 'lauds', nameMn: hourNamesMn.lauds })
+    hours.push({ type: 'vespers', nameMn: hourNamesMn.vespers })
+    hours.push({ type: 'compline', nameMn: hourNamesMn.compline })
+  }
 
   return { date: dateStr, liturgicalDay: day, hours }
 }

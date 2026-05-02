@@ -14,7 +14,12 @@ vi.mock('../bible-loader', () => ({
 }))
 
 describe('getHoursSummary', () => {
-  it('returns 3 active hours for a valid date', () => {
+  // FR-NEW #230 (F-X5): per-day hour list. Mon-Fri unchanged (3 hours);
+  // Saturday only has lauds (vespers/compline moved to Sunday's
+  // firstVespers/firstCompline cards); Sunday has 5 hours
+  // (firstVespers, firstCompline, lauds, vespers, compline).
+  it('returns 3 active hours for a weekday Monday (Mon-Fri unchanged)', () => {
+    // 2026-06-15 = Monday
     const result = getHoursSummary('2026-06-15')
     expect(result).not.toBeNull()
     expect(result!.hours).toHaveLength(3)
@@ -32,10 +37,28 @@ describe('getHoursSummary', () => {
     expect(getHoursSummary('invalid')).toBeNull()
   })
 
-  it('returns data for any valid date (romcal generates dynamically)', () => {
+  // @fr FR-NEW (#230 F-X5)
+  it('returns lauds-only for Saturday (vespers/compline removed; relocated to Sunday)', () => {
+    // 2030-06-15 = Saturday
     const result = getHoursSummary('2030-06-15')
     expect(result).not.toBeNull()
-    expect(result!.hours).toHaveLength(3)
+    expect(result!.hours).toHaveLength(1)
+    expect(result!.hours.map((h) => h.type)).toEqual(['lauds'])
+  })
+
+  // @fr FR-NEW (#230 F-X5)
+  it('returns 5 hours for Sunday with firstVespers + firstCompline before lauds', () => {
+    // 2026-06-14 = Sunday
+    const result = getHoursSummary('2026-06-14')
+    expect(result).not.toBeNull()
+    expect(result!.hours).toHaveLength(5)
+    expect(result!.hours.map((h) => h.type)).toEqual([
+      'firstVespers',
+      'firstCompline',
+      'lauds',
+      'vespers',
+      'compline',
+    ])
   })
 })
 
@@ -77,6 +100,63 @@ describe('assembleHour', () => {
     const result = await assembleHour('2026-06-13', 'vespers')
     expect(result).not.toBeNull()
     expect(result!.hourType).toBe('vespers')
+  })
+
+  // @fr FR-NEW (#230 F-X5)
+  it('Sunday firstVespers route assembles 1st Vespers content (relocated from Saturday/vespers)', async () => {
+    // 2026-06-14 is the Sunday after 2026-06-13 (Saturday)
+    const result = await assembleHour('2026-06-14', 'firstVespers')
+    expect(result).not.toBeNull()
+    expect(result!.hourType).toBe('firstVespers')
+    expect(result!.date).toBe('2026-06-14')
+    expect(result!.liturgicalDay.season).toBe('ORDINARY_TIME')
+    expect(result!.sections.length).toBeGreaterThan(0)
+  })
+
+  // @fr FR-NEW (#230 F-X5)
+  it('Sunday firstVespers concluding prayer matches Sunday vespers (FR-011 anchor X)', async () => {
+    const fv = await assembleHour('2026-06-14', 'firstVespers')
+    const sun = await assembleHour('2026-06-14', 'vespers')
+    expect(fv).not.toBeNull()
+    expect(sun).not.toBeNull()
+    const fvCp = fv!.sections.find((s) => s.type === 'concludingPrayer') as
+      | { type: string; text: string } | undefined
+    const sunCp = sun!.sections.find((s) => s.type === 'concludingPrayer') as
+      | { type: string; text: string } | undefined
+    expect(fvCp).toBeTruthy()
+    expect(sunCp).toBeTruthy()
+    expect(fvCp!.text).toBe(sunCp!.text)
+  })
+
+  // @fr FR-NEW (#230 F-X5)
+  it('Sunday firstCompline route assembles 1st Compline content (Saturday slot, Sunday I)', async () => {
+    const result = await assembleHour('2026-06-14', 'firstCompline')
+    expect(result).not.toBeNull()
+    expect(result!.hourType).toBe('firstCompline')
+    expect(result!.date).toBe('2026-06-14')
+    // The data comes from compline.json Saturday slot (= Sunday I Compline,
+    // PDF p.512). Compline always returns at least psalmody + concluding.
+    expect(result!.sections.length).toBeGreaterThan(0)
+  })
+
+  // @fr FR-NEW (#230 F-X5)
+  it('Sunday firstCompline differs from Sunday compline by concluding prayer (Sunday I p.516 vs Sunday II p.521)', async () => {
+    // PDF p.512 (Sunday I, after 1st Vespers) vs p.517 (Sunday II, after
+    // 2nd Vespers). Both cycles share Psalm 91:1-16 — the discriminator
+    // is the concluding prayer (#229 F-X4: SAT slot p.516, SUN slot p.521).
+    const fc = await assembleHour('2026-06-14', 'firstCompline')
+    const c2 = await assembleHour('2026-06-14', 'compline')
+    expect(fc).not.toBeNull()
+    expect(c2).not.toBeNull()
+    expect(fc!.hourType).toBe('firstCompline')
+    expect(c2!.hourType).toBe('compline')
+    const fcCp = fc!.sections.find((s) => s.type === 'concludingPrayer') as
+      | { type: string; text: string } | undefined
+    const c2Cp = c2!.sections.find((s) => s.type === 'concludingPrayer') as
+      | { type: string; text: string } | undefined
+    expect(fcCp).toBeTruthy()
+    expect(c2Cp).toBeTruthy()
+    expect(fcCp!.text).not.toBe(c2Cp!.text)
   })
 })
 

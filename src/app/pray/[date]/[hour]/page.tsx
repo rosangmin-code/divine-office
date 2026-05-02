@@ -10,7 +10,7 @@ import type { HourType } from '@/lib/types'
 import { BORDER_COLOR_CLASSES, TEXT_COLOR_CLASSES } from '@/lib/liturgical-colors'
 import { formatDateMn, romanNumeral } from '@/lib/mappings'
 
-const VALID_HOURS: HourType[] = ['lauds', 'vespers', 'compline']
+const VALID_HOURS: HourType[] = ['lauds', 'vespers', 'compline', 'firstVespers', 'firstCompline']
 
 export default async function PrayPage({
   params,
