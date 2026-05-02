@@ -42,15 +42,31 @@ export function applySeasonalAntiphon(
  * F-X1 #217 — pre-fix the rich path stayed un-augmented because the helper
  * only operated on plain strings).
  *
- * Rule: append `{ kind: 'rubric', text: 'Аллэлуяа!' }` to the LAST `para`
- * block's spans during EASTER. Skipped when:
+ * Rule: append a NEW `para` block containing only
+ * `{ kind: 'rubric', text: 'Аллэлуяа!' }` at the END of `rich.blocks`
+ * during EASTER. The renderer (`gospel-canticle-section.tsx
+ * renderAntiphonRich`) emits a `<br/>` between every block, so the rubric
+ * naturally surfaces on its own line — matching the user-reported PDF
+ * layout convention where `(Аллэлуяа!)` is printed BELOW the antiphon
+ * body, not glued to its right edge.
+ *
+ * F-X1 redo (#223): pre-fix this helper appended `{kind:'text',text:' '},
+ * {kind:'rubric',text:'Аллэлуяа!'}` INLINE to the last para's spans, which
+ * the renderer concatenated into a single visual line (`body. Аллэлуяа!`).
+ * Users opening Eastertide Saturday Compline expected Аллэлуяа on a
+ * separate line; the inline shape silently regressed that expectation.
+ * The block-level append surfaces the rubric across the renderer's
+ * existing `<br/>` block separator without changing the renderer.
+ *
+ * Skipped when:
  *   - season is not EASTER
  *   - input is null/undefined (no rich AST to augment)
- *   - any existing span already ends with Аллэлуяа (idempotent — protects
- *     against double-application in test fixtures and in seasonal overlays
- *     that already author the rubric)
+ *   - any existing span/block already carries Аллэлуяа (idempotent —
+ *     protects against double-application in test fixtures and in
+ *     seasonal overlays that already author the rubric)
  *   - no `para` block exists (e.g. stanza-only or rubric-line-only AST —
- *     Eastertide rubric placement is ambiguous; defer to the data author)
+ *     Eastertide rubric placement remains ambiguous in those shapes;
+ *     defer to the data author rather than auto-augment)
  *
  * The rubric span surfaces as red + upright in `gospel-canticle-section.tsx
  * `renderAntiphonSpan`, matching the PDF parenthetical convention
@@ -100,29 +116,21 @@ export function applySeasonalAntiphonRich(
     }
   }
 
-  // Append rubric to the LAST para block. Walk backwards.
-  let lastParaIdx = -1
-  for (let i = rich.blocks.length - 1; i >= 0; i--) {
-    if (rich.blocks[i].kind === 'para') { lastParaIdx = i; break }
-  }
-  if (lastParaIdx < 0) return rich
+  // Defer when no para block exists — preserve original ambiguity guard
+  // (stanza-only / rubric-line-only AST). The block-level append below
+  // is unambiguous about placement, but absence of a body para is still
+  // a signal to defer to the data author.
+  const hasPara = rich.blocks.some((b) => b.kind === 'para')
+  if (!hasPara) return rich
 
-  const newBlocks = rich.blocks.map((b, i) => {
-    if (i !== lastParaIdx || b.kind !== 'para') return b
-    // Insert a plain space before the rubric so the prior text-span does
-    // not visually run into the rubric body. Renderer concatenates inline
-    // spans without auto-inserted whitespace, so the leading space MUST
-    // be authored explicitly.
-    return {
-      ...b,
-      spans: [
-        ...b.spans,
-        { kind: 'text' as const, text: ' ' },
-        { kind: 'rubric' as const, text: 'Аллэлуяа!' },
-      ],
-    }
-  })
-  return { ...rich, blocks: newBlocks }
+  // Block-level append — NEW para block at the end carrying only the
+  // rubric span. Renderer's inter-block `<br/>` produces the line break
+  // the user expects without renderer changes.
+  const newBlock = {
+    kind: 'para' as const,
+    spans: [{ kind: 'rubric' as const, text: 'Аллэлуяа!' }],
+  }
+  return { ...rich, blocks: [...rich.blocks, newBlock] }
 }
 
 /**

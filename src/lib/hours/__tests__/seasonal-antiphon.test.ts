@@ -299,14 +299,24 @@ describe('applySeasonalAntiphonRich', () => {
     expect(applySeasonalAntiphonRich(empty, 'EASTER')).toEqual(empty)
   })
 
-  it('appends a rubric span "Аллэлуяа!" with leading space to the last para in EASTER', () => {
+  // F-X1 redo (#223) — block-level append: a NEW para block carrying
+  // only the rubric span is appended at the END of rich.blocks. The
+  // renderer surfaces this across the inter-block `<br/>` separator,
+  // producing the line break the user reported as missing.
+  it('appends a NEW para block containing the Alleluia rubric span at the END in EASTER (#223 line-break shape)', () => {
     const out = applySeasonalAntiphonRich(baseRich, 'EASTER')
     expect(out).toBeDefined()
-    const lastBlock = out!.blocks[0]
-    if (lastBlock.kind !== 'para') throw new Error('expected para')
-    expect(lastBlock.spans).toEqual([
+    expect(out!.blocks).toHaveLength(2)
+    // Original body para — untouched (input not mutated, spans unchanged).
+    const bodyBlock = out!.blocks[0]
+    if (bodyBlock.kind !== 'para') throw new Error('expected body para')
+    expect(bodyBlock.spans).toEqual([
       { kind: 'text', text: 'Эзэн бол миний хүч.' },
-      { kind: 'text', text: ' ' },
+    ])
+    // New rubric-only para — produces a `<br/>` break before rendering.
+    const rubricBlock = out!.blocks[1]
+    if (rubricBlock.kind !== 'para') throw new Error('expected rubric-only para')
+    expect(rubricBlock.spans).toEqual([
       { kind: 'rubric', text: 'Аллэлуяа!' },
     ])
   })
@@ -350,7 +360,10 @@ describe('applySeasonalAntiphonRich', () => {
     expect(applySeasonalAntiphonRich(already, 'EASTER')).toEqual(already)
   })
 
-  it('appends to LAST para when multi-block (e.g. rubric-line preface + body)', () => {
+  // F-X1 redo (#223) — multi-block input gets the rubric appended as a
+  // new para block at the very END (not inlined into the last body para).
+  // All preceding blocks are preserved verbatim.
+  it('appends a NEW rubric-only para at the END when multi-block (rubric-line preface + body paras)', () => {
     const multi: PrayerText = {
       blocks: [
         { kind: 'rubric-line', text: 'Амилалтын улирал:' },
@@ -360,16 +373,20 @@ describe('applySeasonalAntiphonRich', () => {
     }
     const out = applySeasonalAntiphonRich(multi, 'EASTER')
     expect(out).toBeDefined()
-    expect(out!.blocks).toHaveLength(3)
+    expect(out!.blocks).toHaveLength(4)
+    // Existing 3 blocks preserved verbatim — no inline mutation.
     expect(out!.blocks[0]).toEqual({ kind: 'rubric-line', text: 'Амилалтын улирал:' })
     expect((out!.blocks[1] as { spans: unknown }).spans).toEqual([
       { kind: 'text', text: 'first.' },
     ])
     expect((out!.blocks[2] as { spans: unknown }).spans).toEqual([
       { kind: 'text', text: 'last.' },
-      { kind: 'text', text: ' ' },
-      { kind: 'rubric', text: 'Аллэлуяа!' },
     ])
+    // NEW para appended at the end — only the rubric span.
+    expect(out!.blocks[3]).toEqual({
+      kind: 'para',
+      spans: [{ kind: 'rubric', text: 'Аллэлуяа!' }],
+    })
   })
 
   it('returns input unchanged when no para block exists (stanza/rubric-line only)', () => {

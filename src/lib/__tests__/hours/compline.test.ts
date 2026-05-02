@@ -772,14 +772,17 @@ describe('assembleHour() — Compline responsory rich propagation (F-1 #212 L2)'
     }
   })
 
-  // @fr FR-NEW (F-X1 #217)
+  // @fr FR-NEW (F-X1 #217 + #223 redo)
   // 사용자 모바일 검증 surface — Eastertide Saturday compline Nunc Dimittis
   // antiphon must (a) carry Alleluia on the plain string path
-  // (post-`mergeComplineDefaults` re-augmentation) AND (b) carry an
-  // Alleluia rubric span in the rich AST (rich-side seasonal helper).
+  // (post-`mergeComplineDefaults` re-augmentation) AND (b) carry the
+  // Alleluia rubric on the rich AST as its OWN trailing para block
+  // (#223 line-break shape — the renderer surfaces a `<br/>` between
+  // blocks so Аллэлуяа falls on a new line, NOT inlined to the right
+  // edge of the body para).
   // Non-Eastertide variant follows in the next test to guard against
   // over-augmentation.
-  it('Eastertide Saturday (2026-05-02 SAT) → Nunc Dimittis antiphon carries Alleluia on plain + rich paths', async () => {
+  it('Eastertide Saturday (2026-05-02 SAT) → Nunc Dimittis carries Alleluia on plain + appends NEW rubric para on rich (#223 line-break)', async () => {
     const result = await assembleHour('2026-05-02', 'compline')
     expect(result).not.toBeNull()
     const gc = result!.sections.find((s): s is Extract<import('../../types').HourSection, { type: 'gospelCanticle' }> => s.type === 'gospelCanticle')
@@ -789,20 +792,58 @@ describe('assembleHour() — Compline responsory rich propagation (F-1 #212 L2)'
     // post-merge re-augmentation must re-fire the helper so the plain
     // string ends with Alleluia.
     expect(gc!.antiphon).toMatch(/Аллэлуяа!\s*$/)
-    // Rich path — `applySeasonalAntiphonRich` appends a rubric span to
-    // the last para block. The renderer (`gospel-canticle-section.tsx`)
-    // surfaces this as red + upright (PDF parenthetical convention).
+    // Rich path — `applySeasonalAntiphonRich` (#223 redo) appends a NEW
+    // para block carrying ONLY the rubric span. The renderer's
+    // inter-block `<br/>` produces the line break the user expected.
     expect(gc!.antiphonRich).toBeDefined()
-    const lastBlock = gc!.antiphonRich!.blocks[gc!.antiphonRich!.blocks.length - 1]
+    const blocks = gc!.antiphonRich!.blocks
+    const lastBlock = blocks[blocks.length - 1]
     expect(lastBlock.kind).toBe('para')
-    if (lastBlock.kind !== 'para') throw new Error('expected para')
-    const lastSpan = lastBlock.spans[lastBlock.spans.length - 1]
-    expect(lastSpan).toEqual({ kind: 'rubric', text: 'Аллэлуяа!' })
-    // The penultimate span is the leading-space text-span injected by
-    // `applySeasonalAntiphonRich` so the rubric does not run into the
-    // body.
-    const penult = lastBlock.spans[lastBlock.spans.length - 2]
-    expect(penult).toEqual({ kind: 'text', text: ' ' })
+    if (lastBlock.kind !== 'para') throw new Error('expected trailing para')
+    // The trailing block is rubric-only — no leading-space text span,
+    // no body text. This shape is what triggers the `<br/>` separator
+    // when the previous block was the body para.
+    expect(lastBlock.spans).toEqual([
+      { kind: 'rubric', text: 'Аллэлуяа!' },
+    ])
+    // Penultimate block (the body para) MUST NOT carry an inline
+    // Alleluia rubric — guards against the pre-redo regression where
+    // the helper inlined `[' ', '(Аллэлуяа!)']` into the body spans.
+    const penultBlock = blocks[blocks.length - 2]
+    if (penultBlock.kind === 'para') {
+      const lastBodySpan = penultBlock.spans[penultBlock.spans.length - 1]
+      if (lastBodySpan.kind === 'rubric' || lastBodySpan.kind === 'text') {
+        expect(lastBodySpan.text).not.toMatch(/Аллэлуяа/)
+      }
+    }
+  })
+
+  // @fr FR-NEW (#223 redo) — renderer-level acceptance: assembleHour →
+  // GospelCanticleSection emits a real `<br/>` between the body para
+  // and the rubric-only Alleluia para. Without this break, the user
+  // sees Аллэлуяа glued to the body's right edge (the #223 regression
+  // surface). Reads the production rich overlay (real
+  // commons/compline/SAT.rich.json) so the test catches data-shape
+  // drift in addition to helper logic.
+  it('Eastertide Saturday compline rendered antiphon HTML carries `<br/>` before Аллэлуяа (#223 line-break end-to-end)', async () => {
+    const { renderToStaticMarkup } = await import('react-dom/server')
+    const { createElement } = await import('react')
+    const { GospelCanticleSection } = await import('../../../components/prayer-sections/gospel-canticle-section')
+    const result = await assembleHour('2026-05-02', 'compline')
+    expect(result).not.toBeNull()
+    const gc = result!.sections.find((s): s is Extract<import('../../types').HourSection, { type: 'gospelCanticle' }> => s.type === 'gospelCanticle')
+    expect(gc).toBeDefined()
+    const html = renderToStaticMarkup(createElement(GospelCanticleSection, { section: gc! }))
+    // Renderer emits one `<br/>` per inter-block boundary. The
+    // Eastertide overlay typically ships a single body para; the helper
+    // appends the rubric para → at least one `<br/>` between them and
+    // the rubric on the new line.
+    expect(html).toMatch(/<br\s*\/?>[\s\S]*?Аллэлуяа!/)
+    // Rubric span styling is preserved (red + not-italic) on the
+    // Alleluia text — escaping the parent amber-italic cascade.
+    expect(html).toMatch(
+      /<span[^>]*class="[^"]*not-italic[^"]*text-red-700[^"]*"[^>]*>Аллэлуяа!<\/span>/,
+    )
   })
 
   // @fr FR-NEW (F-X1 #217) — AC #6: multi-block end-to-end via assembleCompline + renderer
