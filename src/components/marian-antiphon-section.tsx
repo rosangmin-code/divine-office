@@ -8,6 +8,54 @@ type MarianAntiphonSectionProps = {
   section: Extract<HourSection, { type: 'marianAntiphon' }>
 }
 
+/**
+ * Split a Marian antiphon plain string into per-phrase lines on the
+ * Аллэлуяа delimiter. Eastertide Marian antiphons (notably "Тэнгэрийн
+ * Хатан" / Regina Caeli on PDF p.545) author each phrase terminated by
+ * `Аллэлуяа!` — the PDF renders one phrase per line. Pre-fix, the
+ * production renderer collapsed all phrases into a single `<p>` so they
+ * flowed together into one visual line on every viewport. F-X1 redo
+ * (#223): split on the Alleluia delimiter (with its trailing ASCII
+ * punctuation) and render each segment as its own `<p>` so the PDF
+ * line-break convention surfaces in the web view.
+ *
+ * Behavior:
+ *   - Returns a single-element array (the original string) when no
+ *     Аллэлуяа token is present — Salve Regina / Alma Redemptoris /
+ *     Hail Mary etc. are single-paragraph in the source PDF and stay
+ *     single-paragraph here.
+ *   - When Аллэлуяа is present, each phrase ENDS with the Аллэлуяа
+ *     token (and its trailing punctuation) and is trimmed of leading
+ *     and trailing whitespace.
+ *   - Trailing remainder after the last Аллэлуяа token (rare in the
+ *     authored data but defensive) becomes its own final line.
+ *
+ * NFR-002 contract: text is preserved verbatim — split + trim only.
+ * No casing changes, no punctuation normalization, no whitespace
+ * collapsing inside lines.
+ */
+export function splitMarianTextOnAlleluia(text: string): string[] {
+  if (!/Аллэлуяа/.test(text)) return [text]
+  // Capture-group split so the delimiter is interleaved with body
+  // segments rather than discarded. Punctuation [!.,?] is kept attached
+  // to the delimiter token so the rendered line still carries its
+  // closing punctuation.
+  const parts = text.split(/(Аллэлуяа[!.,?]?)/)
+  const lines: string[] = []
+  let buf = ''
+  for (const part of parts) {
+    if (/^Аллэлуяа[!.,?]?$/.test(part)) {
+      lines.push((buf + part).trim())
+      buf = ''
+    } else {
+      buf += part
+    }
+  }
+  const tail = buf.trim()
+  if (tail.length > 0) lines.push(tail)
+  return lines
+}
+
 export function MarianAntiphonSection({ section }: MarianAntiphonSectionProps) {
   const listId = useId()
   const [selectedIdx, setSelectedIdx] = useState(section.selectedIndex ?? 0)
@@ -18,15 +66,23 @@ export function MarianAntiphonSection({ section }: MarianAntiphonSectionProps) {
   const displayTitle = current?.title ?? section.title
   const displayText = current?.text ?? section.text
   const displayPage = current?.page ?? section.page
+  const displayLines = splitMarianTextOnAlleluia(displayText)
 
   return (
     <section aria-label={displayTitle} className="mb-4">
       <p className="text-sm font-semibold text-red-700 dark:text-red-400">
         {displayTitle} <PageRef page={displayPage} />
       </p>
-      <p className="mt-2 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
-        {displayText}
-      </p>
+      <div
+        data-role="marian-antiphon-text"
+        className="mt-2 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200"
+      >
+        {displayLines.map((line, i) => (
+          <p key={i} data-testid="marian-antiphon-line">
+            {line}
+          </p>
+        ))}
+      </div>
 
       {candidates && candidates.length > 1 && (
         <div className="mt-3">
