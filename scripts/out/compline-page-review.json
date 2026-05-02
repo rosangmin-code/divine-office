@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-05-02T14:21:40.406Z",
+  "generated": "2026-05-02T15:00:48.621Z",
   "entries": [
     {
       "file": "src/data/loth/ordinarium/compline.json",
@@ -15,14 +15,6 @@
       "locator": "days.WED.psalms[1]",
       "declared": 533,
       "reason": "no-fingerprint-match"
-    },
-    {
-      "file": "src/data/loth/ordinarium/compline.json",
-      "locator": "days.SAT.concludingPrayer",
-      "declared": 521,
-      "matched": 516,
-      "delta": -5,
-      "reason": "out-of-window"
     },
     {
       "file": "src/data/loth/ordinarium/compline.json",
