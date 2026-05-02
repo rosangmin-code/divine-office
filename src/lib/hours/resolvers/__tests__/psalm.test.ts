@@ -21,6 +21,29 @@ vi.mock('../../loaders', () => ({
       psalmPrayer: 'Эзэн минь, Та ичгүүрийг минь биднээс…',
       psalmPrayerPage: 280,
     },
+    // F-X2 Phase 2 (#224) anchor — Psalm 51:3-19 catalog default = 144
+    // (W1-FRI-Lauds). W2/W3/W4 occurrences carry per-occurrence overrides
+    // (265/377/490) on their week-N.json entries.
+    'Psalm 51:3-19': {
+      stanzas: [['Тэнгэрбурхан минь, намайг нигүүлсээч.']],
+      psalmPrayer: 'Эцэг минь, биднийг аварч…',
+      psalmPrayerPage: 144,
+    },
+    // F-X2 Phase 2 (#224) anchor — Psalm 110:1-5, 7 catalog default = 69
+    // (W1-SUN-Vespers). W3/W4 occurrences carry overrides (305/416).
+    'Psalm 110:1-5, 7': {
+      stanzas: [['ЭЗЭН миний Эзэнд "Миний баруун гарт залрагтун" гэв.']],
+      psalmPrayer: '"Эцэг минь, амар амгалан ба ялалтыг бидэнд хайрлаж…',
+      psalmPrayerPage: 69,
+    },
+    // F-X2 Phase 2 (#224) — Bible-fallback path anchor (review I-1).
+    // `stanzas` is empty so resolvePsalm enters the Bible-fallback branch
+    // (line 109-125) where the same nullish-coalesce semantics must hold.
+    'Psalm 200:1-3': {
+      stanzas: [],
+      psalmPrayer: 'Synthetic prayer for fallback path test.',
+      psalmPrayerPage: 999, // catalog default
+    },
   }),
 }))
 
@@ -31,7 +54,13 @@ vi.mock('../../../prayers/rich-overlay', () => ({
 }))
 
 vi.mock('../../../bible-loader', () => ({
-  lookupRef: () => null,
+  // Bible-fallback path returns a single synthetic verse so allVerses.length > 0
+  // and the resolver reaches the second return site (line 109).
+  // parseScriptureRef normalizes the book name to lowercase ('Psalm' → 'psalm').
+  lookupRef: (ref: { book: string; chapter: number }) =>
+    ref.book === 'psalm' && ref.chapter === 200
+      ? { texts: [{ verse: 1, text: 'Synthetic verse for fallback test.' }] }
+      : null,
 }))
 
 import { resolvePsalm } from '../psalm'
@@ -235,5 +264,102 @@ describe('resolvePsalm — F-X2 Phase 1 psalmPrayerPage occurrence override', ()
     }
     const result = await resolvePsalm(entry, undefined)
     expect(result.psalmPrayerPage).toBe(280)
+  })
+})
+
+// @fr FR-NEW (F-X2 Phase 2) — task #224
+// Phase 2 batch lands per-occurrence `psalmPrayerPage` overrides on 12 PsalmEntry
+// across 9 multi-occurrence keys (week-{2,3,4}.json). Anchors below pin a sample
+// of the new occurrences so a future regression that drops the override or wires
+// the resolver to ignore it surfaces immediately. They also extend the Phase 1
+// review I-1 follow-up by adding a Bible-fallback-path anchor (resolver line 109).
+describe('resolvePsalm — F-X2 Phase 2 multi-occurrence overrides', () => {
+  // @fr FR-NEW (F-X2 Phase 2)
+  it('W4-FRI-Lauds Psalm 51:3-19 override picks page 490 over catalog default 144', async () => {
+    // Audit estimate was 489 (psalm body 488 +1); PDF-verified 490 (+2).
+    const entry: PsalmEntry = {
+      type: 'psalm',
+      ref: 'Psalm 51:3-19',
+      antiphon_key: 'w4-fri-lauds-ps1',
+      default_antiphon: '',
+      gloria_patri: true,
+      page: 488,
+      psalmPrayerPage: 490, // ← week-4.json occurrence override (PDF-verified)
+    }
+    const result = await resolvePsalm(entry, undefined)
+    expect(result.psalmPrayerPage).toBe(490)
+  })
+
+  // @fr FR-NEW (F-X2 Phase 2)
+  it('W3-SUN-Vespers Psalm 110:1-5, 7 override picks page 305 over catalog default 69', async () => {
+    const entry: PsalmEntry = {
+      type: 'psalm',
+      ref: 'Psalm 110:1-5, 7',
+      antiphon_key: 'w3-sun-vesp-ps1',
+      default_antiphon: '',
+      gloria_patri: true,
+      page: 304,
+      psalmPrayerPage: 305, // ← week-3.json occurrence override
+    }
+    const result = await resolvePsalm(entry, undefined)
+    expect(result.psalmPrayerPage).toBe(305)
+  })
+
+  // @fr FR-NEW (F-X2 Phase 2)
+  it('W1-SUN-Vespers Psalm 110:1-5, 7 (no override) keeps catalog default 69', async () => {
+    // The catalog ref's "first occurrence" (W1) intentionally keeps no override —
+    // both the W1 entry and the catalog default agree on 69. Guards against a
+    // future migration accidentally promoting a later-week override into W1.
+    const entry: PsalmEntry = {
+      type: 'psalm',
+      ref: 'Psalm 110:1-5, 7',
+      antiphon_key: 'w1-sun-vesp-ps1',
+      default_antiphon: '',
+      gloria_patri: true,
+      page: 68,
+      // intentionally no psalmPrayerPage
+    }
+    const result = await resolvePsalm(entry, undefined)
+    expect(result.psalmPrayerPage).toBe(69)
+  })
+
+  // @fr FR-NEW (F-X2 Phase 2) — review I-1 follow-up
+  it('Bible-fallback path also honors per-occurrence psalmPrayerPage override', async () => {
+    // When psalter-texts.json has the ref but stanzas[] is empty, resolvePsalm
+    // skips the PDF-stanza branch and falls through to the Bible-fallback
+    // return site (psalm.ts:109-125). The same nullish-coalesce on
+    // `entry.psalmPrayerPage ?? psalmText?.psalmPrayerPage` must hold there.
+    const entry: PsalmEntry = {
+      type: 'psalm',
+      ref: 'Psalm 200:1-3',
+      antiphon_key: 'fallback-anchor-key',
+      default_antiphon: '',
+      gloria_patri: true,
+      page: 9999,
+      psalmPrayerPage: 1234, // override should win
+    }
+    const result = await resolvePsalm(entry, undefined)
+    // verses[] populated from bible-loader mock → confirms fallback branch ran
+    expect(result.verses?.length).toBeGreaterThan(0)
+    expect(result.psalmPrayerPage).toBe(1234)
+  })
+
+  // @fr FR-NEW (F-X2 Phase 2) — review I-1 follow-up
+  it('Bible-fallback path without override falls back to catalog page', async () => {
+    // No `psalmPrayerPage` on the entry → resolver must surface the catalog
+    // default (999) via the fallback site too. Pairs with the previous test
+    // to confirm both branches of the ?? operator at psalm.ts:122.
+    const entry: PsalmEntry = {
+      type: 'psalm',
+      ref: 'Psalm 200:1-3',
+      antiphon_key: 'fallback-anchor-key',
+      default_antiphon: '',
+      gloria_patri: true,
+      page: 9999,
+      // intentionally no psalmPrayerPage
+    }
+    const result = await resolvePsalm(entry, undefined)
+    expect(result.verses?.length).toBeGreaterThan(0)
+    expect(result.psalmPrayerPage).toBe(999)
   })
 })
