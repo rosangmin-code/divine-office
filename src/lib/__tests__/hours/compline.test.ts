@@ -772,6 +772,128 @@ describe('assembleHour() — Compline responsory rich propagation (F-1 #212 L2)'
     }
   })
 
+  // @fr FR-NEW (F-X1 #217)
+  // 사용자 모바일 검증 surface — Eastertide Saturday compline Nunc Dimittis
+  // antiphon must (a) carry Alleluia on the plain string path
+  // (post-`mergeComplineDefaults` re-augmentation) AND (b) carry an
+  // Alleluia rubric span in the rich AST (rich-side seasonal helper).
+  // Non-Eastertide variant follows in the next test to guard against
+  // over-augmentation.
+  it('Eastertide Saturday (2026-05-02 SAT) → Nunc Dimittis antiphon carries Alleluia on plain + rich paths', async () => {
+    const result = await assembleHour('2026-05-02', 'compline')
+    expect(result).not.toBeNull()
+    const gc = result!.sections.find((s): s is Extract<import('../../types').HourSection, { type: 'gospelCanticle' }> => s.type === 'gospelCanticle')
+    expect(gc).toBeDefined()
+    // Plain path — `mergeComplineDefaults` fills `gospelCanticleAntiphon`
+    // from compline.json (NO Alleluia in source) AFTER Layer 5; the
+    // post-merge re-augmentation must re-fire the helper so the plain
+    // string ends with Alleluia.
+    expect(gc!.antiphon).toMatch(/Аллэлуяа!\s*$/)
+    // Rich path — `applySeasonalAntiphonRich` appends a rubric span to
+    // the last para block. The renderer (`gospel-canticle-section.tsx`)
+    // surfaces this as red + upright (PDF parenthetical convention).
+    expect(gc!.antiphonRich).toBeDefined()
+    const lastBlock = gc!.antiphonRich!.blocks[gc!.antiphonRich!.blocks.length - 1]
+    expect(lastBlock.kind).toBe('para')
+    if (lastBlock.kind !== 'para') throw new Error('expected para')
+    const lastSpan = lastBlock.spans[lastBlock.spans.length - 1]
+    expect(lastSpan).toEqual({ kind: 'rubric', text: 'Аллэлуяа!' })
+    // The penultimate span is the leading-space text-span injected by
+    // `applySeasonalAntiphonRich` so the rubric does not run into the
+    // body.
+    const penult = lastBlock.spans[lastBlock.spans.length - 2]
+    expect(penult).toEqual({ kind: 'text', text: ' ' })
+  })
+
+  // @fr FR-NEW (F-X1 #217) — AC #6: multi-block end-to-end via assembleCompline + renderer
+  // L2 integration — passes a synthesized multi-block AST through the
+  // compline assembler and renders the resulting section via the
+  // production `GospelCanticleSection` component (the same path the App
+  // Router page uses). Validates that:
+  //   (a) `mergedPropers.gospelCanticleAntiphonRich` propagates intact
+  //       to `canticle.antiphonRich`
+  //   (b) renderer emits a `<br/>` between each block (was inline space)
+  //   (c) amber-italic AntiphonBox cascade preserved (text-amber-800)
+  //   (d) rubric span surfaces as red + not-italic (parent `italic`
+  //       escaped) — PDF rubric convention
+  //   (e) `data-render-mode="rich"` marker untouched
+  it('multi-block antiphonRich AST → assembleCompline + renderer emit `<br/>` between blocks (L2 end-to-end, #217 AC #6)', async () => {
+    const { renderToStaticMarkup } = await import('react-dom/server')
+    const { createElement } = await import('react')
+    const { GospelCanticleSection } = await import('../../../components/prayer-sections/gospel-canticle-section')
+    const multiBlockRich = {
+      blocks: [
+        { kind: 'rubric-line' as const, text: 'Амилалтын улирал:' },
+        {
+          kind: 'para' as const,
+          spans: [{ kind: 'text' as const, text: 'Эзэн амилсан.' }],
+        },
+        {
+          kind: 'para' as const,
+          spans: [{ kind: 'rubric' as const, text: '(Аллэлуяа!)' }],
+        },
+      ],
+      page: 515,
+    }
+    const sections = assembleCompline(
+      makeContext({
+        dayOfWeek: 'SAT',
+        mergedPropers: {
+          gospelCanticleAntiphon: 'plain fallback',
+          gospelCanticleAntiphonPage: 515,
+          gospelCanticleAntiphonRich: multiBlockRich,
+        } as HourPropers,
+      }),
+    )
+    const canticle = sections.find(
+      (s): s is Extract<import('../../types').HourSection, { type: 'gospelCanticle' }> =>
+        s.type === 'gospelCanticle',
+    )
+    if (!canticle) throw new Error('gospelCanticle section missing')
+    // (a) propagation
+    expect(canticle.antiphonRich).toBeDefined()
+    expect(canticle.antiphonRich!.blocks).toHaveLength(3)
+    // Render via the production component.
+    const html = renderToStaticMarkup(
+      createElement(GospelCanticleSection, { section: canticle }),
+    )
+    // (b) `<br/>` between blocks. Three rendered blocks → at least 2 inter-block breaks.
+    const brCount = (html.match(/<br\s*\/?>/g) ?? []).length
+    expect(brCount).toBeGreaterThanOrEqual(2)
+    // Adjacency: rubric-line text → break → "Эзэн амилсан." → break → "(Аллэлуяа!)"
+    expect(html).toMatch(/Амилалтын улирал:[\s\S]*?<br\s*\/?>[\s\S]*?Эзэн амилсан\./)
+    expect(html).toMatch(/Эзэн амилсан\.[\s\S]*?<br\s*\/?>[\s\S]*?\(Аллэлуяа!\)/)
+    // (c) amber-italic cascade preserved
+    expect(html).toContain('text-amber-800')
+    expect(html).toContain('italic')
+    // (d) rubric → red + not-italic on the parenthetical span and rubric-line block
+    expect(html).toMatch(
+      /<span[^>]*class="[^"]*not-italic[^"]*text-red-700[^"]*"[^>]*>\(Аллэлуяа!\)<\/span>/,
+    )
+    expect(html).toMatch(
+      /<span[^>]*class="[^"]*not-italic[^"]*text-red-700[^"]*"[^>]*>Амилалтын улирал:<\/span>/,
+    )
+    // (e) data-render-mode marker untouched
+    expect(html).toContain('data-render-mode="rich"')
+  })
+
+  // @fr FR-NEW (F-X1 #217)
+  it('non-Easter Saturday compline (e.g. ORDINARY_TIME) → Nunc Dimittis antiphon does NOT carry Alleluia', async () => {
+    // 2026-08-15 falls in ORDINARY_TIME but is the Assumption Solemnity
+    // (Saturday) — pick a vanilla OT Saturday instead. 2026-08-29 is
+    // SAT in week 22 of OT (no movable feast typically).
+    const result = await assembleHour('2026-08-29', 'compline')
+    expect(result).not.toBeNull()
+    const gc = result!.sections.find((s): s is Extract<import('../../types').HourSection, { type: 'gospelCanticle' }> => s.type === 'gospelCanticle')
+    expect(gc).toBeDefined()
+    // Plain — should NOT have Alleluia appended.
+    expect(gc!.antiphon).not.toMatch(/Аллэлуяа/i)
+    // Rich — should be untouched (no rubric Alleluia span injected).
+    expect(gc!.antiphonRich).toBeDefined()
+    const allText = JSON.stringify(gc!.antiphonRich)
+    expect(allText).not.toMatch(/Аллэлуяа/i)
+  })
+
   // @fr FR-easter-NEW
   it('non-Easter season (2026-08-12 WED, ORDINARY_TIME) → rich preserved as compline-commons default (no regression)', async () => {
     const result = await assembleHour('2026-08-12', 'compline')

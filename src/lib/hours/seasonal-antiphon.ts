@@ -1,4 +1,4 @@
-import type { DayOfWeek, LiturgicalSeason, PsalmEntry } from '../types'
+import type { DayOfWeek, LiturgicalSeason, PrayerText, PsalmEntry } from '../types'
 
 /**
  * Apply season-specific modifications to a psalm or canticle antiphon.
@@ -33,6 +33,96 @@ export function applySeasonalAntiphon(
   // Ensure the preceding clause is closed with a period before appending.
   const closer = /[.!?]$/.test(trimmed) ? '' : '.'
   return `${trimmed}${closer} Аллэлуяа!`
+}
+
+/**
+ * Apply the Eastertide Alleluia rubric to a rich antiphon AST. Mirror of
+ * `applySeasonalAntiphon` for the rich path so seasonal augmentation does
+ * not silently skip when the renderer takes the rich branch (FR-161 wi-002 +
+ * F-X1 #217 — pre-fix the rich path stayed un-augmented because the helper
+ * only operated on plain strings).
+ *
+ * Rule: append `{ kind: 'rubric', text: 'Аллэлуяа!' }` to the LAST `para`
+ * block's spans during EASTER. Skipped when:
+ *   - season is not EASTER
+ *   - input is null/undefined (no rich AST to augment)
+ *   - any existing span already ends with Аллэлуяа (idempotent — protects
+ *     against double-application in test fixtures and in seasonal overlays
+ *     that already author the rubric)
+ *   - no `para` block exists (e.g. stanza-only or rubric-line-only AST —
+ *     Eastertide rubric placement is ambiguous; defer to the data author)
+ *
+ * The rubric span surfaces as red + upright in `gospel-canticle-section.tsx
+ * `renderAntiphonSpan`, matching the PDF parenthetical convention
+ * (`(Аллэлуяа!)` printed in red after the antiphon body).
+ */
+export function applySeasonalAntiphonRich(
+  rich: PrayerText | undefined,
+  season: LiturgicalSeason | undefined,
+): PrayerText | undefined {
+  if (!rich) return rich
+  if (season !== 'EASTER') return rich
+  if (!rich.blocks || rich.blocks.length === 0) return rich
+
+  // Idempotent guard — bail if any text/rubric span anywhere already
+  // carries Alleluia.
+  for (const block of rich.blocks) {
+    if (block.kind === 'rubric-line') {
+      if (/[Аа]ллэлуяа/.test(block.text)) return rich
+      continue
+    }
+    if (block.kind === 'para') {
+      for (const span of block.spans) {
+        const text =
+          span.kind === 'text' ||
+          span.kind === 'rubric' ||
+          span.kind === 'versicle' ||
+          span.kind === 'response'
+            ? span.text
+            : ''
+        if (/[Аа]ллэлуяа/.test(text)) return rich
+      }
+      continue
+    }
+    if (block.kind === 'stanza') {
+      for (const line of block.lines) {
+        for (const span of line.spans) {
+          const text =
+            span.kind === 'text' ||
+            span.kind === 'rubric' ||
+            span.kind === 'versicle' ||
+            span.kind === 'response'
+              ? span.text
+              : ''
+          if (/[Аа]ллэлуяа/.test(text)) return rich
+        }
+      }
+    }
+  }
+
+  // Append rubric to the LAST para block. Walk backwards.
+  let lastParaIdx = -1
+  for (let i = rich.blocks.length - 1; i >= 0; i--) {
+    if (rich.blocks[i].kind === 'para') { lastParaIdx = i; break }
+  }
+  if (lastParaIdx < 0) return rich
+
+  const newBlocks = rich.blocks.map((b, i) => {
+    if (i !== lastParaIdx || b.kind !== 'para') return b
+    // Insert a plain space before the rubric so the prior text-span does
+    // not visually run into the rubric body. Renderer concatenates inline
+    // spans without auto-inserted whitespace, so the leading space MUST
+    // be authored explicitly.
+    return {
+      ...b,
+      spans: [
+        ...b.spans,
+        { kind: 'text' as const, text: ' ' },
+        { kind: 'rubric' as const, text: 'Аллэлуяа!' },
+      ],
+    }
+  })
+  return { ...rich, blocks: newBlocks }
 }
 
 /**

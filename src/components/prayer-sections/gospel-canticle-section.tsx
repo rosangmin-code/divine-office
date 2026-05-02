@@ -68,15 +68,24 @@ function renderAntiphonRich(content: PrayerText): JSX.Element[] {
   for (let bi = 0; bi < content.blocks.length; bi++) {
     const block = content.blocks[bi]
     if (block.kind === 'divider') continue
+    // F-X1 (#217) — block boundary MUST surface as a real line break, not
+    // an inline single-space. Earlier the inter-block separator emitted
+    // `<span>{' '}</span>`, which silently flowed para/stanza/rubric-line
+    // blocks together when seasonal Eastertide overlays (or sanctoral
+    // propers) supplied multi-block antiphon AST. Single-block authoring
+    // (the common case) still renders identically — `firstEmitted` skips
+    // the leading break.
     if (!firstEmitted) {
-      out.push(<span key={`bsep-${bi}`}>{' '}</span>)
+      out.push(<br key={`bsep-${bi}`} />)
     }
     firstEmitted = false
     if (block.kind === 'para') {
       block.spans.forEach((s) => out.push(renderAntiphonSpan(s, keyCounter++)))
     } else if (block.kind === 'stanza') {
       block.lines.forEach((line, li) => {
-        if (li > 0) out.push(<span key={`lsep-${bi}-${li}`}>{' '}</span>)
+        // PDF stanza lines are visually distinct rows; inter-line break
+        // matches the PDF layout (was inline space — F-X1 #217 fix).
+        if (li > 0) out.push(<br key={`lsep-${bi}-${li}`} />)
         line.spans.forEach((s) => out.push(renderAntiphonSpan(s, keyCounter++)))
       })
     } else if (block.kind === 'rubric-line') {

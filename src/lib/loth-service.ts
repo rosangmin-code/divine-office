@@ -28,7 +28,7 @@ import {
   mergeComplineDefaults,
   promoteToFirstVespersIdentity,
 } from './hours'
-import { applySeasonalAntiphon, pickSeasonalVariant } from './hours/seasonal-antiphon'
+import { applySeasonalAntiphon, applySeasonalAntiphonRich, pickSeasonalVariant } from './hours/seasonal-antiphon'
 import { applyConditionalRubrics } from './hours/conditional-rubric-resolver'
 import { applyPageRedirects, loadOrdinariumKeyCatalog } from './hours/page-redirect-resolver'
 import { warmBibleCache } from './bible-loader'
@@ -413,11 +413,21 @@ export async function assembleHour(
   }
 
   // Layer 5: seasonal antiphon augmentation (GILH §113 — Easter Alleluia).
-  // Applied last so it affects both seasonal and psalter-commons gospel
-  // canticle antiphons uniformly.
+  // Applied to both plain and rich paths so renderer-branch parity is
+  // preserved (F-X1 #217 — pre-fix the rich path stayed un-augmented).
+  // For Compline, the plain antiphon is filled by `mergeComplineDefaults`
+  // BELOW (Layer 8b) and so Layer 5 plain augmentation is a no-op here;
+  // we re-run `applySeasonalAntiphon` after the compline-defaults merge
+  // so the Eastertide Alleluia surfaces on the plain path too.
   if (mergedPropers.gospelCanticleAntiphon) {
     mergedPropers.gospelCanticleAntiphon = applySeasonalAntiphon(
       mergedPropers.gospelCanticleAntiphon,
+      day.season,
+    )
+  }
+  if (mergedPropers.gospelCanticleAntiphonRich) {
+    mergedPropers.gospelCanticleAntiphonRich = applySeasonalAntiphonRich(
+      mergedPropers.gospelCanticleAntiphonRich,
       day.season,
     )
   }
@@ -436,6 +446,17 @@ export async function assembleHour(
       { season: day.season, weekOfSeason: day.weekOfSeason },
       dayOfWeek,
     )
+    // F-X1 #217 — re-augment AFTER compline defaults are merged so the
+    // ordinarium-sourced `nuncDimittisAntiphon` (filled in by
+    // `mergeComplineDefaults`, which runs AFTER Layer 5) also receives
+    // the Eastertide Alleluia. Idempotent: `applySeasonalAntiphon`
+    // returns its input unchanged if Alleluia is already present.
+    if (mergedPropers.gospelCanticleAntiphon) {
+      mergedPropers.gospelCanticleAntiphon = applySeasonalAntiphon(
+        mergedPropers.gospelCanticleAntiphon,
+        day.season,
+      )
+    }
   }
 
   // 8c. Fill hymn from seasonal assignments if not already set
