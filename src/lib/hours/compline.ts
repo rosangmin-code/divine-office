@@ -245,8 +245,19 @@ export const assembleCompline: HourAssembler = (ctx) => {
   // alternate prayer becomes the default on weekday Solemnities. Easter
   // Octave keeps the primary per the parallel Sunday/Octave rubric — see
   // `shouldUseAlternateConcludingPrayer` for the full rubric mapping.
+  //
+  // #216 F-2c (#230 Q4=P merger) — when FR-156 promotes a render to
+  // borrow tomorrow's identity (eve-of-Solemnity URL legacy path) OR
+  // when the new firstVespers / firstCompline routes render the
+  // Solemnity directly on its own URL (Q4=P), use the EFFECTIVE
+  // liturgical day so the rank check sees the celebration. Without
+  // this, Solemnity-eve weekday URLs render Solemnity firstCompline
+  // with the eve weekday's rank (no swap) — F-2 silently
+  // misses. `effectiveLiturgicalDay ?? liturgicalDay` falls back to
+  // civil identity when no promotion happened.
   if (ctx.mergedPropers.concludingPrayer || ctx.mergedPropers.concludingPrayerRich) {
-    const swap = shouldUseAlternateConcludingPrayer(ctx.liturgicalDay, ctx.dayOfWeek)
+    const effectiveDay = ctx.effectiveLiturgicalDay ?? ctx.liturgicalDay
+    const swap = shouldUseAlternateConcludingPrayer(effectiveDay, ctx.dayOfWeek)
     const fields = buildConcludingPrayerFields({
       primaryText: ctx.mergedPropers.concludingPrayer,
       primaryRich: ctx.mergedPropers.concludingPrayerRich,

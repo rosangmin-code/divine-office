@@ -3,7 +3,7 @@ import { assembleHour } from '@/lib/loth-service'
 import { isValidDateStr } from '@/lib/date-validation'
 import type { HourType } from '@/lib/types'
 
-const VALID_HOURS: HourType[] = ['lauds', 'vespers', 'compline']
+const VALID_HOURS: HourType[] = ['lauds', 'vespers', 'compline', 'firstVespers', 'firstCompline']
 
 export async function GET(
   request: Request,

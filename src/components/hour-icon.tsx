@@ -25,7 +25,9 @@ export function HourIcon({ hour, className = 'h-6 w-6' }: { hour: HourType; clas
         </svg>
       )
     case 'vespers':
-      // Sunset
+    case 'firstVespers':
+      // Sunset (shared with First Vespers — Sunday I 1st Vespers is also a
+      // sunset prayer; PDF distinguishes only by 1/2 numbering)
       return (
         <svg {...props}>
           <path d="M2 16h20" />
@@ -35,7 +37,8 @@ export function HourIcon({ hour, className = 'h-6 w-6' }: { hour: HourType; clas
         </svg>
       )
     case 'compline':
-      // Crescent moon with star
+    case 'firstCompline':
+      // Crescent moon with star (shared with First Compline)
       return (
         <svg {...props}>
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
