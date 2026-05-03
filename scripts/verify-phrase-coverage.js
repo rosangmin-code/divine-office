@@ -171,15 +171,41 @@ function checkStanzaPhrases(stanza) {
 }
 
 /**
- * Walk every `kind:'stanza'` block under `richData[ref].stanzasRich.blocks`
- * and yield `{ ref, blockIndex, stanza }` for blocks whose `phrases` field
- * is a non-empty array. Stanzas without phrases are skipped — phrase
- * coverage is an opt-in invariant per the additive R-2 contract.
+ * Walk every `kind:'stanza'` block whose `phrases` field is a non-empty
+ * array. Stanzas without phrases are skipped — phrase coverage is an
+ * opt-in invariant per the additive R-2 contract.
+ *
+ * Two top-level shapes are auto-detected:
+ *
+ *   - psalter shape:  `richData[ref].stanzasRich.blocks` (e.g.
+ *     `psalter-texts.rich.json` — a ref-keyed map of stanza overlays).
+ *   - hymn shape:     `richData.hymnRich.blocks` (e.g.
+ *     `prayers/hymns/{N}.rich.json` — a single-overlay file).
+ *
+ * The hymn shape was added by F-X3 Phase A (#249) so the same verifier
+ * binary can validate both psalter and hymn rich.json files via
+ * `--target`. When the input has `hymnRich.blocks`, the iterator yields
+ * just those stanza blocks and ignores `refFilter`.
  *
  * @param {Record<string, any>} richData
  * @param {string|null} refFilter
  */
 function* iterStanzasWithPhrases(richData, refFilter = null) {
+  // Hymn shape — single hymn file with a top-level `hymnRich` overlay.
+  // refFilter is a no-op here (the file contains exactly one logical
+  // entry); use the literal "hymnRich" so violation messages stay
+  // unambiguous.
+  if (Array.isArray(richData?.hymnRich?.blocks)) {
+    const blocks = richData.hymnRich.blocks
+    for (let i = 0; i < blocks.length; i++) {
+      const block = blocks[i]
+      if (!block || block.kind !== 'stanza') continue
+      if (!Array.isArray(block.phrases) || block.phrases.length === 0) continue
+      yield { ref: 'hymnRich', blockIndex: i, stanza: block }
+    }
+    return
+  }
+  // Psalter shape (default) — ref-keyed map.
   const refs = refFilter ? [refFilter] : Object.keys(richData)
   for (const ref of refs) {
     const entry = richData[ref]

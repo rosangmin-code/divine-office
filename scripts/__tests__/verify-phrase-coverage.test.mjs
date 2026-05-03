@@ -139,6 +139,43 @@ describe('verify-phrase-coverage — bounds + schema invariants', () => {
   })
 })
 
+describe('verify-phrase-coverage — hymn-shape auto-detect (#249 F-X3 pilot)', () => {
+  // Hymn rich.json has a top-level `hymnRich.blocks`, NOT a ref-keyed map.
+  // The verifier should recognise this shape and walk the single overlay's
+  // stanza blocks while leaving psalter-shape behaviour intact.
+
+  function hymnPayload(blocks) {
+    return { hymnRich: { blocks, page: 900 } }
+  }
+
+  it('walks hymnRich.blocks when the payload is a single hymn overlay', () => {
+    const data = hymnPayload([
+      richStanza(2, [{ lineRange: [0, 0] }, { lineRange: [1, 1] }]), // PASS
+      { kind: 'divider' },
+      richStanza(3, [{ lineRange: [0, 1] }]), // tail GAP at index 2
+    ])
+    const out = checkRichData(data)
+    expect(out.stanzasInspected).toBe(2)
+    const kinds = out.violations.map((v) => v.kind)
+    expect(kinds).toContain('COVERAGE')
+    // ref label should be the literal "hymnRich" so violation messages
+    // stay unambiguous in CI logs.
+    expect(out.violations[0].ref).toBe('hymnRich')
+  })
+
+  it('PASSes a clean hymn payload with full coverage', () => {
+    const data = hymnPayload([
+      richStanza(4, [
+        { lineRange: [0, 1], indent: 0 },
+        { lineRange: [2, 3], indent: 0 },
+      ]),
+    ])
+    const out = checkRichData(data)
+    expect(out.stanzasInspected).toBe(1)
+    expect(out.violations).toEqual([])
+  })
+})
+
 describe('verify-phrase-coverage — real-data smoke', () => {
   it('exits 0 (no-op) on the live psalter-texts.rich.json (currently no phrases)', () => {
     const r = spawnSync('node', [VERIFIER_PATH, '--target', RICH_TARGET], {
