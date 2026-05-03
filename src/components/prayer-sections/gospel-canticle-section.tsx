@@ -91,6 +91,15 @@ function renderAntiphonRich(content: PrayerText): JSX.Element[] {
         )
       })
     } else if (block.kind === 'rubric-line') {
+      // #247 NIT-2 (production no-op defensive guard): skip rubric-line
+      // blocks whose `text` is empty/whitespace-only. The schema does
+      // not exclude empty strings, and a malformed authoring would
+      // surface a stray empty red span below an antiphon. The
+      // `blockOut.length === 0 → continue` guard further down already
+      // catches this implicitly, but the early skip keeps the intent
+      // explicit at the rubric-line branch (parallels how `divider`
+      // is handled at line 70).
+      if (!block.text.trim()) continue
       // PDF rubric line: red + upright (NOT italic). Parent wrapper
       // is italic, so explicit `not-italic` is required to escape the
       // amber-italic AntiphonBox styling.

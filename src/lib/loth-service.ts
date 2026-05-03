@@ -775,9 +775,12 @@ export async function getTodayHour(hour: HourType): Promise<AssembledHour | null
  * (i.e. should the cards appear above Lauds)?
  *
  * Returns true for:
- *   - All Sundays (Phase 2 #20: `weeks[N].SUN.firstVespers` always present
- *     as data, even when partial — backstop merge in `assembleHour` fills
- *     the rest from regular Sunday vespers).
+ *   - All Sundays (Phase 2 #20: most `weeks[N].SUN.firstVespers` slots
+ *     are populated; the SUN branch fires unconditionally regardless,
+ *     and `assembleHour`'s backstop merge from regular Sunday vespers
+ *     fills partial slots and the few empty ones — currently
+ *     `weeks['easterSunday'].SUN` and `weeks[1].SUN` in
+ *     `propers/easter.json`).
  *   - Solemnity/Feast with a sanctoral.firstVespers entry (12 fixed-date
  *     solemnities + 4 fixed-date feasts: 02-02 Presentation, 08-06
  *     Transfiguration, 09-14 Exaltation, 11-09 Lateran Basilica).
@@ -813,8 +816,14 @@ function hasFirstVespersAndCompline(
  *
  * A date is eligible iff its OWN `hasFirstVespersAndCompline()` returns
  * true — the date itself carries firstVespers content:
- *   - any Sunday (Phase 2 #20: `weeks[N].SUN.firstVespers` always present
- *     as data, with backstop merge from regular Sunday vespers),
+ *   - any Sunday (Phase 2 #20: most `weeks[N].SUN.firstVespers` slots
+ *     are populated, with backstop merge from regular Sunday vespers
+ *     filling partial slots; Easter Octave Sundays
+ *     (`weeks['easterSunday'].SUN`, `weeks[1].SUN` of `easter.json`)
+ *     have empty firstVespers slots and rely ENTIRELY on the backstop
+ *     merge — eligibility holds because the dayOfWeek=SUN gate in
+ *     `hasFirstVespersAndCompline` short-circuits before the data
+ *     check, so the route still 200s and serves the merged content),
  *   - a fixed-date Solemnity/Feast with sanctoral `firstVespers` data
  *     (12 Solemnities + 4 Feasts of the Lord), or
  *   - a movable Solemnity resolved via `getSeasonFirstVespers`

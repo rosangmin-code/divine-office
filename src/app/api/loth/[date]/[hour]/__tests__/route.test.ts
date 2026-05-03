@@ -60,6 +60,33 @@ describe('GET /api/loth/[date]/[hour] — FU#2 firstVespers eligibility gate', (
     expect(res.status).toBe(200)
   })
 
+  // #247 NIT-4 (#244 review NIT-2 follow-up) — direct-URL 404 regression.
+  // 2022-12-24 was Saturday; user typing the Sat Dec 24 URL expecting
+  // Christmas Eve First Vespers must hit the FU#2 404 gate (the
+  // celebration's First Vespers content lives on Dec 25 itself per
+  // #230 F-X5). This guards against any future re-introduction of the
+  // pre-#242 fallback that 200'd Sat eves with Sunday vespers content.
+  it('returns 404 for firstVespers on Sat Dec 24 (Christmas eve direct URL — content lives on Dec 25 post-#230)', async () => {
+    const res = await callGet('2022-12-24', 'firstVespers')
+    expect(res.status).toBe(404)
+    const body = await res.json()
+    expect(body.error).toContain('not available')
+    // #247 NIT-3 — the 404 hint should suggest the next-day URL.
+    expect(body.hint).toContain('2022-12-25')
+  })
+
+  // #247 NIT-4 (#244 review NIT-2 follow-up) — movable Solemnity
+  // firstCompline must take the same path as fixed-date Solemnities.
+  // 2026-05-14 = Ascension (Thursday, movable Solemnity resolved via
+  // `getSeasonFirstVespers` → `weeks['ascension'].SUN.firstVespers`,
+  // path 2 in `hasFirstVespersAndCompline`). Adds positive coverage
+  // for the movable bucket that the existing Christmas case (path 1)
+  // does not exercise.
+  it('returns 200 for firstCompline on a movable Solemnity (Ascension 2026-05-14 Thu)', async () => {
+    const res = await callGet('2026-05-14', 'firstCompline')
+    expect(res.status).toBe(200)
+  })
+
   it('returns 200 for vespers on an ordinary OT weekday (regression — gate must NOT block lauds/vespers/compline)', async () => {
     const res = await callGet('2026-06-15', 'vespers')
     expect(res.status).toBe(200)
