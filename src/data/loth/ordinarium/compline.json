@@ -143,11 +143,19 @@
       "psalms": [
         {
           "type": "psalm",
-          "ref": "Psalm 91:1-16",
-          "antiphon_key": "compline-sat",
-          "default_antiphon": "Тэнгэрбурханы жигүүр дор унтаж байхдаа би шөнийн аймшгаас эс айна.",
+          "ref": "Psalm 4",
+          "antiphon_key": "compline-sat-ps1",
+          "default_antiphon": "Намайгаа өршөөн, залбирал юуг минь сонсооч.",
           "gloria_patri": true,
           "page": 512
+        },
+        {
+          "type": "psalm",
+          "ref": "Psalm 134",
+          "antiphon_key": "compline-sat-ps2",
+          "default_antiphon": "Шөнийн аниргүй цагаар Эзэнийг магтагтун.",
+          "gloria_patri": true,
+          "page": 514
         }
       ],
       "shortReading": {
