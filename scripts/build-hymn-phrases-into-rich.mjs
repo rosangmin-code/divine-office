@@ -14,12 +14,15 @@
  *   2. Lines without terminators are accumulated into the open phrase.
  *      The last line of the stanza always closes the open phrase even if
  *      no terminator fires.
- *   3. If a stanza's first line starts with `Дахилт` (`Дахилт:` /
- *      `Дахилт N:` / inline-with-content), all phrases in that stanza
- *      receive `role: 'refrain'`. The "Дахилт" first-line rubric is kept
- *      with the body lines that follow it (a lone "Дахилт:" line attaches
- *      to the next phrase rather than splitting off; an inline
- *      "Дахилт: <text>" line is the start of phrase 0).
+ *   3. If a stanza's first line opens with one of the refrain prefix
+ *      families — `Дахилт:` / `Дахилт N:` / inline `Дахилт: <text>` /
+ *      `Нийтээр: <text>` (congregational response) /
+ *      `Эсвэл: <text>` / `Эсвэл нийтээр: <text>` (alternate refrain) —
+ *      all phrases in that stanza receive `role: 'refrain'`. A first-line
+ *      rubric line is kept with the body lines that follow it (a lone
+ *      "Дахилт:" line attaches to the next phrase rather than splitting
+ *      off; an inline "Дахилт: <text>" / "Нийтээр: <text>" /
+ *      "Эсвэл: <text>" line is the start of phrase 0).
  *   4. All phrases default to `indent: 0` — hymns are flat single-column
  *      in the PDF, so wrap continuations don't need a hanging indent
  *      shift relative to the phrase start. (This is the price of method
@@ -62,11 +65,21 @@ const DEFAULT_HYMN_DIR = resolve(HERE, '..', 'src/data/loth/prayers/hymns')
 // punctuation is rare in this corpus — straight ASCII variants suffice.
 const TERMINATORS = new Set(['.', '!', '?', '…'])
 
-// "Дахилт" prefix forms we recognize as refrain markers. The Mongolian
-// transliteration is fixed by the PDF. A first-line opener like
-// "Дахилт 1: Мөнх галаас..." (inline content) and a lone "Дахилт:"
-// rubric line both qualify.
-const REFRAIN_PREFIX_RE = /^\s*Дахилт(\s*\d+)?\s*:/
+// Refrain / response prefix forms we recognize as refrain markers. The
+// Mongolian transliteration is fixed by the PDF. Three families qualify:
+//
+//   - "Дахилт:" / "Дахилт N:" / inline ("Дахилт 1: ..." or "Дахилт:Үнэн ...")
+//     — the canonical refrain rubric.
+//   - "Нийтээр:" — "all/everyone:" — congregational response, semantically
+//     equivalent to a refrain (rendered in the same italic style).
+//   - "Эсвэл:" / "Эсвэл нийтээр:" — "or:" / "or all together:" — alternate
+//     refrain wording (composite handles both lone "Эсвэл:" and the chained
+//     "Эсвэл нийтээр:" form found in hymns 114, 115).
+//
+// All three opener families propagate `role: 'refrain'` to every phrase in
+// the stanza. Lone-rubric variant (prefix on a line with NO body) is also
+// recognized via `isLoneRefrainRubric` (pattern shared below).
+const REFRAIN_PREFIX_RE = /^\s*(?:Дахилт(?:\s*\d+)?|Нийтээр|Эсвэл(?:\s+нийтээр)?)\s*:/
 
 /**
  * Concatenate every span's text in a line into a single plain string.
@@ -98,20 +111,26 @@ function closesPhrase(text) {
 }
 
 /**
- * `true` when the line is a rubric-only "Дахилт:" marker — nothing after
- * the colon. Such lines must NOT split a phrase: they attach to the
- * lines that follow (which carry the actual refrain body).
+ * `true` when the line is a rubric-only refrain marker — one of the
+ * recognized prefix families ("Дахилт:" / "Дахилт N:" / "Нийтээр:" /
+ * "Эсвэл:" / "Эсвэл нийтээр:") with nothing after the colon. Such lines
+ * must NOT split a phrase: they attach to the lines that follow (which
+ * carry the actual refrain body). Pattern is the prefix half of
+ * REFRAIN_PREFIX_RE plus a `\s*$` tail to enforce the lone-line shape.
  *
  * @param {string} text
  */
 function isLoneRefrainRubric(text) {
-  return /^\s*Дахилт(\s*\d+)?\s*:\s*$/.test(text)
+  return /^\s*(?:Дахилт(?:\s*\d+)?|Нийтээр|Эсвэл(?:\s+нийтээр)?)\s*:\s*$/.test(text)
 }
 
 /**
- * `true` when the FIRST line of a stanza opens with "Дахилт" — covers
- * both inline ("Дахилт 1: Мөнх галаас...") and rubric-only ("Дахилт:")
- * forms. Used to mark every phrase in the stanza as `role: 'refrain'`.
+ * `true` when the FIRST line of a stanza opens with a recognized refrain
+ * prefix — covers `Дахилт` (canonical refrain), `Нийтээр` (congregational
+ * response), `Эсвэл` / `Эсвэл нийтээр` (alternate refrain) — in both
+ * inline ("Дахилт 1: Мөнх галаас..." / "Нийтээр: Нялх...") and rubric-only
+ * ("Дахилт:") forms. Used to mark every phrase in the stanza as
+ * `role: 'refrain'`.
  *
  * @param {string} text
  */
