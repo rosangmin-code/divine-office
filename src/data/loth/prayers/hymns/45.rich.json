@@ -271,15 +271,6 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Магтуу"
-              }
-            ],
-            "indent": 0
-          },
-          {
-            "spans": [
-              {
-                "kind": "text",
                 "text": "Юуны тул зүдэв?"
               }
             ],
@@ -290,7 +281,7 @@
           {
             "lineRange": [
               0,
-              1
+              0
             ],
             "indent": 0
           }
@@ -731,32 +722,6 @@
             ],
             "indent": 0,
             "role": "refrain"
-          }
-        ]
-      },
-      {
-        "kind": "divider"
-      },
-      {
-        "kind": "stanza",
-        "lines": [
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Магтуу"
-              }
-            ],
-            "indent": 0
-          }
-        ],
-        "phrases": [
-          {
-            "lineRange": [
-              0,
-              0
-            ],
-            "indent": 0
           }
         ]
       },

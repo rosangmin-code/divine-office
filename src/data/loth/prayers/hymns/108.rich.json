@@ -178,32 +178,6 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Магтуу"
-              }
-            ],
-            "indent": 0
-          }
-        ],
-        "phrases": [
-          {
-            "lineRange": [
-              0,
-              0
-            ],
-            "indent": 0
-          }
-        ]
-      },
-      {
-        "kind": "divider"
-      },
-      {
-        "kind": "stanza",
-        "lines": [
-          {
-            "spans": [
-              {
-                "kind": "text",
                 "text": "3. Хэрэв хүн буруугаа засаад"
               }
             ],
