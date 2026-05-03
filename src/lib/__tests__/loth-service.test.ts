@@ -154,16 +154,16 @@ describe('getHoursSummary', () => {
   })
 
   // @fr FR-NEW (#245 F-X5 FU#5) — privileged-Sun positive guard
-  it('keeps Sun II full 5 hours on Lent Sunday whose Monday is the Annunciation (privileged-Sun guard active — class 2 Sun > class 3 Solemnity of Saint)', () => {
+  it('keeps Sun II full 5 hours on Lent Sunday whose Monday is the Annunciation (privileged-Sun guard active — class 2 Sun > class 3 Solemnity of the Lord)', () => {
     // 2030-03-24 = 3rd Sun of Lent (privileged, class 2).
-    // 2030-03-25 = Mon Annunciation of the Lord (SOLEMNITY of
-    // Saints, class 3, sanctoral.firstVespers data present).
+    // 2030-03-25 = Mon Annunciation of the Lord (SOLEMNITY of the
+    // Lord, class 3, sanctoral.firstVespers data present).
     // Per Universal Norms n. 59 (Table of Liturgical Days): class 2
-    // (Sun ADVENT/LENT/EASTER) outranks class 3 (Solemnity of
-    // Saints). Therefore Sun II Vespers WINS — Mon Annunciation
-    // I Vespers does NOT displace it. The fix MUST NOT strip.
-    // (Without `isPrivilegedSunday`, the FU#1 strip would fire
-    // because tomorrow has firstVespers.)
+    // (Sun ADVENT/LENT/EASTER) outranks class 3 (Solemnities, both
+    // of-the-Lord and of-Saints). Therefore Sun II Vespers WINS —
+    // Mon Annunciation I Vespers does NOT displace it. The fix MUST
+    // NOT strip. (Without `isPrivilegedSunday`, the FU#1 strip would
+    // fire because tomorrow has firstVespers.)
     const result = getHoursSummary('2030-03-24')
     expect(result).not.toBeNull()
     expect(result!.hours).toHaveLength(5)
@@ -388,18 +388,29 @@ describe('assembleHour', () => {
 
   // @fr FR-NEW (#230 F-X5, #216 F-2c)
   it('Christmas firstCompline triggers F-2 alternate concluding prayer (rank=SOLEMNITY non-Sunday via effectiveLiturgicalDay)', async () => {
-    // 2026-12-25 = Friday Christmas. compline.json default concluding-
-    // prayer for Friday slot has primary + alternate. F-2 rubric:
-    // "Solemnity not on Sunday → alternate becomes default". The new
-    // firstCompline route (eve-shifted to Thu slot — but the URL date
-    // IS the Solemnity, so liturgicalDay.rank=SOLEMNITY directly) +
-    // #216 F-2c effectiveLiturgicalDay propagation should make the
-    // alternation fire even if eve-shifting were needed.
+    // 2026-12-25 = Friday Christmas. compline.json SAT slot
+    // concluding-prayer has primary + alternate. F-2 rubric:
+    // "Solemnity not on Sunday → alternate becomes default". Phase B
+    // (#230 Q4=P) routes firstCompline ALWAYS to the SAT compline slot
+    // (Sunday I Compline body) regardless of civil dayOfWeek; the URL
+    // date IS the Solemnity, so liturgicalDay.rank=SOLEMNITY directly,
+    // and #216 F-2c effectiveLiturgicalDay propagation makes the
+    // primary↔alternate swap fire on the SAT slot.
     const fc = await assembleHour('2026-12-25', 'firstCompline')
     expect(fc).not.toBeNull()
     expect(fc!.liturgicalDay.rank).toBe('SOLEMNITY')
     // The render should not throw and should emit at least one section.
     expect(fc!.sections.length).toBeGreaterThan(0)
+    // Strengthened assertion (#247 NIT-1): verify the alternate
+    // concluding prayer text/page IS the one served — proves F-2 swap
+    // actually fired. Source of truth: compline.json SAT slot
+    // concludingPrayer.alternate (page 516).
+    const cp = fc!.sections.find((s) => s.type === 'concludingPrayer')
+    expect(cp).toBeDefined()
+    if (cp?.type === 'concludingPrayer') {
+      expect(cp.text).toContain('Та энэ гэрт зочлон орж')
+      expect(cp.page).toBe(516)
+    }
   })
 })
 

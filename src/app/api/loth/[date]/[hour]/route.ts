@@ -32,9 +32,21 @@ export async function GET(
     (hour === 'firstVespers' || hour === 'firstCompline') &&
     !isFirstVespersEligibleDate(date)
   ) {
+    // #247 NIT-3 — UX hint: a typical direct-URL miss (e.g. typing
+    // /api/loth/2022-12-24/firstVespers expecting Christmas Eve) lands
+    // here because the firstVespers content lives on the celebration
+    // date itself (post-#230 F-X5: Sat Dec 24 → Sun/Christmas URL).
+    // Surface the next-day URL so the caller can self-correct without
+    // having to re-derive the rubric. We deliberately do NOT redirect
+    // (`303`) — caching/SW semantics make a JSON 404+hint safer than
+    // a server-issued redirect that could pin the wrong URL.
+    const nextDate = new Date(date + 'T00:00:00Z')
+    nextDate.setUTCDate(nextDate.getUTCDate() + 1)
+    const nextStr = nextDate.toISOString().slice(0, 10)
     return NextResponse.json(
       {
         error: `${hour} is not available for ${date}: the date does not carry First Vespers content (must be a Sunday, or a Solemnity/Feast with firstVespers data).`,
+        hint: `Try /api/loth/${nextStr}/${hour} — the celebration's First Vespers/Compline lives on the celebration date itself (post-#230 F-X5).`,
       },
       { status: 404 },
     )
