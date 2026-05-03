@@ -139,6 +139,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              14
+            ],
+            "indent": 0
+          }
         ]
       }
     ],

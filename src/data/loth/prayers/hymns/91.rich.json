@@ -103,6 +103,22 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              10
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -135,6 +151,15 @@
                 "kind": "text",
                 "text": "Тэр хайрыг та бусдад хүртээ та үүнийг таниул"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              2
             ],
             "indent": 0
           }
@@ -215,6 +240,15 @@
                 "kind": "text",
                 "text": "Та миний агуу их Эзэн, Танд зүрхээ өргөе"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              7
             ],
             "indent": 0
           }
@@ -316,6 +350,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              9
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -369,6 +412,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              4
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -383,6 +435,15 @@
                 "kind": "text",
                 "text": "Миний хайртай охин Би чамайг ерөөж байна"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
             ],
             "indent": 0
           }
@@ -454,6 +515,15 @@
                 "kind": "text",
                 "text": "байна"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              6
             ],
             "indent": 0
           }

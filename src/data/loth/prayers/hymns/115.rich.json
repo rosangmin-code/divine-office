@@ -58,6 +58,22 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              3
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              4,
+              5
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -92,6 +108,24 @@
               }
             ],
             "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0,
+            "role": "refrain"
           }
         ]
       },
@@ -152,6 +186,22 @@
                 "kind": "text",
                 "text": "Аврагч мандан ирэв."
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              3
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              4,
+              5
             ],
             "indent": 0
           }
@@ -217,6 +267,50 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              4,
+              4
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              5,
+              5
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -261,6 +355,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -275,6 +378,15 @@
                 "kind": "text",
                 "text": "Магтуу"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
             ],
             "indent": 0
           }
@@ -301,6 +413,15 @@
                 "kind": "text",
                 "text": "Эзэн болно хэмээн айлдав."
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
             ],
             "indent": 0
           }
@@ -366,6 +487,29 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              4,
+              5
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -428,6 +572,50 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              4,
+              4
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              5,
+              5
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -487,6 +675,15 @@
                 "kind": "text",
                 "text": "Ачилж ёслосугай!"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              5
             ],
             "indent": 0
           }

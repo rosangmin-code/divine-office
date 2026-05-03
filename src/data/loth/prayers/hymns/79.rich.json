@@ -238,6 +238,43 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              4
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              5,
+              16
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              17,
+              20
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              21,
+              24
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              25,
+              25
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -270,6 +307,15 @@
                 "kind": "text",
                 "text": "Аливаа цагт болготугай! Амэн."
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              2
             ],
             "indent": 0
           }
