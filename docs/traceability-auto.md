@@ -4,13 +4,14 @@
 > and FR/NFR IDs in test titles. **Do not edit by hand.**
 > The curated matrix lives in [`docs/traceability-matrix.md`](./traceability-matrix.md).
 
-Scan: 40 test files contributed 22 unique IDs.
+Scan: 45 test files contributed 22 unique IDs.
 
 | ID | Test file | Test title(s) |
 |---|---|---|
 | FR-011 | `e2e/prayer-magnificat-pages.spec.ts` | Magnificat page references (Easter W2 THU vespers) |
-| FR-011 | `e2e/special-days.spec.ts` | Saturday vespers uses next Sunday propers (FR-011, 1st Vespers)<br>Saturday vespers differs from regular Saturday LAUDS (sanity: fallback is hour-scoped) |
+| FR-011 | `e2e/special-days.spec.ts` | (tagged, title unknown)<br>Sunday firstVespers shares core propers with Sunday vespers (FR-011, 1st Vespers anchor relocated)<br>Sunday firstVespers differs from Sunday LAUDS (sanity: fallback is hour-scoped) |
 | FR-011 | `src/lib/__tests__/first-vespers.test.ts` | (tagged, title unknown) |
+| FR-011 | `src/lib/__tests__/loth-service.test.ts` | Sunday firstVespers concluding prayer matches Sunday vespers (FR-011 anchor X) |
 | FR-017j | `e2e/page-references.spec.ts` | PDF viewer UX (FR-017j)<br>swipe left advances bookPage by 1<br>swipe right retreats bookPage by 1<br>swipe left at MAX (969) is a no-op<br>swipe right at MIN (1) is a no-op<br>keyboard ArrowRight advances bookPage<br>keyboard ArrowLeft retreats bookPage<br>canvas occupies the full frame width (fit-to-width)<br>aria-live page indicator updates when page changes |
 | FR-028 | `e2e/settings.spec.ts` | home header no longer renders a theme toggle (FR-028)<br>guide header no longer renders a theme toggle (FR-028) |
 | FR-029 | `e2e/settings.spec.ts` | back link navigates from /settings to home (FR-029) |
@@ -31,6 +32,7 @@ Scan: 40 test files contributed 22 unique IDs.
 | FR-153h | `e2e/prayer-psalm-prayer-rich.spec.ts` | Psalter psalmPrayerRich rendering (FR-153h)<br>psalm-prayer section renders with Mongolian rubric heading<br>first psalm psalmPrayer renders via rich AST (RichContent paragraph branch)<br>psalm-prayer heading carries red rubric class (§12.1) |
 | FR-155 | `e2e/easter-antiphon.spec.ts` | Easter season psalm / canticle antiphons (FR-155) |
 | FR-155 | `src/lib/__tests__/data/psalter-seasonal-antiphons.test.ts` | psalter seasonal_antiphons — post-body variants (task #16)<br>w2-sun-lauds entries have lentPassionSunday (Week 1 compound form promoted) |
+| FR-155 | `src/lib/__tests__/easter-week-fallback.test.ts` | gospelCanticle.antiphon has Layer5 Alleluia augmentation (FR-155 task #12) |
 | FR-155 | `src/lib/hours/__tests__/seasonal-antiphon.test.ts` | lentPassionSunday wins over lentSunday[5] on Lent 5th Sunday (Passion Sunday)<br>easterAlt is a fallback — used only when easter is absent/empty |
 | FR-155 | `src/lib/hours/resolvers/__tests__/psalm.test.ts` | Passion Sunday (LENT SUN week 5) picks lentPassionSunday over lentSunday[5]<br>easterAlt fallback fires only when easter is absent/empty |
 | FR-156 | `e2e/feast-first-vespers.spec.ts` | (tagged, title unknown) |
@@ -53,9 +55,14 @@ Scan: 40 test files contributed 22 unique IDs.
 | FR-160 | `src/lib/hours/__tests__/page-redirect-resolver.test.ts` | loads the live catalog with 9 keys<br>caches across calls (mtime equality)<br>returns input untouched when pageRedirects is undefined<br>returns input untouched when pageRedirects is empty<br>passes validation for redirects whose key is in the catalog<br>throws when ordinariumKey is missing from catalog<br>throws when fixed-key redirect.page differs from catalog.page<br>allows variable-key redirect.page to differ from catalog.page<br>PR-1: keeps propers byte-equal under valid redirects (existing fields preserved)<br>hydrates <br>throws when sourcePath is missing from a catalog entry<br>throws when sourcePath pointer references a missing object key<br>throws when sourcePath references a missing file<br>attaches hydrated bodies onto propers.pageRedirectBodies<br>preserves existing propers fields untouched (additive write only)<br>returns referentially-equal propers when no redirects (no shallow-copy churn)<br>determinism: hydrating the same propers twice yields deep-equal results |
 | FR-160 | `src/lib/hours/__tests__/section-directives.test.ts` | attaches directives to psalmody when sectionOverrides.psalmody present<br>attaches directives to intercessions<br>attaches directives to invitatory<br>attaches directives to dismissal<br>attaches directives to openingVersicle<br>returns section unchanged when sectionOverrides for that section is missing<br>returns section unchanged when sectionOverrides absent entirely<br>returns section unchanged when sectionOverrides.<section> is empty array<br>does NOT attach directives to non-PR-8 section types (e.g. shortReading)<br>preserves all other section fields when attaching directives<br>multiple directives on same section preserve order<br>immutability: original section unchanged after directive attach |
 | FR-161 | `e2e/psalm110-phrase-render.spec.ts` | Psalm 110 stanza emits data-render-mode= |
-| FR-161 | `src/components/__tests__/psalm-block-phrases.test.ts` | PsalmBlock — phrase render branch (FR-161 R-4) |
+| FR-161 | `src/components/__tests__/psalm-block-phrases.test.ts` | PsalmBlock — phrase render branch (FR-161 R-4)<br>renders multiple PhraseGroups with correct hanging indent classes (FR-161 R-13)<br>applies hanging indent classes for all three indent levels (FR-161 R-13) |
+| FR-161 | `src/components/prayer-sections/__tests__/gospel-canticle-section.test.ts` | GospelCanticleSection — antiphonRich render branch (#208) |
+| FR-161 | `src/components/prayer-sections/__tests__/rich-content-flow.test.ts` | RichContent — flow= |
+| FR-161 | `src/lib/__tests__/hours/compline.test.ts` | passes mergedPropers.gospelCanticleAntiphonRich into the gospelCanticle section (C-3a/wi-001)<br>leaves canticle.antiphonRich undefined when no rich overlay is present (legacy path)<br>compline commons rich overlay → assembleCompline (#208 end-to-end) |
 | FR-161 | `src/lib/__tests__/schemas.test.ts` | accepts stanza with lines only (legacy, phrases absent)<br>accepts stanza with lines + phrases (transition / additive Phase 1)<br>accepts stanza with empty lines + phrases array (degenerate Phase 3 future)<br>accepts stanza with empty lines and no phrases (edge / placeholder)<br>accepts a minimal phrase group with lineRange only<br>accepts a phrase group with indent and role<br>rejects role outside the enum<br>rejects indent outside 0/1/2<br>rejects negative or non-integer lineRange entries<br>accepts an array of phrase groups via PhraseGroupArraySchema |
+| FR-161 | `src/lib/hours/__tests__/seasonal-antiphon.test.ts` | applySeasonalAntiphonRich |
 | NFR-002 | `e2e/page-redirect.spec.ts` | Mongolian Cyrillic labels: catalog labels are PDF-original (NFR-002) |
+| NFR-002 | `src/components/__tests__/marian-antiphon-section.test.ts` | preserves the original text verbatim across joined lines (NFR-002 contract)<br>NFR-002 —  |
 | NFR-013 | `e2e/mobile.spec.ts` | prayer article inner width >= 320px for readability (NFR-013)<br>antiphon inner width >= 320px on mobile (NFR-013) |
 | NFR-014 | `e2e/mobile.spec.ts` | psalm has left padding on mobile (NFR-014)<br>psalm stanzas have visible spacing on mobile (NFR-014) |
 | NFR-016 | `e2e/settings.spec.ts` | active radio uses brass gold accent, not liturgical green (NFR-016) |

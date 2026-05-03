@@ -101,6 +101,126 @@ describe('getHoursSummary', () => {
     expect(result).not.toBeNull()
     expect(result!.hours.map((h) => h.type)).toEqual(['lauds', 'vespers', 'compline'])
   })
+
+  // @fr FR-NEW (#240 F-X5 FU#1)
+  it('strips Sun II vespers + compline on ordinary OT Sunday whose Monday is a Solemnity (Sts. Peter & Paul 2026-06-29 Mon → Sun 06-28 stripped)', () => {
+    // 2026-06-28 = Sunday (13th Sun OT, ORDINARY_TIME — class 6 in
+    // Universal Norms n. 59). 2026-06-29 = Monday Sts. Peter & Paul
+    // (SOLEMNITY, class 3, sanctoral.firstVespers data present).
+    // Per Universal Norms n. 61 (rubric collision): I Vespers of the
+    // higher-rank Solemnity wins → Sun II vespers + compline are
+    // surfaced on Mon's firstVespers/firstCompline cards instead.
+    // BEFORE #240 (legacy): 5 hours (firstVespers, firstCompline,
+    // lauds, vespers, compline) — duplicating Mon firstVespers/Compline.
+    // AFTER #240: 3 hours (firstVespers, firstCompline, lauds).
+    const result = getHoursSummary('2026-06-28')
+    expect(result).not.toBeNull()
+    expect(result!.hours.map((h) => h.type)).toEqual([
+      'firstVespers',
+      'firstCompline',
+      'lauds',
+    ])
+  })
+
+  // @fr FR-NEW (#240 F-X5 FU#1)
+  it('strips Sun II vespers + compline on ordinary OT Sunday whose Monday is a Feast of the Lord (Lateran Basilica 2026-11-09 Mon → Sun 11-08 stripped)', () => {
+    // 2026-11-09 = Monday Dedication of Lateran Basilica (FEAST of
+    // the Lord, class 5; feasts.json firstVespers data present).
+    // 2026-11-08 = Sunday OT (class 6) → Mon I Vespers wins.
+    const result = getHoursSummary('2026-11-08')
+    expect(result).not.toBeNull()
+    expect(result!.hours.map((h) => h.type)).toEqual([
+      'firstVespers',
+      'firstCompline',
+      'lauds',
+    ])
+  })
+
+  // @fr FR-NEW (#240 F-X5 FU#1)
+  it('keeps Sun II full 5 hours on ordinary OT Sunday with regular weekday Monday (regression guard — no Mon firstVespers means no strip even after FU#1)', () => {
+    // 2026-06-14 = Sunday (regression guard from #230). Mon 06-15 is
+    // a regular OT weekday → tomorrowHasFirstVespers=false → no strip.
+    // The new FU#1 logic must NOT trigger when Mon has no firstVespers.
+    const result = getHoursSummary('2026-06-14')
+    expect(result).not.toBeNull()
+    expect(result!.hours).toHaveLength(5)
+    expect(result!.hours.map((h) => h.type)).toEqual([
+      'firstVespers',
+      'firstCompline',
+      'lauds',
+      'vespers',
+      'compline',
+    ])
+  })
+
+  // @fr FR-NEW (#245 F-X5 FU#5) — privileged-Sun positive guard
+  it('keeps Sun II full 5 hours on Lent Sunday whose Monday is the Annunciation (privileged-Sun guard active — class 2 Sun > class 3 Solemnity of Saint)', () => {
+    // 2030-03-24 = 3rd Sun of Lent (privileged, class 2).
+    // 2030-03-25 = Mon Annunciation of the Lord (SOLEMNITY of
+    // Saints, class 3, sanctoral.firstVespers data present).
+    // Per Universal Norms n. 59 (Table of Liturgical Days): class 2
+    // (Sun ADVENT/LENT/EASTER) outranks class 3 (Solemnity of
+    // Saints). Therefore Sun II Vespers WINS — Mon Annunciation
+    // I Vespers does NOT displace it. The fix MUST NOT strip.
+    // (Without `isPrivilegedSunday`, the FU#1 strip would fire
+    // because tomorrow has firstVespers.)
+    const result = getHoursSummary('2030-03-24')
+    expect(result).not.toBeNull()
+    expect(result!.hours).toHaveLength(5)
+    expect(result!.hours.map((h) => h.type)).toEqual([
+      'firstVespers',
+      'firstCompline',
+      'lauds',
+      'vespers',
+      'compline',
+    ])
+  })
+
+  // @fr FR-NEW (#245 F-X5 FU#5) — privileged-Sun positive guard
+  it('keeps Sun II full 5 hours on Advent Sunday whose Monday is the Immaculate Conception (privileged-Sun guard active, no Christmas-boundary cross — class 2 Sun > class 3 Solemnity of Saint)', () => {
+    // 2025-12-07 = 2nd Sun of Advent (privileged, class 2).
+    // 2025-12-08 = Mon Immaculate Conception (SOLEMNITY of
+    // Saints, class 3, sanctoral.firstVespers data present).
+    // Sun ADVENT II Vespers (class 2) outranks Mon Immaculate
+    // Conception I Vespers (class 3). Critically, this is NOT
+    // the Advent → Christmas season boundary (tomorrow.season =
+    // CHRISTMAS only on Dec 24/25), so the FU#4 boundary
+    // override MUST NOT fire. Sun stays at full 5 hours.
+    const result = getHoursSummary('2025-12-07')
+    expect(result).not.toBeNull()
+    expect(result!.hours).toHaveLength(5)
+    expect(result!.hours.map((h) => h.type)).toEqual([
+      'firstVespers',
+      'firstCompline',
+      'lauds',
+      'vespers',
+      'compline',
+    ])
+  })
+
+  // @fr FR-NEW (#245 F-X5 FU#4) — Advent → Christmas season boundary
+  it('strips Sun II vespers + compline on 4th Sun Advent whose Monday is Christmas (Advent ends with First Vespers of the Nativity — Universal Norms n. 40 boundary override of privileged-Sun guard)', () => {
+    // 2028-12-24 = Sunday, 4th Sunday of Advent (privileged, class
+    // 2). 2028-12-25 = Mon Christmas Day (SOLEMNITY of the Lord,
+    // CHRISTMAS season; sanctoral 12-25 firstVespers data present).
+    // Per Universal Norms n. 40: "Advent ends before First Vespers
+    // of the Nativity of the Lord." The season boundary itself
+    // displaces Sun ADVENT II Vespers — the privileged-Sun guard
+    // (FU#1) is OVERRIDDEN here by FU#4. Sun II vespers + compline
+    // are surfaced on Mon's firstVespers/firstCompline cards.
+    // BEFORE FU#4 (post-FU#1, pre-FU#4): 5 hours — duplicating Mon
+    // Christmas firstVespers/Compline content (regression).
+    // AFTER FU#4: 3 hours (firstVespers + firstCompline + lauds),
+    // matching the FU#1 OT/Christmas pattern.
+    // Recurrence ~6-7 yr (next 2034-12-24).
+    const result = getHoursSummary('2028-12-24')
+    expect(result).not.toBeNull()
+    expect(result!.hours.map((h) => h.type)).toEqual([
+      'firstVespers',
+      'firstCompline',
+      'lauds',
+    ])
+  })
 })
 
 // @fr FR-NEW (#242 F-X5 FU#2)
