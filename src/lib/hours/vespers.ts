@@ -72,8 +72,17 @@ export const assembleVespers: HourAssembler = (ctx) => {
   // 8. Concluding Prayer
   // F-2 (#214) — see compline.ts for the rubric. Vespers shares the same
   // Solemnity-not-on-Sunday auto-swap behavior; helper applies uniformly.
+  // #242 F-X5 FU#3 — symmetry with compline.ts (#216 F-2c): use
+  // `effectiveLiturgicalDay ?? liturgicalDay` so the legacy
+  // FR-156 Sat-vespers eve-of-Solemnity promotion (loth-service.ts
+  // L209-280) and the F-X5 firstVespers route (loth-service.ts L307-371)
+  // both feed the swap with the celebration's identity. Without this
+  // fall-back, eve-promoted vespers would silently lose F-2 alternation
+  // when tomorrow is a non-Sunday Solemnity carrying primary+alternate
+  // concluding-prayer variants.
   if (ctx.mergedPropers.concludingPrayer || ctx.mergedPropers.concludingPrayerRich) {
-    const swap = shouldUseAlternateConcludingPrayer(ctx.liturgicalDay, ctx.dayOfWeek)
+    const effectiveDay = ctx.effectiveLiturgicalDay ?? ctx.liturgicalDay
+    const swap = shouldUseAlternateConcludingPrayer(effectiveDay, ctx.dayOfWeek)
     const fields = buildConcludingPrayerFields({
       primaryText: ctx.mergedPropers.concludingPrayer,
       primaryRich: ctx.mergedPropers.concludingPrayerRich,

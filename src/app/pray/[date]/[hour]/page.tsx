@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { assembleHour } from '@/lib/loth-service'
+import { assembleHour, isFirstVespersEligibleDate } from '@/lib/loth-service'
 import { isValidDateStr } from '@/lib/date-validation'
 import { PrayerRenderer } from '@/components/prayer-renderer'
 import { SettingsLink } from '@/components/settings-link'
@@ -35,6 +35,21 @@ export default async function PrayPage({
   }
 
   const hourType = hourParam as HourType
+
+  // #242 F-X5 FU#2 — 404 gate for firstVespers/firstCompline URLs on
+  // dates that do NOT carry First Vespers content (ordinary weekdays
+  // with no Solemnity/Feast). Without this gate, the URL silently
+  // returned an out-of-rubric Sunday-vespers fallback. The eligibility
+  // check is independent of `assembleHour` (which still falls back to a
+  // surface-level structure) so the 404 fires before the assembler is
+  // even invoked.
+  if (
+    (hourType === 'firstVespers' || hourType === 'firstCompline') &&
+    !isFirstVespersEligibleDate(date)
+  ) {
+    notFound()
+  }
+
   const assembled = await assembleHour(date, hourType, { celebrationId: celebration })
 
   if (!assembled) {

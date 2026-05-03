@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { getHoursSummary, assembleHour } from '../loth-service'
+import { getHoursSummary, assembleHour, isFirstVespersEligibleDate } from '../loth-service'
 import { isCommonSource } from '../types'
 
 // Mock bible-loader to avoid loading 7.4MB JSONL in tests
@@ -100,6 +100,48 @@ describe('getHoursSummary', () => {
     const result = getHoursSummary('2026-02-04')
     expect(result).not.toBeNull()
     expect(result!.hours.map((h) => h.type)).toEqual(['lauds', 'vespers', 'compline'])
+  })
+})
+
+// @fr FR-NEW (#242 F-X5 FU#2)
+describe('isFirstVespersEligibleDate', () => {
+  it('returns true for any Sunday (Phase 2 weeks[N].SUN.firstVespers always present)', () => {
+    // 2026-06-14 = OT Sunday (plain).
+    expect(isFirstVespersEligibleDate('2026-06-14')).toBe(true)
+  })
+
+  it('returns true for a fixed-date Solemnity carrying sanctoral.firstVespers (Sts. Peter & Paul 2026-06-29 Mon)', () => {
+    expect(isFirstVespersEligibleDate('2026-06-29')).toBe(true)
+  })
+
+  it('returns true for a fixed-date Feast of the Lord carrying firstVespers (Lateran Basilica 2026-11-09 Mon)', () => {
+    expect(isFirstVespersEligibleDate('2026-11-09')).toBe(true)
+  })
+
+  it('returns true for a movable Solemnity resolved via getSeasonFirstVespers (Ascension 2026-05-14 Thu)', () => {
+    expect(isFirstVespersEligibleDate('2026-05-14')).toBe(true)
+  })
+
+  it('returns false for an ordinary OT weekday with no celebration (2026-06-15 Mon)', () => {
+    // Monday after 2026-06-14 Sun, no Solemnity/Feast → not eligible.
+    expect(isFirstVespersEligibleDate('2026-06-15')).toBe(false)
+  })
+
+  it('returns false for an ordinary OT Saturday (2030-06-15 Sat) — Sat is the eve, not the celebration', () => {
+    // Saturday itself has no firstVespers content (the firstVespers
+    // belongs to the upcoming Sunday's URL after #230 F-X5).
+    expect(isFirstVespersEligibleDate('2030-06-15')).toBe(false)
+  })
+
+  it('returns false for an invalid / unparseable date string', () => {
+    expect(isFirstVespersEligibleDate('not-a-date')).toBe(false)
+  })
+
+  it('returns false for an ordinary OT weekday (2026-02-04 Wed) — confirms Memorial/Weekday class never carries firstVespers content', () => {
+    // hasFirstVespersAndCompline gates on dayOfWeek=SUN OR
+    // rank=SOLEMNITY/FEAST + firstVespers data; ordinary weekdays fail
+    // both conditions.
+    expect(isFirstVespersEligibleDate('2026-02-04')).toBe(false)
   })
 })
 

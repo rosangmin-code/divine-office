@@ -807,6 +807,34 @@ function hasFirstVespersAndCompline(
 }
 
 /**
+ * #242 F-X5 FU#2 — public eligibility gate for the
+ * `/pray/<date>/firstVespers`, `/pray/<date>/firstCompline`, and parallel
+ * `/api/loth/<date>/{firstVespers,firstCompline}` URLs.
+ *
+ * A date is eligible iff its OWN `hasFirstVespersAndCompline()` returns
+ * true — the date itself carries firstVespers content:
+ *   - any Sunday (Phase 2 #20: `weeks[N].SUN.firstVespers` always present
+ *     as data, with backstop merge from regular Sunday vespers),
+ *   - a fixed-date Solemnity/Feast with sanctoral `firstVespers` data
+ *     (12 Solemnities + 4 Feasts of the Lord), or
+ *   - a movable Solemnity resolved via `getSeasonFirstVespers`
+ *     special-key path (Ascension, Pentecost, Trinity Sunday,
+ *     Corpus Christi, Sacred Heart, Christ the King).
+ *
+ * Ordinary weekdays (Mon-Sat with no celebration) are NOT eligible —
+ * before #242 the URL still returned 200 with an out-of-rubric Sunday
+ * vespers fallback. Routes now `notFound()` / 404 for non-eligible
+ * dates so SW caches do not pin out-of-rubric content (#231 R2 FU#2
+ * finding).
+ */
+export function isFirstVespersEligibleDate(dateStr: string): boolean {
+  const day = getLiturgicalDay(dateStr)
+  if (!day) return false
+  const dayOfWeek = dateToDayOfWeek(dateStr)
+  return hasFirstVespersAndCompline(dateStr, day, dayOfWeek)
+}
+
+/**
  * Get a summary of all hours available for a given date.
  *
  * FR-NEW #230 (F-X5, Q4=P) — per-day hour list with forward-looking
