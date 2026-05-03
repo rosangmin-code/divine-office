@@ -91,14 +91,17 @@ function renderAntiphonRich(content: PrayerText): JSX.Element[] {
         )
       })
     } else if (block.kind === 'rubric-line') {
-      // #247 NIT-2 (production no-op defensive guard): skip rubric-line
-      // blocks whose `text` is empty/whitespace-only. The schema does
-      // not exclude empty strings, and a malformed authoring would
-      // surface a stray empty red span below an antiphon. The
-      // `blockOut.length === 0 → continue` guard further down already
-      // catches this implicitly, but the early skip keeps the intent
-      // explicit at the rubric-line branch (parallels how `divider`
-      // is handled at line 70).
+      // #247 NIT-2 / #250 F-1 — production-data no-op defensive guard.
+      // Skip rubric-line blocks whose `text` is empty/whitespace-only.
+      // The schema does not exclude empty strings, and a malformed
+      // authoring would surface a stray empty red `<span>` (and its
+      // preceding inter-block `<br/>` separator) under an antiphon.
+      // Note: this is a real behavior change for malformed input, NOT
+      // redundant with the `blockOut.length === 0` guard below — the
+      // rubric-line branch unconditionally pushes a `<span>` so
+      // `blockOut.length` would be 1, not 0, and the downstream guard
+      // would NOT short-circuit. Production data has no empty
+      // rubric-line blocks today; this is type-safety hardening.
       if (!block.text.trim()) continue
       // PDF rubric line: red + upright (NOT italic). Parent wrapper
       // is italic, so explicit `not-italic` is required to escape the
