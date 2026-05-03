@@ -68,6 +68,44 @@ function renderAntiphonRich(content: PrayerText): JSX.Element[] {
   for (let bi = 0; bi < content.blocks.length; bi++) {
     const block = content.blocks[bi]
     if (block.kind === 'divider') continue
+
+    // Compute this block's emitted elements FIRST. Task #222 defensive
+    // hardening: pre-fix `firstEmitted` was flipped to `false` BEFORE the
+    // inner content emission, so a para with empty `spans` (or any block
+    // shape that emits nothing) would still flip the flag — leaking a
+    // stray `<br/>` into the NEXT block's separator pointing at content
+    // that never appeared. Post-fix we only flip + push the block
+    // separator after we KNOW the block produced at least one element.
+    const blockOut: JSX.Element[] = []
+    if (block.kind === 'para') {
+      block.spans.forEach((s) =>
+        blockOut.push(renderAntiphonSpan(s, keyCounter++)),
+      )
+    } else if (block.kind === 'stanza') {
+      block.lines.forEach((line, li) => {
+        // PDF stanza lines are visually distinct rows; inter-line break
+        // matches the PDF layout (was inline space — F-X1 #217 fix).
+        if (li > 0) blockOut.push(<br key={`lsep-${bi}-${li}`} />)
+        line.spans.forEach((s) =>
+          blockOut.push(renderAntiphonSpan(s, keyCounter++)),
+        )
+      })
+    } else if (block.kind === 'rubric-line') {
+      // PDF rubric line: red + upright (NOT italic). Parent wrapper
+      // is italic, so explicit `not-italic` is required to escape the
+      // amber-italic AntiphonBox styling.
+      blockOut.push(
+        <span
+          key={`rubric-${bi}`}
+          className="not-italic text-red-700 dark:text-red-400"
+        >
+          {block.text}
+        </span>,
+      )
+    }
+
+    if (blockOut.length === 0) continue // empty block — skip separator + flip
+
     // F-X1 (#217) — block boundary MUST surface as a real line break, not
     // an inline single-space. Earlier the inter-block separator emitted
     // `<span>{' '}</span>`, which silently flowed para/stanza/rubric-line
@@ -79,28 +117,7 @@ function renderAntiphonRich(content: PrayerText): JSX.Element[] {
       out.push(<br key={`bsep-${bi}`} />)
     }
     firstEmitted = false
-    if (block.kind === 'para') {
-      block.spans.forEach((s) => out.push(renderAntiphonSpan(s, keyCounter++)))
-    } else if (block.kind === 'stanza') {
-      block.lines.forEach((line, li) => {
-        // PDF stanza lines are visually distinct rows; inter-line break
-        // matches the PDF layout (was inline space — F-X1 #217 fix).
-        if (li > 0) out.push(<br key={`lsep-${bi}-${li}`} />)
-        line.spans.forEach((s) => out.push(renderAntiphonSpan(s, keyCounter++)))
-      })
-    } else if (block.kind === 'rubric-line') {
-      // PDF rubric line: red + upright (NOT italic). Parent wrapper
-      // is italic, so explicit `not-italic` is required to escape the
-      // amber-italic AntiphonBox styling.
-      out.push(
-        <span
-          key={`rubric-${bi}`}
-          className="not-italic text-red-700 dark:text-red-400"
-        >
-          {block.text}
-        </span>,
-      )
-    }
+    out.push(...blockOut)
   }
   return out
 }

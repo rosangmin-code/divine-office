@@ -414,4 +414,70 @@ describe('applySeasonalAntiphonRich', () => {
     applySeasonalAntiphonRich(orig, 'EASTER')
     expect(JSON.stringify(orig)).toBe(before)
   })
+
+  // Task #222 defensive hardening — broaden idempotent regex to cover the
+  // hymn-style spelling `Аллэлүяа` (with `ү`). Antiphons in production use
+  // `Аллэлуяа` exclusively, so this is a guard against future overlays
+  // mixing hymn-source AST shapes through the rich helper.
+  it('idempotent against the Аллэлүяа variant (hymn spelling, #222 broaden)', () => {
+    const variantSpan: PrayerText = {
+      blocks: [
+        {
+          kind: 'para',
+          spans: [{ kind: 'text', text: 'Эзэн бол хүч. Аллэлүяа!' }],
+        },
+      ],
+    }
+    expect(applySeasonalAntiphonRich(variantSpan, 'EASTER')).toEqual(
+      variantSpan,
+    )
+    const variantRubricLine: PrayerText = {
+      blocks: [
+        { kind: 'para', spans: [{ kind: 'text', text: 'body' }] },
+        { kind: 'rubric-line', text: 'Аллэлүяа.' },
+      ],
+    }
+    expect(applySeasonalAntiphonRich(variantRubricLine, 'EASTER')).toEqual(
+      variantRubricLine,
+    )
+  })
+
+  // Task #222 — mirror the plain helper's closing-period insertion (line
+  // 33-35) on the rich path. Production data ends with punctuation already,
+  // so this only fires for hand-authored entries that omit the closer.
+  it('appends a closing period to the last text-bearing span when missing (#222 mirror)', () => {
+    const noPeriod: PrayerText = {
+      blocks: [
+        {
+          kind: 'para',
+          spans: [{ kind: 'text', text: 'Эзэн бол хүч' }],
+        },
+      ],
+    }
+    const out = applySeasonalAntiphonRich(noPeriod, 'EASTER')
+    expect(out).toBeDefined()
+    expect(out!.blocks).toHaveLength(2)
+    const body = out!.blocks[0]
+    if (body.kind !== 'para') throw new Error('expected body para')
+    expect(body.spans).toEqual([{ kind: 'text', text: 'Эзэн бол хүч.' }])
+    const rubric = out!.blocks[1]
+    if (rubric.kind !== 'para') throw new Error('expected rubric para')
+    expect(rubric.spans).toEqual([{ kind: 'rubric', text: 'Аллэлуяа!' }])
+  })
+
+  it('leaves an existing closing punctuation untouched (#222 no double period)', () => {
+    const withQuestion: PrayerText = {
+      blocks: [
+        {
+          kind: 'para',
+          spans: [{ kind: 'text', text: 'Хэн вэ?' }],
+        },
+      ],
+    }
+    const out = applySeasonalAntiphonRich(withQuestion, 'EASTER')
+    expect(out).toBeDefined()
+    const body = out!.blocks[0]
+    if (body.kind !== 'para') throw new Error('expected body para')
+    expect(body.spans).toEqual([{ kind: 'text', text: 'Хэн вэ?' }])
+  })
 })
