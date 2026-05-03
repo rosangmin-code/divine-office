@@ -94,6 +94,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              9
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -117,6 +126,15 @@
                 "kind": "text",
                 "text": "Хамгийн нандин Түүний нэр Есүс"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
             ],
             "indent": 0
           }

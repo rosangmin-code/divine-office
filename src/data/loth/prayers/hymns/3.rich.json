@@ -40,6 +40,22 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -120,6 +136,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              7
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -154,6 +179,24 @@
               }
             ],
             "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              1,
+              2
+            ],
+            "indent": 0,
+            "role": "refrain"
           }
         ]
       },
@@ -208,6 +251,29 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              4
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -242,6 +308,24 @@
               }
             ],
             "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              1,
+              2
+            ],
+            "indent": 0,
+            "role": "refrain"
           }
         ]
       }
