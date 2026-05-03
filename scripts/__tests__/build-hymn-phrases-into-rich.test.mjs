@@ -103,6 +103,79 @@ describe('planStanzaPhrases — refrain detection', () => {
     ])
     expect(phrases).toEqual([{ lineRange: [0, 1], indent: 0 }])
   })
+
+  // R3 (review #257) — explicit assertions for `Дахилт N:` numbered variants
+  // already covered by REFRAIN_PREFIX_RE (`/Дахилт(\s*\d+)?\s*:/`) but lacking
+  // direct tests. Without these, a regex change could silently regress refrain
+  // detection on hymns 35, 76, etc. that use `Дахилт 2:` / `Дахилт 3:` openers.
+  it('propagates `role:refrain` when first line opens with "Дахилт 2:" (numbered)', () => {
+    const phrases = planStanzaPhrases([
+      line('Дахилт 2: Алдарт Эзэн дахин ирээд'),
+      line('Бидэнд хайр өршөөл хайрла.'),
+    ])
+    expect(phrases).toEqual([
+      { lineRange: [0, 1], indent: 0, role: 'refrain' },
+    ])
+  })
+
+  it('propagates `role:refrain` when first line opens with "Дахилт 3:" (numbered)', () => {
+    const phrases = planStanzaPhrases([
+      line('Дахилт 3: Аврагч маань ирэв.'),
+      line('Магтан дуулъя.'),
+    ])
+    expect(phrases).toEqual([
+      { lineRange: [0, 0], indent: 0, role: 'refrain' },
+      { lineRange: [1, 1], indent: 0, role: 'refrain' },
+    ])
+  })
+
+  // R3 — no-space variant `Дахилт:<text>` (corpus has 1 instance: hymn body
+  // line "Дахилт:Үнэн итгэл хай"). Regex tolerates `\s*` so it matches; this
+  // test pins behavior so a future tightening doesn't silently drop it.
+  it('propagates `role:refrain` when "Дахилт:" has no space after the colon', () => {
+    const phrases = planStanzaPhrases([
+      line('Дахилт:Үнэн итгэл хай'),
+      line('Эзэндээ найдъя.'),
+    ])
+    expect(phrases).toEqual([
+      { lineRange: [0, 1], indent: 0, role: 'refrain' },
+    ])
+  })
+
+  // R1 (review #257) — refrain prefix family extended to cover congregational
+  // response ("Нийтээр:" — hymn 1 block[2], hymns 44/95/114/115) and
+  // alternate refrain ("Эсвэл:" — hymns 49/50/106; "Эсвэл нийтээр:" —
+  // hymns 114/115). All three propagate `role:'refrain'` to every phrase
+  // in the stanza.
+  it('propagates `role:refrain` when first line opens with "Нийтээр:" (congregational response)', () => {
+    const phrases = planStanzaPhrases([
+      line('Нийтээр: Нялх хүүхдийн туйлын хайртай хаан,'),
+    ])
+    // Single-line stanza ending with comma → one covering phrase + refrain role.
+    expect(phrases).toEqual([
+      { lineRange: [0, 0], indent: 0, role: 'refrain' },
+    ])
+  })
+
+  it('propagates `role:refrain` when first line opens with "Эсвэл:" (alternate refrain)', () => {
+    const phrases = planStanzaPhrases([
+      line('Эсвэл: Аж сайхан төрүүлж'),
+      line('Аврагчаа магтан дуулъя.'),
+    ])
+    expect(phrases).toEqual([
+      { lineRange: [0, 1], indent: 0, role: 'refrain' },
+    ])
+  })
+
+  it('propagates `role:refrain` when first line opens with "Эсвэл нийтээр:" (composite alternate)', () => {
+    const phrases = planStanzaPhrases([
+      line('Эсвэл нийтээр: Аллэлуяа, Аллэлуяа, Аллэлуяа!'),
+    ])
+    // Trailing `!` closes the phrase at line 0.
+    expect(phrases).toEqual([
+      { lineRange: [0, 0], indent: 0, role: 'refrain' },
+    ])
+  })
 })
 
 describe('injectPhrasesIntoHymnRich — block-level integration', () => {
