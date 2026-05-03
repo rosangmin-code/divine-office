@@ -40,6 +40,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -120,6 +129,16 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              7
+            ],
+            "indent": 0,
+            "role": "refrain"
+          }
         ]
       },
       {
@@ -182,6 +201,16 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              5
+            ],
+            "indent": 0,
+            "role": "refrain"
+          }
         ]
       },
       {
@@ -205,6 +234,15 @@
                 "kind": "text",
                 "text": "Ивээл хайраа үзүүлнэ"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
             ],
             "indent": 0
           }
@@ -323,6 +361,16 @@
               }
             ],
             "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              11
+            ],
+            "indent": 0,
+            "role": "refrain"
           }
         ]
       }

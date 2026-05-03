@@ -94,6 +94,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              9
+            ],
+            "indent": 0
+          }
         ]
       }
     ],

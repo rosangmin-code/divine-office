@@ -22,6 +22,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -48,6 +57,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -71,6 +89,15 @@
                 "kind": "text",
                 "text": "Намайг аваач Есүс ээ"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
             ],
             "indent": 0
           }
@@ -127,6 +154,16 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              4
+            ],
+            "indent": 0,
+            "role": "refrain"
+          }
         ]
       },
       {
@@ -168,6 +205,15 @@
                 "kind": "text",
                 "text": "Агуу чадлаа харуулаач"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              3
             ],
             "indent": 0
           }
@@ -215,6 +261,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -267,6 +322,16 @@
               }
             ],
             "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              4
+            ],
+            "indent": 0,
+            "role": "refrain"
           }
         ]
       }

@@ -22,6 +22,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -39,6 +48,16 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0,
+            "role": "refrain"
+          }
         ]
       },
       {
@@ -53,6 +72,15 @@
                 "kind": "text",
                 "text": "Магтуу"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
             ],
             "indent": 0
           }
@@ -109,6 +137,29 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              4,
+              4
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -132,6 +183,15 @@
                 "kind": "text",
                 "text": "Энэрлийн нөхөр мэт буун тэдэнд хаан болтугай."
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
             ],
             "indent": 0
           }
@@ -167,6 +227,15 @@
                 "kind": "text",
                 "text": "болтугай."
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              2
             ],
             "indent": 0
           }

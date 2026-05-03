@@ -67,6 +67,22 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              5
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              6,
+              6
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -81,6 +97,15 @@
                 "kind": "text",
                 "text": "Миний дотор зөв Сүнсийг байгуулаач."
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
             ],
             "indent": 0
           }
@@ -128,6 +153,36 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -153,6 +208,24 @@
               }
             ],
             "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0,
+            "role": "refrain"
           }
         ]
       },
@@ -195,6 +268,36 @@
                 "kind": "text",
                 "text": "Асарч тэтгэхийг мэдүүлэв."
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
             ],
             "indent": 0
           }
@@ -242,6 +345,36 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -283,6 +416,36 @@
                 "kind": "text",
                 "text": "Тэнгэрт Есүс эдүгээ залрав."
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
             ],
             "indent": 0
           }
@@ -330,6 +493,22 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -365,6 +544,29 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -379,6 +581,15 @@
                 "kind": "text",
                 "text": "Энсэн гуйн хүлээж суумуй."
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
             ],
             "indent": 0
           }
@@ -423,6 +634,36 @@
                 "kind": "text",
                 "text": "Эцэс цагийн шүүлгээ санагтун!"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
             ],
             "indent": 0
           }

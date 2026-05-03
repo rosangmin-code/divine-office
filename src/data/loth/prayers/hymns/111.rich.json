@@ -40,6 +40,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -74,6 +83,24 @@
               }
             ],
             "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0,
+            "role": "refrain"
           }
         ]
       },
@@ -119,6 +146,36 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -142,6 +199,15 @@
                 "kind": "text",
                 "text": "Үлдэж хоцорсон шархаа"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
             ],
             "indent": 0
           }
@@ -177,6 +243,15 @@
                 "kind": "text",
                 "text": "Үнэн лавыг бат мэдэв."
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              2
             ],
             "indent": 0
           }
@@ -224,6 +299,36 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -265,6 +370,36 @@
                 "kind": "text",
                 "text": "Үзүүлэн мэдүүлэв."
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
             ],
             "indent": 0
           }
@@ -312,6 +447,36 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -353,6 +518,36 @@
                 "kind": "text",
                 "text": "Энх жаргалыг олох болтугай."
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
             ],
             "indent": 0
           }

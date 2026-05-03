@@ -49,6 +49,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              4
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -147,6 +156,16 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              9
+            ],
+            "indent": 0,
+            "role": "refrain"
+          }
         ]
       },
       {
@@ -163,6 +182,16 @@
               }
             ],
             "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0,
+            "role": "refrain"
           }
         ]
       }

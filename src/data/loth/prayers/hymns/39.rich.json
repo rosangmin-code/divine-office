@@ -22,6 +22,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -57,6 +66,29 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -73,6 +105,16 @@
               }
             ],
             "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0,
+            "role": "refrain"
           }
         ]
       },
@@ -106,6 +148,29 @@
                 "kind": "text",
                 "text": "Цогтойгоор дахин амьдрав. Аллэлуяа!"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
             ],
             "indent": 0
           }
@@ -144,6 +209,29 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -176,6 +264,29 @@
                 "kind": "text",
                 "text": "Гэдрэг хойш дутаав. Аллэлуяа!"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
             ],
             "indent": 0
           }
@@ -214,6 +325,29 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -246,6 +380,29 @@
                 "kind": "text",
                 "text": "Эдүгээд дахин амьдрав. Аллэлуяа!"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
             ],
             "indent": 0
           }
@@ -284,6 +441,29 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -316,6 +496,29 @@
                 "kind": "text",
                 "text": "Биширч итгэжээ. Аллэлуяа!"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
             ],
             "indent": 0
           }
@@ -354,6 +557,29 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -386,6 +612,29 @@
                 "kind": "text",
                 "text": "Таван шархыг үзэгтүн хэмээв. Аллэлуяа!"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
             ],
             "indent": 0
           }
@@ -424,6 +673,29 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -456,6 +728,29 @@
                 "kind": "text",
                 "text": "Тун үл итгэв. Аллэлуяа!"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
             ],
             "indent": 0
           }
@@ -494,6 +789,29 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -529,6 +847,29 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -561,6 +902,22 @@
                 "kind": "text",
                 "text": "Хуруугаа хүргэ хэмээвээс, Аллэлуяа!"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              2
             ],
             "indent": 0
           }

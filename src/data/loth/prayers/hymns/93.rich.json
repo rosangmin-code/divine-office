@@ -49,6 +49,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              4
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -66,6 +75,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -80,6 +98,15 @@
                 "kind": "text",
                 "text": "Миний хайртай охин Би чамайг ерөөж байна"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
             ],
             "indent": 0
           }
@@ -151,6 +178,15 @@
                 "kind": "text",
                 "text": "байна"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              6
             ],
             "indent": 0
           }

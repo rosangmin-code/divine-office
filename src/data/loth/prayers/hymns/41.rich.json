@@ -13,6 +13,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -54,6 +63,15 @@
                 "kind": "text",
                 "text": "Ер магтагдан жаргатугай!"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              3
             ],
             "indent": 0
           }
@@ -101,6 +119,16 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              3
+            ],
+            "indent": 0,
+            "role": "refrain"
+          }
         ]
       },
       {
@@ -142,6 +170,36 @@
                 "kind": "text",
                 "text": "Ийн хэлсэн буюу."
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
             ],
             "indent": 0
           }
@@ -189,6 +247,36 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -230,6 +318,36 @@
                 "kind": "text",
                 "text": "Тэнгэрийн замыг заагч"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
             ],
             "indent": 0
           }
@@ -277,6 +395,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -321,6 +448,36 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -335,6 +492,15 @@
                 "kind": "text",
                 "text": "Магтуу"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
             ],
             "indent": 0
           }
@@ -382,6 +548,36 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -423,6 +619,22 @@
                 "kind": "text",
                 "text": "Хэмээн тийнхүү айлдав."
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
             ],
             "indent": 0
           }
@@ -470,6 +682,36 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -511,6 +753,36 @@
                 "kind": "text",
                 "text": "Мөргөн магтан тахив."
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
             ],
             "indent": 0
           }

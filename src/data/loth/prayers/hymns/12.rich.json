@@ -121,6 +121,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              12
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -174,6 +183,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              4
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -197,6 +215,15 @@
                 "kind": "text",
                 "text": "магтаал"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
             ],
             "indent": 0
           }
@@ -244,6 +271,36 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -285,6 +342,36 @@
                 "kind": "text",
                 "text": "Их хишгийн амийг олгоно уу!"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
             ],
             "indent": 0
           }
@@ -332,6 +419,22 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -373,6 +476,36 @@
                 "kind": "text",
                 "text": "Тахин хүндэлж магтах болтугай."
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
             ],
             "indent": 0
           }
@@ -420,6 +553,36 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -452,6 +615,15 @@
                 "kind": "text",
                 "text": "Энэ ба хойтод магтах болтугай."
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              2
             ],
             "indent": 0
           }
@@ -499,6 +671,36 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -540,6 +742,29 @@
                 "kind": "text",
                 "text": "Мутраараа адислах болтугай."
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              3
             ],
             "indent": 0
           }

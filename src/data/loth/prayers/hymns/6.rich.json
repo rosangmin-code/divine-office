@@ -31,6 +31,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              2
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -84,6 +93,24 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              3
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              4,
+              4
+            ],
+            "indent": 0,
+            "role": "refrain"
+          }
         ]
       },
       {
@@ -125,6 +152,36 @@
                 "kind": "text",
                 "text": "Машид хүсэн хүлээдэг."
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
             ],
             "indent": 0
           }
@@ -181,6 +238,24 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              3
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              4,
+              4
+            ],
+            "indent": 0,
+            "role": "refrain"
+          }
         ]
       },
       {
@@ -225,6 +300,22 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -241,6 +332,16 @@
               }
             ],
             "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0,
+            "role": "refrain"
           }
         ]
       },
@@ -286,6 +387,36 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -302,6 +433,16 @@
               }
             ],
             "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0,
+            "role": "refrain"
           }
         ]
       },
@@ -344,6 +485,22 @@
                 "kind": "text",
                 "text": "Тэнгэрийн оронд гаргагтун!"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              3
             ],
             "indent": 0
           }
@@ -391,6 +548,22 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -432,6 +605,22 @@
                 "kind": "text",
                 "text": "Тэнгэрийн оронд гаргагтун!"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              3
             ],
             "indent": 0
           }
@@ -479,6 +668,22 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -520,6 +725,22 @@
                 "kind": "text",
                 "text": "Өршөөлийг олгогтун!"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              3
             ],
             "indent": 0
           }
@@ -567,6 +788,29 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -608,6 +852,36 @@
                 "kind": "text",
                 "text": "Гэрчилж хайрлагтун!"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
             ],
             "indent": 0
           }
@@ -655,6 +929,22 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              3
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -696,6 +986,22 @@
                 "kind": "text",
                 "text": "Зохистойгоор өмөглөгтүн!"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              3
             ],
             "indent": 0
           }

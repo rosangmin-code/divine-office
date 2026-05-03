@@ -76,6 +76,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              7
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -117,6 +126,15 @@
                 "kind": "text",
                 "text": "Эзэн Танд бид найдаж байна"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              3
             ],
             "indent": 0
           }

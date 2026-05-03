@@ -76,6 +76,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              7
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -171,6 +180,15 @@
                 "kind": "text",
                 "text": "Та миний агуу их Эзэн, Танд зүрхээ өргөе"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              9
             ],
             "indent": 0
           }
