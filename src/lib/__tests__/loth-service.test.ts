@@ -101,6 +101,57 @@ describe('getHoursSummary', () => {
     expect(result).not.toBeNull()
     expect(result!.hours.map((h) => h.type)).toEqual(['lauds', 'vespers', 'compline'])
   })
+
+  // @fr FR-NEW (#240 F-X5 FU#1)
+  it('strips Sun II vespers + compline on ordinary OT Sunday whose Monday is a Solemnity (Sts. Peter & Paul 2026-06-29 Mon → Sun 06-28 stripped)', () => {
+    // 2026-06-28 = Sunday (13th Sun OT, ORDINARY_TIME — class 6 in
+    // Universal Norms n. 59). 2026-06-29 = Monday Sts. Peter & Paul
+    // (SOLEMNITY, class 3, sanctoral.firstVespers data present).
+    // Per Universal Norms n. 61 (rubric collision): I Vespers of the
+    // higher-rank Solemnity wins → Sun II vespers + compline are
+    // surfaced on Mon's firstVespers/firstCompline cards instead.
+    // BEFORE #240 (legacy): 5 hours (firstVespers, firstCompline,
+    // lauds, vespers, compline) — duplicating Mon firstVespers/Compline.
+    // AFTER #240: 3 hours (firstVespers, firstCompline, lauds).
+    const result = getHoursSummary('2026-06-28')
+    expect(result).not.toBeNull()
+    expect(result!.hours.map((h) => h.type)).toEqual([
+      'firstVespers',
+      'firstCompline',
+      'lauds',
+    ])
+  })
+
+  // @fr FR-NEW (#240 F-X5 FU#1)
+  it('strips Sun II vespers + compline on ordinary OT Sunday whose Monday is a Feast of the Lord (Lateran Basilica 2026-11-09 Mon → Sun 11-08 stripped)', () => {
+    // 2026-11-09 = Monday Dedication of Lateran Basilica (FEAST of
+    // the Lord, class 5; feasts.json firstVespers data present).
+    // 2026-11-08 = Sunday OT (class 6) → Mon I Vespers wins.
+    const result = getHoursSummary('2026-11-08')
+    expect(result).not.toBeNull()
+    expect(result!.hours.map((h) => h.type)).toEqual([
+      'firstVespers',
+      'firstCompline',
+      'lauds',
+    ])
+  })
+
+  // @fr FR-NEW (#240 F-X5 FU#1)
+  it('keeps Sun II full 5 hours on ordinary OT Sunday with regular weekday Monday (regression guard — no Mon firstVespers means no strip even after FU#1)', () => {
+    // 2026-06-14 = Sunday (regression guard from #230). Mon 06-15 is
+    // a regular OT weekday → tomorrowHasFirstVespers=false → no strip.
+    // The new FU#1 logic must NOT trigger when Mon has no firstVespers.
+    const result = getHoursSummary('2026-06-14')
+    expect(result).not.toBeNull()
+    expect(result!.hours).toHaveLength(5)
+    expect(result!.hours.map((h) => h.type)).toEqual([
+      'firstVespers',
+      'firstCompline',
+      'lauds',
+      'vespers',
+      'compline',
+    ])
+  })
 })
 
 describe('assembleHour', () => {

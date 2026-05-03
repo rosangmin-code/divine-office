@@ -809,8 +809,8 @@ function hasFirstVespersAndCompline(
 /**
  * Get a summary of all hours available for a given date.
  *
- * FR-NEW #230 (F-X5, Q4=P) — per-day hour list with forward-looking
- * eve-stripping:
+ * FR-NEW #230 (F-X5, Q4=P) + #240 (F-X5 FU#1) — per-day hour list with
+ * forward-looking eve-stripping:
  *
  *   - **Today carries firstVespers/firstCompline** (Sunday OR
  *     Solemnity/Feast with firstVespers data per
@@ -823,16 +823,27 @@ function hasFirstVespersAndCompline(
  *   - **Today is the eve-weekday of (SUN | SOLEMNITY/FEAST with
  *     firstVespers data)**: vespers + compline cards STRIPPED. Only
  *     lauds remains. Saturday eve of plain Sunday is the original
- *     case (Q1); Q4=P extends to weekday-eve-of-celebration. The
- *     eve URLs (`/pray/<eve>/vespers`, `/pray/<eve>/compline`) still
- *     resolve server-side for SW/cache backward-compat (FR-156
- *     promotion preserved on those URLs); they are simply removed
- *     from the visible card list. (Sunday's own structure is NOT
- *     stripped even when the next day is a Solemnity — Sunday II
- *     Vespers card stays; rubric subtlety reserved for follow-up.)
+ *     case (Q1); Q4=P extends to weekday-eve-of-celebration.
+ *
+ *   - **Today is a non-privileged Sunday (ORDINARY_TIME or CHRISTMAS,
+ *     class 6 in Table of Liturgical Days) with tomorrow carrying
+ *     firstVespers** (i.e., Mon = Solemnity class 3 / Feast of the
+ *     Lord class 5): Sun II vespers + compline cards STRIPPED — the
+ *     content is now surfaced on Mon's firstVespers/firstCompline
+ *     cards. Per Universal Norms n. 61 (GIRM #59), the higher-rank
+ *     I Vespers wins. Privileged Sundays (ADVENT/LENT/EASTER, class
+ *     2) are PROTECTED — their II Vespers outranks Mon Solemnity of
+ *     Saints (class 3) / Mon Feast of the Lord (class 5).
+ *     Implemented in #240 F-X5 FU#1. Test case: 2026-06-28 (13th
+ *     Sun OT) → 2026-06-29 (Mon Sts. Peter & Paul SOLEMNITY).
  *
  *   - **Other weekday** (no firstVespers today, no celebration tomorrow):
  *     lauds + vespers + compline (unchanged from pre-#230).
+ *
+ * Eve URLs (`/pray/<eve>/vespers`, `/pray/<eve>/compline`) still
+ * resolve server-side for SW/cache backward-compat (FR-156 promotion
+ * preserved on those URLs); they are only removed from the visible
+ * card list — never from server routing.
  */
 export function getHoursSummary(dateStr: string): {
   date: string
@@ -847,9 +858,7 @@ export function getHoursSummary(dateStr: string): {
 
   // Forward-looking: strip vespers/compline from today's eve cards if
   // tomorrow carries firstVespers (the eve content is then surfaced on
-  // tomorrow's firstVespers/firstCompline cards). Sundays themselves
-  // are not stripped — the rubric collision (Sun II Vespers vs Mon
-  // Solemnity Vespers I) is reserved for follow-up.
+  // tomorrow's firstVespers/firstCompline cards).
   const tomorrowDate = new Date(dateStr + 'T00:00:00Z')
   tomorrowDate.setUTCDate(tomorrowDate.getUTCDate() + 1)
   const tMM = String(tomorrowDate.getUTCMonth() + 1).padStart(2, '0')
@@ -859,9 +868,16 @@ export function getHoursSummary(dateStr: string): {
   const tomorrowDow = dateToDayOfWeek(tomorrowStr)
   const tomorrowHasFirstVespers = !!tomorrowDay
     && hasFirstVespersAndCompline(tomorrowStr, tomorrowDay, tomorrowDow)
-  // Strip eve vespers/compline ONLY for non-Sunday today (Sunday's own
-  // 5-card structure stays even when next day is celebration).
-  const stripEveCards = dayOfWeek !== 'SUN' && tomorrowHasFirstVespers
+  // #240 F-X5 FU#1: extend strip to non-privileged Sundays (OT /
+  // CHRISTMAS, class 6) when Mon = Solemnity/Feast carrying
+  // firstVespers (class 3 / 5). Per Universal Norms n. 61, Mon I
+  // Vespers wins. Privileged Sundays (ADVENT/LENT/EASTER, class 2)
+  // are NOT stripped — their II Vespers outranks Mon Solemnity of
+  // Saints / Feast of the Lord.
+  const isPrivilegedSunday =
+    dayOfWeek === 'SUN' &&
+    (day.season === 'ADVENT' || day.season === 'LENT' || day.season === 'EASTER')
+  const stripEveCards = tomorrowHasFirstVespers && !isPrivilegedSunday
 
   const hours: { type: HourType; nameMn: string }[] = []
 
