@@ -92,38 +92,79 @@ describe('GET /api/loth/[date]/[hour] — FU#2 firstVespers eligibility gate', (
     expect(res.status).toBe(200)
   })
 
-  // @fr FR-NEW (#298 F-X6) — First Compline psalm/antiphon page mapping.
-  // Pre-#298: data/ordinarium/compline.json days.SAT.psalms[0].page = 517
-  // — that page in the printed PDF is the *Second* Compline (Sun II, after
-  // Second Vespers, Psalm 91 header). The actual First Compline (Sun I,
-  // after First Vespers, on Sundays/Solemnities) starts at PDF page 512
-  // ('1 ДҮГЭЭР ОРОЙН ЗАЛБИРЛЫН ДАРАА' header, 'Шад дуулал 1' antiphon,
-  // 'Дуулал 4' / 'Дуулал 134'). #230 F-X5 had relocated SAT-keyed Compline
-  // content onto the Sunday URL as 'firstCompline', so the wrong-page leak
-  // surfaced to user-visible First Compline rendering. The fix changes
-  // days.SAT.psalms[0].page → 512; the psalm-block renderer drives BOTH
-  // the antiphon-box page badge and the psalm-reference page badge from
-  // the same `psalm.page` field, so a single field flip restores both.
-  // Second Compline (days.SUN.psalms[0].page = 517) intentionally stays
-  // — that one matches PDF p517 'Шад дуулал 1' / 'Дуулал 91'.
-  it('firstCompline psalm carries page 512 — First Compline anchor (PDF p512)', async () => {
+  // @fr FR-NEW (#298 F-X6 / #307 F-X6b) — First Compline psalm/antiphon
+  // data + page mapping. Pre-#298: compline.json days.SAT.psalms[0].page
+  // = 517 — that page in the printed PDF is the *Second* Compline (Sun
+  // II, after Second Vespers, Psalm 91 header). #298 fixed page → 512,
+  // but the ref/antiphon were left as Sun II content (Psalm 91 + 'жигүүр
+  // дор'), so the page badge pointed at PDF p512 (Sun I) while the body
+  // showed Sun II (Psalm 91:1-16). #307 F-X6b corrects ref + default
+  // antiphon to PDF p512 verbatim ('Дуулал 4' / 'Намайгаа өршөөн,
+  // залбирал юуг минь сонсооч.') AND adds the second psalm of the Sun I
+  // First Compline pair ('Дуулал 134' / 'Шөнийн аниргүй цагаар Эзэнийг
+  // магтагтун.', PDF p514). #230 F-X5 had relocated SAT-keyed Compline
+  // content onto the Sunday URL as 'firstCompline', so the user sees
+  // these two psalms when opening firstCompline on a Sunday. The
+  // psalm-block renderer drives both the antiphon-box page badge and
+  // the psalm-reference page badge from `psalm.page`, so the page+ref
+  // pair must be PDF-consistent or the page badge points one place
+  // while the psalm body shows another. Second Compline (days.SUN.
+  // psalms[0]) stays at Psalm 91 + 'Тэнгэрбурханы жигүүр' / page 517 —
+  // that matches PDF p517 '2 ДУГААР ОРОЙН ЗАЛБИРЛЫН ДАРАА'.
+  it('firstCompline psalmody[0] is PDF p512 Psalm 4 with Sun I antiphon (#307 F-X6b)', async () => {
     const res = await callGet('2026-06-14', 'firstCompline') // Sunday
     expect(res.status).toBe(200)
-    const body = (await res.json()) as { sections: Array<{ type: string; psalms?: Array<{ page?: number }> }> }
+    const body = (await res.json()) as {
+      sections: Array<{
+        type: string
+        psalms?: Array<{ reference?: string; antiphon?: string; page?: number }>
+      }>
+    }
     const psalmody = body.sections.find((s) => s.type === 'psalmody')
     expect(psalmody).toBeDefined()
     expect(psalmody?.psalms).toBeDefined()
-    expect(psalmody!.psalms!.length).toBeGreaterThan(0)
+    expect(psalmody!.psalms!.length).toBeGreaterThanOrEqual(2)
+    // Pin all three signals together so a future drift on any one
+    // resurfaces the F-X6 / F-X6b page-badge↔body mismatch.
+    expect(psalmody!.psalms![0].reference).toBe('Psalm 4')
+    expect(psalmody!.psalms![0].antiphon).toContain('Намайгаа өршөөн')
     expect(psalmody!.psalms![0].page).toBe(512) // NOT 517 (that's Second Compline)
   })
 
+  it('firstCompline psalmody[1] is PDF p514 Psalm 134 with night-praise antiphon (#307 F-X6b)', async () => {
+    // Sun I First Compline traditionally pairs Psalm 4 + Psalm 134 (LOTH
+    // Latin Liturgia Horarum). PDF p514 'Шад дуулал 2 Шөнийн аниргүй
+    // цагаар Эзэнийг магтагтун. / Дуулал 134' confirms the pair in the
+    // Mongolian translation.
+    const res = await callGet('2026-06-14', 'firstCompline') // Sunday
+    expect(res.status).toBe(200)
+    const body = (await res.json()) as {
+      sections: Array<{
+        type: string
+        psalms?: Array<{ reference?: string; antiphon?: string; page?: number }>
+      }>
+    }
+    const psalmody = body.sections.find((s) => s.type === 'psalmody')
+    expect(psalmody!.psalms![1].reference).toBe('Psalm 134')
+    expect(psalmody!.psalms![1].antiphon).toContain('Шөнийн аниргүй')
+    expect(psalmody!.psalms![1].page).toBe(514)
+  })
+
   it('compline (Second Compline, Sunday eve) psalm carries page 517 — regression guard for #298 F-X6', async () => {
-    // The fix MUST NOT touch Second Compline. days.SUN.psalms[0].page stays 517,
-    // which matches PDF p517 ('2 ДУГААР ОРОЙН ЗАЛБИРЛЫН ДАРАА' header).
+    // The fix MUST NOT touch Second Compline. days.SUN.psalms[0] stays
+    // Psalm 91 + 'Тэнгэрбурханы жигүүр' / page 517, which matches PDF
+    // p517 ('2 ДУГААР ОРОЙН ЗАЛБИРЛЫН ДАРАА' header / 'Дуулал 91').
     const res = await callGet('2026-06-14', 'compline') // Sunday → days.SUN
     expect(res.status).toBe(200)
-    const body = (await res.json()) as { sections: Array<{ type: string; psalms?: Array<{ page?: number }> }> }
+    const body = (await res.json()) as {
+      sections: Array<{
+        type: string
+        psalms?: Array<{ reference?: string; antiphon?: string; page?: number }>
+      }>
+    }
     const psalmody = body.sections.find((s) => s.type === 'psalmody')
+    expect(psalmody?.psalms?.[0]?.reference).toBe('Psalm 91:1-16')
+    expect(psalmody?.psalms?.[0]?.antiphon).toContain('Тэнгэрбурханы жигүүр')
     expect(psalmody?.psalms?.[0]?.page).toBe(517)
   })
 
