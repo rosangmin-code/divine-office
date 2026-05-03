@@ -837,6 +837,16 @@ function hasFirstVespersAndCompline(
  *     Implemented in #240 F-X5 FU#1. Test case: 2026-06-28 (13th
  *     Sun OT) → 2026-06-29 (Mon Sts. Peter & Paul SOLEMNITY).
  *
+ *   - **Sun ADVENT → Mon CHRISTMAS season boundary** (e.g.,
+ *     2028-12-24 Sun 4th Advent → 2028-12-25 Mon Christmas): the
+ *     privileged-Sunday guard is OVERRIDDEN. Per Universal Norms
+ *     n. 40, "Advent ends before First Vespers of the Nativity of
+ *     the Lord" — the season boundary itself displaces Sunday II
+ *     Vespers, regardless of class-rank collision. Detected as
+ *     `today.season === 'ADVENT' && tomorrow.season === 'CHRISTMAS'`
+ *     (only Dec 24 satisfies both). Implemented in #245 F-X5 FU#4.
+ *     Recurrence ~6-7 yr (next 2028-12-24, then 2034-12-24).
+ *
  *   - **Other weekday** (no firstVespers today, no celebration tomorrow):
  *     lauds + vespers + compline (unchanged from pre-#230).
  *
@@ -877,7 +887,20 @@ export function getHoursSummary(dateStr: string): {
   const isPrivilegedSunday =
     dayOfWeek === 'SUN' &&
     (day.season === 'ADVENT' || day.season === 'LENT' || day.season === 'EASTER')
-  const stripEveCards = tomorrowHasFirstVespers && !isPrivilegedSunday
+  // #245 F-X5 FU#4: Advent → Christmas season-boundary override.
+  // Per Universal Norms n. 40, "Advent ends before First Vespers of
+  // the Nativity of the Lord" — the season boundary itself displaces
+  // Sun ADVENT II Vespers, overriding the privileged-Sun guard. Only
+  // Dec 24 satisfies (today.season=ADVENT && tomorrow.season=CHRISTMAS);
+  // Sun Lent → Mon Annunciation / Sun Advent → Mon Immaculate
+  // Conception remain protected (no season cross).
+  const isAdventToChristmasBoundary =
+    isPrivilegedSunday &&
+    day.season === 'ADVENT' &&
+    !!tomorrowDay &&
+    tomorrowDay.season === 'CHRISTMAS'
+  const stripEveCards =
+    tomorrowHasFirstVespers && (!isPrivilegedSunday || isAdventToChristmasBoundary)
 
   const hours: { type: HourType; nameMn: string }[] = []
 
