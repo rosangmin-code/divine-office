@@ -168,6 +168,53 @@ describe('GET /api/loth/[date]/[hour] — FU#2 firstVespers eligibility gate', (
     expect(psalmody?.psalms?.[0]?.page).toBe(517)
   })
 
+  // @fr FR-NEW (#309 F-X6c) — First Compline shortReading carry-over fix.
+  // Pre-#309: compline.json days.SAT.shortReading was Rev 22:4-5 + page
+  // 519 (Sun II Compline content), the same Sun II → Sun I carry-over
+  // class as F-X6 (page) and F-X6b (psalm/antiphon). PDF p.514-515
+  // (lines 17793-17802) shows the orthodox Sun I First Compline reading
+  // is Дэд хууль 6:4-7 (Deuteronomy 6:4-7, the Shema 'Сонс, Израиль аа!').
+  // Pin all three signals (ref + body anchor + page) so a future
+  // re-introduction of the carry-over breaks the test, mirroring the
+  // F-X6b psalm-pin pattern.
+  it('firstCompline shortReading is PDF p514 Шема Deuteronomy 6:4-7 (#309 F-X6c)', async () => {
+    const res = await callGet('2026-06-14', 'firstCompline') // Sunday
+    expect(res.status).toBe(200)
+    const body = (await res.json()) as {
+      sections: Array<{
+        type: string
+        ref?: string
+        page?: number
+        verses?: Array<{ verse: number; text: string }>
+      }>
+    }
+    const reading = body.sections.find((s) => s.type === 'shortReading')
+    expect(reading).toBeDefined()
+    expect(reading!.ref).toBe('Deuteronomy 6:4-7') // NOT 'Revelation 22:4-5' (Sun II)
+    expect(reading!.page).toBe(514) // NOT 519 (Sun II shortReading page)
+    // Body anchor: opening word of the Shema as it appears in PDF p.514.
+    const fullText = (reading!.verses ?? []).map((v) => v.text).join(' ')
+    expect(fullText).toContain('Сонс, Израиль')
+  })
+
+  it('compline (Second Compline, Sunday eve) shortReading carries Rev 22:4-5 + page 519 — regression guard for #309 F-X6c', async () => {
+    // The F-X6c fix MUST NOT touch Second Compline. days.SUN.shortReading
+    // stays Revelation 22:4-5 + page 519, which matches PDF p.519
+    // (lines 17964-17969).
+    const res = await callGet('2026-06-14', 'compline') // Sunday → days.SUN
+    expect(res.status).toBe(200)
+    const body = (await res.json()) as {
+      sections: Array<{
+        type: string
+        ref?: string
+        page?: number
+      }>
+    }
+    const reading = body.sections.find((s) => s.type === 'shortReading')
+    expect(reading?.ref).toBe('Revelation 22:4-5')
+    expect(reading?.page).toBe(519)
+  })
+
   it('returns 200 for lauds on an ordinary OT weekday (regression — gate must NOT block lauds)', async () => {
     const res = await callGet('2026-06-15', 'lauds')
     expect(res.status).toBe(200)
