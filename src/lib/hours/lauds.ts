@@ -95,8 +95,17 @@ export const assembleLauds: HourAssembler = (ctx) => {
   // 9. Concluding Prayer
   // F-2 (#214) — see compline.ts for the rubric. Lauds shares the same
   // Solemnity-not-on-Sunday auto-swap behavior; helper applies uniformly.
+  // #242 F-X5 FU#3 — symmetry with compline.ts (#216 F-2c): use
+  // `effectiveLiturgicalDay ?? liturgicalDay` so a future identity
+  // promotion (FR-156 / Q4=P) feeds the swap with the celebration's
+  // rank rather than the eve weekday's. Today no path promotes
+  // effectiveLiturgicalDay for lauds (lauds is morning prayer — no
+  // eve-shifting), so the fall-back makes this a behavior-equivalent
+  // refactor for current callers and a forward guarantee for any
+  // future eve-promotion of lauds.
   if (ctx.mergedPropers.concludingPrayer || ctx.mergedPropers.concludingPrayerRich) {
-    const swap = shouldUseAlternateConcludingPrayer(ctx.liturgicalDay, ctx.dayOfWeek)
+    const effectiveDay = ctx.effectiveLiturgicalDay ?? ctx.liturgicalDay
+    const swap = shouldUseAlternateConcludingPrayer(effectiveDay, ctx.dayOfWeek)
     const fields = buildConcludingPrayerFields({
       primaryText: ctx.mergedPropers.concludingPrayer,
       primaryRich: ctx.mergedPropers.concludingPrayerRich,

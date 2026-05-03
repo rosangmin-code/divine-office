@@ -133,4 +133,36 @@ describe('assembleVespers — F-2 concluding-prayer auto-swap (#214)', () => {
     const cp = getCp(withPrayerCtx({ rank: 'SOLEMNITY', season: 'EASTER', weekOfSeason: 1, dayOfWeek: 'WED' }))
     expect(cp.text).toBe('PRIMARY')
   })
+
+  // @fr FR-NEW (#242 F-X5 FU#3)
+  // Symmetry with compline.ts (#216 F-2c). When FR-156 promotes the
+  // identity (Sat-vespers eve of a non-Sunday Solemnity, or the F-X5
+  // firstVespers route), `ctx.effectiveLiturgicalDay` carries the
+  // celebration's rank while `ctx.liturgicalDay` keeps the URL's civil
+  // identity. The F-2 swap helper must read the EFFECTIVE day, otherwise
+  // a Sat-vespers URL eve of (say) a Mon Solemnity would silently render
+  // the primary instead of the alternate.
+  it('effectiveLiturgicalDay (Solemnity non-Sunday) overrides liturgicalDay (plain weekday) → swap fires', () => {
+    const promotedDay = {
+      season: 'ORDINARY_TIME',
+      psalterWeek: 1,
+      rank: 'SOLEMNITY',
+      weekOfSeason: 13,
+    } as LiturgicalDayInfo
+    const ctx = withPrayerCtx({ rank: 'WEEKDAY', season: 'ORDINARY_TIME', weekOfSeason: 13, dayOfWeek: 'SAT' })
+    const ctxWithPromotion: HourContext = { ...ctx, effectiveLiturgicalDay: promotedDay }
+    const cp = getCp(ctxWithPromotion)
+    expect(cp.text).toBe('ALTERNATE')
+    expect(cp.alternateText).toBe('PRIMARY')
+    expect(cp.page).toBe(200)
+  })
+
+  // @fr FR-NEW (#242 F-X5 FU#3)
+  it('no effectiveLiturgicalDay → falls back to liturgicalDay (regression guard for ?? operator)', () => {
+    // Same WEEKDAY rank as the promotion test, but no effective day
+    // promoted: helper must read `liturgicalDay.rank === 'WEEKDAY'` →
+    // no swap.
+    const cp = getCp(withPrayerCtx({ rank: 'WEEKDAY', season: 'ORDINARY_TIME', weekOfSeason: 13, dayOfWeek: 'SAT' }))
+    expect(cp.text).toBe('PRIMARY')
+  })
 })

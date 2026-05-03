@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { assembleHour } from '@/lib/loth-service'
+import { assembleHour, isFirstVespersEligibleDate } from '@/lib/loth-service'
 import { isValidDateStr } from '@/lib/date-validation'
 import type { HourType } from '@/lib/types'
 
@@ -22,6 +22,21 @@ export async function GET(
     return NextResponse.json(
       { error: `Invalid hour: ${hour}. Valid hours: ${VALID_HOURS.join(', ')}` },
       { status: 400 },
+    )
+  }
+
+  // #242 F-X5 FU#2 — 404 gate for firstVespers/firstCompline routes on
+  // dates that do NOT carry First Vespers content. Mirrors the page.tsx
+  // gate so the API surface and SSR surface stay aligned.
+  if (
+    (hour === 'firstVespers' || hour === 'firstCompline') &&
+    !isFirstVespersEligibleDate(date)
+  ) {
+    return NextResponse.json(
+      {
+        error: `${hour} is not available for ${date}: the date does not carry First Vespers content (must be a Sunday, or a Solemnity/Feast with firstVespers data).`,
+      },
+      { status: 404 },
     )
   }
 

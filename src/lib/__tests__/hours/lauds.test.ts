@@ -156,4 +156,33 @@ describe('assembleLauds — F-2 concluding-prayer auto-swap (#214)', () => {
     const cp = getCp(withPrayerCtx({ rank: 'SOLEMNITY', season: 'EASTER', weekOfSeason: 1, dayOfWeek: 'WED' }))
     expect(cp.text).toBe('PRIMARY')
   })
+
+  // @fr FR-NEW (#242 F-X5 FU#3)
+  // Symmetry with compline.ts (#216 F-2c). For lauds the
+  // `effectiveLiturgicalDay` is currently never promoted (lauds is
+  // morning prayer — no eve-shifting) but the helper migrates to the
+  // `effectiveLiturgicalDay ?? liturgicalDay` pattern to match
+  // compline/vespers. This test pins the contract: if a future
+  // promotion site sets `effectiveLiturgicalDay` for lauds, the swap
+  // MUST read it.
+  it('effectiveLiturgicalDay (Solemnity non-Sunday) overrides liturgicalDay (plain weekday) → swap fires', () => {
+    const promotedDay = {
+      season: 'ORDINARY_TIME',
+      psalterWeek: 1,
+      rank: 'SOLEMNITY',
+      weekOfSeason: 13,
+    } as LiturgicalDayInfo
+    const ctx = withPrayerCtx({ rank: 'WEEKDAY', season: 'ORDINARY_TIME', weekOfSeason: 13, dayOfWeek: 'MON' })
+    const ctxWithPromotion: HourContext = { ...ctx, effectiveLiturgicalDay: promotedDay }
+    const cp = getCp(ctxWithPromotion)
+    expect(cp.text).toBe('ALTERNATE')
+    expect(cp.alternateText).toBe('PRIMARY')
+    expect(cp.page).toBe(200)
+  })
+
+  // @fr FR-NEW (#242 F-X5 FU#3)
+  it('no effectiveLiturgicalDay → falls back to liturgicalDay (regression guard for ?? operator)', () => {
+    const cp = getCp(withPrayerCtx({ rank: 'WEEKDAY', season: 'ORDINARY_TIME', weekOfSeason: 13, dayOfWeek: 'MON' }))
+    expect(cp.text).toBe('PRIMARY')
+  })
 })
