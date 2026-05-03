@@ -67,6 +67,15 @@
             ],
             "indent": 0
           }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              6
+            ],
+            "indent": 0
+          }
         ]
       },
       {
@@ -135,6 +144,15 @@
                 "kind": "text",
                 "text": "Гайхамшигт тэр хайрыг та авч байна уу"
               }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              6
             ],
             "indent": 0
           }
