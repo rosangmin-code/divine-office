@@ -29,7 +29,10 @@ export function applySeasonalAntiphon(
   const trimmed = antiphon.trimEnd()
   if (trimmed.length === 0) return antiphon
   // Already ends with Alleluia (any trailing punctuation).
-  if (/[Аа]ллэлуяа[,.!?]*$/.test(trimmed)) return antiphon
+  // Idempotent regex covers both `Аллэлуяа` (antiphon canonical spelling) and
+  // `Аллэлүяа` (variant with `ү`, used in hymn texts) — task #222 defensive
+  // broaden so a stray hymn-style spelling does not double-augment.
+  if (/[Аа]ллэл[уү]яа[,.!?]*$/.test(trimmed)) return antiphon
   // Ensure the preceding clause is closed with a period before appending.
   const closer = /[.!?]$/.test(trimmed) ? '' : '.'
   return `${trimmed}${closer} Аллэлуяа!`
@@ -81,10 +84,14 @@ export function applySeasonalAntiphonRich(
   if (!rich.blocks || rich.blocks.length === 0) return rich
 
   // Idempotent guard — bail if any text/rubric span anywhere already
-  // carries Alleluia.
+  // carries Alleluia. Pattern covers both `Аллэлуяа` (antiphon canonical
+  // spelling) and `Аллэлүяа` (hymn-style variant with `ү`) — task #222
+  // defensive broaden, since hymn-text overlays could in principle ship
+  // through a rich AST and the original `[Аа]ллэлуяа` would silently miss.
+  const ALLELUIA_RE = /[Аа]ллэл[уү]яа/
   for (const block of rich.blocks) {
     if (block.kind === 'rubric-line') {
-      if (/[Аа]ллэлуяа/.test(block.text)) return rich
+      if (ALLELUIA_RE.test(block.text)) return rich
       continue
     }
     if (block.kind === 'para') {
@@ -96,7 +103,7 @@ export function applySeasonalAntiphonRich(
           span.kind === 'response'
             ? span.text
             : ''
-        if (/[Аа]ллэлуяа/.test(text)) return rich
+        if (ALLELUIA_RE.test(text)) return rich
       }
       continue
     }
@@ -110,7 +117,7 @@ export function applySeasonalAntiphonRich(
             span.kind === 'response'
               ? span.text
               : ''
-          if (/[Аа]ллэлуяа/.test(text)) return rich
+          if (ALLELUIA_RE.test(text)) return rich
         }
       }
     }
@@ -123,6 +130,15 @@ export function applySeasonalAntiphonRich(
   const hasPara = rich.blocks.some((b) => b.kind === 'para')
   if (!hasPara) return rich
 
+  // Mirror the plain helper's closing-period insertion (line 33-35)
+  // defensively: if the antiphon body's final text-bearing span does not
+  // end with closing punctuation, append a period to it so the flattened
+  // reading (a11y / printable export / future plain-text pipeline) closes
+  // the body before the Аллэлуяа! rubric on the new line. Production PDF
+  // data always ends with punctuation so this is a no-op in practice —
+  // task #222 keeps it for safety against hand-authored entries.
+  const baseBlocks = ensureClosingPeriod(rich.blocks)
+
   // Block-level append — NEW para block at the end carrying only the
   // rubric span. Renderer's inter-block `<br/>` produces the line break
   // the user expects without renderer changes.
@@ -130,7 +146,48 @@ export function applySeasonalAntiphonRich(
     kind: 'para' as const,
     spans: [{ kind: 'rubric' as const, text: 'Аллэлуяа!' }],
   }
-  return { ...rich, blocks: [...rich.blocks, newBlock] }
+  return { ...rich, blocks: [...baseBlocks, newBlock] }
+}
+
+/**
+ * Walk the rich blocks backward, find the last text-bearing span in the
+ * last `para` block, and append `.` if it does not already end with a
+ * sentence-closing punctuation (`.`, `!`, `?`). Pure / immutable — when
+ * no change is required (or no eligible span is found) the original
+ * `blocks` reference is returned unchanged.
+ *
+ * Mirror of `applySeasonalAntiphon`'s line 34 closer logic for the rich
+ * path. Task #222 defensive hardening — production rich AST always ends
+ * with a period; this guards against future hand-authored entries that
+ * forget the closer.
+ */
+function ensureClosingPeriod(
+  blocks: PrayerText['blocks'],
+): PrayerText['blocks'] {
+  for (let bi = blocks.length - 1; bi >= 0; bi--) {
+    const b = blocks[bi]
+    if (b.kind !== 'para') continue
+    if (b.spans.length === 0) continue
+    for (let si = b.spans.length - 1; si >= 0; si--) {
+      const s = b.spans[si]
+      if (
+        s.kind !== 'text' &&
+        s.kind !== 'rubric' &&
+        s.kind !== 'versicle' &&
+        s.kind !== 'response'
+      )
+        continue
+      const trimmed = s.text.trimEnd()
+      if (trimmed.length === 0) continue
+      if (/[.!?]$/.test(trimmed)) return blocks // already closed — no-op
+      const newSpans = [...b.spans]
+      newSpans[si] = { ...s, text: trimmed + '.' }
+      const newBlocks = [...blocks]
+      newBlocks[bi] = { ...b, spans: newSpans }
+      return newBlocks
+    }
+  }
+  return blocks // no eligible text-bearing span found — no-op
 }
 
 /**

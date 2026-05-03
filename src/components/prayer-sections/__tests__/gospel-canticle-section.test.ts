@@ -255,6 +255,39 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
     expect(html).toMatch(/Эхний хэсэг\.[\s\S]*?<br\s*\/?>[\s\S]*?Хоёр дахь хэсэг\./)
   })
 
+  // Task #222 defensive hardening — pre-fix `firstEmitted` flipped to
+  // `false` BEFORE the inner content emission. A para block with empty
+  // `spans` would still flip the flag and the NEXT non-empty block would
+  // emit a stray leading `<br/>` despite it being the first VISIBLE block.
+  // Post-fix the flag flips only after the block actually emitted at
+  // least one element.
+  it('rich path skips block separator when a para has empty spans (#222 hardening)', () => {
+    const antiphonRich: PrayerText = {
+      blocks: [
+        // Empty-spans para — hand-authored / future overlay shape that
+        // contributes nothing renderable.
+        { kind: 'para', spans: [] },
+        // First VISIBLE block — must NOT be preceded by a `<br/>`.
+        { kind: 'para', spans: [{ kind: 'text', text: 'Бодит хэсэг.' }] },
+      ],
+    }
+    const section = makeSection({ antiphonRich })
+    const html = render(createElement(GospelCanticleSection, { section }))
+    expect(html).toContain('data-render-mode="rich"')
+    expect(html).toContain('Бодит хэсэг.')
+    // Inside the rich antiphon container the leading `<br/>` would be
+    // visually a stray empty line. We assert there's no `<br/>` between
+    // the wrapper's "Шад магтаал: " label and the first emitted body.
+    expect(html).toMatch(/Шад магтаал:[\s\S]*?<\/span>(?!\s*<br)/)
+    // Defensive: if there's any `<br/>` it does NOT appear before the
+    // first body content.
+    const labelIdx = html.indexOf('Бодит хэсэг.')
+    const firstBrIdx = html.search(/<br\s*\/?>/)
+    if (firstBrIdx !== -1) {
+      expect(firstBrIdx).toBeGreaterThan(labelIdx)
+    }
+  })
+
   it('renders rich path even when plain `antiphon` is empty (#207 gate fix)', () => {
     // Sanctoral / seasonal data may legitimately ship rich-only without
     // a plain string companion — the prior gate `section.antiphon &&`
