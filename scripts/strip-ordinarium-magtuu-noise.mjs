@@ -54,12 +54,20 @@ function stripNoiseFromText(text) {
   }
   if (removed === 0) return { text, removed: 0 }
 
-  // Collapse 3+ consecutive empty lines -> 2 ("","" = single visual gap).
+  // Collapse 2+ consecutive empty lines -> 1 (a single blank line
+  // already represents one paragraph gap under whitespace-pre-line CSS;
+  // anything more would visually widen the gap).
   // Also trim trailing blank lines (so we don't leave "...\n\n\n" at EOF).
+  //
+  // #330 F-X7b F-1 — blank判定을 `line.trim() === ''` 로 완화하여
+  // whitespace-only / NBSP-only / ZWSP-only 라인도 blank 으로 인식한다.
+  // 현 ordinarium 데이터에는 strict-empty 만 존재하지만 PDF 재추출 또는
+  // 데이터 추가 시 silent 누락 위험이 있어 defensive widen.
+  const isBlank = (line) => line.trim() === ''
   const collapsed = []
   let blankRun = 0
   for (const line of kept) {
-    if (line === '') {
+    if (isBlank(line)) {
       blankRun += 1
       if (blankRun <= 1) collapsed.push(line)
     } else {
@@ -67,8 +75,8 @@ function stripNoiseFromText(text) {
       collapsed.push(line)
     }
   }
-  // Trim trailing blanks
-  while (collapsed.length > 0 && collapsed[collapsed.length - 1] === '') collapsed.pop()
+  // Trim trailing blanks (whitespace-only included).
+  while (collapsed.length > 0 && isBlank(collapsed[collapsed.length - 1])) collapsed.pop()
 
   return { text: collapsed.join('\n'), removed }
 }

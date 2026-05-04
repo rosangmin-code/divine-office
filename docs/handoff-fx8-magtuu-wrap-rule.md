@@ -145,6 +145,27 @@ phrase 리스트 walk:
   scope. F-X8 은 rich path 만 처리. alt-pick 메뉴는 plain text 그대로 (사용자가
   default 가 아닌 다른 hymn 을 고른 case 만, 회귀 위험 0).
 
+### 5.1 인접 cohort 와의 orthogonality (#330 F-X8 F-1 addendum)
+
+review-324 의 AC-5 PARTIALLY_MET 에서 식별된 traceability gap 보강:
+다음 세 항목은 F-X8 와 별개 cohort 이며, F-X8 의 줄바꿈 규칙 (capital=verse,
+lower=wrap) 와는 직접 충돌하지 않는다.
+
+- **F-X7c (3 hymn 41/45/111 page-break stanza-drift)** — review #311 F-2 에서
+  식별된 별도 cohort. PDF page-break 가 stanza 중간에 떨어진 데이터 형상
+  문제로, F-X8 의 phrase 분해와는 직교. F-X8 는 fix 하지도, regress 하지도
+  않음 (verified: hymn 41 b0 = 1-line "1. Есүс мандан ирсэн" + b2 = 3-line
+  body — pre-existing 형상 그대로).
+- **F-X7b review-318 follow-up F-1/F-2/F-3** — `scripts/strip-ordinarium-magtuu-noise.mjs`
+  whitespace-blank handling + positive fixture + comment-vs-code 정정. 모두
+  plain-text alt-pick path tooling 에 한정되며, rich path 줄바꿈 규칙인
+  F-X8 와는 다른 script 를 다룬다. **#330 batch 에서 모두 정리**
+  (`pair-cli` 에서 task #330 참조).
+- **F-X8 review-324 follow-up F-2..F-10** — 본 task #330 batch 에서
+  builder defensive validation, renderer flush+flow guard, JSDoc 보강 등
+  10건을 함께 정리. 동일 batch 안에서 처리되는 cosmetic/defensive 강화이며
+  F-X8 의 동작 자체는 변경되지 않음.
+
 ## 6. 참조 task
 
 - F-X3 #228 audit (`docs/handoff-fx3-phrase-audit.md`) — 122 hymn audit
