@@ -23,8 +23,24 @@ function indentClassFor(level: 0 | 1 | 2 | undefined): string {
 // First-line position matches the legacy phrase indent (0 / 6 / 12
 // spacing units); viewport-wrapped continuation lines indent +6 further
 // via `text-indent: -1.5rem` (-indent-6). User spec: "구문 wrap 시 들여쓰기".
-function phraseHangingIndentClass(level: 0 | 1 | 2 | undefined): string {
+//
+// F-X8 (#300) — `flush=true` overrides hanging indent with column-flush
+// rendering (no padding-left, no negative text-indent). Applied for hymn
+// (Магтуу) phrases where the user spec is "들여쓰기 없음" — capital lines
+// open new verses, lowercase wraps stay attached, and visual indentation
+// is intentionally absent. Levels are still honoured (1 / 2) so hymn
+// authors can opt back into nested indents in rare future cases without
+// reinstating hanging behaviour.
+function phraseHangingIndentClass(
+  level: 0 | 1 | 2 | undefined,
+  flush = false,
+): string {
   const lv = level ?? 0
+  if (flush) {
+    if (lv === 0) return ''
+    if (lv === 1) return 'pl-6'
+    return 'pl-12'
+  }
   if (lv === 0) return 'pl-6 -indent-6'
   if (lv === 1) return 'pl-12 -indent-6'
   return 'pl-18 -indent-6'
@@ -310,7 +326,12 @@ function flattenForSentenceFlow(
   return lines
 }
 
-function renderBlock(block: PrayerBlock, key: number, flow: FlowMode): JSX.Element {
+function renderBlock(
+  block: PrayerBlock,
+  key: number,
+  flow: FlowMode,
+  flush: boolean,
+): JSX.Element {
   if (block.kind === 'para') {
     const indent = indentClassFor(block.indent)
     const cls = [BODY_CLASS, indent].filter(Boolean).join(' ')
@@ -347,8 +368,11 @@ function renderBlock(block: PrayerBlock, key: number, flow: FlowMode): JSX.Eleme
           {block.phrases.map((phrase, pi) => {
             const [start, end] = phrase.lineRange
             const phraseSpans = block.lines.slice(start, end + 1).flatMap((l) => l.spans)
-            // FR-161 R-13: hanging indent for phrase wrap continuation.
-            const indent = phraseHangingIndentClass(phrase.indent)
+            // FR-161 R-13: hanging indent for phrase wrap continuation
+            // (default). F-X8 (#300): hymn callers pass `flush={true}`
+            // to drop the hanging-indent rule entirely (capital=verse,
+            // lowercase=wrap, no indent — see RichContent comment block).
+            const indent = phraseHangingIndentClass(phrase.indent, flush)
             const isRefrain = phrase.role === 'refrain'
             const isDoxology = phrase.role === 'doxology'
             const roleClass = isRefrain
@@ -400,6 +424,7 @@ export function RichContent({
   content,
   className,
   flow,
+  flush,
 }: {
   content: PrayerText
   className?: string
@@ -414,6 +439,14 @@ export function RichContent({
   //                  trailing `.|!|?|…|:` + next-line capital.
   //   undefined    → equivalent to `'legacy'`.
   flow?: 'legacy' | 'natural' | 'sentence'
+  // F-X8 (#300) — `flush=true` opts the legacy phrase render out of the
+  // FR-161 R-13 hanging-indent rule. The phrase still emits one
+  // `<span class="block">` per `lineRange`, but with no `pl-6 -indent-6`
+  // padding/text-indent pair so each verse line begins at column 0 and
+  // wrap continuations also flow flush. Hymn renderer (Магтуу-style) is
+  // the only current caller. Has no effect when `flow !== undefined`
+  // (natural/sentence flows do not consult phrase indent).
+  flush?: boolean
 }): JSX.Element {
   // FR-161 R-17: natural / sentence flow modes operate on the ENTIRE
   // content (multi-block aware). The whole `PrayerText` becomes one
@@ -444,7 +477,7 @@ export function RichContent({
   // Legacy / undefined: per-block rendering with `space-y-2` between blocks.
   return (
     <div className={className ? `space-y-2 ${className}` : 'space-y-2'}>
-      {content.blocks.map((b, i) => renderBlock(b, i, flow))}
+      {content.blocks.map((b, i) => renderBlock(b, i, flow, flush ?? false))}
     </div>
   )
 }

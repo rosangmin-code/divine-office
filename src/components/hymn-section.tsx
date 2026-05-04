@@ -43,7 +43,12 @@ export function HymnSection({ section }: HymnSectionProps) {
         Магтуу <PageRef page={displayPage} />
       </p>
       {useRich ? (
-        <RichContent content={section.textRich!} className="mt-2" />
+        // F-X8 (#300) — Магтуу 줄바꿈 규칙: flush=true drops phrase
+        // hanging indent so capital lines render flush at column 0 and
+        // lowercase wrap continuations stay attached without indenting.
+        // Phrase boundaries themselves are owned by the hymn builder
+        // (`scripts/build-hymn-phrases-into-rich.mjs` Pass A/B).
+        <RichContent content={section.textRich!} className="mt-2" flush />
       ) : (
         <div className="mt-2 whitespace-pre-line font-serif text-stone-800 dark:text-stone-200">
           {displayText}

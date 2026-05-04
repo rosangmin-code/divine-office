@@ -45,6 +45,27 @@
           {
             "lineRange": [
               0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
               3
             ],
             "indent": 0
@@ -143,6 +164,62 @@
           {
             "lineRange": [
               0,
+              1
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              4,
+              4
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              5,
+              5
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              6,
+              6
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              7,
+              7
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              8,
               8
             ],
             "indent": 0,
