@@ -1,14 +1,24 @@
 #!/usr/bin/env node
 /**
- * verify-no-page-noise.js — F-X7 (#299) regression guard.
+ * verify-no-page-noise.js — F-X7 / F-X7b regression guard.
  *
- * Asserts that the PDF page-header label 'Магтуу' does NOT leak as
- * standalone tokens into hymn rich.json bodies. The page header sits
+ * Asserts that the PDF page-header label 'Магтуу' does NOT leak as a
+ * standalone token into either hymn render path. The page header sits
  * at the top of every PDF hymn page and historically got transcribed
- * as either:
+ * into two distinct surfaces:
  *
- *   (A) a single-line stanza ['Магтуу'] sandwiched between dividers, or
- *   (B) the first line of an otherwise-real stanza.
+ *   1. Rich render path — src/data/loth/prayers/hymns/{N}.rich.json
+ *      Shapes:
+ *        (A) a single-line stanza ['Магтуу'] sandwiched between dividers, or
+ *        (B) the first line of an otherwise-real stanza.
+ *      Closed by F-X7 (#299).
+ *
+ *   2. Plain-text / alt-pick render path — src/data/loth/ordinarium/hymns.json
+ *      `text` field (a single string with `\n` separators) where the
+ *      noise appears as a standalone token line. Surfaces when the user
+ *      picks a non-default candidate via the '다른 찬миг ai' menu
+ *      (`useRich` gate in hymn-section.tsx falls back to plain text).
+ *      Closed by F-X7b (#317).
  *
  * Both shapes are surfaced as failures here. Anything else that contains
  * 'Магтуу' as a substring inside a longer line (e.g. an inflected form
@@ -25,9 +35,10 @@ const fs = require('node:fs')
 const path = require('node:path')
 
 const HYMN_DIR = 'src/data/loth/prayers/hymns'
+const ORDINARIUM_HYMNS = 'src/data/loth/ordinarium/hymns.json'
 const PAGE_LABEL = 'Магтуу'
 
-function findings() {
+function findRichFindings() {
   const out = []
   const files = fs
     .readdirSync(HYMN_DIR)
@@ -44,7 +55,8 @@ function findings() {
         const text = (ln.spans || []).map((s) => s.text || '').join('').trim()
         if (text === PAGE_LABEL) {
           out.push({
-            file: f,
+            scope: 'rich',
+            file: `${HYMN_DIR}/${f}`,
             block: i,
             line: j,
             shape: lines.length === 1 ? 'A:single-line-stanza' : 'B:first-line-of-stanza',
@@ -56,17 +68,50 @@ function findings() {
   return out
 }
 
+function findOrdinariumFindings() {
+  const out = []
+  const data = JSON.parse(fs.readFileSync(ORDINARIUM_HYMNS, 'utf-8'))
+  for (const [id, entry] of Object.entries(data)) {
+    if (!entry || typeof entry !== 'object') continue
+    const text = entry.text
+    if (typeof text !== 'string' || !text.includes(PAGE_LABEL)) continue
+    const lines = text.split('\n')
+    lines.forEach((line, idx) => {
+      if (line.trim() === PAGE_LABEL) {
+        out.push({
+          scope: 'ordinarium',
+          file: ORDINARIUM_HYMNS,
+          hymnId: id,
+          line: idx,
+          shape: 'A:standalone-text-line',
+        })
+      }
+    })
+  }
+  return out
+}
+
 function main() {
-  const hits = findings()
+  const rich = findRichFindings()
+  const ord = findOrdinariumFindings()
+  const hits = [...rich, ...ord]
   if (hits.length === 0) {
-    console.log(`[verify-no-page-noise] OK — 0 occurrences of standalone '${PAGE_LABEL}' in ${HYMN_DIR}`)
+    console.log(`[verify-no-page-noise] OK — 0 occurrences of standalone '${PAGE_LABEL}' in:`)
+    console.log(`  - ${HYMN_DIR} (rich)`)
+    console.log(`  - ${ORDINARIUM_HYMNS} (plain-text)`)
     process.exit(0)
   }
   console.error(`[verify-no-page-noise] FAIL — ${hits.length} page-noise occurrences (PDF page header leaked into hymn body):`)
   for (const h of hits) {
-    console.error(`  ${h.file} block[${h.block}] line[${h.line}] shape=${h.shape}`)
+    if (h.scope === 'rich') {
+      console.error(`  [rich] ${h.file} block[${h.block}] line[${h.line}] shape=${h.shape}`)
+    } else {
+      console.error(`  [ordinarium] hymn[${h.hymnId}] line[${h.line}] shape=${h.shape}`)
+    }
   }
-  console.error(`\nFix: re-run \`node scripts/strip-hymn-magtuu-noise.mjs\` (F-X7).`)
+  console.error(`\nFix:`)
+  if (rich.length > 0) console.error(`  rich path  → \`node scripts/strip-hymn-magtuu-noise.mjs\` (F-X7)`)
+  if (ord.length > 0)  console.error(`  plain path → \`node scripts/strip-ordinarium-magtuu-noise.mjs\` (F-X7b)`)
   process.exit(1)
 }
 
