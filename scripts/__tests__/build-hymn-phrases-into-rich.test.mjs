@@ -38,6 +38,8 @@ import {
   planStanzaPhrasesWithDecision,
   detectB2Strict,
   injectPhrasesIntoHymnRich,
+  splitMagtuuPhrasesOnCapitalBoundaries,
+  mergeLowercaseWraps,
 } from '../build-hymn-phrases-into-rich.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
@@ -508,5 +510,261 @@ describe('CLI --dry-run + --decisions (no file write)', () => {
     } finally {
       rmSync(tmp, { recursive: true, force: true })
     }
+  })
+})
+
+// ─── F-X8 (#300) — Магтуу 줄바꿈 규칙 (capital=verse, lower=wrap) ────────────
+//
+// Pass A (`splitMagtuuPhrasesOnCapitalBoundaries`) and Pass B
+// (`mergeLowercaseWraps`) together implement the user spec:
+//   - capital line → new verse boundary
+//   - lowercase line → wrap continuation, attach to prior verse
+//   - no indent (rendering side; data side keeps indent: 0)
+// These tests pin Pass A intra-phrase split, Pass B cross-phrase merge,
+// and the integration cases (refrain role propagation, idempotency).
+// @fr FR-161
+
+describe('splitMagtuuPhrasesOnCapitalBoundaries — Pass A intra-phrase split', () => {
+  it('splits a single covering phrase at every capital-line boundary', () => {
+    // Hymn 12 b0 shape — 13 capital lines, all in one a2_fallback phrase.
+    const lines = [
+      line('Аниргүй шөнө Ариун шөнө'),
+      line('Амгалан дэлхий нойрсож байна'),
+      line('Энхрий жаахан хүү минь ээ'),
+    ]
+    const planned = [{ lineRange: [0, 2], indent: 0 }]
+    const { phrases, splitCount } = splitMagtuuPhrasesOnCapitalBoundaries(lines, planned)
+    expect(phrases).toEqual([
+      { lineRange: [0, 0], indent: 0 },
+      { lineRange: [1, 1], indent: 0 },
+      { lineRange: [2, 2], indent: 0 },
+    ])
+    expect(splitCount).toBe(2) // 3 sub-phrases means 2 new boundaries
+  })
+
+  it('keeps lowercase wrap line attached to the prior capital sub-phrase', () => {
+    // Hymn 91 b6 shape — capital, capital, capital, capital, capital, lowercase wrap, capital, ...
+    const lines = [
+      line('2. Та биднийг авралд дуудсан'),
+      line('Гэмээс Та чөлөөлсөн'),
+      line('Танд бүх алдрыг өргөн, бүх магтаалын танд'),
+      line('өргөе'), // lowercase wrap of L2
+      line('Та миний агуу их Эзэн'),
+    ]
+    const planned = [{ lineRange: [0, 4], indent: 0 }]
+    const { phrases } = splitMagtuuPhrasesOnCapitalBoundaries(lines, planned)
+    expect(phrases).toEqual([
+      { lineRange: [0, 0], indent: 0 },
+      { lineRange: [1, 1], indent: 0 },
+      { lineRange: [2, 3], indent: 0 }, // wrap absorbed
+      { lineRange: [4, 4], indent: 0 },
+    ])
+  })
+
+  it('inherits the parent phrase role on every sub-phrase (refrain propagation)', () => {
+    const lines = [
+      line('Дахилт: Эзэн Бурхан'),
+      line('Бид Танд итгэнэ'),
+      line('Магтан дуулъя'),
+    ]
+    const planned = [{ lineRange: [0, 2], indent: 0, role: 'refrain' }]
+    const { phrases } = splitMagtuuPhrasesOnCapitalBoundaries(lines, planned)
+    expect(phrases).toEqual([
+      { lineRange: [0, 0], indent: 0, role: 'refrain' },
+      { lineRange: [1, 1], indent: 0, role: 'refrain' },
+      { lineRange: [2, 2], indent: 0, role: 'refrain' },
+    ])
+  })
+
+  it('passes through single-line phrases unchanged (no inner boundaries possible)', () => {
+    const lines = [line('Аллэлуяа.'), line('Магтан дуулъя.'), line('Эзэн Бурхан.')]
+    const planned = [
+      { lineRange: [0, 0], indent: 0 },
+      { lineRange: [1, 1], indent: 0 },
+      { lineRange: [2, 2], indent: 0 },
+    ]
+    const { phrases, splitCount } = splitMagtuuPhrasesOnCapitalBoundaries(lines, planned)
+    expect(phrases).toEqual(planned)
+    expect(splitCount).toBe(0)
+  })
+
+  it('is idempotent — re-splitting already-split phrases yields the same shape', () => {
+    const lines = [
+      line('Эхний бадаг'),
+      line('хоёр дахь мөр'), // lowercase wrap
+      line('Гурав дахь бадаг'),
+    ]
+    const once = splitMagtuuPhrasesOnCapitalBoundaries(lines, [{ lineRange: [0, 2], indent: 0 }])
+    const twice = splitMagtuuPhrasesOnCapitalBoundaries(lines, once.phrases)
+    expect(twice.phrases).toEqual(once.phrases)
+    expect(twice.splitCount).toBe(0)
+  })
+
+  it('does not mutate the input phrases array', () => {
+    const planned = [{ lineRange: [0, 2], indent: 0 }]
+    const snapshot = JSON.stringify(planned)
+    splitMagtuuPhrasesOnCapitalBoundaries(
+      [line('А'), line('Б'), line('в')],
+      planned,
+    )
+    expect(JSON.stringify(planned)).toBe(snapshot)
+  })
+})
+
+describe('mergeLowercaseWraps — Pass B cross-phrase wrap absorption', () => {
+  it('merges a lowercase-opening phrase into the prior capital phrase', () => {
+    // Hymn 11 b0 shape (b2_layer1) — per-line phrases planned, line 8 wraps.
+    const lines = [
+      line('Халуун хайр халуун хайр халуун хайрыг'),
+      line('чамд өгье'), // lowercase wrap of line 0
+      line('Баяр баясгаланг'),
+    ]
+    const planned = [
+      { lineRange: [0, 0], indent: 0 },
+      { lineRange: [1, 1], indent: 0 },
+      { lineRange: [2, 2], indent: 0 },
+    ]
+    const { phrases, mergedCount } = mergeLowercaseWraps(lines, planned)
+    expect(phrases).toEqual([
+      { lineRange: [0, 1], indent: 0 },
+      { lineRange: [2, 2], indent: 0 },
+    ])
+    expect(mergedCount).toBe(1)
+  })
+
+  it('preserves the prior phrase role/indent through the merge', () => {
+    const lines = [line('Эзэн Бурхан'), line('бидний хайр')]
+    const planned = [
+      { lineRange: [0, 0], indent: 0, role: 'refrain' },
+      { lineRange: [1, 1], indent: 0 },
+    ]
+    const { phrases } = mergeLowercaseWraps(lines, planned)
+    expect(phrases).toEqual([{ lineRange: [0, 1], indent: 0, role: 'refrain' }])
+  })
+
+  it('leaves a leading lowercase phrase untouched (no prior phrase to merge into)', () => {
+    // Edge case — hymn 1 b4 / hymn 44 b4 cross-stanza wrap shape.
+    const lines = [line('бидний хаан'), line('Магтан дуулъя.')]
+    const planned = [
+      { lineRange: [0, 0], indent: 0 },
+      { lineRange: [1, 1], indent: 0 },
+    ]
+    const { phrases, mergedCount } = mergeLowercaseWraps(lines, planned)
+    expect(phrases).toEqual(planned)
+    expect(mergedCount).toBe(0)
+  })
+
+  it('is idempotent — re-merging already-merged phrases yields the same list', () => {
+    const lines = [line('Капитал'), line('lowercase wrap'), line('Шинэ бадаг')]
+    const planned = [
+      { lineRange: [0, 0], indent: 0 },
+      { lineRange: [1, 1], indent: 0 },
+      { lineRange: [2, 2], indent: 0 },
+    ]
+    const once = mergeLowercaseWraps(lines, planned)
+    const twice = mergeLowercaseWraps(lines, once.phrases)
+    expect(twice.phrases).toEqual(once.phrases)
+    expect(twice.mergedCount).toBe(0)
+  })
+
+  it('returns a single-phrase input untouched', () => {
+    const lines = [line('Эхэн'), line('хоёр')]
+    const planned = [{ lineRange: [0, 1], indent: 0 }]
+    const { phrases, mergedCount } = mergeLowercaseWraps(lines, planned)
+    expect(phrases).toEqual(planned)
+    expect(mergedCount).toBe(0)
+  })
+
+  it('does not mutate the input phrases array', () => {
+    const planned = [
+      { lineRange: [0, 0], indent: 0 },
+      { lineRange: [1, 1], indent: 0 },
+    ]
+    const snapshot = JSON.stringify(planned)
+    mergeLowercaseWraps([line('Эзэн'), line('бид')], planned)
+    expect(JSON.stringify(planned)).toBe(snapshot)
+  })
+})
+
+describe('injectPhrasesIntoHymnRich — F-X8 integration (split + merge)', () => {
+  it('splits a 13-line capital-only stanza into per-verse phrases (hymn 12 b0 shape)', () => {
+    const hymnRich = {
+      blocks: [
+        stanza(
+          'Аниргүй шөнө Ариун шөнө',
+          'Амгалан дэлхий нойрсож байна',
+          'Энхрий жаахан хүү минь ээ',
+          'Энх амрыг чи өгнө',
+        ),
+      ],
+    }
+    const r = injectPhrasesIntoHymnRich(hymnRich)
+    expect(r.ok).toBe(true)
+    expect(r.data.blocks[0].phrases).toEqual([
+      { lineRange: [0, 0], indent: 0 },
+      { lineRange: [1, 1], indent: 0 },
+      { lineRange: [2, 2], indent: 0 },
+      { lineRange: [3, 3], indent: 0 },
+    ])
+    // Telemetry — Pass A fired (4 sub-phrases from 1 input → 3 new boundaries).
+    expect(r.decisions[0].splitFired).toBe(3)
+    expect(r.decisions[0].wrapMerged).toBe(0)
+  })
+
+  it('absorbs a lowercase wrap line within an a2_fallback covering phrase (hymn 91 b6 shape)', () => {
+    const hymnRich = {
+      blocks: [
+        stanza(
+          'Танд бүх алдрыг өргөн, бүх магтаалын танд',
+          'өргөе', // lowercase wrap of line 0
+          'Та миний агуу их Эзэн',
+        ),
+      ],
+    }
+    const r = injectPhrasesIntoHymnRich(hymnRich)
+    expect(r.ok).toBe(true)
+    expect(r.data.blocks[0].phrases).toEqual([
+      { lineRange: [0, 1], indent: 0 }, // wrap absorbed
+      { lineRange: [2, 2], indent: 0 },
+    ])
+  })
+
+  it('preserves refrain role across capital-line splits within a refrain stanza', () => {
+    const hymnRich = {
+      blocks: [
+        stanza(
+          'Дахилт: Эзэн Бурхан',
+          'Бид Танд итгэнэ',
+          'Магтан дуулъя',
+        ),
+      ],
+    }
+    const r = injectPhrasesIntoHymnRich(hymnRich)
+    expect(r.ok).toBe(true)
+    // refrain prefix opens the stanza → planner emits one [0,2] phrase
+    // with role:refrain; F-X8 split breaks it into 3 sub-phrases that
+    // each retain the refrain role.
+    expect(r.data.blocks[0].phrases).toEqual([
+      { lineRange: [0, 0], indent: 0, role: 'refrain' },
+      { lineRange: [1, 1], indent: 0, role: 'refrain' },
+      { lineRange: [2, 2], indent: 0, role: 'refrain' },
+    ])
+  })
+
+  it('is byte-identical on second invocation (split + merge are idempotent)', () => {
+    const hymnRich = {
+      blocks: [
+        stanza(
+          'Халуун хайрыг чамд өгье',
+          'Энэ дэлхийн өгч чадахгүй',
+          'Халуун хайр халуун хайр халуун хайрыг',
+          'чамд өгье',
+        ),
+      ],
+    }
+    const first = injectPhrasesIntoHymnRich(hymnRich)
+    const second = injectPhrasesIntoHymnRich(first.data)
+    expect(second.ok).toBe(true)
+    expect(JSON.stringify(second.data)).toBe(JSON.stringify(first.data))
   })
 })

@@ -81,6 +81,48 @@
           {
             "lineRange": [
               0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              4,
+              4
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              5,
+              5
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              6,
+              6
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              7,
               7
             ],
             "indent": 0

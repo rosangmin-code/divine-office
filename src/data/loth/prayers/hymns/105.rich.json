@@ -151,6 +151,14 @@
           {
             "lineRange": [
               0,
+              0
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              1,
               3
             ],
             "indent": 0,
@@ -311,6 +319,14 @@
           {
             "lineRange": [
               0,
+              0
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              1,
               3
             ],
             "indent": 0,
@@ -471,6 +487,14 @@
           {
             "lineRange": [
               0,
+              0
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              1,
               3
             ],
             "indent": 0,

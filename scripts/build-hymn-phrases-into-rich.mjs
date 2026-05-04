@@ -379,6 +379,172 @@ export function planStanzaPhrases(lines) {
   return planStanzaPhrasesWithDecision(lines).phrases
 }
 
+// ── F-X8 (task #300) — Магтуу 류 줄바꿈 규칙 (capital=verse, lower=wrap) ───
+//
+// User spec (#300): "들여쓰기 없음, 대문자로 시작하는 line = 새로운 절, 소문자
+// 시작 line = 같은 절의 wrap continuation". The PDF typesetter, when a verse
+// line exceeded the column width, wrapped to the NEXT visual line WITHOUT
+// re-capitalising. Those lowercase-opening lines are NOT new verses — they
+// belong to the prior capital-opening verse line as a flowing wrap. The
+// (a2)/(b2) terminator and per-line splitters cannot tell wraps apart from
+// real verse boundaries because they do not inspect the leading character.
+//
+// Two-pass post-processing on the (a2)/(b2) planner output:
+//
+//   1. `splitMagtuuPhrasesOnCapitalBoundaries` — explode every multi-line
+//      phrase into per-verse sub-phrases. Each non-lowercase line opens a
+//      new sub-phrase; lowercase lines stay attached to the prior verse.
+//      Inherits the parent phrase's `indent` and `role` (refrain
+//      propagation survives the split). Single-line input phrases are
+//      pass-through.
+//   2. `mergeLowercaseWraps` — across phrase boundaries, if the next
+//      phrase's first line opens lowercase (b2-layer1 hymn 11 shape:
+//      per-line phrases planned, but line 8 = "чамд өгье" wrap of line 7),
+//      absorb it into the prior phrase.
+//
+// Both passes are pure + idempotent — re-running yields the same output.
+// Edge case: if the FIRST line of a stanza opens lowercase (cross-stanza
+// wrap from a sibling block above, 2 hymns: 1.b4 / 44.b4), there is no
+// prior phrase to merge into so the lowercase phrase is preserved as-is
+// (documented as a known limitation in `docs/handoff-fx8-magtuu-wrap-
+// rule.md`).
+
+// Mongolian Cyrillic lowercase set — written out longhand because regex
+// `[а-я]` ranges drop ё/ө/ү inconsistently across engines (see
+// memory/feedback_regex_unicode_boundary.md). Order doesn't matter; this
+// is membership-only.
+const MONGOLIAN_CYRILLIC_LOWERCASE = new Set(
+  'абвгдеёжзийклмнопрстуфхцчшщъыьэюяөү'.split(''),
+)
+
+/**
+ * `true` when the first non-whitespace character of `text` is a Mongolian-
+ * Cyrillic lowercase letter (excludes Latin, digits, punctuation, capital
+ * Cyrillic, and anything that already opens a new verse).
+ *
+ * @param {string} text
+ */
+function startsWithLowercaseCyrillic(text) {
+  if (typeof text !== 'string') return false
+  const trimmed = text.replace(/^\s+/u, '')
+  if (trimmed.length === 0) return false
+  return MONGOLIAN_CYRILLIC_LOWERCASE.has(trimmed[0])
+}
+
+/**
+ * Pass 1 — explode each multi-line phrase into per-verse sub-phrases on
+ * Mongolian-Cyrillic capital-line boundaries (any line whose first non-
+ * whitespace character is NOT a lowercase Mongolian-Cyrillic letter
+ * starts a new sub-phrase). Lowercase-opening lines stay attached to the
+ * prior sub-phrase as a wrap continuation. Inherits the parent phrase's
+ * `indent` and `role` so refrain propagation survives the split.
+ *
+ * Single-line input phrases are returned unchanged (no inner lines to
+ * split). Empty/blank lines inside a phrase do not open a sub-phrase
+ * boundary and stay attached to whichever sub-phrase contains them.
+ *
+ * Pure — never mutates input. Returns `{ phrases, splitCount }` where
+ * `splitCount` is the number of NEW sub-phrase boundaries introduced
+ * (so an input phrase split into N sub-phrases contributes `N - 1`).
+ *
+ * @param {{ spans: { text: string }[] }[]} lines
+ * @param {{ lineRange: [number, number], indent?: 0 | 1 | 2, role?: 'refrain' | 'doxology' }[]} phrases
+ */
+export function splitMagtuuPhrasesOnCapitalBoundaries(lines, phrases) {
+  if (!Array.isArray(phrases) || phrases.length === 0) {
+    return {
+      phrases: Array.isArray(phrases) ? phrases.map((p) => ({ ...p })) : [],
+      splitCount: 0,
+    }
+  }
+  const out = []
+  let splitCount = 0
+  for (const phrase of phrases) {
+    const range = phrase.lineRange
+    if (!Array.isArray(range) || range.length !== 2) {
+      out.push({ ...phrase })
+      continue
+    }
+    const [start, end] = range
+    if (start >= end) {
+      // Single-line phrase — no inner boundaries to draw.
+      out.push({ ...phrase })
+      continue
+    }
+    // Inherit parent meta on every emitted sub-phrase so refrain colour /
+    // hanging-indent level survive the split.
+    const carry = {}
+    if (phrase.indent !== undefined) carry.indent = phrase.indent
+    if (phrase.role !== undefined) carry.role = phrase.role
+    let curStart = start
+    let emitted = 0
+    for (let i = start + 1; i <= end; i++) {
+      const text = joinedLineText(lines[i] || {})
+      const trimmed = text.replace(/^\s+/u, '')
+      if (trimmed.length === 0) continue // blank — stays in the open sub-phrase
+      if (!startsWithLowercaseCyrillic(text)) {
+        // New verse boundary — close the open sub-phrase ending at i-1.
+        out.push({ lineRange: [curStart, i - 1], ...carry })
+        emitted += 1
+        curStart = i
+      }
+      // else lowercase wrap — keep accumulating into the open sub-phrase.
+    }
+    // Tail — emit the final sub-phrase covering the residual range.
+    out.push({ lineRange: [curStart, end], ...carry })
+    emitted += 1
+    if (emitted > 1) splitCount += emitted - 1
+  }
+  return { phrases: out, splitCount }
+}
+
+/**
+ * Pass 2 — post-process planned phrases by absorbing any phrase whose
+ * first line opens with a Mongolian-Cyrillic lowercase letter into the
+ * previous phrase. The merged phrase keeps the prior phrase's `indent`
+ * and `role`; the absorbed phrase's metadata is discarded.
+ *
+ * Pure — never mutates the input arrays. Returns `{ phrases, mergedCount }`
+ * where `mergedCount` is the number of phrases absorbed (not the number
+ * of LINES — for tally telemetry parity with line-count audits, callers
+ * that need that should compute `lineRange[1] - lineRange[0] + 1` per
+ * absorbed phrase).
+ *
+ * @param {{ spans: { text: string }[] }[]} lines
+ * @param {{ lineRange: [number, number], indent?: 0 | 1 | 2, role?: 'refrain' | 'doxology' }[]} phrases
+ */
+export function mergeLowercaseWraps(lines, phrases) {
+  if (!Array.isArray(phrases) || phrases.length < 2) {
+    return {
+      phrases: Array.isArray(phrases) ? phrases.map((p) => ({ ...p })) : [],
+      mergedCount: 0,
+    }
+  }
+  const out = [{ ...phrases[0] }]
+  let mergedCount = 0
+  for (let i = 1; i < phrases.length; i++) {
+    const prev = out[out.length - 1]
+    const cur = phrases[i]
+    const firstLineIdx = cur.lineRange?.[0]
+    if (typeof firstLineIdx !== 'number') {
+      out.push({ ...cur })
+      continue
+    }
+    const firstLineText = joinedLineText(lines[firstLineIdx] || {})
+    if (startsWithLowercaseCyrillic(firstLineText)) {
+      // Absorb cur into prev — extend prev.lineRange[1] to cur.lineRange[1].
+      // Mutating `prev` is safe because it's a fresh shallow copy from
+      // `{ ...phrases[0] }` / `{ ...cur }` above; the input array stays
+      // untouched.
+      prev.lineRange = [prev.lineRange[0], cur.lineRange[1]]
+      mergedCount += 1
+    } else {
+      out.push({ ...cur })
+    }
+  }
+  return { phrases: out, mergedCount }
+}
+
 /**
  * Plan + apply phrase injection for one hymn file's `hymnRich` payload.
  * Returns the new `hymnRich` (deep-cloned where blocks change) AND the
@@ -394,13 +560,39 @@ export function injectPhrasesIntoHymnRich(hymnRich) {
   const decisions = []
   const blocks = hymnRich.blocks.map((block, blockIndex) => {
     if (!block || block.kind !== 'stanza') return block
-    const { phrases, decision } = planStanzaPhrasesWithDecision(block.lines || [])
+    const { phrases: planned, decision } = planStanzaPhrasesWithDecision(block.lines || [])
+    // F-X8 (#300) — Магтуу 줄바꿈 규칙 (capital=verse, lower=wrap):
+    //
+    //   Pass A: split each multi-line phrase on Mongolian-Cyrillic
+    //           capital-line boundaries (lowercase-opening lines stay
+    //           attached to the prior verse). This converts the (a2)
+    //           single-covering and (a2_terminator) sentence-grouped
+    //           phrases into per-verse sub-phrases while preserving role
+    //           (refrain) and indent inheritance.
+    //
+    //   Pass B: across phrase boundaries, absorb any phrase whose first
+    //           line opens lowercase into the prior phrase. Catches the
+    //           per-line planner case (b2_layer1, b2_layer2) where Pass
+    //           A is a no-op but lowercase wraps still need merging.
+    //
+    // Both passes are pure + idempotent; running them in this order is
+    // commutative wrt the final phrase-count on production hymn data
+    // (verified by the unit tests). `splitFired` / `wrapMerged` carry
+    // telemetry for the curator summary line.
+    const { phrases: split, splitCount: splitFired } =
+      splitMagtuuPhrasesOnCapitalBoundaries(block.lines || [], planned)
+    const { phrases, mergedCount: wrapMerged } = mergeLowercaseWraps(
+      block.lines || [],
+      split,
+    )
     decisions.push({
       blockIndex,
       decision: decision.kind,
       reason: decision.reason,
       lineCount: (block.lines || []).length,
       phraseCount: phrases.length,
+      splitFired,
+      wrapMerged,
     })
     // Idempotent overwrite: drop any prior `phrases` field, write fresh.
     const { phrases: _drop, ...rest } = block
@@ -527,6 +719,17 @@ function cliMain() {
     b2_layer2: 0,
   }
   let stanzaTotal = 0
+  // F-X8 (#300) — telemetry for both passes of the Магтуу wrap rule:
+  //   - Pass A (split-on-capital): how many stanzas had at least one
+  //     intra-phrase split + how many new sub-phrase boundaries opened.
+  //   - Pass B (lowercase-merge): how many stanzas absorbed at least one
+  //     cross-phrase wrap + how many phrase entries were absorbed.
+  // Both numbers surface in the summary line so the curator can verify
+  // the rule ran with the expected fan-in/out after a re-build.
+  let wrapSplitStanzas = 0
+  let wrapSplitNewBoundaries = 0
+  let wrapMergedStanzas = 0
+  let wrapMergedPhrases = 0
   for (const id of ids) {
     const r = processOneHymn(id, hymnDir, args.dryRun)
     if (r.ok) {
@@ -539,6 +742,14 @@ function cliMain() {
         for (const d of r.decisions) {
           stanzaTotal += 1
           tally[d.decision] = (tally[d.decision] || 0) + 1
+          if (typeof d.splitFired === 'number' && d.splitFired > 0) {
+            wrapSplitStanzas += 1
+            wrapSplitNewBoundaries += d.splitFired
+          }
+          if (typeof d.wrapMerged === 'number' && d.wrapMerged > 0) {
+            wrapMergedStanzas += 1
+            wrapMergedPhrases += d.wrapMerged
+          }
           if (args.decisions) {
             process.stdout.write(
               JSON.stringify({
@@ -548,6 +759,8 @@ function cliMain() {
                 reason: d.reason,
                 line_count: d.lineCount,
                 phrase_count: d.phraseCount,
+                wrap_split: d.splitFired ?? 0,
+                wrap_merged: d.wrapMerged ?? 0,
               }) + '\n',
             )
           }
@@ -564,6 +777,16 @@ function cliMain() {
       `b2_layer1=${tally.b2_layer1} b2_layer2=${tally.b2_layer2} ` +
       `a2_terminator=${tally.a2_terminator} a2_refrain=${tally.a2_refrain} ` +
       `a2_fallback=${tally.a2_fallback}\n`,
+  )
+  // F-X8 (#300) summary — both passes are unconditional, so zero counts
+  // signal "no Магтуу wrap shape detected" rather than a configuration
+  // skip. A future re-extract that regresses the wrap structure should
+  // surface as a noticeable change in either count.
+  process.stdout.write(
+    `[hymn-phrases] magtuu-rule — split_stanzas=${wrapSplitStanzas} ` +
+      `split_new_boundaries=${wrapSplitNewBoundaries} ` +
+      `merged_stanzas=${wrapMergedStanzas} ` +
+      `phrases_absorbed=${wrapMergedPhrases}\n`,
   )
   if (failCount > 0) process.exit(3)
 }

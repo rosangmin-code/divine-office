@@ -641,3 +641,100 @@ describe('RichContent — flow="sentence" inline para split (FR-161 R-18)', () =
   })
 })
 
+// @fr FR-161
+describe('RichContent — flush=true (F-X8 #300 — Магтуу 줄바꿈 규칙)', () => {
+  // The flush prop strips the FR-161 R-13 hanging-indent classes from
+  // phrase rendering. Hymn-section is the only production caller; the
+  // rule expression "들여쓰기 없음" (no indent) maps to dropping the
+  // `pl-6 -indent-6` pair while keeping the per-phrase `<span class
+  // ="block">` boundaries that own the verse-line layout.
+
+  it('phrase render emits no -indent-6 / pl-6 padding when flush=true', () => {
+    const content = makeContent([
+      makeStanzaBlock(['Аниргүй шөнө', 'Ариун шөнө'], {
+        phrases: [
+          { lineRange: [0, 0], indent: 0 },
+          { lineRange: [1, 1], indent: 0 },
+        ],
+      }),
+    ])
+    const html = render(
+      createElement(RichContent, { content, flush: true }),
+    )
+    // Render-mode marker still flips to "phrase" — the data path is
+    // unchanged, only the indent class set differs.
+    expect(html).toContain('data-render-mode="phrase"')
+    // Hanging-indent class set MUST be absent.
+    expect(html).not.toMatch(/-indent-6/)
+    // Both verse phrases are emitted with the normal phrase data-role.
+    const phraseSpans = (html.match(/data-role="psalm-phrase"/g) ?? []).length
+    expect(phraseSpans).toBe(2)
+    // Body text round-trips.
+    expect(html).toContain('Аниргүй шөнө')
+    expect(html).toContain('Ариун шөнө')
+  })
+
+  it('flush=false (default) preserves the FR-161 R-13 hanging-indent rule', () => {
+    const content = makeContent([
+      makeStanzaBlock(['Эзэн өршөөнө', 'Бид Тандаа найдъя'], {
+        phrases: [
+          { lineRange: [0, 0], indent: 0 },
+          { lineRange: [1, 1], indent: 0 },
+        ],
+      }),
+    ])
+    const html = render(createElement(RichContent, { content }))
+    // Default render-mode is still "phrase" with the legacy hanging
+    // indent — proves flush is opt-in and does not change defaults.
+    expect(html).toContain('data-render-mode="phrase"')
+    expect(html).toMatch(/-indent-6/)
+    expect(html).toMatch(/pl-6/)
+  })
+
+  it('flush=true preserves multi-line phrase wrap (lineRange spans 2 lines)', () => {
+    // Captures the F-X8 wrap-merge case (hymn 91 b6 shape) where a
+    // capital line + lowercase wrap collapse into one phrase. Renderer
+    // must still join lines with a single space (not <br>) so viewport
+    // wrap is left to the browser.
+    const content = makeContent([
+      makeStanzaBlock(
+        [
+          'Танд бүх алдрыг өргөн, бүх магтаалын танд',
+          'өргөе',
+        ],
+        { phrases: [{ lineRange: [0, 1], indent: 0 }] },
+      ),
+    ])
+    const html = render(
+      createElement(RichContent, { content, flush: true }),
+    )
+    expect(html).not.toMatch(/-indent-6/)
+    // Joined inline: capital line + space + lowercase wrap, all inside
+    // a single phrase span (no per-line `<span class="block">`).
+    const stripped = html.replace(/<[^>]+>/g, '')
+    expect(stripped).toContain(
+      'Танд бүх алдрыг өргөн, бүх магтаалын танд өргөе',
+    )
+  })
+
+  it('flush=true keeps refrain styling (RUBRIC_CLASS) on refrain phrases', () => {
+    const content = makeContent([
+      makeStanzaBlock(['Дахилт: Эзэн Бурхан', 'Бид магтан дуулъя'], {
+        phrases: [
+          { lineRange: [0, 0], indent: 0, role: 'refrain' },
+          { lineRange: [1, 1], indent: 0, role: 'refrain' },
+        ],
+      }),
+    ])
+    const html = render(
+      createElement(RichContent, { content, flush: true }),
+    )
+    expect(html).not.toMatch(/-indent-6/)
+    // Refrain colour class survives flush mode (orthogonal axis).
+    expect(html).toMatch(/text-red-700/)
+    const refrainSpans = (html.match(/data-role="psalm-phrase-refrain"/g) ?? [])
+      .length
+    expect(refrainSpans).toBe(2)
+  })
+})
+
