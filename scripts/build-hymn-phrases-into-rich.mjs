@@ -413,6 +413,16 @@ export function planStanzaPhrases(lines) {
 // `[а-я]` ranges drop ё/ө/ү inconsistently across engines (see
 // memory/feedback_regex_unicode_boundary.md). Order doesn't matter; this
 // is membership-only.
+//
+// #330 F-X8 F-9 — composition note: this set is the full Russian alphabet
+// (33 letters: а-я + ё) PLUS the two Mongolian-specific lowercase letters
+// ө and ү (no ы in modern Mongolian, but kept for parity with Russian
+// loanwords / pre-reform spellings that occasionally surface in liturgy).
+// Membership is therefore a Russian superset; lowercase Russian-only
+// loanwords also match — acceptable because Mongolian Cyrillic embeds
+// the full Russian alphabet for transliteration of foreign names and
+// technical terms, so a "lowercase Cyrillic continuation" never needs
+// to distinguish Russian-only letters from Mongolian-specific ones.
 const MONGOLIAN_CYRILLIC_LOWERCASE = new Set(
   'абвгдеёжзийклмнопрстуфхцчшщъыьэюяөү'.split(''),
 )
@@ -450,25 +460,55 @@ function startsWithLowercaseCyrillic(text) {
  * @param {{ spans: { text: string }[] }[]} lines
  * @param {{ lineRange: [number, number], indent?: 0 | 1 | 2, role?: 'refrain' | 'doxology' }[]} phrases
  */
+// #330 F-X8 F-5 — pure clone helper for phrase pass-through. The shallow
+// `{ ...phrase }` spread leaves the inner `lineRange` array reference
+// shared with the input; downstream callers that index-mutate (none today,
+// but the contract should not depend on that) would silently corrupt the
+// input. Cloning lineRange too gives us full immutability of the input
+// without changing any other semantics. Used by both Pass A and Pass B.
+function clonePhrase(phrase) {
+  if (!phrase || typeof phrase !== 'object') return phrase
+  const cloned = { ...phrase }
+  if (Array.isArray(phrase.lineRange)) cloned.lineRange = [...phrase.lineRange]
+  return cloned
+}
+
 export function splitMagtuuPhrasesOnCapitalBoundaries(lines, phrases) {
   if (!Array.isArray(phrases) || phrases.length === 0) {
     return {
-      phrases: Array.isArray(phrases) ? phrases.map((p) => ({ ...p })) : [],
+      phrases: Array.isArray(phrases) ? phrases.map(clonePhrase) : [],
       splitCount: 0,
     }
   }
+  const linesLen = Array.isArray(lines) ? lines.length : 0
   const out = []
   let splitCount = 0
   for (const phrase of phrases) {
     const range = phrase.lineRange
     if (!Array.isArray(range) || range.length !== 2) {
-      out.push({ ...phrase })
+      out.push(clonePhrase(phrase))
       continue
     }
     const [start, end] = range
-    if (start >= end) {
+    // #330 F-X8 F-4 — distinguish "single-line phrase" (start === end,
+    // expected) from "malformed range" (start > end, planner bug). The
+    // pre-fix `start >= end` collapsed both into a silent pass-through;
+    // we now keep the pass-through behaviour (do not crash production
+    // builder runs) but emit a developer warning in non-production so
+    // a planner regression surfaces during local/dev/CI runs.
+    if (start > end) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn(
+          `[splitMagtuuPhrasesOnCapitalBoundaries] malformed lineRange ` +
+            `start=${start} > end=${end} — passing through unchanged`,
+        )
+      }
+      out.push(clonePhrase(phrase))
+      continue
+    }
+    if (start === end) {
       // Single-line phrase — no inner boundaries to draw.
-      out.push({ ...phrase })
+      out.push(clonePhrase(phrase))
       continue
     }
     // Inherit parent meta on every emitted sub-phrase so refrain colour /
@@ -476,10 +516,22 @@ export function splitMagtuuPhrasesOnCapitalBoundaries(lines, phrases) {
     const carry = {}
     if (phrase.indent !== undefined) carry.indent = phrase.indent
     if (phrase.role !== undefined) carry.role = phrase.role
+    // #330 F-X8 F-8 — bound the iteration end to the actual `lines`
+    // array length so an out-of-range planner end (end >= lines.length)
+    // can no longer be silently absorbed via `lines[i] || {}`. The
+    // planner contract is end < lines.length; if violated we still
+    // proceed defensively up to the available data and warn in dev.
+    const safeEnd = Math.min(end, Math.max(linesLen - 1, start))
+    if (process.env.NODE_ENV !== 'production' && safeEnd !== end) {
+      console.warn(
+        `[splitMagtuuPhrasesOnCapitalBoundaries] lineRange end=${end} ` +
+          `exceeds lines.length=${linesLen} — clamping to ${safeEnd}`,
+      )
+    }
     let curStart = start
     let emitted = 0
-    for (let i = start + 1; i <= end; i++) {
-      const text = joinedLineText(lines[i] || {})
+    for (let i = start + 1; i <= safeEnd; i++) {
+      const text = joinedLineText(lines[i])
       const trimmed = text.replace(/^\s+/u, '')
       if (trimmed.length === 0) continue // blank — stays in the open sub-phrase
       if (!startsWithLowercaseCyrillic(text)) {
@@ -491,7 +543,7 @@ export function splitMagtuuPhrasesOnCapitalBoundaries(lines, phrases) {
       // else lowercase wrap — keep accumulating into the open sub-phrase.
     }
     // Tail — emit the final sub-phrase covering the residual range.
-    out.push({ lineRange: [curStart, end], ...carry })
+    out.push({ lineRange: [curStart, safeEnd], ...carry })
     emitted += 1
     if (emitted > 1) splitCount += emitted - 1
   }
@@ -516,30 +568,62 @@ export function splitMagtuuPhrasesOnCapitalBoundaries(lines, phrases) {
 export function mergeLowercaseWraps(lines, phrases) {
   if (!Array.isArray(phrases) || phrases.length < 2) {
     return {
-      phrases: Array.isArray(phrases) ? phrases.map((p) => ({ ...p })) : [],
+      phrases: Array.isArray(phrases) ? phrases.map(clonePhrase) : [],
       mergedCount: 0,
     }
   }
-  const out = [{ ...phrases[0] }]
+  const linesLen = Array.isArray(lines) ? lines.length : 0
+  // #330 F-X8 F-5 — clone the first phrase (deep on lineRange) so the
+  // input array's references are never mutated when prev.lineRange is
+  // reassigned during a merge.
+  const out = [clonePhrase(phrases[0])]
   let mergedCount = 0
   for (let i = 1; i < phrases.length; i++) {
     const prev = out[out.length - 1]
     const cur = phrases[i]
     const firstLineIdx = cur.lineRange?.[0]
-    if (typeof firstLineIdx !== 'number') {
-      out.push({ ...cur })
+    // #330 F-X8 F-3 — Pass B bounds check on cur.lineRange[1] too. The
+    // pre-fix code only validated firstLineIdx (lineRange[0]) and would
+    // produce `[prev.start, undefined]` if cur.lineRange were length-1
+    // (or if [1] were non-numeric). Production planner output is always
+    // [start,end] so this is unreachable in practice, but the contract
+    // is now explicit.
+    const lastLineIdx = cur.lineRange?.[1]
+    if (typeof firstLineIdx !== 'number' || typeof lastLineIdx !== 'number') {
+      if (
+        process.env.NODE_ENV !== 'production' &&
+        cur.lineRange != null
+      ) {
+        console.warn(
+          `[mergeLowercaseWraps] malformed lineRange (firstLineIdx=` +
+            `${firstLineIdx}, lastLineIdx=${lastLineIdx}) — passing through`,
+        )
+      }
+      out.push(clonePhrase(cur))
       continue
     }
-    const firstLineText = joinedLineText(lines[firstLineIdx] || {})
+    // #330 F-X8 F-8 — bound firstLineIdx to lines.length so the prior
+    // `lines[firstLineIdx] || {}` silent absorb is removed; out-of-range
+    // (planner bug) → treat as no-merge pass-through with a dev warning.
+    if (firstLineIdx >= linesLen) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn(
+          `[mergeLowercaseWraps] firstLineIdx=${firstLineIdx} ` +
+            `exceeds lines.length=${linesLen} — passing through`,
+        )
+      }
+      out.push(clonePhrase(cur))
+      continue
+    }
+    const firstLineText = joinedLineText(lines[firstLineIdx])
     if (startsWithLowercaseCyrillic(firstLineText)) {
       // Absorb cur into prev — extend prev.lineRange[1] to cur.lineRange[1].
-      // Mutating `prev` is safe because it's a fresh shallow copy from
-      // `{ ...phrases[0] }` / `{ ...cur }` above; the input array stays
-      // untouched.
-      prev.lineRange = [prev.lineRange[0], cur.lineRange[1]]
+      // Mutating `prev` is safe because it's a fresh clonePhrase() copy
+      // (lineRange deep-cloned), so the input array stays untouched.
+      prev.lineRange = [prev.lineRange[0], lastLineIdx]
       mergedCount += 1
     } else {
-      out.push({ ...cur })
+      out.push(clonePhrase(cur))
     }
   }
   return { phrases: out, mergedCount }
@@ -575,10 +659,13 @@ export function injectPhrasesIntoHymnRich(hymnRich) {
     //           per-line planner case (b2_layer1, b2_layer2) where Pass
     //           A is a no-op but lowercase wraps still need merging.
     //
-    // Both passes are pure + idempotent; running them in this order is
-    // commutative wrt the final phrase-count on production hymn data
-    // (verified by the unit tests). `splitFired` / `wrapMerged` carry
-    // telemetry for the curator summary line.
+    // Both passes are pure + idempotent. The order is hard-coded A→B in
+    // production because A introduces new phrase boundaries that B may
+    // then merge across; reverse order (B→A) is NOT exercised by the
+    // unit tests and is not part of the contract. The unit tests pin
+    // the A→B sequence via `injectPhrasesIntoHymnRich`. `splitFired` /
+    // `wrapMerged` carry telemetry for the curator summary line.
+    // (#330 F-X8 F-10 — earlier comment overstated commutativity.)
     const { phrases: split, splitCount: splitFired } =
       splitMagtuuPhrasesOnCapitalBoundaries(block.lines || [], planned)
     const { phrases, mergedCount: wrapMerged } = mergeLowercaseWraps(

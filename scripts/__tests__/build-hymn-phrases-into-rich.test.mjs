@@ -768,3 +768,128 @@ describe('injectPhrasesIntoHymnRich — F-X8 integration (split + merge)', () =>
     expect(JSON.stringify(second.data)).toBe(JSON.stringify(first.data))
   })
 })
+
+// ─── #330 F-X8 F-6 + F-7 — coverage gaps from review-324 ─────────────────────
+//
+// Pin behaviour previously left untested:
+//   - F-6: Pass B drops absorbed phrase metadata when prev.role !== cur.role
+//          — only prev's role/indent survive the merge.
+//   - F-7a: multi-line phrase whose FIRST line opens lowercase (cross-stanza
+//          wrap inside a single-input phrase). Pass A keeps the lowercase
+//          opener attached to the leading sub-phrase rather than splitting it.
+//   - F-7b: Pass A receives a malformed range (start > end). Production
+//          contract forbids this, but planner regression should pass-through
+//          unchanged rather than crash.
+//   - F-7c: prev.role !== cur.role merge contract (also F-6).
+//   - F-7d: leading non-lowercase characters that are NOT Mongolian-Cyrillic
+//          (Latin letters, digits, punctuation) → treated as capital
+//          boundaries (NOT lowercase wraps).
+// @fr FR-161
+
+describe('#330 F-X8 F-7a — Pass A: multi-line phrase opening with lowercase', () => {
+  it('keeps lowercase first line as its own leading sub-phrase (cross-stanza wrap shape)', () => {
+    // Hymn 1.b4 / 44.b4 documented limitation: stanza opens with a
+    // lowercase wrap from the prior block. Within Pass A, the
+    // iteration starts at `start + 1` (line 0 is the seed of the
+    // open sub-phrase), so the lowercase opener sits alone in the
+    // leading sub-phrase. Every subsequent capital line opens its
+    // own sub-phrase per the documented per-verse contract.
+    const lines = [
+      line('бидний хаан'), // lowercase opener — wrap from prior stanza
+      line('Магтан дуулъя'), // capital → new verse
+      line('Аллэлуяа.'), // capital → new verse
+    ]
+    const planned = [{ lineRange: [0, 2], indent: 0 }]
+    const { phrases } = splitMagtuuPhrasesOnCapitalBoundaries(lines, planned)
+    expect(phrases).toEqual([
+      { lineRange: [0, 0], indent: 0 }, // leading sub-phrase = lowercase opener alone
+      { lineRange: [1, 1], indent: 0 }, // capital opens new
+      { lineRange: [2, 2], indent: 0 }, // capital opens new
+    ])
+  })
+})
+
+describe('#330 F-X8 F-7b — Pass A: malformed range (start > end)', () => {
+  it('passes through a malformed phrase unchanged without crashing', () => {
+    // Production planner output never produces start > end, but the
+    // pass-through contract should hold even on malformed input rather
+    // than throwing or corrupting the output array.
+    const lines = [line('Эзэн'), line('бид')]
+    const planned = [{ lineRange: [3, 1], indent: 0 }]
+    const { phrases, splitCount } = splitMagtuuPhrasesOnCapitalBoundaries(
+      lines,
+      planned,
+    )
+    expect(phrases).toEqual([{ lineRange: [3, 1], indent: 0 }])
+    expect(splitCount).toBe(0)
+  })
+})
+
+describe('#330 F-X8 F-6 / F-7c — Pass B: prev.role !== cur.role absorption', () => {
+  it("absorbs cur into prev keeping prev's role; drops cur's role", () => {
+    // Production planners assign role uniformly per stanza, so this
+    // case is currently unreachable. Pinning the contract guards
+    // against a future planner that produces mixed roles in one
+    // stanza — the merge must keep prev's metadata, not cur's.
+    const lines = [line('Эзэн'), line('бидний хайр')]
+    const planned = [
+      { lineRange: [0, 0], indent: 0, role: 'doxology' },
+      { lineRange: [1, 1], indent: 0, role: 'refrain' },
+    ]
+    const { phrases, mergedCount } = mergeLowercaseWraps(lines, planned)
+    expect(phrases).toEqual([{ lineRange: [0, 1], indent: 0, role: 'doxology' }])
+    expect(mergedCount).toBe(1)
+  })
+
+  it("preserves prev.indent across role-mismatched merges", () => {
+    // Same contract for indent: prev wins, cur is discarded.
+    const lines = [line('Эзэн'), line('бид')]
+    const planned = [
+      { lineRange: [0, 0], indent: 1, role: 'refrain' },
+      { lineRange: [1, 1], indent: 2 },
+    ]
+    const { phrases } = mergeLowercaseWraps(lines, planned)
+    expect(phrases).toEqual([{ lineRange: [0, 1], indent: 1, role: 'refrain' }])
+  })
+})
+
+describe('#330 F-X8 F-7d — Pass A/B: non-Cyrillic-Mongolian leading chars are capital boundaries', () => {
+  it('treats Latin lowercase as a capital boundary (not a wrap)', () => {
+    // Latin 'a' is NOT in MONGOLIAN_CYRILLIC_LOWERCASE, so it should
+    // be classified as a verse boundary (capital-equivalent), not
+    // absorbed as a wrap continuation. Defends against a future
+    // refactor that switches to Unicode `\p{Ll}` and silently absorbs
+    // foreign lowercase as wraps.
+    const lines = [line('Эзэн'), line('alleluia')] // Latin opener
+    const planned = [{ lineRange: [0, 1], indent: 0 }]
+    const { phrases } = splitMagtuuPhrasesOnCapitalBoundaries(lines, planned)
+    // Latin 'alleluia' opens a NEW sub-phrase, not a wrap.
+    expect(phrases).toEqual([
+      { lineRange: [0, 0], indent: 0 },
+      { lineRange: [1, 1], indent: 0 },
+    ])
+  })
+
+  it('treats digit opener as a capital boundary (numbered verse marker)', () => {
+    const lines = [line('Эзэн магтан'), line('2. Бид Тандаа найдъя.')]
+    const planned = [{ lineRange: [0, 1], indent: 0 }]
+    const { phrases } = splitMagtuuPhrasesOnCapitalBoundaries(lines, planned)
+    expect(phrases).toEqual([
+      { lineRange: [0, 0], indent: 0 },
+      { lineRange: [1, 1], indent: 0 },
+    ])
+  })
+
+  it('treats punctuation opener as a capital boundary (no merge into prior)', () => {
+    // Pass B mirror of the same contract — `«bid` (punct first) does
+    // NOT register as lowercase wrap so cur stays as its own phrase.
+    const lines = [line('Эзэн'), line('«Bid magtan dulai.»')]
+    const planned = [
+      { lineRange: [0, 0], indent: 0 },
+      { lineRange: [1, 1], indent: 0 },
+    ]
+    const { phrases, mergedCount } = mergeLowercaseWraps(lines, planned)
+    expect(phrases).toEqual(planned)
+    expect(mergedCount).toBe(0)
+  })
+})

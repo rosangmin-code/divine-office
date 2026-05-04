@@ -448,6 +448,25 @@ export function RichContent({
   // (natural/sentence flows do not consult phrase indent).
   flush?: boolean
 }): JSX.Element {
+  // #330 F-X8 F-2 — dev-mode guard for the `flush` + `flow` mutual
+  // exclusion. `flush` only meaningfully applies to the legacy phrase
+  // render path (per-block); when a `flow` mode is set, the legacy path
+  // is bypassed entirely and `flush` has no effect. The JSDoc on
+  // `flush` already documents this, but a runtime warning surfaces an
+  // accidental misuse during local/dev/CI runs without a hard
+  // production failure (no current caller passes both, but the type
+  // signature does not enforce mutual exclusion).
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    flush === true &&
+    (flow === 'natural' || flow === 'sentence')
+  ) {
+    console.warn(
+      `[RichContent] \`flush\` is ignored when \`flow="${flow}"\` is set ` +
+        '— flow modes bypass the legacy phrase-render path entirely.',
+    )
+  }
+
   // FR-161 R-17: natural / sentence flow modes operate on the ENTIRE
   // content (multi-block aware). The whole `PrayerText` becomes one
   // flowing prose unit; block boundaries contribute only inter-block

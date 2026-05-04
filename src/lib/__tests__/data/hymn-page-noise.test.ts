@@ -64,9 +64,18 @@ function findRichNoise() {
 
 interface OrdinariumEntry { title?: string; text?: string; page?: number }
 
-function findOrdinariumNoise() {
+// #330 F-X7b F-2 — pure detector function. Takes an in-memory data map
+// (caller-provided) and returns the same hit list the file-reading
+// `findOrdinariumNoise()` produces. Splitting parse-from-file from the
+// detection logic lets us pin the detector with a synthetic positive
+// fixture: a future regex/path/trim refactor that silently breaks
+// detection now fails the positive test instead of merely passing the
+// data-regression assertion (which only proves "current data is clean",
+// not "detector still detects").
+export function parseOrdinariumNoise(
+  data: Record<string, OrdinariumEntry>,
+): Array<{ hymnId: string; line: number }> {
   const out: Array<{ hymnId: string; line: number }> = []
-  const data = JSON.parse(fs.readFileSync(ORDINARIUM_HYMNS, 'utf8')) as Record<string, OrdinariumEntry>
   for (const [id, entry] of Object.entries(data)) {
     if (!entry || typeof entry !== 'object') continue
     const text = entry.text
@@ -79,6 +88,14 @@ function findOrdinariumNoise() {
     })
   }
   return out
+}
+
+function findOrdinariumNoise() {
+  const data = JSON.parse(fs.readFileSync(ORDINARIUM_HYMNS, 'utf8')) as Record<
+    string,
+    OrdinariumEntry
+  >
+  return parseOrdinariumNoise(data)
 }
 
 describe('F-X7 hymn page-noise regression guard', () => {
@@ -100,5 +117,51 @@ describe('F-X7 hymn page-noise regression guard', () => {
         .map((h) => `  hymn[${h.hymnId}] line[${h.line}]`)
         .join('\n')}`,
     ).toEqual([])
+  })
+
+  // #330 F-X7b F-2 — positive control for the parseOrdinariumNoise()
+  // detector. The data-regression assertion above only proves the
+  // current ordinarium/hymns.json file is clean; it cannot detect a
+  // refactor that silently breaks the detector itself (e.g., a typo
+  // in PAGE_LABEL, a wrong split character, or a `.trim()` removal).
+  // This synthetic fixture forces a positive hit so any future change
+  // that disables detection fails CI immediately.
+  it("plain-text path detector returns hits for synthetic data containing 'Магтуу' lines", () => {
+    const synthetic: Record<string, OrdinariumEntry> = {
+      cleanHymn: { title: 'No noise', text: 'Бид Эзэнийг магтан дуулъя\nАллэлуяа' },
+      noiseStrict: {
+        title: 'Strict empty around noise',
+        text: 'Real verse 1\nМагтуу\nReal verse 2',
+      },
+      noiseWhitespace: {
+        title: 'Whitespace-padded noise',
+        text: 'verse a\n  Магтуу  \nverse b',
+      },
+      missingText: { title: 'No text field' },
+      inflectedNotMatched: {
+        title: 'Inflected form is body, not noise',
+        text: 'Магтууг нь дуулъя гэж бид амласан', // "Магтууг" mid-sentence — does NOT match
+      },
+    }
+    const hits = parseOrdinariumNoise(synthetic)
+    // Two distinct hymns produce hits (strict + whitespace-padded);
+    // each appears at exactly line index 1 within its own text block.
+    expect(hits).toEqual([
+      { hymnId: 'noiseStrict', line: 1 },
+      { hymnId: 'noiseWhitespace', line: 1 },
+    ])
+  })
+
+  // #330 F-X7b F-2 — negative control. Hymns whose text field has
+  // `Магтуу` only as a substring (inflected form, mid-sentence) must
+  // NOT register. Pins the `line.trim() === PAGE_LABEL` exact-match
+  // contract so a future relaxation to substring matching is caught.
+  it('plain-text path detector ignores inflected/embedded forms', () => {
+    const synthetic: Record<string, OrdinariumEntry> = {
+      inflected: { title: 'Inflected', text: 'Магтуунуудыг бид дуулъя' },
+      embedded: { title: 'Embedded', text: 'Энэ Магтуу гэдэг нь утгатай' },
+      lowercase: { title: 'Lowercase', text: 'магтуу гэсэн нь өөр зүйл' },
+    }
+    expect(parseOrdinariumNoise(synthetic)).toEqual([])
   })
 })
