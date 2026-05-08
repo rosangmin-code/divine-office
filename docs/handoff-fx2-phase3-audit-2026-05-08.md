@@ -211,3 +211,20 @@ Discussion exchange IDs:
 - R1: `ex_20260508T130316Z_8e66a5f6` (15.7s, 557 output tokens)
 - R2: `ex_20260508T130432Z_8409a5f8` (9.4s, 804 output tokens)
 
+### 6.1 Phase 3 fix execution (#352, dev, 2026-05-08)
+
+Implemented Option A + Strategy R-1 verbatim per §3 recommendation.
+
+| Aspect | Outcome |
+|--------|---------|
+| Schema (Option A) | `psalmPrayer?: string` added to `PsalmEntry` (`src/lib/types.ts` L199, mirrors Phase 2's `psalmPrayerPage?: number` placement directly above) |
+| Resolver gate (R-1) | Both return sites in `src/lib/hours/resolvers/psalm.ts` updated. When `entry.psalmPrayer !== undefined`: `psalmPrayer` resolves to entry override, `psalmPrayerRich` is set to `undefined` unconditionally (catalog rich AST for the W1-default text is suppressed). Plain-text rendering path takes over — already exercised by FR-153h. |
+| Data lands (3 occurrences) | `week-2.json` Psalm 110:1-5,7 W2-SUN-vespers (psalmPrayer + page 186); `week-3.json` Psalm 100:1-5 W3-FRI-lauds (psalmPrayer + page 380); `week-4.json` Psalm 147:12-20 W4-FRI-lauds (psalmPrayer + page 493). Catalog (`psalter-texts.json`) intentionally unchanged — zero data churn, R-1 contract. |
+| Tests added | `psalm.test.ts` Phase 3 describe block: 3 occurrence-positive anchors (each asserts `psalmPrayer === <PDF text>` + `psalmPrayerPage === <expected>` + `psalmPrayerRich === undefined`); 1 negative-pair regression (same ref without override → catalog rich + plain still flow); 1 Bible-fallback parity assertion. Loader mock surfaces `SENTINEL_RICH_AST` for the 3 affected refs so the suppression branch is provably distinguishable from vacuous absence. |
+| Verification gates | vitest **951 passed / 0 failed** (47 files, baseline 943 + 8 new — 5 Phase 3 anchors plus 3 Phase-3-aware mock entries needed by the existing Phase 2 anchors); `npx tsc --noEmit` clean; `npx eslint <changed>` 0 errors; `verify-phrase-coverage.js` 215/215 OK; `verify-no-page-noise.js` 0 violations; `verify-psalter-pages.js` agree=157 / verified-correction=4 / drift=0 (baseline preserved). |
+| audit-fx2-phase2-pages.js (Phase 3 rows) | Rows 1 (Psalm 110 W2 @186), 8 (Psalm 100 W3 @380), 15 (Psalm 147 W4 @493) — page column ✓ (PDF page matches week-N.json `psalmPrayerPage`); prayer-text column shows `✗ DIFFERS` because the script compares to catalog default — this is **expected** per Strategy R-1 (catalog intentionally unchanged). Script's overall `NEEDS_REVIEW` summary is the pre-existing baseline (rows 5/6/7/9 — Phase 2 audit-estimate vs PDF off-by-1/2 — unrelated to Phase 3). |
+
+**Risk register status (§4.2)**: R3 (catalog rename drift) — left as data-quality scrub; not blocking. The audit script's prayer-text comparison column already provides the visibility needed; a future regression check can be added without schema impact.
+
+**LOC actual vs estimated**: ~30 LOC code (1 type field + ~12 LOC across 2 resolver sites + 6 LOC across 3 data files) + ~120 LOC test (5 anchors + 3 mock entries + sentinel rich AST scaffolding). Slightly above the §4 estimate (~25-30 LOC code + ~80 LOC test) due to the rich-overlay sentinel mock pattern needed to make R-1 suppression provably distinguishable.
+
