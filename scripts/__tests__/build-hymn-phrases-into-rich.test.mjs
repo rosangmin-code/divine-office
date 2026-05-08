@@ -881,9 +881,11 @@ describe('#330 F-X8 F-7d — Pass A/B: non-Cyrillic-Mongolian leading chars are 
   })
 
   it('treats punctuation opener as a capital boundary (no merge into prior)', () => {
-    // Pass B mirror of the same contract — `«bid` (punct first) does
+    // Pass B mirror of the same contract — `«Бид` (punct first) does
     // NOT register as lowercase wrap so cur stays as its own phrase.
-    const lines = [line('Эзэн'), line('«Bid magtan dulai.»')]
+    // #345 I-4 — verbatim Mongolian-Cyrillic text (was Latin transliteration)
+    // so the test fixture matches the production data shape.
+    const lines = [line('Эзэн'), line('«Бид магтан дуулай.»')]
     const planned = [
       { lineRange: [0, 0], indent: 0 },
       { lineRange: [1, 1], indent: 0 },
