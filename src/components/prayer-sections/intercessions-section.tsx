@@ -3,6 +3,19 @@ import { PageRef } from '../page-ref'
 import { RichContent } from './rich-content'
 import { DirectiveBlock, partitionDirectives } from './directive-block'
 
+// F-X12 Phase A (#374): legacy-path heuristic — when a petition line ends with
+// "...залбирцгаая" (cohortative "let us pray") plus optional `:`/`.`, the
+// IMMEDIATELY following item is the intercession's response refrain. PDF
+// renders this refrain in italics; we mirror that visual cue. Narrow scope:
+// only matches the exact stem "залбирцгаая" (audit §3.5 — keeps recall low
+// to avoid italicizing normal versicle/response pairs). Other cohortative
+// suffixes (e.g. "алдаршуулцгаая") are intentionally excluded; extend
+// case-by-case on user follow-up.
+//
+// Trailing-whitespace tolerant; punctuation optional (covers ":" / "." /
+// bare). Cyrillic-only stem keeps ASCII keyword interactions impossible.
+export const LEGACY_INTERCESSION_REFRAIN_LEAD_RE = /залбирцгаая[:.]?\s*$/
+
 export function IntercessionsSection({
   section,
 }: {
@@ -114,14 +127,27 @@ export function IntercessionsSection({
             </p>
           )}
           <ul className="mt-2 space-y-2">
-            {section.items.map((item, i) => (
-              <li
-                key={i}
-                className="font-serif text-stone-800 dark:text-stone-200"
-              >
-                — {item}
-              </li>
-            ))}
+            {section.items.map((item, i) => {
+              // F-X12 Phase A: cohortative trigger on previous line elevates
+              // the next item to refrain (italic). i === 0 always plain.
+              const prev = i > 0 ? section.items[i - 1] : ''
+              const isRefrain =
+                i > 0 &&
+                LEGACY_INTERCESSION_REFRAIN_LEAD_RE.test(prev.trim())
+              return (
+                <li
+                  key={i}
+                  data-role={
+                    isRefrain ? 'intercessions-refrain' : undefined
+                  }
+                  className={`font-serif text-stone-800 dark:text-stone-200${
+                    isRefrain ? ' italic' : ''
+                  }`}
+                >
+                  — {item}
+                </li>
+              )
+            })}
           </ul>
         </>
       )}
