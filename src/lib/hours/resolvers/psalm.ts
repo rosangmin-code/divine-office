@@ -62,9 +62,14 @@ export async function resolvePsalm(
     // suppress the catalog `psalmPrayerRich` overlay — it encodes the
     // W1-default prayer AST and would render alongside the wrong text.
     // The plain-text path (already used by FR-153h fallback) stays correct.
+    // #359 F-3: use loose-equality `!= null` so a defensive `null` value
+    // (TypeScript types disallow but JSON.parse could yield it) is treated
+    // identically to `undefined` — the text path uses `??` which already
+    // falls through on null, so suppression must align to avoid emitting
+    // catalog text without its rich AST (asymmetric UX).
     const psalmPrayerOverride = entry.psalmPrayer
     const psalmPrayerRich =
-      psalmPrayerOverride !== undefined
+      psalmPrayerOverride != null
         ? undefined
         : (loadPsalterTextPsalmPrayerRich(entry.ref) ?? undefined)
     const headerRich = loadPsalterHeaderRich(entry.ref) ?? undefined
@@ -122,6 +127,9 @@ export async function resolvePsalm(
   // keeps R-1 invariant across both return sites so a multi-occurrence
   // psalm that loses its catalog entry but keeps its week-N.json mapping
   // (text + page override) still emits the correct plain text alone.
+  // #359 F-3: see catalog return site above — `!= null` mirrors the `??`
+  // text path so a stray runtime `null` cannot trigger suppression while
+  // the text falls back to catalog (asymmetric UX guard).
   const psalmPrayerOverride = entry.psalmPrayer
   return {
     psalmType: entry.type,
@@ -132,7 +140,7 @@ export async function resolvePsalm(
     gloriaPatri: entry.gloria_patri,
     psalmPrayer: psalmPrayerOverride ?? psalmText?.psalmPrayer,
     psalmPrayerRich:
-      psalmPrayerOverride !== undefined
+      psalmPrayerOverride != null
         ? undefined
         : (loadPsalterTextPsalmPrayerRich(entry.ref) ?? undefined),
     // F-X2 Phase 1 (#219): same per-occurrence override on the Bible
