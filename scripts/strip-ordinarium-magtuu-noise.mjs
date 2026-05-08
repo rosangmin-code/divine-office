@@ -59,10 +59,14 @@ function stripNoiseFromText(text) {
   // anything more would visually widen the gap).
   // Also trim trailing blank lines (so we don't leave "...\n\n\n" at EOF).
   //
-  // #330 F-X7b F-1 — blank判定을 `line.trim() === ''` 로 완화하여
-  // whitespace-only / NBSP-only / ZWSP-only 라인도 blank 으로 인식한다.
-  // 현 ordinarium 데이터에는 strict-empty 만 존재하지만 PDF 재추출 또는
-  // 데이터 추가 시 silent 누락 위험이 있어 defensive widen.
+  // #330 F-X7b F-1 — blank判定을 `line.trim() === ''` 로 완화하여 일반
+  // whitespace + NBSP (U+00A0) only 라인도 blank 으로 인식한다.
+  // 주의: JS .trim() 은 NBSP (U+00A0) 는 제거하지만 ZWSP (U+200B) 는
+  // format 문자로 분류되어 제거하지 않는다 — ZWSP-only 라인은 비-blank.
+  // 현 ordinarium 데이터에는 NBSP/ZWSP 모두 없어 동작 영향은 0이지만,
+  // PDF 재추출 또는 데이터 추가 시 NBSP 라인이 들어올 수 있어 defensive
+  // widen 의도이며, ZWSP 도 가드하려면 정규식 기반 검사가 필요하다
+  // (#345 I-2 follow-up — 옵션, 현재 미적용).
   const isBlank = (line) => line.trim() === ''
   const collapsed = []
   let blankRun = 0

@@ -460,17 +460,18 @@ function startsWithLowercaseCyrillic(text) {
  * @param {{ spans: { text: string }[] }[]} lines
  * @param {{ lineRange: [number, number], indent?: 0 | 1 | 2, role?: 'refrain' | 'doxology' }[]} phrases
  */
-// #330 F-X8 F-5 — pure clone helper for phrase pass-through. The shallow
-// `{ ...phrase }` spread leaves the inner `lineRange` array reference
-// shared with the input; downstream callers that index-mutate (none today,
-// but the contract should not depend on that) would silently corrupt the
-// input. Cloning lineRange too gives us full immutability of the input
-// without changing any other semantics. Used by both Pass A and Pass B.
+// #330 F-X8 F-5 / #345 I-3 — pure clone helper for phrase pass-through.
+// The shallow `{ ...phrase }` spread leaves any nested mutable
+// (e.g. `lineRange` array) shared with the input; downstream callers that
+// index-mutate would silently corrupt the input. Today only `lineRange` is
+// non-primitive, but the schema may grow new array/object fields (see the
+// JSDoc on splitMagtuuPhrasesOnCapitalBoundaries / mergeLowercaseWraps).
+// `structuredClone` (Node 17+) gives us forward-compat deep-clone semantics
+// for any future field shape — pure data so no clone-incompatible types.
+// Used by both Pass A and Pass B.
 function clonePhrase(phrase) {
   if (!phrase || typeof phrase !== 'object') return phrase
-  const cloned = { ...phrase }
-  if (Array.isArray(phrase.lineRange)) cloned.lineRange = [...phrase.lineRange]
-  return cloned
+  return structuredClone(phrase)
 }
 
 export function splitMagtuuPhrasesOnCapitalBoundaries(lines, phrases) {
@@ -481,6 +482,23 @@ export function splitMagtuuPhrasesOnCapitalBoundaries(lines, phrases) {
     }
   }
   const linesLen = Array.isArray(lines) ? lines.length : 0
+  // #345 I-5 — Explicit degenerate guard: planner contract requires
+  // `phrases[i].lineRange[1] < lines.length`. When `lines` is empty AND
+  // any phrase asks for content, the per-phrase safeEnd clamp at L527
+  // truncates each multi-line phrase to a single-line tail (semantically
+  // correct, but the silent absorption can mask an upstream planner bug).
+  // Emit a single dev warning here so the degenerate input surfaces once
+  // at the call site rather than per-phrase deep inside the loop.
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    linesLen === 0 &&
+    phrases.some((p) => Array.isArray(p?.lineRange) && p.lineRange[1] > p.lineRange[0])
+  ) {
+    console.warn(
+      `[splitMagtuuPhrasesOnCapitalBoundaries] linesLen=0 but ${phrases.length} ` +
+        `phrase(s) request content — per-phrase clamping to single-line tails`,
+    )
+  }
   const out = []
   let splitCount = 0
   for (const phrase of phrases) {

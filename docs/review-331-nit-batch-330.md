@@ -110,3 +110,26 @@ All 9 new tests are ADEQUATE per behavioral coverage protocol (positive + negati
   "confidence": "HIGH"
 }
 ```
+
+---
+
+## Errata (added by #345 NIT cleanup batch)
+
+**F-1 / I-1 — Commit 03a1f9c message off-by-1 — accepted as immutable**
+
+The commit message of `03a1f9c` claims `47 files / 947 tests PASS (937 baseline + 10 신규)`.
+Verified actual count from `npm test` evidence: **47 files / 946 tests PASS, +9 new tests** (not +10).
+Per-file breakdown:
+
+- `scripts/__tests__/build-hymn-phrases-into-rich.test.mjs` — F-7a (1) + F-7b (1) + F-6/F-7c (2) + F-7d (3) = **7 new**
+- `src/lib/__tests__/data/hymn-page-noise.test.ts` — F-X7b F-2 positive + negative = **2 new**
+
+**Decision**: defer. Commit history is immutable; rewriting (force-push, amend) is more invasive than the doc-accuracy benefit warrants. This errata note is the canonical source of truth for the actual count. No action required from downstream consumers.
+
+**F-2 / I-2 — strip-ordinarium-magtuu-noise.mjs comment overstated** — fixed in #345 (this batch). Comment now accurately documents that JS `.trim()` handles NBSP (U+00A0) but NOT ZWSP (U+200B); current ordinarium data has neither, so behavioral effect is 0.
+
+**F-3 / I-3 — clonePhrase forward-compat** — fixed in #345 (this batch). Replaced manual `lineRange` deep-clone with `structuredClone()` (Node 17+) for forward-compat against future schema growth.
+
+**F-4 / I-4 — F-7d test fixture Latin → Cyrillic** — fixed in #345 (this batch). Test fixture switched to verbatim Mongolian-Cyrillic «Бид магтан дуулай.» to match production data shape.
+
+**F-5 / I-5 — splitMagtuuPhrasesOnCapitalBoundaries linesLen=0 explicit guard** — fixed in #345 (this batch). One-time dev warning at function entry surfaces the degenerate case (empty lines + multi-line phrases) without spamming per-phrase warnings deeper in the loop.
