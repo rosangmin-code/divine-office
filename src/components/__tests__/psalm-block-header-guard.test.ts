@@ -89,6 +89,32 @@ describe('sanitizePsalmHeaderPreface — F-X9 defensive guard (unit)', () => {
     expect(result).toBe('Ариун угаалын… Египетээс гарсан юм')
   })
 
+  it('strips trailing `(харьцуул. attribution)` cf-prefix suffix variant', () => {
+    // F-X9 NIT-1 (review #376): renderer must mirror the extractor's
+    // `stripAttributionSuffix` cf-prefix-aware regex. Some PDF prefaces
+    // wrap the citation with the Mongolian "compare with" `харьцуул.`
+    // prefix (e.g. parsed_data/full_pdf.txt:13223, :14790). Catalog is
+    // currently clean of this dirty shape; the test locks renderer
+    // parity so a future stale-catalog regression is stripped by the
+    // guard layer.
+    const result = sanitizePsalmHeaderPreface(
+      'Some body sentence ending. (харьцуул. Үйлс 2:24)',
+      undefined,
+      'Үйлс 2:24',
+    )
+    expect(result).toBe('Some body sentence ending.')
+  })
+
+  it('strips trailing `(харьцуул. attribution).` cf-prefix + period variant', () => {
+    // Same NIT-1 — period-after-closing-paren combined with cf-prefix.
+    const result = sanitizePsalmHeaderPreface(
+      'Зөвт хүн цатгагдах болно (харьцуул. Матай 5:6).',
+      'Тэнгэрбурхан бол зөв шударга хүний хөрвөшгүй бат түшиг мөн',
+      'Матай 5:6',
+    )
+    expect(result).toBe('Зөвт хүн цатгагдах болно')
+  })
+
   it('strips BOTH title prefix and attribution suffix in one call', () => {
     // Psalm 67 spot-check (handoff §1.1): both quirks on the same entry.
     const result = sanitizePsalmHeaderPreface(
