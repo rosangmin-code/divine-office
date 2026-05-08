@@ -6,6 +6,57 @@ import { PageRef } from './page-ref'
 import { AntiphonBox } from './prayer-renderer'
 import { RichContent } from './prayer-sections/rich-content'
 
+// Escape a string for use as a literal RegExp source (defensive helper for
+// `sanitizePsalmHeaderPreface`; covers the standard JS regex meta-set).
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+/**
+ * F-X9 (#362 audit, #373 dispatch B) defensive guard for the FR-160-C
+ * `psalter-headers` catalog. The PDF block-capture extractor (origin
+ * `155f17a`) inadvertently bundled the title-line prefix and the
+ * `(attribution)` suffix into `preface_text`, while the renderer below
+ * also emits `psalm.title` (line 24-26) and the attribution span
+ * (line 35-37) separately — producing a visible double-emit on 67/77
+ * (title) and 74/77 (attribution) catalog entries.
+ *
+ * Dispatch A (#372) regenerates the catalog so `preface_text` is body-
+ * only; this guard is the layered defense — it is a NOP on clean data
+ * and resilient if a stale catalog ever returns. Layered by design.
+ *
+ * Strip rules:
+ *   - If `preface_text` starts with `psalm.title` (trimmed), drop that
+ *     prefix and any single separator punctuation that follows.
+ *   - If `preface_text` ends with `(attribution)` or `(attribution).`,
+ *     drop that suffix.
+ *
+ * Non-strict matches (mid-string near-matches, ~7 catalog entries) are
+ * intentionally NOT touched — those require data correction (Dispatch A).
+ */
+export function sanitizePsalmHeaderPreface(
+  prefaceText: string,
+  title: string | undefined,
+  attribution: string,
+): string {
+  let pt = prefaceText
+  const trimmedTitle = title?.trim() ?? ''
+  if (trimmedTitle && pt.startsWith(trimmedTitle)) {
+    pt = pt.slice(trimmedTitle.length).trimStart()
+    // Drop a single separator (period / comma / colon / em-dash) that some
+    // PDF entries place between the title-line and the body — e.g.
+    // "title. Зөвт..." → "Зөвт...".
+    pt = pt.replace(/^[.,;:—\-]\s*/, '')
+  }
+  if (attribution) {
+    const attribPat = new RegExp(
+      `\\s*\\(${escapeRegExp(attribution)}\\)\\.?\\s*$`,
+    )
+    pt = pt.replace(attribPat, '').trimEnd()
+  }
+  return pt
+}
+
 export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; antiphonNumber?: number }) {
   const { settings } = useSettings()
   return (
@@ -24,19 +75,29 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
         {psalm.title && (
           <p className="text-xs italic text-stone-500 dark:text-stone-500">{psalm.title}</p>
         )}
-        {/* FR-160-C: psalm-header preface (patristic Father / NT typological) */}
-        {psalm.headerRich && (
-          <p
-            data-role="psalm-header-rich"
-            data-kind={psalm.headerRich.kind}
-            className="mt-1 text-xs italic text-red-700 dark:text-red-400"
-          >
-            {psalm.headerRich.preface_text}
-            {' ('}
-            <span data-role="psalm-header-attribution">{psalm.headerRich.attribution}</span>
-            {')'}
-          </p>
-        )}
+        {/* FR-160-C: psalm-header preface (patristic Father / NT typological).
+            F-X9 (#373) — defensive guard strips title-prefix and (attribution)-
+            suffix that some catalog entries inadvertently bundled into
+            `preface_text` (see `sanitizePsalmHeaderPreface` doc above). */}
+        {psalm.headerRich && (() => {
+          const prefaceBody = sanitizePsalmHeaderPreface(
+            psalm.headerRich.preface_text,
+            psalm.title,
+            psalm.headerRich.attribution,
+          )
+          return (
+            <p
+              data-role="psalm-header-rich"
+              data-kind={psalm.headerRich.kind}
+              className="mt-1 text-xs italic text-red-700 dark:text-red-400"
+            >
+              {prefaceBody}
+              {prefaceBody ? ' (' : '('}
+              <span data-role="psalm-header-attribution">{psalm.headerRich.attribution}</span>
+              {')'}
+            </p>
+          )
+        })()}
       </div>
 
       {/* Stanzas (PDF source) or Verses (fallback) */}
