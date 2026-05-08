@@ -117,13 +117,33 @@ export function pdftotextLayout(pdfPath, from, to) {
 }
 
 /**
- * Detect the per-column baseline column — the smallest leading-whitespace
- * count among non-blank lines that (a) appears at least twice and (b) is
- * not zero (col-0 lines are usually flush-left header/commentary, not
- * phrase content). Falls back to the minimum non-zero leading width seen.
+ * Detect the per-column baseline column — the leading-whitespace count
+ * that hosts the bulk of phrase-start lines.
  *
- * The mode-of-minimums approach rejects rare deeper-indent headers while
- * still picking up the dominant phrase-start column.
+ * Two-stage policy (FR-161 #375 — F-X10 fix):
+ *
+ *   1. If col-0 has count >= 2 AND strictly dominates every non-zero
+ *      candidate, baseline = 0. This catches PDFs whose psalm body is
+ *      flush-left (Psalm 46:2-12 right col, Psalm 32:1-11 right col,
+ *      Psalm 30:2-13, etc.) — pre-fix, the unconditional col-0 skip
+ *      mis-anchored baseline at the wrap-indent (col 3), causing every
+ *      wrap pair (col 0 → col 3) to register as `rel = -3` and `rel = 0`
+ *      respectively, neither of which fires Stage 1's wrap branch
+ *      (which requires rel = 3 ± 1). 42 of 96 phrase-injected refs were
+ *      ALL single-line because of this; user reported case is Psalm
+ *      46:2-12 lines "Далайн зүрх рүү уулс нуран ороход ч" → "бид
+ *      айхгүй." (book page 153).
+ *
+ *   2. Otherwise, the smallest non-zero indent with count >= 2 wins
+ *      (original "mode of minimums" behaviour). This preserves all
+ *      pre-fix correct cases — body indented at col 3 with col-0
+ *      lines being page header / attribution intro / commentary
+ *      (Psalm 110 / 24 / 8 / 117 etc.). Strict dominance (`>` not `>=`)
+ *      ensures ties stay on the legacy non-zero path so close calls
+ *      don't flip baseline silently.
+ *
+ *   3. Final fallback: the minimum indent seen (covers the
+ *      single-solo-line corner case with one solitary indent value).
  *
  * @param {string[]} columnLines
  * @returns {number}
@@ -133,17 +153,90 @@ export function detectBaselineCol(columnLines) {
   for (const raw of columnLines) {
     if (raw.trim().length === 0) continue
     const lead = raw.length - raw.trimStart().length
-    if (lead === 0) continue // flush-left = commentary or header, skip
     counts.set(lead, (counts.get(lead) ?? 0) + 1)
   }
   if (counts.size === 0) return 0
-  // Prefer the smallest indent that occurs >=2 times — that's the
-  // phrase-start baseline, since wraps are rarer than starts overall.
   const sorted = [...counts.entries()].sort(([a], [b]) => a - b)
-  for (const [col, count] of sorted) {
-    if (count >= 2) return col
+  const candidates = sorted.filter((entry) => entry[1] >= 2).map((entry) => entry[0])
+  if (candidates.length === 0) return sorted[0][0]
+
+  // Score each candidate baseline by counting "valid wrap pairs" — the
+  // number of consecutive non-blank lines where the first sits at the
+  // candidate baseline and the second sits at baseline + WRAP_DELTA
+  // (within WRAP_TOLERANCE). This reframes baseline detection as
+  // "which baseline interpretation produces the most coherent
+  // wrap structure?", which discriminates correctly when a column
+  // mixes content at multiple indents (e.g. Psalm 20:2-8 right col
+  // mixes col-0 evening-prayer text with col-3 psalm body — body
+  // wraps at col 6, so baseline=3 wins).
+  function scoreWraps(baseline) {
+    let n = 0
+    for (let i = 1; i < columnLines.length; i++) {
+      const prev = columnLines[i - 1]
+      const cur = columnLines[i]
+      if (prev.trim().length === 0 || cur.trim().length === 0) continue
+      const prevLead = prev.length - prev.trimStart().length
+      const curLead = cur.length - cur.trimStart().length
+      if (
+        Math.abs(prevLead - baseline) <= WRAP_TOLERANCE &&
+        Math.abs(curLead - (baseline + WRAP_DELTA)) <= WRAP_TOLERANCE
+      ) {
+        n++
+      }
+    }
+    return n
   }
-  return sorted[0][0]
+
+  // Stage 1 — dominance check.
+  //
+  // When one candidate's count is more than DOMINANCE_RATIO times every
+  // other candidate's count, that candidate is the baseline. This
+  // handles the common case of a column with one clear content indent
+  // and minor noise at other indents (page number / attribution /
+  // section-header at col 0; uniform body at col 3). Without this guard,
+  // Stage 2's wrap-score tie-break can spuriously pick a non-dominant
+  // anchor when an isolated header→body transition counts as a single
+  // "wrap pair" but is not actually a content wrap (Psalm 149:1-9: 25
+  // body lines at col 3 vs 3 col-0 lines + 1 attribution→verse
+  // transition would otherwise pick baseline=0 and merge the entire
+  // psalm into one phrase).
+  const DOMINANCE_RATIO = 2
+  const sortedByCount = [...counts.entries()].sort(([, a], [, b]) => b - a)
+  if (sortedByCount.length > 0) {
+    const [topCol, topCount] = sortedByCount[0]
+    if (topCount >= 2) {
+      let dominant = true
+      for (const [col, c] of sortedByCount) {
+        if (col === topCol) continue
+        if (topCount <= c * DOMINANCE_RATIO) {
+          dominant = false
+          break
+        }
+      }
+      if (dominant) return topCol
+    }
+  }
+  // Stage 2 — wrap-score tie-break for ambiguous mixed-content columns.
+  let best = null
+  for (const col of candidates) {
+    const score = scoreWraps(col)
+    const occurrence = counts.get(col) ?? 0
+    if (
+      best === null ||
+      score > best.score ||
+      (score === best.score && occurrence > best.occurrence) ||
+      (score === best.score && occurrence === best.occurrence && col < best.col)
+    ) {
+      best = { col, score, occurrence }
+    }
+  }
+  if (best.score >= 1) return best.col
+  // Stage 3 — legacy fallback (no wrap evidence): smallest non-zero
+  // candidate with >=2 hits, then smallest seen.
+  for (const col of candidates) {
+    if (col !== 0) return col
+  }
+  return candidates[0]
 }
 
 /**

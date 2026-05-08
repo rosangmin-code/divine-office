@@ -301,6 +301,60 @@ describe('extractPhrasesFromColumn — end-to-end on pilot fixtures', () => {
 })
 
 // @fr FR-161
+// F-X10 (#375) — body-at-flush-left wrap continuation regression guard.
+//
+// Pre-fix, `detectBaselineCol` unconditionally skipped col-0 lines, which
+// silently misanchored baseline at col 3 (the wrap-indent) for psalms
+// whose body is flush-left. Every wrap pair (col 0 → col 3) registered
+// as `rel = -3` and `rel = 0`, neither of which fires Stage 1's wrap
+// branch. 42 of 96 phrase-injected refs were ALL single-line because of
+// this. User-reported case: Psalm 46:2-12 lines "Далайн зүрх рүү уулс
+// нуран ороход ч" → "бид айхгүй." (book page 153 right col).
+//
+// The fix is column-level: pick the candidate baseline that maximises
+// "valid wrap pairs" (consecutive non-blank lines at baseline + WRAP_DELTA),
+// with strict count-dominance as a fast path for unambiguous cases. The
+// tests below codify the invariants:
+//   - Psalm 46 right col (body @ col 0): baseline=0 + multi-line phrases.
+//   - Psalm 110 left col (body @ col 3): baseline=3 preserved (no
+//     regression of the FR-161 R-7 PILOT contract).
+describe('detectBaselineCol — F-X10 body-at-flush-left handling', () => {
+  it('Psalm 46:2-12 right col (book page 153): baseline=0 with wraps', () => {
+    const lines = loadColumn(77, 'right')
+    const out = extractPhrasesFromColumn(lines)
+    expect(out.baselineCol).toBe(0)
+    // PDF has at least 3 wrap pairs in the body (L05→L06, L36→L37,
+    // L40→L41 from the column dump). After translatePhrases via the
+    // builder the count converges to 5 across two rich blocks; at the
+    // raw extractor level we only need to assert that wrap detection
+    // fires at all.
+    let multiLine = 0
+    for (const stanza of out.stanzas) {
+      for (const phrase of stanza.phrases) {
+        if (phrase.lineRange[1] > phrase.lineRange[0]) multiLine++
+      }
+    }
+    expect(multiLine).toBeGreaterThanOrEqual(3)
+  })
+
+  it('Psalm 110 left col (FR-161 R-7 PILOT): baseline=3 preserved + stanza 3 wraps detected', () => {
+    const lines = loadColumn(35, 'left')
+    const out = extractPhrasesFromColumn(lines)
+    expect(out.baselineCol).toBe(3)
+    // Stanza containing "Эзэн тангарагласан бөгөөд" / "санаагаа
+    // өөрчлөхгүй." (the book-page-68 wrap pair) MUST detect the wrap.
+    const wrapStanza = out.stanzas.find((s) =>
+      s.lines.some((l) => l.includes('Эзэн тангарагласан')),
+    )
+    expect(wrapStanza).toBeDefined()
+    const multiLine = wrapStanza.phrases.filter(
+      (p) => p.lineRange[1] > p.lineRange[0],
+    )
+    expect(multiLine.length).toBeGreaterThanOrEqual(1)
+  })
+})
+
+// @fr FR-161
 describe('extractPhrasesFromColumn — Stage 3 review queue', () => {
   it('flags needsReview=true when Stage 1 splits a phrase that Stage 2 considers continuous', () => {
     // Stage 1 sees baseline=3 and treats every line as a new phrase
