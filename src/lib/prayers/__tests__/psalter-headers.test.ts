@@ -250,5 +250,159 @@ describe('FR-160-C psalter-headers catalog', () => {
       }
       expect(violations).toEqual([])
     })
+
+    // F-X9 NIT-2 (review #376): the canonical title-prefix invariant above
+    // walks `loadPsalmTitlesByNumber()` which only sees titles authored in
+    // week-N.json / propers/*.json. The PDF carries 11 additional psalms
+    // whose titles are NOT in any JSON source (data gap — the extractor
+    // covers them via `fallbackStripFirstPdfLine`). 7 of the 11 land in
+    // the catalog; the other 4 (Psalms 95, 4, 134, 91) lack a matching
+    // canonical key in psalter-texts.json so they remain in `unmatched`.
+    //
+    // Without the fixture below, a fallback-strip regression would re-grow
+    // title-dup on these 7 entries silently — the canonical invariant
+    // wouldn't catch it because it only knows JSON-sourced titles.
+    //
+    // Each entry's `pdfTitle` is verbatim from `parsed_data/full_pdf.txt`
+    // (PDF SSOT — feedback_pdf_ssot_verbatim memory). The invariant
+    // asserts each catalog entry's `preface_text` does NOT start with its
+    // PDF-only title, locking the fallback strip path.
+    it('no fallback-path entry starts with its PDF-only title (NIT-2)', () => {
+      // 11 fallback entries discovered via traced re-run of the extractor
+      // logic against `parsed_data/full_pdf.txt`. 7 land in the catalog
+      // (asserted below); 4 remain in `unmatched` and are documented for
+      // reference but skipped here because the loader never reads them.
+      const PDF_ONLY_TITLES: Array<{
+        ref: string
+        page: number
+        attribution: string
+        pdfTitle: string
+        inCatalog: boolean
+      }> = [
+        // In catalog (loader-reachable):
+        {
+          ref: 'Psalm 141:1-9',
+          page: 50,
+          attribution: 'Илчлэл 8:4',
+          pdfTitle: 'Аюулын үед унших даатгал залбирал',
+          inCatalog: true,
+        },
+        {
+          ref: 'Psalm 119:105-112',
+          page: 167,
+          attribution: 'Иохан 15:12',
+          pdfTitle: 'Тэнгэрбурханы энэрэл хайрын тухай бясалгал',
+          inCatalog: true,
+        },
+        {
+          ref: 'Psalm 16:1-6',
+          page: 168,
+          attribution: 'Үйлс 2:24',
+          pdfTitle: 'Эзэн бол миний өв юм',
+          inCatalog: true,
+        },
+        {
+          ref: 'Psalm 113:1-9',
+          page: 287,
+          attribution: 'Лук 1:52',
+          pdfTitle: 'Эзэний нэр алдрыгмагтан дуулагтун',
+          inCatalog: true,
+        },
+        {
+          ref: 'Psalm 146:1-10',
+          page: 460,
+          attribution: 'Арнобиус',
+          pdfTitle: 'Тэнгэрбурханд найдагчид',
+          inCatalog: true,
+        },
+        {
+          ref: 'Psalm 16:1-6',
+          page: 535,
+          attribution: 'Үйлс 2:24',
+          pdfTitle: 'Эзэн бол миний өв юм',
+          inCatalog: true,
+        },
+        {
+          ref: 'Psalm 88:2-10',
+          page: 539,
+          attribution: 'Лук 22:53',
+          pdfTitle: 'Өвчтэй хүний даатгал залбирал',
+          inCatalog: true,
+        },
+        // Unmatched (no canonical key in psalter-texts.json — documented
+        // for completeness; not asserted because the catalog never carries
+        // these refs):
+        {
+          ref: 'Psalm 95',
+          page: 28,
+          attribution: 'Еврей 3:13',
+          pdfTitle: 'Тэнгэрбурханыг магтах дуудлага',
+          inCatalog: false,
+        },
+        {
+          ref: 'Psalm 4',
+          page: 512,
+          attribution: 'Гэгээн Августин',
+          pdfTitle: 'Талархал магтаал',
+          inCatalog: false,
+        },
+        {
+          ref: 'Psalm 134',
+          page: 514,
+          attribution: 'Илчлэл 19:5',
+          pdfTitle: 'Сүм хийдийн доторх үдшийн даатгал залбирал',
+          inCatalog: false,
+        },
+        {
+          ref: 'Psalm 91',
+          page: 517,
+          attribution: 'Лук 10:19',
+          pdfTitle: 'Тэнгэрбурханы ивээл доорх аюулгүй байдал',
+          inCatalog: false,
+        },
+      ]
+
+      const raw = JSON.parse(readFileSync(CATALOG_PATH, 'utf-8'))
+      const violations: Array<{
+        ref: string
+        page: number
+        pdfTitle: string
+      }> = []
+      const missing: Array<{ ref: string; page: number }> = []
+
+      for (const fixture of PDF_ONLY_TITLES) {
+        if (!fixture.inCatalog) continue
+        const refEntry = raw.refs[fixture.ref] as
+          | { entries: { preface_text: string; page: number }[] }
+          | undefined
+        if (!refEntry) {
+          // The fixture promised this ref is in the catalog; if it's not,
+          // the fixture is stale (or a future cleanup removed the entry).
+          // Surface as a missing-fixture finding rather than a silent skip.
+          missing.push({ ref: fixture.ref, page: fixture.page })
+          continue
+        }
+        const match = refEntry.entries.find((e) => e.page === fixture.page)
+        if (!match) {
+          missing.push({ ref: fixture.ref, page: fixture.page })
+          continue
+        }
+        if (match.preface_text.startsWith(fixture.pdfTitle)) {
+          violations.push({
+            ref: fixture.ref,
+            page: fixture.page,
+            pdfTitle: fixture.pdfTitle,
+          })
+        }
+      }
+
+      // Both lists must be empty. `violations` catches a fallback-strip
+      // regression; `missing` catches catalog drift (a fixture entry
+      // pointing at a ref/page that no longer exists in the catalog).
+      expect({ violations, missing }).toEqual({
+        violations: [],
+        missing: [],
+      })
+    })
   })
 })

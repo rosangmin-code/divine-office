@@ -29,7 +29,14 @@ function escapeRegExp(s: string): string {
  *   - If `preface_text` starts with `psalm.title` (trimmed), drop that
  *     prefix and any single separator punctuation that follows.
  *   - If `preface_text` ends with `(attribution)` or `(attribution).`,
- *     drop that suffix.
+ *     drop that suffix. Also strips the optional Mongolian "compare with"
+ *     cf-prefix `харьцуул.` (e.g. `(харьцуул. Үйлс 2:24)`) for parity
+ *     with the extractor's `stripAttributionSuffix` helper
+ *     (`scripts/extract-psalter-headers.js`) and the catalog invariant
+ *     test (`src/lib/prayers/__tests__/psalter-headers.test.ts`). All
+ *     three layers share the same dirty-pattern definition so a stale
+ *     catalog with cf-prefix attribution literals is stripped uniformly
+ *     (NIT-1 from review #376 — F-X9 cohort layered defense parity).
  *
  * Non-strict matches (mid-string near-matches, ~7 catalog entries) are
  * intentionally NOT touched — those require data correction (Dispatch A).
@@ -49,8 +56,15 @@ export function sanitizePsalmHeaderPreface(
     pt = pt.replace(/^[.,;:—\-]\s*/, '')
   }
   if (attribution) {
+    // Optional `харьцуул.\s+` cf-style prefix mirrors the extractor's
+    // `stripAttributionSuffix` (scripts/extract-psalter-headers.js:262)
+    // and the invariant test pattern (psalter-headers.test.ts:238). The
+    // prefix appears in some prefaces (e.g. parsed_data/full_pdf.txt
+    // :13223, :14790) and is consumed-but-excluded from the captured
+    // attribution; the renderer guard must therefore accept either form.
     const attribPat = new RegExp(
-      `\\s*\\(${escapeRegExp(attribution)}\\)\\.?\\s*$`,
+      `\\s*\\((?:харьцуул\\.\\s+)?${escapeRegExp(attribution)}\\)\\.?\\s*$`,
+      'u',
     )
     pt = pt.replace(attribPat, '').trimEnd()
   }
