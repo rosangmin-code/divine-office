@@ -1,3 +1,6 @@
+// v7 — #361: hour-card-list 의 라벨 옆 `→` 화살표를 모바일에서 숨김
+// (`hidden md:inline` + aria-hidden). HTML byte 출력 (className 문자열 +
+// span 가시성) 이 바뀌므로 v6 precache snapshot 과 어긋날 수 있어 bump.
 // v6 — #360: mobile horizontal padding reduced (`px-4` → `px-2`) on all
 // main page containers (pray/home/guide/ordinarium/settings + loadings).
 // HTML byte output changes (className string), so existing precache
@@ -7,7 +10,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v6'
+const CACHE_VERSION = 'divine-office-v7'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 

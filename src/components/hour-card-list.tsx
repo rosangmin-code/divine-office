@@ -51,8 +51,11 @@ function HourCard({
         </p>
       </div>
 
-      {/* Arrow */}
-      <span className="text-stone-300 dark:text-stone-600">→</span>
+      {/* Arrow — desktop only (#361). 모바일에서는 카드 자체가 click
+          affordance 이고, 좁은 화면에서 라벨 옆 화살표가 시각적 노이즈 +
+          horizontal real-estate 손실을 일으킨다는 사용자 피드백. md (≥768px)
+          이상에서만 노출. aria-hidden 으로 AT 노출 제거 (Link 자체가 nav). */}
+      <span aria-hidden="true" className="hidden text-stone-300 md:inline dark:text-stone-600">→</span>
     </Link>
   )
 }
