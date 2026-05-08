@@ -1,7 +1,8 @@
 /**
  * Wrap-rate invariant on `psalter-texts.rich.json`.
  *
- * FR-161 #375 (F-X10) — guards two regressions at the rich-data level:
+ * FR-161 #375 (F-X10) + #396 (FU-1, FU-4) — guards rich-data regressions
+ * across four orthogonal axes:
  *
  *   1. PILOT REGRESSION — the FR-161 R-7 PILOT (Psalm 110:1-5,7) MUST
  *      retain at least one multi-line `PhraseGroup` (`lineRange[1] >
@@ -13,16 +14,48 @@
  *
  *   2. WRAP-RATE FLOOR — across all phrase-injected refs (`stanzasRich`
  *      blocks with a `phrases?` array), the share of multi-line groups
- *      must remain ≥ 15%. Pre-fix the rate was 7.2% (179/2476); the
- *      F-X10 fix lifts it to ≈15% by re-injecting the 96 phrase-bearing
- *      refs through the corrected extractor. A drop below 15% indicates
- *      either an extractor regression or a builder/auto-reconciler step
- *      flattening wraps post-extraction.
+ *      must remain ≥ 13%. The threshold was 15% post-F-X10 (339/2258);
+ *      FU-1 (#396) deliberately lowers it to ≈13.7% (324/2362) by
+ *      correcting 11 over-merge collapses. The collapsed cases
+ *      previously REGISTERED as multi-line (a 15-line phrase IS
+ *      multi-line) and inflated both numerator and false-positive
+ *      "wrap" detection; FU-1 fragments them, REDUCING numerator
+ *      while raising denominator. The 13% floor is the post-FU-1
+ *      stable level — a drop below 13% indicates a true extractor
+ *      regression (or builder flattening) rather than the legitimate
+ *      adjustment FU-1 introduced.
  *
- * The threshold is intentionally tight — 15% is the post-fix floor, not
- * an aspirational ceiling. Future work to broaden coverage will raise
- * it; future regressions will breach it. Either way, the test is the
- * canary.
+ *   3. MAX PHRASE SPAN (FU-4) — no single phrase may span more than
+ *      MAX_PHRASE_SPAN lines. The pre-FU-1 baseline detector flipped
+ *      to col-0 on mixed-content columns where a single
+ *      header→body transition counted as a wrap pair (Psalm 32:1-11
+ *      block 1: 15 lines collapsed into 1 phrase; Psalm 143:1-11 block
+ *      1: 14 lines; Rev 11:17-18 block 0: 12 lines; etc., 11 over-merge
+ *      stanzas total). The wrap-rate floor (#2) is unable to detect
+ *      this because the single huge phrase IS multi-line — collapse
+ *      INCREASES the multi-line count. Capping max span gives a real
+ *      structural floor.
+ *
+ *   4. PHRASE/LINE RATIO (FU-4) — per-block, ≥40% of lines must be
+ *      phrase-starts. Catches collapse cases where the wrap-rate
+ *      invariant alone is satisfied (a 15-line block as 1 phrase is
+ *      multi-line so it counts toward (#2), but the ratio is 0.07).
+ *      Healthy psalm bodies cluster ≥0.5 (typical wrap pair is 2 lines
+ *      → 0.5 ratio); 0.4 is a conservative floor that allows long
+ *      "verse + 3-line wrap" continuations without flagging.
+ *
+ * Known structural deferrals — see KNOWN_DEFERRED_OVER_MERGE:
+ *
+ *   Per-page baseline detection (the unit `detectBaselineCol` operates
+ *   on) cannot distinguish body indent from prose indent when one
+ *   column dominates by raw line count but mixes a closing-prayer
+ *   prose body (col 0) with blank-separated psalm-verse stanzas
+ *   (col 3). The Stage 1 dominance check then picks col 0 because
+ *   col 0 has more total lines, even though the verses ARE the body.
+ *   Solving this requires per-content-block (per-stanza) baseline
+ *   detection (review #389 F-3 / FU-3). That work is deferred to the
+ *   F-X11 cohort; until then, specific blocks remain over-merged and
+ *   are listed below with their structural cause.
  */
 
 import { describe, it, expect } from 'vitest'
@@ -41,6 +74,27 @@ const TARGET = resolve(
 function loadRich() {
   return JSON.parse(readFileSync(TARGET, 'utf-8'))
 }
+
+// FU-4 thresholds (review #389 → #396 fix).
+const MAX_PHRASE_SPAN = 5
+const MIN_PHRASE_LINE_RATIO = 0.4
+const RATIO_MIN_BLOCK_LINES = 5 // skip tiny blocks where ratio is unstable
+
+// Structural per-content-block baseline limitation (FU-3 deferral).
+// These blocks span page-break columns where a closing-prayer prose
+// body at col 0 dominates by line count over col-3 psalm verses
+// separated by blank lines. Stage 1 dominance (col 0 occ > 2× col 3
+// occ) selects col 0, then `splitIntoStanzas` flattens the
+// blank-separated col-3 verses into one continuous stanza. Resolution
+// requires per-stanza baseline detection — tracked in review #389 F-3
+// / FU-3, deferred to the F-X11 cohort.
+const KNOWN_DEFERRED_OVER_MERGE = new Set([
+  'Psalm 147:12-20::block-1', // PDF physical 135 left col, page 268 →
+  // col 0 prose (closing prayer "Дууллыг төгсгөх залбирал" + Reading)
+  // = 20 lines; col 3 (5 verses, blank-separated) = 7 lines. 20 > 14
+  // (= 7×2) so Stage 1 picks col 0; the 5 col-3 verses then collapse
+  // into 1 phrase per the builder's flattening pass.
+])
 
 // @fr FR-161
 describe('psalter-texts.rich.json — wrap-rate invariants (F-X10)', () => {
@@ -77,7 +131,7 @@ describe('psalter-texts.rich.json — wrap-rate invariants (F-X10)', () => {
     expect(foundUserCase).toBe(true)
   })
 
-  it('overall multi-line wrap rate >= 15% across phrase-injected refs', () => {
+  it('overall multi-line wrap rate >= 13% across phrase-injected refs (post-FU-1 floor)', () => {
     const data = loadRich()
     let total = 0
     let multi = 0
@@ -92,6 +146,63 @@ describe('psalter-texts.rich.json — wrap-rate invariants (F-X10)', () => {
     }
     expect(total).toBeGreaterThan(0)
     const rate = multi / total
-    expect(rate).toBeGreaterThanOrEqual(0.15)
+    expect(rate).toBeGreaterThanOrEqual(0.13)
+  })
+
+  it(`max phrase span <= ${MAX_PHRASE_SPAN} lines per stanza block (FU-4 over-merge guard)`, () => {
+    const data = loadRich()
+    const violations = []
+    for (const [ref, payload] of Object.entries(data)) {
+      for (const [bi, block] of (payload.stanzasRich?.blocks ?? []).entries()) {
+        if (block.kind !== 'stanza') continue
+        const key = `${ref}::block-${bi}`
+        if (KNOWN_DEFERRED_OVER_MERGE.has(key)) continue
+        for (const phrase of block.phrases ?? []) {
+          const span = phrase.lineRange[1] - phrase.lineRange[0] + 1
+          if (span > MAX_PHRASE_SPAN) {
+            violations.push({
+              ref,
+              blockIndex: bi,
+              lineRange: phrase.lineRange,
+              span,
+            })
+          }
+        }
+      }
+    }
+    expect(
+      violations,
+      `Over-merge regression: ${violations.length} phrase(s) exceed max span ${MAX_PHRASE_SPAN}.\n${JSON.stringify(violations, null, 2)}`,
+    ).toEqual([])
+  })
+
+  it(`per-block phrase/line ratio >= ${MIN_PHRASE_LINE_RATIO} (FU-4 collapse guard)`, () => {
+    const data = loadRich()
+    const violations = []
+    for (const [ref, payload] of Object.entries(data)) {
+      for (const [bi, block] of (payload.stanzasRich?.blocks ?? []).entries()) {
+        if (block.kind !== 'stanza') continue
+        const phrases = block.phrases ?? []
+        if (phrases.length === 0) continue
+        const lineCount = block.lines?.length ?? 0
+        if (lineCount < RATIO_MIN_BLOCK_LINES) continue
+        const key = `${ref}::block-${bi}`
+        if (KNOWN_DEFERRED_OVER_MERGE.has(key)) continue
+        const ratio = phrases.length / lineCount
+        if (ratio < MIN_PHRASE_LINE_RATIO) {
+          violations.push({
+            ref,
+            blockIndex: bi,
+            phraseCount: phrases.length,
+            lineCount,
+            ratio: +ratio.toFixed(3),
+          })
+        }
+      }
+    }
+    expect(
+      violations,
+      `Over-merge regression: ${violations.length} block(s) have phrase/line ratio < ${MIN_PHRASE_LINE_RATIO}.\n${JSON.stringify(violations, null, 2)}`,
+    ).toEqual([])
   })
 })
