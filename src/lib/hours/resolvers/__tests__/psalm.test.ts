@@ -80,7 +80,13 @@ vi.mock('../../../prayers/rich-overlay', () => ({
   loadPsalterTextPsalmPrayerRich: (ref: string) =>
     ref === 'Psalm 110:1-5, 7' ||
     ref === 'Psalm 100:1-5' ||
-    ref === 'Psalm 147:12-20'
+    ref === 'Psalm 147:12-20' ||
+    // #359 F-2 — surface SENTINEL for the Bible-fallback synthetic ref so
+    // the Phase 3 fallback parity test can ACTIVELY prove R-1 suppression
+    // (override path returns undefined while the loader still has rich
+    // available); previously the loader returned null here making both
+    // suppression and natural-absence vacuously equal.
+    ref === 'Psalm 200:1-3'
       ? SENTINEL_RICH_AST
       : null,
   loadPsalterHeaderRich: () => null,
@@ -493,14 +499,22 @@ describe('resolvePsalm — F-X2 Phase 3 psalmPrayer text override (Option A + R-
     const result = await resolvePsalm(entry, undefined)
     expect(result.psalmPrayer).toBe('"Эцэг минь, амар амгалан ба ялалтыг бидэнд хайрлаж…')
     expect(result.psalmPrayerPage).toBe(69)
-    expect(result.psalmPrayerRich).toBeDefined()
+    // #359 F-1 — pin SENTINEL identity (was toBeDefined). Proves the
+    // no-override branch surfaces the loader-supplied AST, so the
+    // positive tests' `toBeUndefined()` is observably the suppression
+    // branch rather than vacuous absence.
+    expect(result.psalmPrayerRich).toBe(SENTINEL_RICH_AST)
   })
 
-  // @fr FR-NEW (F-X2 Phase 3) — Bible-fallback parity
+  // @fr FR-NEW (F-X2 Phase 3) — Bible-fallback parity (override path)
   it('Bible-fallback path also suppresses rich when entry.psalmPrayer is set', async () => {
     // Mirrors the Phase 2 review I-1 follow-up but for the Phase 3 R-1
     // invariant — fallback site (psalm.ts:115-141) must apply the same
     // suppression so a catalog-less occurrence still renders coherently.
+    // #359 F-2 — loader mock now returns SENTINEL for Psalm 200:1-3, so
+    // `toBeUndefined()` here ACTIVELY proves the suppression branch ran
+    // (the negative pair below surfaces SENTINEL on the same fallback
+    // path, distinguishing suppression from natural absence).
     const entry: PsalmEntry = {
       type: 'psalm',
       ref: 'Psalm 200:1-3',
@@ -515,9 +529,30 @@ describe('resolvePsalm — F-X2 Phase 3 psalmPrayer text override (Option A + R-
     expect(result.verses?.length).toBeGreaterThan(0) // confirms fallback branch
     expect(result.psalmPrayer).toBe('Bible-fallback path Phase 3 override.')
     expect(result.psalmPrayerPage).toBe(1234)
-    // For this synthetic ref the loader mock returns null anyway, but the
-    // assertion still pins the suppression contract for future loader-side
-    // changes that might surface a non-null overlay for unrelated refs.
     expect(result.psalmPrayerRich).toBeUndefined()
+  })
+
+  // @fr FR-NEW (F-X2 Phase 3) — Bible-fallback negative pair (#359 F-2)
+  it('Bible-fallback path surfaces catalog rich when entry.psalmPrayer is absent', async () => {
+    // Mirror of the negative pair on the catalog return site — when
+    // there is no override, the resolver MUST surface the loader-supplied
+    // SENTINEL_RICH_AST so the override-path test's `toBeUndefined()`
+    // is observably the suppression branch rather than the natural-
+    // absence branch (R-1 contract proven across BOTH return sites).
+    const entry: PsalmEntry = {
+      type: 'psalm',
+      ref: 'Psalm 200:1-3',
+      antiphon_key: 'fallback-phase3-no-override',
+      default_antiphon: '',
+      gloria_patri: true,
+      page: 9999,
+      // intentionally no psalmPrayer / psalmPrayerPage — so the catalog
+      // default (text from loader stub, page 999) wins and rich surfaces.
+    }
+    const result = await resolvePsalm(entry, undefined)
+    expect(result.verses?.length).toBeGreaterThan(0) // confirms fallback branch
+    expect(result.psalmPrayer).toBe('Synthetic prayer for fallback path test.')
+    expect(result.psalmPrayerPage).toBe(999)
+    expect(result.psalmPrayerRich).toBe(SENTINEL_RICH_AST)
   })
 })
