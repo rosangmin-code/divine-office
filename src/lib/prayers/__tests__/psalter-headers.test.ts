@@ -127,4 +127,128 @@ describe('FR-160-C psalter-headers catalog', () => {
       expect(loadPsalterHeaderRich('Psalm 63:2-9')).toBeNull()
     }
   })
+
+  // F-X9 (#362) invariant — preface_text must NOT carry the PDF title prefix
+  // or the `(attribution)` literal. Both are emitted separately by
+  // psalm-block.tsx (`psalm.title` and `({attribution})`), so storing them
+  // in preface_text causes both to render twice in the UI (audit #362:
+  // 67/77 title-dup + 74/77 attribution-dup before fix).
+  //
+  // Locked here so a future extractor regression (or an unfix-rebuild of
+  // the catalog from a stale extractor binary) fails CI loudly. The
+  // invariant covers BOTH F-X9 fix A (this dispatch — extractor + catalog
+  // regen) and F-X9 fix B (renderer guard, dispatch #373) — they share
+  // the same contract on preface_text shape.
+  describe('F-X9 (#362) preface_text shape invariants', () => {
+    /**
+     * Build psalmNum -> Set<title> map by walking week-N.json + propers
+     * exactly the way scripts/extract-psalter-headers.js does. Used to
+     * assert that no preface_text starts with a known canonical title.
+     */
+    function loadPsalmTitlesByNumber(): Map<number, Set<string>> {
+      const titleSources = [
+        'src/data/loth/psalter/week-1.json',
+        'src/data/loth/psalter/week-2.json',
+        'src/data/loth/psalter/week-3.json',
+        'src/data/loth/psalter/week-4.json',
+        'src/data/loth/propers/advent.json',
+        'src/data/loth/propers/christmas.json',
+        'src/data/loth/propers/lent.json',
+        'src/data/loth/propers/easter.json',
+        'src/data/loth/propers/ordinary-time.json',
+      ]
+      const map = new Map<number, Set<string>>()
+      function walk(node: unknown): void {
+        if (Array.isArray(node)) {
+          for (const item of node) walk(item)
+          return
+        }
+        if (node && typeof node === 'object') {
+          const obj = node as Record<string, unknown>
+          if (typeof obj.ref === 'string' && typeof obj.title === 'string') {
+            const m = obj.ref.match(/^Psalm\s+(\d+)/)
+            if (m) {
+              const num = parseInt(m[1], 10)
+              const norm = obj.title.trim().replace(/\s+/g, ' ')
+              if (norm) {
+                if (!map.has(num)) map.set(num, new Set())
+                map.get(num)!.add(norm)
+              }
+            }
+          }
+          for (const key of Object.keys(obj)) walk(obj[key])
+        }
+      }
+      for (const rel of titleSources) {
+        const path = resolve(REPO_ROOT, rel)
+        try {
+          walk(JSON.parse(readFileSync(path, 'utf-8')))
+        } catch {
+          // Optional file — skip silently in test, like the extractor.
+        }
+      }
+      return map
+    }
+
+    function escapeRegExp(s: string): string {
+      return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    }
+
+    it('no entry starts with the canonical psalm title (no title-dup)', () => {
+      const raw = JSON.parse(readFileSync(CATALOG_PATH, 'utf-8'))
+      const titlesByNum = loadPsalmTitlesByNumber()
+      const violations: Array<{ ref: string; page: number; title: string }> = []
+      for (const [refKey, refEntry] of Object.entries(raw.refs) as [
+        string,
+        { entries: { preface_text: string; page: number }[] },
+      ][]) {
+        const m = refKey.match(/^Psalm\s+(\d+)/)
+        if (!m) continue
+        const psNum = parseInt(m[1], 10)
+        const titles = titlesByNum.get(psNum) || new Set<string>()
+        for (const e of refEntry.entries) {
+          for (const t of titles) {
+            if (e.preface_text.startsWith(t)) {
+              violations.push({ ref: refKey, page: e.page, title: t })
+              break
+            }
+          }
+        }
+      }
+      expect(violations).toEqual([])
+    })
+
+    it('no entry ends with the (attribution) literal (no attribution-dup)', () => {
+      const raw = JSON.parse(readFileSync(CATALOG_PATH, 'utf-8'))
+      const violations: Array<{ ref: string; page: number; tail: string }> = []
+      for (const [refKey, refEntry] of Object.entries(raw.refs) as [
+        string,
+        {
+          entries: {
+            preface_text: string
+            attribution: string
+            page: number
+          }[]
+        },
+      ][]) {
+        for (const e of refEntry.entries) {
+          // Match the same shape the renderer emits and the extractor
+          // strips: optional `харьцуул.\s+` cf-prefix + attribution +
+          // optional trailing period.
+          const pat = new RegExp(
+            `\\((?:харьцуул\\.\\s+)?${escapeRegExp(e.attribution)}\\)\\.?\\s*$`,
+            'u',
+          )
+          if (pat.test(e.preface_text)) {
+            violations.push({
+              ref: refKey,
+              page: e.page,
+              tail: e.preface_text.slice(-50),
+            })
+          }
+        }
+      }
+      expect(violations).toEqual([])
+    })
+  })
 })
