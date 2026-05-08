@@ -244,7 +244,7 @@ function FootnotesSection() {
 
 export default function GuidePage() {
   return (
-    <div className="mx-auto max-w-2xl px-4 md:px-6 py-8">
+    <div className="mx-auto max-w-2xl px-2 md:px-6 py-8">
       {/* Header */}
       <header className="mb-8">
         <div className="flex items-center justify-between mb-4">

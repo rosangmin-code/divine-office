@@ -1,6 +1,6 @@
 export default function PrayLoading() {
   return (
-    <div className="mx-auto max-w-2xl px-4 py-6 lg:max-w-3xl md:px-6">
+    <div className="mx-auto max-w-2xl px-2 py-6 lg:max-w-3xl md:px-6">
       {/* Back link skeleton */}
       <div className="mb-4 flex items-center justify-between">
         <div className="h-5 w-40 animate-pulse rounded bg-stone-100 dark:bg-stone-800" />

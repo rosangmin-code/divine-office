@@ -37,7 +37,7 @@ export default function SettingsPage() {
   const { settings, updateSettings } = useSettings()
 
   return (
-    <div className="mx-auto max-w-2xl px-4 md:px-6 py-8">
+    <div className="mx-auto max-w-2xl px-2 md:px-6 py-8">
       <header className="mb-8">
         <div className="mb-4 flex items-center justify-between">
           <Link
