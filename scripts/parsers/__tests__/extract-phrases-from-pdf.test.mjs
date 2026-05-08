@@ -355,6 +355,51 @@ describe('detectBaselineCol — F-X10 body-at-flush-left handling', () => {
 })
 
 // @fr FR-161
+// FU-1 (#396) — Stage 2 gate strengthening regression guard.
+//
+// Pre-FU-1, the Stage 2 wrap-score gate was `score >= 1`: a single
+// accidental header→body indent transition (which the indent pattern
+// alone cannot distinguish from a real wrap) was sufficient to flip
+// baseline. On Psalm 32 continuation page 136 left col, this caused
+// the entire 11-line Psalm 32 stanza to collapse into one phrase
+// (review #389 F-1 — over-merge MAJOR).
+//
+// FU-1 fix layers two protections:
+//   * scoreWraps now ignores wrap pairs whose `prev` line ends with
+//     sentence-terminator punctuation (mid-sentence-only filter — true
+//     wraps are continuations, not section transitions).
+//   * Stage 2 gate `score >= max(2, occurrence / 5)` — absolute floor
+//     of 2 prevents single-pair flips; density floor (≥ 20% of lines)
+//     prevents sparse noise from beating populated columns.
+//
+// Physical page 069 left col is the canonical regression fixture:
+// counts col-0 = 11, col-3 = 17 (Stage 1 dominance fails because
+// 17 ≤ 22 = 11 × 2). Pre-fix, col-0 won Stage 2 with score 1 and
+// baseline=0 collapsed all 11 lines. Post-fix, col-0 score 0 (its
+// only wrap-shaped pair was a sentence-end transition, filtered out)
+// fails the gate; Stage 3 fallback correctly lands on baseline=3.
+describe('detectBaselineCol — F-X10 FU-1 over-merge regression guard (#396)', () => {
+  it('Psalm 32 continuation page 136 left col: baseline=3 (col-0 sentence-transition rejected)', () => {
+    const lines = loadColumn(69, 'left')
+    expect(detectBaselineCol(lines)).toBe(3)
+    // End-to-end: the body lines (col 3, blank-separated) must NOT
+    // collapse into a single multi-line phrase.
+    const out = extractPhrasesFromColumn(lines)
+    let maxSpan = 0
+    for (const stanza of out.stanzas) {
+      for (const phrase of stanza.phrases) {
+        const span = phrase.lineRange[1] - phrase.lineRange[0] + 1
+        if (span > maxSpan) maxSpan = span
+      }
+    }
+    // Pre-FU-1 the over-merge produced a single phrase spanning 11
+    // lines; healthy extraction yields max-span 1-2 (single verse or
+    // wrap pair).
+    expect(maxSpan).toBeLessThanOrEqual(2)
+  })
+})
+
+// @fr FR-161
 describe('extractPhrasesFromColumn — Stage 3 review queue', () => {
   it('flags needsReview=true when Stage 1 splits a phrase that Stage 2 considers continuous', () => {
     // Stage 1 sees baseline=3 and treats every line as a new phrase

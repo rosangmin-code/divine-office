@@ -120,30 +120,51 @@ export function pdftotextLayout(pdfPath, from, to) {
  * Detect the per-column baseline column — the leading-whitespace count
  * that hosts the bulk of phrase-start lines.
  *
- * Two-stage policy (FR-161 #375 — F-X10 fix):
+ * Three-stage policy (FR-161 — F-X10 fix #375 + FU-1 #396):
  *
- *   1. If col-0 has count >= 2 AND strictly dominates every non-zero
- *      candidate, baseline = 0. This catches PDFs whose psalm body is
- *      flush-left (Psalm 46:2-12 right col, Psalm 32:1-11 right col,
- *      Psalm 30:2-13, etc.) — pre-fix, the unconditional col-0 skip
- *      mis-anchored baseline at the wrap-indent (col 3), causing every
- *      wrap pair (col 0 → col 3) to register as `rel = -3` and `rel = 0`
- *      respectively, neither of which fires Stage 1's wrap branch
- *      (which requires rel = 3 ± 1). 42 of 96 phrase-injected refs were
- *      ALL single-line because of this; user reported case is Psalm
- *      46:2-12 lines "Далайн зүрх рүү уулс нуран ороход ч" → "бид
- *      айхгүй." (book page 153).
+ *   Stage 1 (count dominance): one candidate's count strictly dominates
+ *   every other (top > 2 × runner-up). This handles the common
+ *   single-content column — body uniformly at col 3 with minor noise at
+ *   col 0 (page header, attribution), or body uniformly at col 0 with
+ *   col 3 wrap-indent noise.
  *
- *   2. Otherwise, the smallest non-zero indent with count >= 2 wins
- *      (original "mode of minimums" behaviour). This preserves all
- *      pre-fix correct cases — body indented at col 3 with col-0
- *      lines being page header / attribution intro / commentary
- *      (Psalm 110 / 24 / 8 / 117 etc.). Strict dominance (`>` not `>=`)
- *      ensures ties stay on the legacy non-zero path so close calls
- *      don't flip baseline silently.
+ *   Stage 2 (wrap-score tie-break): on ambiguous mixed-content columns
+ *   where Stage 1 finds no dominator, score each candidate by counting
+ *   "valid wrap pairs" — `prev` at baseline, `cur` at baseline +
+ *   WRAP_DELTA, AND `prev` mid-sentence (no terminator). The
+ *   sentence-boundary filter excludes section transitions (header →
+ *   next-section body) which align with the indent pattern by accident
+ *   rather than as content wraps.
+ *   Gate: `score >= max(2, occurrence / 5)`. The absolute floor of 2
+ *   prevents a single accidental wrap from flipping baseline; the
+ *   density floor prevents sparse noise from beating a populated
+ *   column with rare wraps. See in-line comment for derivation.
  *
- *   3. Final fallback: the minimum indent seen (covers the
- *      single-solo-line corner case with one solitary indent value).
+ *   Stage 3 (legacy fallback): smallest non-zero indent with count
+ *   ≥ 2, then smallest indent seen. Preserves pre-F-X10 behaviour for
+ *   genuinely ambiguous columns where Stage 2 gate finds no
+ *   trustworthy wrap signal — typically column-mode psalms whose body
+ *   sits at col 3 with no detected wraps.
+ *
+ * Worked examples (regression cases captured by these stages):
+ *
+ *   - Psalm 46:2-12 right col (body @ col 0, frequent wraps to col 3) →
+ *     Stage 1 dominance fires (col 0 occ=24, col 3 occ=5 → 24 > 10).
+ *     Baseline=0. User-reported wrap "Далайн зүрх рүү уулс нуран ороход
+ *     ч / бид айхгүй." (book page 153) is preserved.
+ *
+ *   - Psalm 110:1-5,7 left col (FR-161 R-7 PILOT, body @ col 3) → Stage
+ *     1 dominance fires (col 3 occ=18, col 0 occ=4 → 18 > 8). Baseline=3.
+ *     Stanza wraps at col 3 → col 6 register correctly.
+ *
+ *   - Psalm 32 continuation page 136 left col (mixed-content, no
+ *     dominator) → Stage 1 fails (col 0 occ=11, col 3 occ=17 → 17 ≤ 22).
+ *     Stage 2: col-0 sentence-filtered score = 1 (one header→body
+ *     transition, prev mid-sentence-shaped); col-3 score = 0. Gate
+ *     col-0: max(2, 11/5) = 2.2 → 1 < 2.2 fails. Gate col-3: 0 < 3.4
+ *     fails. Stage 3 falls to col 3 → Baseline=3. Pre-FU-1 gate
+ *     `score>=1` would have picked col 0 and over-merged the 11-line
+ *     stanza into 1 phrase.
  *
  * @param {string[]} columnLines
  * @returns {number}
@@ -169,6 +190,18 @@ export function detectBaselineCol(columnLines) {
   // mixes content at multiple indents (e.g. Psalm 20:2-8 right col
   // mixes col-0 evening-prayer text with col-3 psalm body — body
   // wraps at col 6, so baseline=3 wins).
+  //
+  // Sentence-boundary filter (FU-1, review #389): a true wrap pair is a
+  // mid-sentence continuation — the previous line does NOT end with
+  // sentence-terminator punctuation. Pairs whose prev line ends with
+  // `.`, `!`, `?` (optional close-quote) are typically section
+  // transitions (header → next-section body, end-of-Gloria → seasonal
+  // header) that happen to align with the indent pattern by accident,
+  // not by content wrap. Filtering these out at the scoring stage
+  // prevents Psalm 32 / 116 / 143 page-continuation-style over-merge:
+  // mixed-content columns that previously scored col-0 = 1–2 from
+  // section transitions now score 0–1, falling below the Stage 2 gate
+  // and ceding baseline to the legacy Stage 3 fallback.
   function scoreWraps(baseline) {
     let n = 0
     for (let i = 1; i < columnLines.length; i++) {
@@ -179,7 +212,8 @@ export function detectBaselineCol(columnLines) {
       const curLead = cur.length - cur.trimStart().length
       if (
         Math.abs(prevLead - baseline) <= WRAP_TOLERANCE &&
-        Math.abs(curLead - (baseline + WRAP_DELTA)) <= WRAP_TOLERANCE
+        Math.abs(curLead - (baseline + WRAP_DELTA)) <= WRAP_TOLERANCE &&
+        !SENTENCE_END_RE.test(prev.trim())
       ) {
         n++
       }
@@ -217,6 +251,33 @@ export function detectBaselineCol(columnLines) {
     }
   }
   // Stage 2 — wrap-score tie-break for ambiguous mixed-content columns.
+  //
+  // Gate: `best.score >= max(2, candidate.occurrence / 5)` (FU-1 — review
+  // #389). Two layered floors guard against accidental baseline flips
+  // when the column has no clear dominant content type:
+  //
+  //   * Absolute floor of 2 — a single accidental wrap-pair (e.g. one
+  //     header→body alignment that survives the sentence-boundary
+  //     filter) must not flip baseline. The pre-fix gate `score >= 1`
+  //     allowed exactly this: Psalm 32 page 136 left col scored col-0
+  //     = 1 from a header→body transition, picked baseline=0, and
+  //     collapsed the entire 11-line Psalm 32 stanza into one phrase.
+  //
+  //   * Density floor — wrap evidence must scale with the candidate's
+  //     line count (≥ ~20% of its lines participate in wrap pairs).
+  //     Without this, a sparse score on a populated column wins
+  //     against silent columns: e.g. col-0 occ=11 score=2 (18%
+  //     density, mostly noise) would beat col-3 occ=17 score=0
+  //     (zero-wrap psalm body) under the absolute-only gate, even
+  //     though col-3 is the structural baseline. The /5 divisor maps
+  //     cleanly to typical wrap-rate floors observed in healthy
+  //     fixtures (Psalm 24 left col ≈ 43%, Psalm 110 left col mid-30%).
+  //
+  // When BOTH candidates fail the gate, Stage 3 falls back to the
+  // legacy "smallest non-zero indent with ≥ 2 hits". This preserves
+  // the pre-F-X10 behaviour for genuinely ambiguous columns and is
+  // the safe default for column-mode psalms whose body sits at col 3
+  // with no detected wraps.
   let best = null
   for (const col of candidates) {
     const score = scoreWraps(col)
@@ -230,7 +291,8 @@ export function detectBaselineCol(columnLines) {
       best = { col, score, occurrence }
     }
   }
-  if (best.score >= 1) return best.col
+  const minScore = Math.max(2, best.occurrence / 5)
+  if (best.score >= minScore) return best.col
   // Stage 3 — legacy fallback (no wrap evidence): smallest non-zero
   // candidate with >=2 hits, then smallest seen.
   for (const col of candidates) {
