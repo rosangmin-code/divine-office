@@ -196,6 +196,20 @@ export interface PsalmEntry {
   // occurrence-bound metadata (page / antiphon_key) in week-N.json,
   // which is already the SSOT for 4-week cycle data.
   psalmPrayerPage?: number       // Override for catalog default (occurrence-specific)
+  // F-X2 Phase 3 (#352): occurrence-specific psalmPrayer **text** override.
+  // For 3 emergent occurrences (Psalm 110:1-5,7 W2-SUN-vespers @186 /
+  // Psalm 100:1-5 W3-FRI-lauds @380 / Psalm 147:12-20 W4-FRI-lauds @493)
+  // the PDF prints a wholly different `Дууллыг төгсгөх залбирал` body
+  // than the catalog default — text mismatch, not just page mismatch
+  // (which Phase 2 already covered). When this field is set, the resolver
+  // prefers it over `psalter-texts.json.psalmPrayer` AND suppresses the
+  // catalog `psalmPrayerRich` overlay (R-1 strategy): the rich AST encodes
+  // the W1-default prayer text, so emitting it alongside an override would
+  // render mismatched UX. The 3 occurrences therefore fall back to the
+  // plain-text rendering path (already exercised by FR-153h). See
+  // docs/handoff-fx2-phase3-audit-2026-05-08.md §1-3 for verbatim PDF
+  // sources and peer-locked R-1 consensus.
+  psalmPrayer?: string           // Override for catalog psalmPrayer text (occurrence-specific)
   // PDF 의 각 시편 엔트리는 default 후렴 아래 rubric 행으로 시즌/날짜/주차별
   // variant 를 수록한다. Phase 2 (task #14) 에서 실제 PDF 텍스트를 주입하며,
   // 본 필드가 존재하면 resolver 가 이를 default_antiphon 보다 우선 선택한다

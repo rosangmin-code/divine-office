@@ -31,10 +31,29 @@ vi.mock('../../loaders', () => ({
     },
     // F-X2 Phase 2 (#224) anchor — Psalm 110:1-5, 7 catalog default = 69
     // (W1-SUN-Vespers). W3/W4 occurrences carry overrides (305/416).
+    // F-X2 Phase 3 (#352) — W2 occurrence additionally overrides the
+    // prayer *text* (PDF p.186 prints a wholly different body).
     'Psalm 110:1-5, 7': {
       stanzas: [['ЭЗЭН миний Эзэнд "Миний баруун гарт залрагтун" гэв.']],
       psalmPrayer: '"Эцэг минь, амар амгалан ба ялалтыг бидэнд хайрлаж…',
       psalmPrayerPage: 69,
+    },
+    // F-X2 Phase 3 (#352) — Psalm 100:1-5 W3-FRI-Lauds emergent text+page
+    // mismatch. Catalog default is the W1-FRI-Lauds prayer (page 148);
+    // W3 occurrence carries its own text + page on week-3.json.
+    'Psalm 100:1-5': {
+      stanzas: [['Бүх дэлхий Эзэнд хашхирагтун.']],
+      psalmPrayer: 'Эзэн, баяр баясгалангаар бид Таныг дуудаж…',
+      psalmPrayerPage: 148,
+    },
+    // F-X2 Phase 3 (#352) — Psalm 147:12-20 W4-FRI-Lauds emergent text+page
+    // mismatch. Catalog default is the W2-FRI-Lauds prayer (page 268);
+    // W4 occurrence carries its own text + page on week-4.json (PDF p.493
+    // spans 493→494).
+    'Psalm 147:12-20': {
+      stanzas: [['Йерусалим аа, Эзэнийг магт.']],
+      psalmPrayer: 'Эзэн, Та Йерусалимын хил хязгаарт амар тайвныг тогтоосон…',
+      psalmPrayerPage: 268,
     },
     // F-X2 Phase 2 (#224) — Bible-fallback path anchor (review I-1).
     // `stanzas` is empty so resolvePsalm enters the Bible-fallback branch
@@ -47,9 +66,23 @@ vi.mock('../../loaders', () => ({
   }),
 }))
 
+// F-X2 Phase 3 (#352) — surface non-null `psalmPrayerRich` for the 3 refs
+// that gain Phase 3 entry-level text overrides. The R-1 suppression
+// assertion needs the loader to *return something* in the no-override
+// branch so we can prove the override branch returns `undefined` instead
+// (otherwise both branches would be vacuously `undefined` and the test
+// could not distinguish suppression from natural absence).
+const SENTINEL_RICH_AST = {
+  blocks: [{ kind: 'para' as const, lines: ['CATALOG_RICH_AST_SENTINEL'] }],
+}
 vi.mock('../../../prayers/rich-overlay', () => ({
   loadPsalterTextRich: () => null,
-  loadPsalterTextPsalmPrayerRich: () => null,
+  loadPsalterTextPsalmPrayerRich: (ref: string) =>
+    ref === 'Psalm 110:1-5, 7' ||
+    ref === 'Psalm 100:1-5' ||
+    ref === 'Psalm 147:12-20'
+      ? SENTINEL_RICH_AST
+      : null,
   loadPsalterHeaderRich: () => null,
 }))
 
@@ -361,5 +394,130 @@ describe('resolvePsalm — F-X2 Phase 2 multi-occurrence overrides', () => {
     const result = await resolvePsalm(entry, undefined)
     expect(result.verses?.length).toBeGreaterThan(0)
     expect(result.psalmPrayerPage).toBe(999)
+  })
+})
+
+// @fr FR-NEW (F-X2 Phase 3) — task #352
+// Phase 3 lands joint text+page overrides on 3 emergent occurrences whose
+// PDF prints a wholly different `Дууллыг төгсгөх залбирал` body than the
+// catalog default. Schema (Option A): optional `psalmPrayer?: string` on
+// PsalmEntry. Strategy R-1 (peer R2 AGREE): when the override is set,
+// resolver suppresses `psalmPrayerRich` so the renderer falls back to the
+// plain-text path — preventing rendering of the catalog rich AST (which
+// encodes the W1-default text) alongside the override body. See
+// docs/handoff-fx2-phase3-audit-2026-05-08.md §1-3 for verbatim PDF
+// sources and consensus log.
+describe('resolvePsalm — F-X2 Phase 3 psalmPrayer text override (Option A + R-1)', () => {
+  // Verbatim PDF strings (parsed_data/full_pdf.txt). Exact byte-equality
+  // with what week-{2,3,4}.json now carries — a future drift between catalog,
+  // entry, or PDF will surface as a literal string mismatch.
+  const PDF_TEXT_PSALM_110_W2 =
+    'Төгс хүчит Тэнгэрбурхан минь, Та Өөрийн тосолсон Нэгэн болох Христийн хаанчлалыг бүрэн төгс болгоно уу. Шинэ Йерусалимын мөнхийн тахилч болсон Таны Хүүгийн төгс тахил нь газар бүрт Таны нэрээр өргөгдөх болтугай. Мөн Та бүх үндэстнүүдийг Өөрийнхөө төлөөх ариун хүмүүс болгоно уу.'
+  const PDF_TEXT_PSALM_100_W3 =
+    'Бидэнд хайртай Эцэг Тэнгэрбурхан минь, Та ид хүчнийхээ тэмдгийг үзүүлснээрээ биднийг бүтээсэн төдийгүй Өөрийнхөө сайн сайхныг харуулснаараа биднийг Өөрийн ард түмнээр сонгосон билээ. Хамаг хүмүүс Таны хашаанд магтаалтайгаар орохын тулд Та охид хөвгүүдийнхээ өргөж буй дуун магтаалыг минь хүлээн авна уу.'
+  const PDF_TEXT_PSALM_147_W4 =
+    'Төгс хүчит Тэнгэрбурхан минь, хишиг ивээлээр бялхаасан ба Ариун Сүнсээр хүчирхэгжүүлсэн Шашнаараа уламжлан Та Өөрийн үгийг бүх үндэстэн рүү илгээдэг. Тиймийн тул Та Өөрийн Шашныг дээдийн дээд амин зуулгаар тэжээн тэтгэж, итгэл бишрэлдээ эргэлзээгүй болгоно уу. Түүнчлэн Та түүний охид хөвгүүдийг олон болгож өгнө үү. Ингэснээр тэд тэнгэр дээрх тахилын ширээн дээр Таны хайрын нууцуудыг нэгэн сэтгэлээр тэмдэглэх болно.'
+
+  // @fr FR-NEW (F-X2 Phase 3)
+  it('Psalm 110:1-5,7 W2-SUN-Vespers — override emits PDF text + page 186 + suppresses rich', async () => {
+    const entry: PsalmEntry = {
+      type: 'psalm',
+      ref: 'Psalm 110:1-5, 7',
+      antiphon_key: 'w2-sun-vesp-ps1',
+      default_antiphon: '',
+      gloria_patri: true,
+      page: 185,
+      psalmPrayer: PDF_TEXT_PSALM_110_W2,
+      psalmPrayerPage: 186,
+    }
+    const result = await resolvePsalm(entry, undefined)
+    expect(result.psalmPrayer).toBe(PDF_TEXT_PSALM_110_W2)
+    expect(result.psalmPrayerPage).toBe(186)
+    // R-1: rich must be suppressed even though the loader mock returns a
+    // non-null AST for this ref — proves the override branch wins.
+    expect(result.psalmPrayerRich).toBeUndefined()
+  })
+
+  // @fr FR-NEW (F-X2 Phase 3)
+  it('Psalm 100:1-5 W3-FRI-Lauds — override emits PDF text + page 380 + suppresses rich', async () => {
+    const entry: PsalmEntry = {
+      type: 'psalm',
+      ref: 'Psalm 100:1-5',
+      antiphon_key: 'w3-fri-lauds-ps3',
+      default_antiphon: '',
+      gloria_patri: true,
+      page: 379,
+      psalmPrayer: PDF_TEXT_PSALM_100_W3,
+      psalmPrayerPage: 380,
+    }
+    const result = await resolvePsalm(entry, undefined)
+    expect(result.psalmPrayer).toBe(PDF_TEXT_PSALM_100_W3)
+    expect(result.psalmPrayerPage).toBe(380)
+    expect(result.psalmPrayerRich).toBeUndefined()
+  })
+
+  // @fr FR-NEW (F-X2 Phase 3)
+  it('Psalm 147:12-20 W4-FRI-Lauds — override emits PDF text + page 493 + suppresses rich', async () => {
+    const entry: PsalmEntry = {
+      type: 'psalm',
+      ref: 'Psalm 147:12-20',
+      antiphon_key: 'w4-fri-lauds-ps3',
+      default_antiphon: '',
+      gloria_patri: true,
+      page: 492,
+      psalmPrayer: PDF_TEXT_PSALM_147_W4,
+      psalmPrayerPage: 493,
+    }
+    const result = await resolvePsalm(entry, undefined)
+    expect(result.psalmPrayer).toBe(PDF_TEXT_PSALM_147_W4)
+    expect(result.psalmPrayerPage).toBe(493)
+    expect(result.psalmPrayerRich).toBeUndefined()
+  })
+
+  // @fr FR-NEW (F-X2 Phase 3) — R-1 negative pair
+  it('Same ref without psalmPrayer override keeps catalog rich (proves suppression is conditional)', async () => {
+    // Same ref as the W2 case above, but no entry-level psalmPrayer override.
+    // Resolver must surface the loader-supplied SENTINEL_RICH_AST so we
+    // *prove* the previous tests' `undefined` is the suppression branch
+    // rather than vacuous absence. Also covers the W1 occurrence position
+    // where catalog rich+plain remain authoritative.
+    const entry: PsalmEntry = {
+      type: 'psalm',
+      ref: 'Psalm 110:1-5, 7',
+      antiphon_key: 'w1-sun-vesp-ps1',
+      default_antiphon: '',
+      gloria_patri: true,
+      page: 68,
+      // intentionally no psalmPrayer / psalmPrayerPage
+    }
+    const result = await resolvePsalm(entry, undefined)
+    expect(result.psalmPrayer).toBe('"Эцэг минь, амар амгалан ба ялалтыг бидэнд хайрлаж…')
+    expect(result.psalmPrayerPage).toBe(69)
+    expect(result.psalmPrayerRich).toBeDefined()
+  })
+
+  // @fr FR-NEW (F-X2 Phase 3) — Bible-fallback parity
+  it('Bible-fallback path also suppresses rich when entry.psalmPrayer is set', async () => {
+    // Mirrors the Phase 2 review I-1 follow-up but for the Phase 3 R-1
+    // invariant — fallback site (psalm.ts:115-141) must apply the same
+    // suppression so a catalog-less occurrence still renders coherently.
+    const entry: PsalmEntry = {
+      type: 'psalm',
+      ref: 'Psalm 200:1-3',
+      antiphon_key: 'fallback-phase3',
+      default_antiphon: '',
+      gloria_patri: true,
+      page: 9999,
+      psalmPrayer: 'Bible-fallback path Phase 3 override.',
+      psalmPrayerPage: 1234,
+    }
+    const result = await resolvePsalm(entry, undefined)
+    expect(result.verses?.length).toBeGreaterThan(0) // confirms fallback branch
+    expect(result.psalmPrayer).toBe('Bible-fallback path Phase 3 override.')
+    expect(result.psalmPrayerPage).toBe(1234)
+    // For this synthetic ref the loader mock returns null anyway, but the
+    // assertion still pins the suppression contract for future loader-side
+    // changes that might surface a non-null overlay for unrelated refs.
+    expect(result.psalmPrayerRich).toBeUndefined()
   })
 })

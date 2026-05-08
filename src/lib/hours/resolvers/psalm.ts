@@ -57,7 +57,16 @@ export async function resolvePsalm(
 
   if (psalmText && psalmText.stanzas.length > 0) {
     const stanzasRich = loadPsalterTextRich(entry.ref) ?? undefined
-    const psalmPrayerRich = loadPsalterTextPsalmPrayerRich(entry.ref) ?? undefined
+    // F-X2 Phase 3 (#352, R-1): when entry-level `psalmPrayer` text override
+    // is set (3 emergent occurrences with PDF-divergent prayer body),
+    // suppress the catalog `psalmPrayerRich` overlay — it encodes the
+    // W1-default prayer AST and would render alongside the wrong text.
+    // The plain-text path (already used by FR-153h fallback) stays correct.
+    const psalmPrayerOverride = entry.psalmPrayer
+    const psalmPrayerRich =
+      psalmPrayerOverride !== undefined
+        ? undefined
+        : (loadPsalterTextPsalmPrayerRich(entry.ref) ?? undefined)
     const headerRich = loadPsalterHeaderRich(entry.ref) ?? undefined
     return {
       psalmType: entry.type,
@@ -69,7 +78,10 @@ export async function resolvePsalm(
       headerRich,
       verses: [],
       gloriaPatri: entry.gloria_patri,
-      psalmPrayer: psalmText.psalmPrayer,
+      // F-X2 Phase 3 (#352): per-occurrence text override wins over the
+      // catalog default; preserves nullish-coalesce semantics with the
+      // Phase 1/2 page-override (psalmPrayerPage below).
+      psalmPrayer: psalmPrayerOverride ?? psalmText.psalmPrayer,
       psalmPrayerRich,
       // F-X2 Phase 1 (#219): per-occurrence override wins over the
       // catalog's single default page. Multi-occurrence psalms (e.g.
@@ -106,6 +118,11 @@ export async function resolvePsalm(
     )
   }
 
+  // F-X2 Phase 3 (#352, R-1): same suppression on the Bible-fallback path —
+  // keeps R-1 invariant across both return sites so a multi-occurrence
+  // psalm that loses its catalog entry but keeps its week-N.json mapping
+  // (text + page override) still emits the correct plain text alone.
+  const psalmPrayerOverride = entry.psalmPrayer
   return {
     psalmType: entry.type,
     reference: entry.ref,
@@ -113,8 +130,11 @@ export async function resolvePsalm(
     antiphon,
     verses: allVerses,
     gloriaPatri: entry.gloria_patri,
-    psalmPrayer: psalmText?.psalmPrayer,
-    psalmPrayerRich: loadPsalterTextPsalmPrayerRich(entry.ref) ?? undefined,
+    psalmPrayer: psalmPrayerOverride ?? psalmText?.psalmPrayer,
+    psalmPrayerRich:
+      psalmPrayerOverride !== undefined
+        ? undefined
+        : (loadPsalterTextPsalmPrayerRich(entry.ref) ?? undefined),
     // F-X2 Phase 1 (#219): same per-occurrence override on the Bible
     // fallback path — keeps semantics aligned across the two return
     // sites in case a multi-occurrence psalm ever loses its catalog
