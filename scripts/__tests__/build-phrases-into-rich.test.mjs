@@ -23,6 +23,7 @@ import {
   planRefUpdates,
   renderDryRun,
   collectReviewQueue,
+  isHeaderArtifact,
 } from '../build-phrases-into-rich.mjs'
 
 // Helpers — build minimal rich-AST stanza blocks.
@@ -647,6 +648,314 @@ describe('collectReviewQueue + injectPhrasesIntoRichData — needsReview surfaci
         stanzaIndex: 0,
         firstLine: 'unmatched first line',
         lineCount: 1,
+      },
+    ])
+  })
+})
+
+// @fr FR-161
+// Curator queue bulk-hotfix (#447 — audit #446) — `collectReviewQueue`
+// suppresses two classes of scan-noise that swamp the curator queue:
+//   1. Header / section / page-title artifacts (Cat A-D from audit §2)
+//      — page titles "Дуулал N", book section "Магтаал…", doxology
+//      "Эцэг, Хүү, Ариун Сүнсэнд…", day/season/page headers, Roman
+//      numeral dividers "I"/"II". 12/12 PDF spot-checks confirmed these
+//      never correspond to an injected stanza, so suppressing them at
+//      queue-collection time has zero rich.json impact.
+//   2. (firstLine, lineCount) cross-ref dedupe — multi-page gather
+//      surfaces the same column window from neighbouring pages multiple
+//      times across refs (audit Cat E ~50 overlapping). Dedupe set is
+//      shared across the whole `batches` input.
+// Pre-#447 the curator queue was 206 entries / 96 distinct refs ≈ 2.15
+// entries/ref; audit projects 60-75% reduction (206 → ~50-80) after the
+// hotfix lands. The tests below pin the contract: each catalog regex
+// branch is exercised, dedupe is verified, and two regression guards
+// ensure body content is NOT silently dropped (false-positive surface).
+describe('collectReviewQueue — header filter + dedupe (#447 bulk-hotfix, audit #446)', () => {
+  // --- Catalog coverage: isHeaderArtifact unit tests --------------------
+  // Every regex branch is exercised so a future tweak to one alternative
+  // cannot silently drop the others.
+
+  it('isHeaderArtifact: Cat A — "Дуулал N" page-title (any psalm number)', () => {
+    expect(isHeaderArtifact('Дуулал 80')).toBe(true)
+    expect(isHeaderArtifact('Дуулал 24')).toBe(true)
+    expect(isHeaderArtifact('Дуулал 1')).toBe(true)
+    expect(isHeaderArtifact('Дуулал 150')).toBe(true)
+  })
+
+  it('isHeaderArtifact: Cat B — "Магтаал" book-section (tab or space follows)', () => {
+    expect(isHeaderArtifact('Магтаал\t\tхалдаа суун')).toBe(true)
+    expect(isHeaderArtifact('Магтаал есдугаар')).toBe(true)
+    // Negative — "Магтаал" with no following [\t ] (e.g. end-of-line) is
+    // body usage, not the section header.
+    expect(isHeaderArtifact('Магтаал')).toBe(false)
+  })
+
+  it('isHeaderArtifact: Cat C — doxology / prayer-name preambles', () => {
+    expect(isHeaderArtifact('Эцэг, Хүү, Ариун Сүнсэнд алдар…')).toBe(true)
+    expect(isHeaderArtifact('Оройн даатгал залбирал')).toBe(true)
+    expect(isHeaderArtifact('Дууллын залбирал')).toBe(true)
+    expect(isHeaderArtifact('Шад дуулал')).toBe(true)
+    expect(isHeaderArtifact('Шад магтаал')).toBe(true)
+  })
+
+  it('isHeaderArtifact: Cat D — day / season / page / Roman headers', () => {
+    expect(isHeaderArtifact('Бямба гарагийн орой')).toBe(true)
+    expect(isHeaderArtifact('1 ДУГААР ДОЛОО ХОНОГ')).toBe(true)
+    expect(isHeaderArtifact('3 ДУГААР ДОЛОО ХОНОГ')).toBe(true)
+    expect(isHeaderArtifact('Ариун долоо хоног')).toBe(true)
+    expect(isHeaderArtifact('Амилалтын улирал')).toBe(true)
+    expect(isHeaderArtifact('Дөчин хоногийн мацаг')).toBe(true)
+    expect(isHeaderArtifact('12 сарын 25')).toBe(true)
+    // Roman numeral dividers — anchored at end-of-string so only bare
+    // "I" or "II" lines match.
+    expect(isHeaderArtifact('I')).toBe(true)
+    expect(isHeaderArtifact('II')).toBe(true)
+  })
+
+  // --- Regression guard #1 (false-positive surface) ---------------------
+  // The Roman divider branch is `I{1,2}$` — anchored at end-of-string.
+  // Body content that happens to start with "I" must NOT be filtered.
+
+  it('isHeaderArtifact: regression — body line starting with "I" is NOT filtered', () => {
+    expect(isHeaderArtifact('I am a body line that starts with I')).toBe(false)
+    expect(isHeaderArtifact('III')).toBe(false) // 3 Is — outside {1,2}
+    expect(isHeaderArtifact('I.')).toBe(false) // trailing period — not bare divider
+  })
+
+  // --- Regression guard #2 (false-positive surface) ---------------------
+  // Body content that does NOT match any catalog branch passes through.
+
+  it('isHeaderArtifact: regression — normal body content is NOT filtered', () => {
+    expect(isHeaderArtifact('Эзэн минь ээ,')).toBe(false)
+    expect(isHeaderArtifact('Таны царайг хайн хайн')).toBe(false)
+    expect(isHeaderArtifact('Үндэстнүүдийг хөөгөөд,')).toBe(false)
+    expect(isHeaderArtifact('Шүүгчид нь хадны өөдөөс')).toBe(false)
+    expect(isHeaderArtifact('')).toBe(false) // empty / falsy guard
+    expect(isHeaderArtifact(null)).toBe(false)
+    expect(isHeaderArtifact(undefined)).toBe(false)
+  })
+
+  // --- collectReviewQueue: filter integration ---------------------------
+  // Each Cat A/B/C/D sample, when `needsReview: true`, is dropped at
+  // queue-collection time. The queue should be empty for an all-header
+  // batch.
+
+  it('collectReviewQueue: drops every Cat A-D sample even when needsReview=true', () => {
+    const queue = collectReviewQueue([
+      {
+        ref: 'Psalm 80:2-8, 15-20',
+        stanzas: [
+          {
+            stanzaIndex: 0,
+            lines: ['Дуулал 80', 'noise', 'noise', 'noise'],
+            phrases: [],
+            needsReview: true,
+          },
+        ],
+      },
+      {
+        ref: 'Tobit 13:1-8',
+        stanzas: [
+          {
+            stanzaIndex: 0,
+            lines: ['Магтаал\t\tаврагдсан', 'body'],
+            phrases: [],
+            needsReview: true,
+          },
+        ],
+      },
+      {
+        ref: 'Psalm 149:1-9',
+        stanzas: [
+          {
+            stanzaIndex: 0,
+            lines: ['Эцэг, Хүү, Ариун Сүнсэнд алдар', 'болтугай.'],
+            phrases: [],
+            needsReview: true,
+          },
+        ],
+      },
+      {
+        ref: 'Psalm 113:1-9',
+        stanzas: [
+          {
+            stanzaIndex: 0,
+            lines: ['3 ДУГААР ДОЛОО ХОНОГ', 'noise'],
+            phrases: [],
+            needsReview: true,
+          },
+          {
+            stanzaIndex: 1,
+            lines: ['I'],
+            phrases: [],
+            needsReview: true,
+          },
+        ],
+      },
+    ])
+    expect(queue).toEqual([])
+  })
+
+  // --- collectReviewQueue: dedupe ---------------------------------------
+  // Same (firstLine, lineCount) pair surfaced twice (cross-ref or
+  // intra-ref) collapses to a single queue entry. The first occurrence
+  // wins (its ref / stanzaIndex is recorded).
+
+  it('collectReviewQueue: cross-ref (firstLine, lineCount) dedupe — same pair pushed once', () => {
+    const queue = collectReviewQueue([
+      {
+        ref: 'Psalm 141:1-10',
+        stanzas: [
+          {
+            stanzaIndex: 0,
+            lines: ['Шүүгчид нь хадны өөдөөс', 'тэвчээр болж', 'мөн нэр алдартай'],
+            phrases: [],
+            needsReview: true,
+          },
+        ],
+      },
+      {
+        ref: 'Psalm 142:1-7',
+        stanzas: [
+          {
+            stanzaIndex: 0,
+            lines: ['Шүүгчид нь хадны өөдөөс', 'тэвчээр болж', 'мөн нэр алдартай'],
+            phrases: [],
+            needsReview: true,
+          },
+        ],
+      },
+    ])
+    // Only the FIRST occurrence is kept (Psalm 141, the cross-ref Psalm 142
+    // duplicate is dropped — Cat E from audit §2).
+    expect(queue).toEqual([
+      {
+        ref: 'Psalm 141:1-10',
+        stanzaIndex: 0,
+        firstLine: 'Шүүгчид нь хадны өөдөөс',
+        lineCount: 3,
+      },
+    ])
+  })
+
+  // --- Regression guard #3: dedupe is (firstLine, lineCount) — NOT just firstLine ---
+  // Different `lineCount` for the same `firstLine` represents a different
+  // cap-window (potentially a different stanza shape) and must NOT collapse.
+
+  it('collectReviewQueue: dedupe preserves entries with same firstLine but different lineCount', () => {
+    const queue = collectReviewQueue([
+      {
+        ref: 'Psalm A',
+        stanzas: [
+          {
+            stanzaIndex: 0,
+            lines: ['shared opener', 'L2', 'L3'], // lineCount=3
+            phrases: [],
+            needsReview: true,
+          },
+        ],
+      },
+      {
+        ref: 'Psalm B',
+        stanzas: [
+          {
+            stanzaIndex: 0,
+            lines: ['shared opener', 'L2', 'L3', 'L4', 'L5'], // lineCount=5
+            phrases: [],
+            needsReview: true,
+          },
+        ],
+      },
+    ])
+    // Both pass through — same firstLine but the (firstLine, lineCount)
+    // tuples are distinct.
+    expect(queue).toEqual([
+      {
+        ref: 'Psalm A',
+        stanzaIndex: 0,
+        firstLine: 'shared opener',
+        lineCount: 3,
+      },
+      {
+        ref: 'Psalm B',
+        stanzaIndex: 0,
+        firstLine: 'shared opener',
+        lineCount: 5,
+      },
+    ])
+  })
+
+  // --- Regression guard #4 (false-negative surface) ---------------------
+  // Normal body firstLine + needsReview=true MUST still reach the queue —
+  // the filter must not silently swallow actionable curator-relevant
+  // entries.
+
+  it('collectReviewQueue: regression — normal body firstLine still surfaces (filter false-positive guard)', () => {
+    const queue = collectReviewQueue([
+      {
+        ref: 'Psalm Body',
+        stanzas: [
+          {
+            stanzaIndex: 0,
+            lines: ['Эзэн минь ээ,', 'би таныг хүсч байна', 'таны нэрийг'],
+            phrases: [],
+            needsReview: true,
+          },
+        ],
+      },
+    ])
+    expect(queue).toEqual([
+      {
+        ref: 'Psalm Body',
+        stanzaIndex: 0,
+        firstLine: 'Эзэн минь ээ,',
+        lineCount: 3,
+      },
+    ])
+  })
+
+  // --- Combined behaviour: header + dedupe + body in one batch ----------
+  // End-to-end shape — the queue contains ONLY the body entry; the
+  // header is filtered, the duplicate body is deduped.
+
+  it('collectReviewQueue: combined — header filtered, duplicate body deduped, distinct body kept', () => {
+    const queue = collectReviewQueue([
+      {
+        ref: 'Mixed Ref 1',
+        stanzas: [
+          {
+            stanzaIndex: 0,
+            lines: ['Дуулал 50', 'noise'], // header → filtered
+            phrases: [],
+            needsReview: true,
+          },
+          {
+            stanzaIndex: 1,
+            lines: ['Real body line', 'L2'], // body → kept
+            phrases: [],
+            needsReview: true,
+          },
+        ],
+      },
+      {
+        ref: 'Mixed Ref 2',
+        stanzas: [
+          {
+            stanzaIndex: 0,
+            lines: ['Real body line', 'L2'], // exact dup → deduped
+            phrases: [],
+            needsReview: true,
+          },
+        ],
+      },
+    ])
+    expect(queue).toEqual([
+      {
+        ref: 'Mixed Ref 1',
+        stanzaIndex: 1,
+        firstLine: 'Real body line',
+        lineCount: 2,
       },
     ])
   })
