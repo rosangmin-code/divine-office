@@ -67,6 +67,14 @@ export function stripPageHeaders(lines) {
  *   - phrases whose `lineRange` straddles the removed line have the
  *     missing line elided (the wrap continues across the deleted noise)
  *
+ * F-X11 (#408): also remaps `paragraphBoundaries[]`. A boundary at index
+ * `b` (meaning "paragraph break BEFORE lines[b]") is rewritten to point
+ * at the new index of the SAME surviving line (the original line at
+ * `b`); if `lines[b]` itself was filtered out, the boundary attaches to
+ * the next surviving line. Boundaries whose target falls outside the
+ * surviving range are dropped (a boundary at the very start or end is a
+ * no-op visually).
+ *
  * Stanzas that become entirely empty are dropped from the output.
  */
 export function stripPageHeadersFromStanzas(stanzas) {
@@ -91,7 +99,30 @@ export function stripPageHeadersFromStanzas(stanzas) {
       if (kept.length === 0) continue
       newPhrases.push({ ...p, lineRange: [kept[0], kept[kept.length - 1]] })
     }
-    out.push({ ...stanza, lines: newLines, phrases: newPhrases })
+    const newBoundaries = []
+    for (const b of stanza.paragraphBoundaries || []) {
+      // Find the new index of the FIRST surviving line at or after b.
+      let mapped = -1
+      for (let i = b; i < stanza.lines.length; i++) {
+        if (oldToNew.has(i)) {
+          mapped = oldToNew.get(i)
+          break
+        }
+      }
+      // 0 / out-of-range / duplicate → drop. A boundary at index 0 means
+      // the paragraph break is before the first surviving line, which
+      // is the stanza-start spacing already provided by the outer block
+      // wrapper (no within-stanza extra gap needed).
+      if (mapped <= 0 || mapped >= newLines.length) continue
+      if (newBoundaries.length > 0 && newBoundaries[newBoundaries.length - 1] === mapped) continue
+      newBoundaries.push(mapped)
+    }
+    out.push({
+      ...stanza,
+      lines: newLines,
+      phrases: newPhrases,
+      paragraphBoundaries: newBoundaries,
+    })
   }
   return out
 }

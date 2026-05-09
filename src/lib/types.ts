@@ -135,6 +135,29 @@ export type PrayerBlock =
       lines: { spans: PrayerSpan[]; indent: 0 | 1 | 2; role?: 'refrain' | 'doxology' }[]
       /** FR-161 R-3 — phrase grouping (additive, optional). 부재/빈 배열 → legacy line-render fallback. */
       phrases?: PhraseGroup[]
+      /**
+       * F-X11 (#408) — within-stanza paragraph boundaries. Each entry is a
+       * 0-based `lines[]` (or `phrases[]` first-line-index) at which a
+       * paragraph break should render. Boundary is BEFORE the listed index:
+       * e.g. `[3, 7]` means an extra spacing gap is rendered above
+       * `lines[3]` and `lines[7]` (before-line semantics, mirrors how
+       * `paragraphBoundaries` is populated by the extractor's 1-blank-vs-
+       * 2+-blank distinction). Index 0 is rejected by the builder as a
+       * no-op (a paragraph break at the very start of a stanza is the
+       * stanza boundary itself).
+       *
+       * Renderer contract: when present and non-empty, the phrase-render
+       * path inserts `mt-3` (within-stanza paragraph spacing) above any
+       * phrase whose `lineRange[0]` matches a boundary; the legacy
+       * line-render path applies the same to its inner `<span>` blocks.
+       * Absent / empty array → no within-stanza paragraph spacing
+       * (regression-safe additive — this is how every pre-#408 stanza
+       * looks today).
+       *
+       * See `docs/handoff-fx11-paragraph-break-audit-2026-05-08.md` §4
+       * Option B for the design rationale.
+       */
+      paragraphBoundaries?: number[]
     }
   | { kind: 'divider' }
 

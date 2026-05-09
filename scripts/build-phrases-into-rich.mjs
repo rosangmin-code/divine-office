@@ -115,17 +115,27 @@ function normalizeTypography(s) {
  * the PDF separates by blank lines — Psalm 110:1-5,7 stanza 0 is 5 verses)
  * can still be matched.
  *
- * @param {{ stanzaIndex?: number, lines: string[], phrases: any[] }[]} extractorStanzas
+ * F-X11 (#408) — also surfaces `isParagraphStart` per row so the builder
+ * can translate stanza-relative paragraphBoundaries into rich-block-
+ * relative indices once a window is matched. A row at lineWithinStanza
+ * `b` whose stanza's `paragraphBoundaries` includes `b` is marked. The
+ * row at lineWithinStanza 0 is NEVER marked (a paragraph break before the
+ * first line of a stanza is the stanza boundary itself, not a within-
+ * stanza break).
+ *
+ * @param {{ stanzaIndex?: number, lines: string[], phrases: any[], paragraphBoundaries?: number[] }[]} extractorStanzas
  */
 function flattenExtractorStream(extractorStanzas) {
   const stream = []
   for (let s = 0; s < extractorStanzas.length; s++) {
     const stanza = extractorStanzas[s]
+    const boundaries = new Set(stanza.paragraphBoundaries || [])
     for (let i = 0; i < stanza.lines.length; i++) {
       stream.push({
         text: stanza.lines[i],
         stanzaPos: s,
         lineWithinStanza: i,
+        isParagraphStart: i > 0 && boundaries.has(i),
       })
     }
   }
@@ -341,10 +351,37 @@ export function planRefUpdates(richStanzaSlots, extractorStanzas) {
     updates.push({
       blockIndex: slot.blockIndex,
       phrases: translatePhrases(window, extractorStanzas),
+      paragraphBoundaries: translateParagraphBoundaries(window),
       richFirstLine,
     })
   }
   return { updates, issues }
+}
+
+/**
+ * F-X11 (#408) — translate paragraph-boundary markers from extractor-
+ * stanza-relative indices to rich-block-relative indices. The flat-stream
+ * `window` carries `isParagraphStart` per row (set by
+ * `flattenExtractorStream` based on each source stanza's
+ * `paragraphBoundaries`). A row at window index `wi` with
+ * `isParagraphStart === true` becomes a paragraph boundary at the rich
+ * block's line index `wi`.
+ *
+ * Index 0 is excluded by `flattenExtractorStream` (a boundary at the
+ * very first line of a stanza maps to the stanza boundary, not a within-
+ * stanza break). Index 0 in the WINDOW would also be a no-op visually
+ * (stanza-start spacing already comes from the outer block wrapper), so
+ * filter it here defensively.
+ *
+ * @param {{ isParagraphStart?: boolean }[]} window
+ * @returns {number[]}
+ */
+function translateParagraphBoundaries(window) {
+  const out = []
+  for (let i = 1; i < window.length; i++) {
+    if (window[i].isParagraphStart) out.push(i)
+  }
+  return out
 }
 
 function countMatchingPrefix(stream, start, richTexts) {
@@ -426,15 +463,40 @@ export function injectPhrasesIntoRichData(richData, batches) {
     const blocks = ref.stanzasRich.blocks.map((block, i) => {
       const update = refPlan.updates.find((u) => u.blockIndex === i)
       if (!update) return block
-      // Idempotent: assigning `phrases` overwrites any prior value at this
-      // block. Empty-phrases arrays are skipped to keep additive minimal.
-      if (!update.phrases || update.phrases.length === 0) {
-        // Strip a previously-set phrases field if extractor now has none —
-        // keeps round-trips honest.
-        const { phrases: _drop, ...rest } = block
+      // F-X11 (#408) — apply phrases AND paragraphBoundaries to the block
+      // (both fields are independently optional). Idempotent: assigning
+      // overwrites any prior values; empty arrays are stripped so a clean
+      // re-extraction reverts to the legacy line-render fallback shape.
+      const noPhrases = !update.phrases || update.phrases.length === 0
+      const noBoundaries =
+        !update.paragraphBoundaries || update.paragraphBoundaries.length === 0
+      if (noPhrases && noBoundaries) {
+        // Strip both a previously-set `phrases` AND
+        // `paragraphBoundaries` field if extractor has neither — keeps
+        // round-trips honest.
+        const {
+          phrases: _dropP,
+          paragraphBoundaries: _dropB,
+          ...rest
+        } = block
         return rest
       }
-      return { ...block, phrases: update.phrases }
+      // Build the next block in a deterministic field order: existing
+      // shape, then `phrases`, then `paragraphBoundaries`. JSON
+      // serialisation key order is stable in V8 so this keeps diffs
+      // small when only one of the two fields is present.
+      const next = { ...block }
+      if (noPhrases) {
+        delete next.phrases
+      } else {
+        next.phrases = update.phrases
+      }
+      if (noBoundaries) {
+        delete next.paragraphBoundaries
+      } else {
+        next.paragraphBoundaries = update.paragraphBoundaries
+      }
+      return next
     })
     data[refPlan.ref] = {
       ...ref,
@@ -465,8 +527,10 @@ export function renderDryRun(result) {
         const phraseSummary = u.phrases
           .map((p) => `[${p.lineRange[0]},${p.lineRange[1]}]`)
           .join(' ')
+        const pbCount = (u.paragraphBoundaries || []).length
+        const pbSummary = pbCount > 0 ? ` ¶=${u.paragraphBoundaries.join(',')}` : ''
         lines.push(
-          `    block ${u.blockIndex} (first="${u.richFirstLine.slice(0, 30)}…") → ${u.phrases.length} phrase(s) ${phraseSummary}`,
+          `    block ${u.blockIndex} (first="${u.richFirstLine.slice(0, 30)}…") → ${u.phrases.length} phrase(s) ${phraseSummary}${pbSummary}`,
         )
       }
     }

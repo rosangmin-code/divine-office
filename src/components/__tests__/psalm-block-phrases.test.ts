@@ -23,7 +23,11 @@ import type { AssembledPsalm, PhraseGroup, PrayerBlock, PrayerText } from '@/lib
 
 function makeStanzaBlock(
   lineTexts: string[],
-  options: { phrases?: PhraseGroup[]; lineIndents?: (0 | 1 | 2)[] } = {},
+  options: {
+    phrases?: PhraseGroup[]
+    lineIndents?: (0 | 1 | 2)[]
+    paragraphBoundaries?: number[]
+  } = {},
 ): PrayerBlock {
   const lineIndents = options.lineIndents ?? lineTexts.map(() => 0 as const)
   return {
@@ -33,6 +37,9 @@ function makeStanzaBlock(
       indent: lineIndents[i],
     })),
     ...(options.phrases ? { phrases: options.phrases } : {}),
+    ...(options.paragraphBoundaries
+      ? { paragraphBoundaries: options.paragraphBoundaries }
+      : {}),
   } as PrayerBlock
 }
 
@@ -189,5 +196,140 @@ describe('PsalmBlock — phrase render branch (FR-161 R-4)', () => {
     expect(html).toContain('With phrase')
     expect(html).toContain('Legacy line A')
     expect(html).toContain('Legacy line B')
+  })
+})
+
+// @fr FR-161
+// F-X11 (#408) — within-stanza paragraph boundary rendering.
+// `paragraphBoundaries[]` (line indices in the stanza) instructs the
+// renderer to inject a slightly larger gap (mt-3) above the matching
+// phrase or line. This sits visually between the per-phrase 0-gap and
+// the inter-block stanza-level space-y-5 / space-y-4 gap, so a paragraph
+// break is distinguishable from both.
+describe('PsalmBlock — F-X11 paragraph boundary rendering', () => {
+  it('phrase path: prepends mt-3 + data-paragraph-boundary on the matching phrase', () => {
+    // 4 phrases, paragraph boundary BEFORE phrase index 2 (line 2).
+    const psalm = makePsalm([
+      makeStanzaBlock(['v1', 'v2', 'v3', 'v4'], {
+        phrases: [
+          { lineRange: [0, 0], indent: 0 },
+          { lineRange: [1, 1], indent: 0 },
+          { lineRange: [2, 2], indent: 0 },
+          { lineRange: [3, 3], indent: 0 },
+        ],
+        paragraphBoundaries: [2],
+      }),
+    ])
+    const html = render(createElement(PsalmBlock, { psalm }))
+    expect(html).toContain('data-render-mode="phrase"')
+    // Exactly ONE span carries the boundary marker.
+    const matches = html.match(/data-paragraph-boundary="true"/g) ?? []
+    expect(matches.length).toBe(1)
+    // The boundary span uses mt-3 spacing, alongside the indent class.
+    expect(html).toMatch(/data-paragraph-boundary="true"[^>]+class="block pl-6 -indent-6 mt-3"[^>]*>v3</)
+    // mt-3 within phrase spans appears exactly once (the boundary).
+    // Note: mt-3 also appears on AntiphonBox wrappers and the optional
+    // psalm-prayer `<div>`, which are page-level chrome unrelated to
+    // F-X11 — assert the boundary-specific occurrence rather than a
+    // page-wide count.
+    const phraseSpanMt3 = (html.match(/data-role="psalm-phrase[a-z-]*"[^>]+class="[^"]*\bmt-3\b/g) ?? []).length
+    expect(phraseSpanMt3).toBe(1)
+  })
+
+  it('phrase path: no boundary attribute when paragraphBoundaries is absent', () => {
+    const psalm = makePsalm([
+      makeStanzaBlock(['v1', 'v2'], {
+        phrases: [
+          { lineRange: [0, 0], indent: 0 },
+          { lineRange: [1, 1], indent: 0 },
+        ],
+      }),
+    ])
+    const html = render(createElement(PsalmBlock, { psalm }))
+    expect(html).not.toContain('data-paragraph-boundary')
+    // No phrase span carries mt-3 (page-level mt-3 from AntiphonBox /
+    // psalm-prayer chrome is allowed; F-X11 spacing should not appear).
+    const phraseSpanMt3 = (html.match(/data-role="psalm-phrase[a-z-]*"[^>]+class="[^"]*\bmt-3\b/g) ?? []).length
+    expect(phraseSpanMt3).toBe(0)
+  })
+
+  it('phrase path: multiple boundaries each get mt-3', () => {
+    const psalm = makePsalm([
+      makeStanzaBlock(['v1', 'v2', 'v3', 'v4'], {
+        phrases: [
+          { lineRange: [0, 0], indent: 0 },
+          { lineRange: [1, 1], indent: 0 },
+          { lineRange: [2, 2], indent: 0 },
+          { lineRange: [3, 3], indent: 0 },
+        ],
+        paragraphBoundaries: [1, 3],
+      }),
+    ])
+    const html = render(createElement(PsalmBlock, { psalm }))
+    const markers = html.match(/data-paragraph-boundary="true"/g) ?? []
+    expect(markers.length).toBe(2)
+  })
+
+  it('legacy line path: boundary applied to the matching line span (no phrases)', () => {
+    // No phrases → legacy line-by-line render. The boundary attaches to
+    // the matching line.
+    const psalm = makePsalm([
+      makeStanzaBlock(['L1', 'L2', 'L3'], {
+        paragraphBoundaries: [2],
+      }),
+    ])
+    const html = render(createElement(PsalmBlock, { psalm }))
+    // Legacy outer keeps whitespace-pre-line.
+    expect(html).toContain('whitespace-pre-line')
+    expect(html).not.toContain('data-render-mode="phrase"')
+    // Boundary attribute on exactly one span.
+    const matches = html.match(/data-paragraph-boundary="true"/g) ?? []
+    expect(matches.length).toBe(1)
+    expect(html).toMatch(/data-paragraph-boundary="true"[^>]+class="block mt-3"[^>]*>L3</)
+  })
+
+  it('end-to-end: Psalm 46:2-12 user-reported case — wrap pair AND paragraph break preserved', () => {
+    // Mirror the post-F-X11 expected shape for the user-reported PDF
+    // p.153 case: a stanza containing the wrap pair "Далайн зүрх рүү
+    // уулс нуран ороход ч / бид айхгүй." (lineRange [3,4] = 1 multi-
+    // line phrase) AND a paragraph boundary before the refrain block
+    // start. Asserts the renderer surfaces BOTH the joined wrap and
+    // the paragraph gap concurrently.
+    const psalm = makePsalm([
+      makeStanzaBlock(
+        [
+          'Тэнгэрбурхан, бидний хоргодох газар ба хүч,',
+          'Зовлон шаналан дунд үнэхээр олддог тусламж.',
+          'Дэлхий өөрчлөгдөхөд ч,',
+          'Далайн зүрх рүү уулс нуран ороход ч',
+          'бид айхгүй.',
+          'Ус хүрхрэн хөөсрөхөд ч,',
+          'Уулс сүртэйгээр ганхан чичрэхэд ч айхгүй.',
+          'Түг түмдийн ЭЗЭН бидэнтэй хамт',
+          'Иаковын Тэнгэрбурхан бидний хүчит цайз.',
+        ],
+        {
+          phrases: [
+            { lineRange: [0, 0], indent: 0 },
+            { lineRange: [1, 1], indent: 0 },
+            { lineRange: [2, 2], indent: 0 },
+            { lineRange: [3, 4], indent: 0 }, // wrap pair (F-X10 contract)
+            { lineRange: [5, 5], indent: 0 },
+            { lineRange: [6, 6], indent: 0 },
+            { lineRange: [7, 7], indent: 0, role: 'refrain' },
+            { lineRange: [8, 8], indent: 0, role: 'refrain' },
+          ],
+          paragraphBoundaries: [7], // before refrain group
+        },
+      ),
+    ])
+    const html = render(createElement(PsalmBlock, { psalm }))
+    // 1. wrap pair joined with a single space (F-X10 contract, regression-safe)
+    expect(html).toContain('Далайн зүрх рүү уулс нуран ороход ч бид айхгүй.')
+    // 2. paragraph boundary attribute on exactly one span (F-X11 contract)
+    const markers = html.match(/data-paragraph-boundary="true"/g) ?? []
+    expect(markers.length).toBe(1)
+    // 3. refrain phrase at index 7 carries both red text + mt-3
+    expect(html).toMatch(/data-paragraph-boundary="true"[^>]+class="block pl-6 -indent-6 text-red-700 dark:text-red-400 mt-3"[^>]*>Түг түмдийн/)
   })
 })

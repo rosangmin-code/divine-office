@@ -131,6 +131,43 @@ describe('psalter-texts.rich.json — wrap-rate invariants (F-X10)', () => {
     expect(foundUserCase).toBe(true)
   })
 
+  // F-X11 (#408) — user-reported paragraph breaks around the refrain.
+  // PDF p.153 has visible paragraph spacing AFTER "Уулс сүртэйгээр
+  // ганхан чичрэхэд ч айхгүй." (before refrain start) and AFTER
+  // "Иаковын Тэнгэрбурхан бидний хүчит цайз." (refrain end → next
+  // verse cluster). Both must register as `paragraphBoundaries[]`
+  // entries on the rich.json stanza so the renderer surfaces the
+  // visual gap.
+  it('Psalm 46:2-12 user-reported paragraph break before refrain start is preserved', () => {
+    const data = loadRich()
+    const psalm = data['Psalm 46:2-12']
+    expect(psalm).toBeDefined()
+    const block0 = psalm.stanzasRich?.blocks?.[0]
+    expect(block0).toBeDefined()
+    expect(block0.kind).toBe('stanza')
+    const boundaries = new Set(block0.paragraphBoundaries ?? [])
+    // Find the line index of "Түг түмдийн ЭЗЭН бидэнтэй хамт" (first
+    // refrain line). The boundary BEFORE this line is the user-reported
+    // break.
+    const refrainStartIdx = block0.lines.findIndex(
+      (l) => (l.spans?.[0]?.text ?? '').startsWith('Түг түмдийн ЭЗЭН'),
+    )
+    expect(refrainStartIdx).toBeGreaterThan(0)
+    expect(boundaries.has(refrainStartIdx)).toBe(true)
+  })
+
+  it('Psalm 46:2-12 user-reported paragraph break after refrain (before "Тэнгэрбурханы хотыг") is preserved', () => {
+    const data = loadRich()
+    const psalm = data['Psalm 46:2-12']
+    const block0 = psalm.stanzasRich?.blocks?.[0]
+    const boundaries = new Set(block0.paragraphBoundaries ?? [])
+    const idx = block0.lines.findIndex(
+      (l) => (l.spans?.[0]?.text ?? '').startsWith('Тэнгэрбурханы хотыг'),
+    )
+    expect(idx).toBeGreaterThan(0)
+    expect(boundaries.has(idx)).toBe(true)
+  })
+
   it('overall multi-line wrap rate >= 13% across phrase-injected refs (post-FU-1 floor)', () => {
     const data = loadRich()
     let total = 0

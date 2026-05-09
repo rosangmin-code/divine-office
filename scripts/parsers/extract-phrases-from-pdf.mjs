@@ -346,27 +346,133 @@ export function dropSpuriousBlanks(columnLines, baseline) {
 }
 
 /**
+ * F-X11 (#408) — drop column-split artifact blanks before stanza splitting.
+ *
+ * `splitColumns` produces left/right streams of EQUAL length: every
+ * physical-page row maps to one row in BOTH streams. When the OTHER column
+ * has content but THIS column does not (typical 2-up layout: left col runs
+ * an end-of-psalm prayer while right col carries the next psalm body),
+ * `splitColumns` emits a `''` blank in this column at that row. Those
+ * blanks are NOT visual paragraph breaks in the printed PDF — they're
+ * pure layout artifacts.
+ *
+ * Visual paragraph breaks (which we DO want to preserve) require BOTH
+ * columns to be blank at the same row index. The 2-up landscape PDF
+ * encodes a true blank row as a vertical gap that runs across both
+ * book-page columns simultaneously.
+ *
+ * This filter takes the per-row paired streams and drops a blank from
+ * `thisColLines[i]` whenever `otherColLines[i]` has non-empty content.
+ * The resulting stream has only "real" blanks (where both columns were
+ * blank at that physical row) — those are the input to the paragraph-
+ * vs-stanza distinction in `splitIntoStanzas`.
+ *
+ * Backward-compat: when `otherColLines` is undefined or shorter than
+ * `thisColLines`, the function is a no-op pass-through (legacy callers
+ * with single-column input get the original line stream).
+ *
+ * @param {string[]} thisColLines
+ * @param {string[]} [otherColLines]
+ * @returns {string[]}
+ */
+export function dropColumnArtifactBlanks(thisColLines, otherColLines) {
+  if (!Array.isArray(otherColLines) || otherColLines.length === 0) {
+    return thisColLines
+  }
+  const out = []
+  for (let i = 0; i < thisColLines.length; i++) {
+    const line = thisColLines[i]
+    if (line.trim().length === 0) {
+      // Only drop when other col has CONTENT at the same row. If other
+      // col is also blank (or out of range), the blank is a "real" PDF
+      // blank row — keep it for paragraph/stanza distinction downstream.
+      const otherLine = i < otherColLines.length ? otherColLines[i] : ''
+      if (otherLine.trim().length > 0) continue
+    }
+    out.push(line)
+  }
+  return out
+}
+
+/**
  * Split a column's `lines[]` (post-`splitColumns` and post-
- * `dropSpuriousBlanks`) into stanza groups. Each stanza is the list of
- * consecutive non-blank lines, preserving original leading whitespace.
+ * `dropSpuriousBlanks`) into stanza groups. Each stanza carries a
+ * `lines` array (consecutive non-blank lines, preserving original
+ * leading whitespace) AND a `paragraphBoundaries` array tracking
+ * within-stanza paragraph splits.
+ *
+ * F-X11 (#408) — paragraph-aware splitting:
+ *   - 1-blank between content lines → PARAGRAPH boundary IF a sentence
+ *     terminator + capital-start cross-check passes. The next line's
+ *     index in the current `lines[]` is then appended to
+ *     `paragraphBoundaries`; otherwise the blank is treated as a
+ *     column-split artifact and skipped (kept inside the stanza, no
+ *     boundary marker). The sentence-end heuristic is essential here
+ *     because cross-column blank verification (the audit's "둘 다
+ *     column blank" rule) gives false negatives on the user-reported
+ *     Psalm 46:2-12 layout — left col carries a different psalm whose
+ *     content rows align with right-col paragraph blanks, so the
+ *     "blank in BOTH columns" check would never fire. Sentence-end
+ *     punctuation + uppercase-start matches the visual contract used by
+ *     the original Stage 2 cross-checker (`runStage2`).
+ *   - 2+-blank → STANZA boundary (flush current stanza, start new
+ *     one). This part is unchanged from pre-F-X11 behaviour.
+ *
+ * Pre-F-X11 callers that want the legacy "every blank ends a stanza"
+ * shape can still get it via `extractPhrasesFromColumn`'s backward-
+ * compat shim (`explodeParagraphBoundariesToStanzas`) — it explodes
+ * each surviving paragraph boundary into a stanza split when no
+ * `otherColumnLines` is supplied (single-column fixture mode).
  *
  * @param {string[]} columnLines
- * @returns {string[][]}
+ * @returns {{ lines: string[], paragraphBoundaries: number[] }[]}
  */
 export function splitIntoStanzas(columnLines) {
   const stanzas = []
-  let current = []
-  for (const line of columnLines) {
-    if (line.trim().length === 0) {
-      if (current.length > 0) {
-        stanzas.push(current)
-        current = []
-      }
-    } else {
-      current.push(line)
+  let currentLines = []
+  let currentBoundaries = []
+  let blankRun = 0
+
+  function flushStanza() {
+    if (currentLines.length > 0) {
+      stanzas.push({
+        lines: currentLines,
+        paragraphBoundaries: currentBoundaries,
+      })
+      currentLines = []
+      currentBoundaries = []
     }
   }
-  if (current.length > 0) stanzas.push(current)
+
+  for (const line of columnLines) {
+    if (line.trim().length === 0) {
+      blankRun++
+      continue
+    }
+    if (blankRun >= 2) {
+      // 2+-blank → stanza boundary.
+      flushStanza()
+    } else if (blankRun === 1 && currentLines.length > 0) {
+      // 1-blank within an in-progress stanza is AMBIGUOUS — could be a
+      // real paragraph break OR a column-split artifact (the OTHER
+      // book-page column had content at this row). Disambiguate via
+      // the same sentence-terminator + capital-start heuristic that
+      // Stage 2 already uses to cross-check phrase boundaries: real
+      // PDF paragraph breaks land at sentence ends where the next
+      // paragraph opens with an uppercase letter. Comma-terminated
+      // mid-clause continuations and lowercase-start wraps are
+      // therefore NEVER promoted to paragraph boundaries even if the
+      // OTHER column happens to be blank.
+      const prevLine = currentLines[currentLines.length - 1].trim()
+      const nextLine = line.trim()
+      if (SENTENCE_END_RE.test(prevLine) && STARTS_UPPER_RE.test(nextLine)) {
+        currentBoundaries.push(currentLines.length)
+      }
+    }
+    currentLines.push(line)
+    blankRun = 0
+  }
+  flushStanza()
   return stanzas
 }
 
@@ -468,34 +574,98 @@ export function crossCheckDisagrees(stage1Phrases, stage2Starts) {
  * Top-level: extract phrase groups from a single column's pdftotext-layout
  * output (post-splitColumns).
  *
+ * F-X11 (#408) — when `options.otherColumnLines` is supplied (per-row
+ * paired stream from the OTHER book-page column), column-split artifact
+ * blanks are dropped first so `splitIntoStanzas` can correctly count
+ * 1-blank vs 2+-blank to populate `paragraphBoundaries[]`. Without
+ * `otherColumnLines` (legacy callers / single-column fixtures), the
+ * function preserves the pre-F-X11 behaviour: every blank acts as a
+ * stanza boundary and `paragraphBoundaries` is always empty.
+ *
  * @param {string[]} columnLines
- * @param {{ baseline?: number }} [options]
+ * @param {{ baseline?: number, otherColumnLines?: string[] }} [options]
  * @returns {{
  *   baselineCol: number,
  *   stanzas: {
  *     stanzaIndex: number,
  *     lines: string[],
  *     phrases: { lineRange: [number, number], indent: 0|1|2 }[],
+ *     paragraphBoundaries: number[],
  *     needsReview: boolean,
  *   }[],
  * }}
  */
 export function extractPhrasesFromColumn(columnLines, options = {}) {
   const baseline = options.baseline ?? detectBaselineCol(columnLines)
+  const hasOtherCol =
+    Array.isArray(options.otherColumnLines) && options.otherColumnLines.length > 0
+  // F-X11 (#408) — paragraph detection happens INSIDE `splitIntoStanzas`
+  // via a sentence-terminator + capital-start heuristic, NOT via
+  // cross-column blank verification (which gives false negatives when
+  // the other column has unrelated content at the paragraph-break row,
+  // e.g. user-reported Psalm 46:2-12 page 153 right col where left col
+  // runs an unrelated closing-prayer body across both paragraph blank
+  // rows). `dropColumnArtifactBlanks` is intentionally NOT used here;
+  // the heuristic alone is sufficient to filter spurious blanks
+  // (mid-clause comma-terminated lines never promote to paragraph
+  // boundaries even when surrounded by 1-blank gaps).
   const cleaned = dropSpuriousBlanks(columnLines, baseline)
-  const stanzaRawGroups = splitIntoStanzas(cleaned)
-  const stanzas = stanzaRawGroups.map((rawLines, stanzaIndex) => {
-    const stage1 = runStage1(rawLines, baseline)
+  // F-X11 backward-compat: in legacy single-column mode (no
+  // `otherColumnLines`), the test fixtures expect "every blank ends a
+  // stanza" — that's how the pre-F-X11 dataset was authored. Switch
+  // splitting strategy by mode: live extraction (with otherCol) uses
+  // the new paragraph-aware splitter; legacy callers fall back to
+  // every-blank splitting. Both produce `{ lines, paragraphBoundaries }`
+  // shape so downstream code is uniform.
+  let stanzaGroups
+  if (hasOtherCol) {
+    stanzaGroups = splitIntoStanzas(cleaned)
+  } else {
+    stanzaGroups = splitOnEveryBlank(cleaned)
+  }
+  const stanzas = stanzaGroups.map((group, stanzaIndex) => {
+    const stage1 = runStage1(group.lines, baseline)
     const stage2Starts = runStage2(stage1.lines)
     const needsReview = crossCheckDisagrees(stage1.phrases, stage2Starts)
     return {
       stanzaIndex,
       lines: stage1.lines,
       phrases: stage1.phrases,
+      paragraphBoundaries: group.paragraphBoundaries,
       needsReview,
     }
   })
   return { baselineCol: baseline, stanzas }
+}
+
+/**
+ * F-X11 (#408) — backward-compat splitter for legacy single-column
+ * callers. Mirrors the pre-F-X11 behaviour: every blank ends the
+ * current stanza, regardless of paragraph semantics. Output shape
+ * matches `splitIntoStanzas` (each stanza carries an empty
+ * `paragraphBoundaries: []` so downstream consumers don't need a
+ * legacy-vs-live branch).
+ *
+ * @param {string[]} columnLines
+ * @returns {{ lines: string[], paragraphBoundaries: number[] }[]}
+ */
+function splitOnEveryBlank(columnLines) {
+  const stanzas = []
+  let current = []
+  for (const line of columnLines) {
+    if (line.trim().length === 0) {
+      if (current.length > 0) {
+        stanzas.push({ lines: current, paragraphBoundaries: [] })
+        current = []
+      }
+    } else {
+      current.push(line)
+    }
+  }
+  if (current.length > 0) {
+    stanzas.push({ lines: current, paragraphBoundaries: [] })
+  }
+  return stanzas
 }
 
 /**
@@ -521,7 +691,16 @@ export function extractPhrasesFromPdf({ pdfPath, bookPage, column }) {
       `extractPhrasesFromPdf: no ${targetColumn}-column stream for physical page ${physical}`,
     )
   }
-  const result = extractPhrasesFromColumn(stream.lines)
+  // F-X11 (#408) — pass the OTHER column's per-row stream so column-split
+  // artifact blanks can be filtered before stanza splitting. The OTHER
+  // stream is always emitted by `splitColumns` (one per side per
+  // physical page) and is row-aligned with the target stream (both come
+  // from the same line-by-line walk of the layout output).
+  const otherSide = targetColumn === 'left' ? 'right' : 'left'
+  const otherStream = split.find((s) => s.column === otherSide)
+  const result = extractPhrasesFromColumn(stream.lines, {
+    otherColumnLines: otherStream?.lines,
+  })
   return { bookPage, column: targetColumn, physicalPage: physical, ...result }
 }
 
