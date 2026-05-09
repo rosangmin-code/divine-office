@@ -413,4 +413,152 @@ describe('FR-160-C psalter-headers catalog', () => {
       })
     })
   })
+
+  // F-X13 (#444) preface_text page-break artifact invariants — locks the
+  // pre-#444 latent bug where the block-capture window in
+  // `scripts/extract-psalter-headers.js` only filtered EMPTY lines and
+  // therefore absorbed the PDF's running-header / page-marker lines that
+  // appear between the opening and closing lines of a long preface (when
+  // it crosses the visual page break of the 2-up book layout).
+  //
+  // Surfaced at #376 review MINOR-1 on:
+  //   - Psalm 113:1-9 page 287 — `288 288 3 дугаар долоо хоног` mid-text
+  //   - Psalm 122:1-9 page 398 — `399 Бямба гарагийн орой 399` mid-text
+  //
+  // The invariants below cover BOTH the specific user-reported regressions
+  // (positive fixture: Psalm 113 / 122 must carry the clean PDF preface
+  // text without artifacts) AND the global structural shape (negative
+  // sweep: NO catalog entry's preface_text contains a running-header /
+  // page-marker pattern). Designed to fail loudly if a future extractor
+  // change re-introduces the unfiltered block-capture path.
+  describe('F-X13 (#444) preface_text page-break artifact invariants', () => {
+    it('Psalm 113:1-9 page 287 preface_text has no page-break artifact (positive fixture)', () => {
+      const raw = JSON.parse(readFileSync(CATALOG_PATH, 'utf-8'))
+      const refEntry = raw.refs['Psalm 113:1-9'] as
+        | { entries: { preface_text: string; page: number }[] }
+        | undefined
+      expect(refEntry).toBeDefined()
+      const match = refEntry!.entries.find((e) => e.page === 287)
+      expect(match).toBeDefined()
+      // PDF p.287 (full_pdf.txt L9785-9795 verbatim): the preface body is
+      // the two non-blank prose lines around the page break — opening
+      // "Удирдагчдыг сэнтийгээс нь буулган даруу" + closing "байгсдыг Тэр
+      // өргөмжлөв (Лук 1:52)". The trailing `(Лук 1:52)` is stripped by
+      // the F-X9 attribution-suffix path and the title `Эзэний нэр…` is
+      // stripped by the F-X9 fallback path. What remains MUST NOT contain
+      // any of the page-break artifacts the PDF interleaves at the page
+      // break.
+      expect(match!.preface_text).toBe(
+        'Удирдагчдыг сэнтийгээс нь буулган даруу байгсдыг Тэр өргөмжлөв',
+      )
+    })
+
+    it('Psalm 122:1-9 page 398 preface_text has no page-break artifact (positive fixture)', () => {
+      const raw = JSON.parse(readFileSync(CATALOG_PATH, 'utf-8'))
+      const refEntry = raw.refs['Psalm 122:1-9'] as
+        | { entries: { preface_text: string; page: number }[] }
+        | undefined
+      expect(refEntry).toBeDefined()
+      const match = refEntry!.entries.find((e) => e.page === 398)
+      expect(match).toBeDefined()
+      // PDF p.398-399 (full_pdf.txt L13728-13738 verbatim): preface body
+      // is the two prose lines around the page break — opening "Харин
+      // та нар Сион уул, амьд Тэнгэрбурханы хот," + closing "тэнгэрлэг
+      // Йерусалим руу ирсэн (Еврей 12:22)" (attribution stripped). The
+      // bare page number `399` and weekday running header `Бямба
+      // гарагийн орой` MUST be filtered.
+      expect(match!.preface_text).toBe(
+        'Харин та нар Сион уул, амьд Тэнгэрбурханы хот, тэнгэрлэг Йерусалим руу ирсэн',
+      )
+    })
+
+    it('no entry contains a weekday running header (negative sweep)', () => {
+      // PDF running header pattern: `<weekday> гарагийн <time-of-day>` —
+      // `Бямба гарагийн орой`, `Ням гарагийн өглөө`, etc. Standalone in
+      // the PDF as a 2-up running header; should never appear inside a
+      // captured preface body. The pattern below matches the inline
+      // shape (with surrounding whitespace) so a regression that splices
+      // the running header mid-text is detected.
+      const raw = JSON.parse(readFileSync(CATALOG_PATH, 'utf-8'))
+      const violations: Array<{
+        ref: string
+        page: number
+        match: string
+      }> = []
+      const re =
+        /(?:Ням|Даваа|Мягмар|Лхагва|Пүрэв|Баасан|Бямба)\s+гарагийн\s+(?:өглөө|өдөр|орой|даатгал)/u
+      for (const [refKey, refEntry] of Object.entries(raw.refs) as [
+        string,
+        { entries: { preface_text: string; page: number }[] },
+      ][]) {
+        for (const e of refEntry.entries) {
+          const m = re.exec(e.preface_text)
+          if (m) {
+            violations.push({ ref: refKey, page: e.page, match: m[0] })
+          }
+        }
+      }
+      expect(violations).toEqual([])
+    })
+
+    it('no entry contains a week-of-cycle running header (negative sweep)', () => {
+      // PDF running header pattern: `<digit> дугаар|дүгээр|дэх|дахь
+      // долоо хоног`. Standalone in the PDF; should never appear inside
+      // a captured preface body.
+      const raw = JSON.parse(readFileSync(CATALOG_PATH, 'utf-8'))
+      const violations: Array<{
+        ref: string
+        page: number
+        match: string
+      }> = []
+      const re = /\d+\s+(?:дугаар|дүгээр|дэх|дахь)\s+долоо\s+хоног/u
+      for (const [refKey, refEntry] of Object.entries(raw.refs) as [
+        string,
+        { entries: { preface_text: string; page: number }[] },
+      ][]) {
+        for (const e of refEntry.entries) {
+          const m = re.exec(e.preface_text)
+          if (m) {
+            violations.push({ ref: refKey, page: e.page, match: m[0] })
+          }
+        }
+      }
+      expect(violations).toEqual([])
+    })
+
+    it('no entry contains a twin-page-number artifact (negative sweep)', () => {
+      // PDF 2-up layout prints the same book-page integer twice on each
+      // physical page (left + right column markers). When a preface
+      // crosses the page break, the unfiltered capture absorbs both
+      // copies — diagnostic shape: `\b<NN> <NN>\b`. This MUST never
+      // appear in a captured preface body. Defensive: also catches the
+      // single-bare-integer shape sandwiched between body words (a
+      // weaker but related artifact pattern not in the dispatch's two
+      // refs but worth pinning preemptively).
+      const raw = JSON.parse(readFileSync(CATALOG_PATH, 'utf-8'))
+      const violations: Array<{
+        ref: string
+        page: number
+        match: string
+      }> = []
+      // Mongolian preface bodies do not embed bare 2-4 digit integers
+      // inline (verse refs in attribution e.g. `Лук 1:52` always carry
+      // a `:` separator and live in the trailing `(...)` literal that
+      // the F-X9 attribution-suffix strip removes). A standalone integer
+      // surrounded by whitespace is therefore a strong artifact signal.
+      const re = /\s(\d{2,4})\s+\1\s/u // twin same-integer
+      for (const [refKey, refEntry] of Object.entries(raw.refs) as [
+        string,
+        { entries: { preface_text: string; page: number }[] },
+      ][]) {
+        for (const e of refEntry.entries) {
+          const m = re.exec(' ' + e.preface_text + ' ')
+          if (m) {
+            violations.push({ ref: refKey, page: e.page, match: m[0].trim() })
+          }
+        }
+      }
+      expect(violations).toEqual([])
+    })
+  })
 })

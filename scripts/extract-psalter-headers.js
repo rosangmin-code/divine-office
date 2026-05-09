@@ -91,6 +91,57 @@ const NT_RE = new RegExp(
   'u',
 )
 
+// F-X13 (#444) — page-break artifact filter for the preface block-capture
+// window. The PDF flows long prefaces across the visual page break of the
+// 2-up book layout: between the opening preface line(s) and the closing
+// `(attribution)` line, the renderer can interleave bare page numbers and
+// running headers (weekday or week-of-cycle markers) that have no semantic
+// content. The pre-#444 block-capture only filtered EMPTY lines, so these
+// running-header artifacts were silently merged into preface_text — surfaced
+// at #376 review MINOR-1 on Psalm 113:1-9 (`288 288 3 дугаар долоо хоног`)
+// and Psalm 122:1-9 (`399 Бямба гарагийн орой 399`). The patterns below
+// catch the running-header shapes verbatim observed in
+// `parsed_data/full_pdf.txt`. They MUST NOT match preface body prose:
+//   - BARE_PAGE_NUMBER_RE: digits-only line, possibly with trailing tabs.
+//     Body prose never reduces to a single integer line.
+//   - WEEK_MARKER_RE: `<digit>+ дугаар|дүгээр|дэх|дахь долоо хоног` —
+//     full-line week-of-cycle running header. The 4 ordinal forms cover
+//     1-4 weeks (1 дүгээр / 2 дугаар / 3 дугаар / 4 дэх / 4 дахь). The
+//     `^\s*...\s*$` anchors guarantee the line carries no body prose.
+//   - WEEKDAY_HEADER_RE: `<day> гарагийн <time-of-day> [<page>]?` — full-
+//     line weekday running header, with optional trailing page number.
+//     The original page-header-filter.mjs (#369 family) requires the
+//     trailing page; #444 also handles the BARE form (PDF p.398 right
+//     half places `Бямба гарагийн орой` without a trailing page integer
+//     because the integer is on a separate line above/below).
+const F_X13_BARE_PAGE_NUMBER_RE = /^\s*\d{1,4}\s*$/u
+const F_X13_WEEK_MARKER_RE = /^\s*\d+\s+(?:дугаар|дүгээр|дэх|дахь)\s+долоо\s+хоног\s*$/u
+const F_X13_WEEKDAY_NAMES = ['Ням', 'Даваа', 'Мягмар', 'Лхагва', 'Пүрэв', 'Баасан', 'Бямба']
+const F_X13_WEEKDAY_HEADER_RE = new RegExp(
+  `^\\s*(?:${F_X13_WEEKDAY_NAMES.join('|')})\\s+гарагийн\\s+\\S+(?:\\s+\\d{1,4})?\\s*$`,
+  'u',
+)
+
+/**
+ * Return true when `line` is a page-break artifact (running header or
+ * bare page-number line) that should NOT be merged into a captured
+ * preface_text. Caller is `main()` block-capture; mirrors the design of
+ * `scripts/dev/page-header-filter.mjs::isPageHeaderLine` but adds the
+ * BARE forms (without trailing page integer for weekday headers, without
+ * leading page integer for week markers).
+ *
+ * @param {string} line - raw PDF line (will be trimmed)
+ * @returns {boolean}
+ */
+function isPageBreakArtifact(line) {
+  const t = (line || '').trim()
+  if (!t) return false
+  if (F_X13_BARE_PAGE_NUMBER_RE.test(t)) return true
+  if (F_X13_WEEK_MARKER_RE.test(t)) return true
+  if (F_X13_WEEKDAY_HEADER_RE.test(t)) return true
+  return false
+}
+
 // F-X9 fix A helpers ---------------------------------------------------------
 
 /**
@@ -371,10 +422,18 @@ async function main() {
     // psalter/week-N.json + propers/*.json) and the trailing
     // `(attribValue)` literal. The strip is purely string-manipulation on
     // the captured block; the PDF text itself is untouched.
+    // F-X13 (#444) — also filter page-break artifacts (bare page numbers,
+    // running weekday/week-of-cycle headers) from the rawBlock. Pre-#444
+    // only EMPTY lines were filtered, so a long preface that crossed the
+    // 2-up book page break absorbed the page-marker / running-header lines
+    // verbatim into preface_text (review #376 MINOR-1: Psalm 113:1-9 and
+    // Psalm 122:1-9 had `288 288 3 дугаар долоо хоног` and `399 Бямба
+    // гарагийн орой 399` mid-text). The PDF text body itself is untouched
+    // — only the captured preface block is sanitised.
     const rawPdfLines = lines.slice(windowStart, attribLineIdx + 1)
     const rawBlock = rawPdfLines
       .map((l) => l.trim())
-      .filter((l) => l.length > 0)
+      .filter((l) => l.length > 0 && !isPageBreakArtifact(l))
       .join(' ')
       .replace(/\s+/g, ' ')
 
