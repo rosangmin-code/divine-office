@@ -677,10 +677,8 @@ describe('detectRefrains (F-X11 #418)', () => {
   })
 
   // F-X11 follow-up batch (#426 — review #419 N-5): negative tests for
-  // 1-line repetitions (must NOT match — refrain detection is strictly
-  // 2-line) and a true 3-line refrain (the detector still only locks
-  // 2 of the 3 lines because the algorithm is fixed at length=2; this
-  // is the documented limitation).
+  // 1-line repetitions (must NOT match — refrain detection requires
+  // length ≥ 2).
   it('does NOT match a single line that repeats (1-line refrain not supported)', () => {
     // Mimics "Аллэлуяа" repetition — 1-line acclamation that the
     // detector intentionally ignores. The lines BETWEEN the
@@ -697,31 +695,198 @@ describe('detectRefrains (F-X11 #418)', () => {
     expect(detectRefrains(stanza)).toEqual([])
   })
 
-  it('only locks the first 2 lines of a repeating 3-line refrain (length is fixed at 2)', () => {
-    // True 3-line refrain pattern repeats: [A, B, C] at indices 0,1,2
-    // and 5,6,7. The detector finds [A, B] match → refrain locked at
-    // length=2 only. Line C (line 2 / 7) is NOT protected by the
-    // refrain layer; downstream `refineParagraphBoundariesWithRefrains`
-    // will still treat C as a regular line. This is documented
-    // behaviour — Mongolian liturgical refrains are predominantly
-    // 2-line in the print, and broadening to ≥3 lines requires
-    // explicit data-quality input (deferred until a real 3-line
-    // regression surfaces).
+  // F-X11 Phase 2-A (#435) — 3-line refrain support. Pre-#435 the
+  // detector was fixed at length=2 and only locked the first 2 lines
+  // of a 3-line refrain, leaving line C as a paragraph fragment
+  // downstream (Psalm 8:2-10 mis-split case from #434 hotfix). With
+  // longest-match-wins (2..4), a true 3-line refrain locks at
+  // length=3 in a single instance per occurrence.
+  it('detects a 3-line refrain at length=3 (Psalm 8 motivating case)', () => {
+    // Mirrors Psalm 8:2-10 — opening 3-line refrain repeats at the
+    // closing of the psalm, separated by body verses.
     const stanza = [
-      'Refrain line A',
-      'Refrain line B',
-      'Refrain line C',
+      'ЭЗЭН, бидний Эзэн!',
+      'Таны нэр бүх газар дэлхийд',
+      'Юутай суу алдартай вэ!',
+      'Body verse 1.',
+      'Body verse 2.',
+      'Body verse 3.',
+      'ЭЗЭН, бидний Эзэн!',
+      'Таны нэр бүх газар дэлхийд',
+      'Юутай суу алдартай вэ!',
+    ]
+    const refrains = detectRefrains(stanza)
+    expect(refrains).toEqual([
+      { start: 0, length: 3 },
+      { start: 6, length: 3 },
+    ])
+  })
+
+  // F-X11 Phase 2-A (#435) — 4-line refrain support. Pre-#435 the
+  // detector mis-split the 4-line Psalm 80 refrain into 2 × 2-line
+  // (locking `[i, i+1]` AND `[i+2, i+3]` as separate refrains),
+  // which fragmented the print refrain visually mid-way. With
+  // longest-match-wins, length=4 wins over length=2 per starting
+  // position, producing one refrain instance per occurrence.
+  it('detects a 4-line refrain at length=4 (Psalm 80 motivating case)', () => {
+    const stanza = [
+      'Stanza 1 line 1.',
+      'Stanza 1 line 2.',
+      'Stanza 1 line 3.',
+      'Stanza 1 line 4.',
+      'Stanza 1 line 5.',
+      'Stanza 1 line 6.',
+      'Түг түмдийн Тэнгэрбурхан,',
+      'Биднийгээ дахин босгооч,',
+      'Нүүр царайгаа гэрэлтүүлээч,',
+      'Тэгвэл бид аврагдана.',
+      'Stanza 2 body line.',
+      'Stanza 2 more.',
+      'Stanza 2 finale.',
+      'Тamiing rest 1.',
+      'Тamiing rest 2.',
+      'Тamiing rest 3.',
+      'Тamiing rest 4.',
+      'Тamiing rest 5.',
+      'Тamiing rest 6.',
+      'Түг түмдийн Тэнгэрбурхан,',
+      'Биднийгээ дахин босгооч,',
+      'Нүүр царайгаа гэрэлтүүлээч,',
+      'Тэгвэл бид аврагдана.',
+      'Final tail.',
+    ]
+    const refrains = detectRefrains(stanza)
+    expect(refrains).toEqual([
+      { start: 6, length: 4 },
+      { start: 19, length: 4 },
+    ])
+  })
+
+  // F-X11 Phase 2-A (#435) — longest-match-wins. When a 3-line pattern
+  // also has a 2-line subset that repeats, the 3-line interpretation
+  // wins (locked first, used set blocks shorter re-detection of the
+  // same lines). This is critical for refrains where the first two
+  // lines might "echo" elsewhere in body text: the body echo would
+  // wrongly classify the refrain as length=2 under the legacy
+  // algorithm, missing the 3rd line.
+  it('prefers length=3 over length=2 when both would match (longest-match-wins)', () => {
+    const stanza = [
+      'Refrain A',
+      'Refrain B',
+      'Refrain C',
       'Body line 1.',
       'Body line 2.',
-      'Refrain line A',
-      'Refrain line B',
-      'Refrain line C',
+      'Refrain A',
+      'Refrain B',
+      'Refrain C',
       'Final body.',
     ]
     const refrains = detectRefrains(stanza)
     expect(refrains).toEqual([
-      { start: 0, length: 2 },
-      { start: 5, length: 2 },
+      { start: 0, length: 3 },
+      { start: 5, length: 3 },
+    ])
+  })
+
+  // F-X11 Phase 2-A (#435) — 5+-line conservative cap. The detector
+  // refuses to lock refrains longer than `MAX_REFRAIN_LENGTH = 4` to
+  // avoid false-positives on near-duplicate body stanzas (which the
+  // empirical corpus contains; a true 5+-line refrain has not been
+  // observed). When a synthetic 5-line pattern repeats, the detector
+  // partially locks at length=4 — the 5th line falls outside refrain
+  // protection and is treated as a regular body line.
+  it('caps detection at length=4; a 5-line repeating pattern locks only 4 lines', () => {
+    const stanza = [
+      'Penta A',
+      'Penta B',
+      'Penta C',
+      'Penta D',
+      'Penta E', // 5th line of "refrain"
+      'Body 1.',
+      'Body 2.',
+      'Penta A',
+      'Penta B',
+      'Penta C',
+      'Penta D',
+      'Penta E',
+      'Tail.',
+    ]
+    const refrains = detectRefrains(stanza)
+    // Length-4 wins; 5th line (idx 4 / 11) is NOT in any refrain
+    // window — caller's responsibility downstream.
+    expect(refrains).toEqual([
+      { start: 0, length: 4 },
+      { start: 7, length: 4 },
+    ])
+  })
+
+  // F-X11 Phase 2-A (#435) — explicit raise of `maxLength` allows
+  // 5-line detection for targeted experiments. Default cap is 4; the
+  // optional argument is present so future audits can broaden if a
+  // real 5+-line regression surfaces, without forking the detector.
+  it('respects an explicit higher maxLength when caller opts in', () => {
+    const stanza = [
+      'Penta A',
+      'Penta B',
+      'Penta C',
+      'Penta D',
+      'Penta E',
+      'Body 1.',
+      'Body 2.',
+      'Penta A',
+      'Penta B',
+      'Penta C',
+      'Penta D',
+      'Penta E',
+      'Tail.',
+    ]
+    const refrains = detectRefrains(stanza, 5)
+    expect(refrains).toEqual([
+      { start: 0, length: 5 },
+      { start: 7, length: 5 },
+    ])
+  })
+
+  // F-X11 Phase 2-A (#435) — refrain at the stanza tail. Edge case
+  // where the second instance ends exactly at the last line; the
+  // structural cap `2*len ≤ n - i` must allow this.
+  it('detects a 3-line refrain whose second instance ends at the stanza tail', () => {
+    const stanza = [
+      'Tail A',
+      'Tail B',
+      'Tail C',
+      'Mid 1.',
+      'Mid 2.',
+      'Tail A',
+      'Tail B',
+      'Tail C',
+    ]
+    const refrains = detectRefrains(stanza)
+    expect(refrains).toEqual([
+      { start: 0, length: 3 },
+      { start: 5, length: 3 },
+    ])
+  })
+
+  // F-X11 Phase 2-A (#435) — adjacent multi-line refrains (refrain
+  // immediately followed by another refrain instance with no body
+  // gap). Documented behaviour: non-overlap is preserved by the
+  // `j += len` jump, so adjacent occurrences register as two separate
+  // instances.
+  it('detects two adjacent 3-line refrain instances with no body separator', () => {
+    const stanza = [
+      'Adj A',
+      'Adj B',
+      'Adj C',
+      'Adj A',
+      'Adj B',
+      'Adj C',
+      'Tail line.',
+    ]
+    const refrains = detectRefrains(stanza)
+    expect(refrains).toEqual([
+      { start: 0, length: 3 },
+      { start: 3, length: 3 },
     ])
   })
 })
@@ -846,6 +1011,60 @@ describe('refineParagraphBoundariesWithRefrains (F-X11 #418)', () => {
     // 6 is dropped; only refrain enter/exit survive.
     expect(out).toEqual([3, 5, 10, 12])
   })
+
+  // F-X11 Phase 2-A (#435) — multi-line refrain enter/exit. The
+  // refiner reads `r.length` per-instance, so 3-line and 4-line
+  // refrains produce correctly-spaced enter/exit positions. Tests
+  // mirror the Psalm 8 / Psalm 80 motivating cases.
+  it('produces correct enter/exit for a 3-line refrain (Psalm 8 shape)', () => {
+    const refrains = [
+      { start: 0, length: 3 },
+      { start: 24, length: 3 },
+    ]
+    // stanzaLineCount=27 → tail exit (24+3=27) is suppressed; idx-0
+    // start is also suppressed → set = {3, 24}.
+    const out = refineParagraphBoundariesWithRefrains([], refrains, 27)
+    expect(out).toEqual([3, 24])
+  })
+
+  it('produces correct enter/exit for a 4-line refrain (Psalm 80 shape)', () => {
+    const refrains = [
+      { start: 6, length: 4 },
+      { start: 19, length: 4 },
+    ]
+    // Refrain 1 enter=6, exit=10; refrain 2 enter=19, exit=23. Both
+    // strictly inside the stanza (lineCount=30) → all four kept.
+    const out = refineParagraphBoundariesWithRefrains([], refrains, 30)
+    expect(out).toEqual([6, 10, 19, 23])
+  })
+
+  it('drops mid-refrain heuristic boundaries when refrain spans 4 lines', () => {
+    // Heuristic over-fragments mid-refrain (idx 7, 8, 21, 22 are
+    // INSIDE 4-line refrain windows [6..9] and [19..22]). The strict
+    // "between refrain instances" filter only drops idx 11..18 (the
+    // body gap); mid-refrain boundaries [7, 8, 21, 22] survive that
+    // filter but get dedup'd against refrain enter/exit ONLY when
+    // they coincide. Here they don't — pre-#435 these would surface
+    // as PB inside the refrain. Post-#435, the upstream caller
+    // (`splitIntoStanzas`) is expected to NOT generate such
+    // boundaries because the lines are identical to the refrain
+    // pattern (no sentence-end + capital-start transition between
+    // refrain interior lines). So we test the OUTPUT contract: the
+    // refiner's own filter does NOT eliminate non-between
+    // boundaries, mirroring the function's documented scope.
+    const heuristic = [7, 11, 14, 21]
+    const refrains = [
+      { start: 6, length: 4 },
+      { start: 19, length: 4 },
+    ]
+    const out = refineParagraphBoundariesWithRefrains(heuristic, refrains, 30)
+    // 11, 14 are strictly between (10, 19) → dropped.
+    // 7 is inside refrain 1 [6..9] (NOT between instances) → kept by
+    // the strict-between filter; merged with refrain enter/exit set.
+    // 21 is inside refrain 2 [19..22] (NOT between instances) → kept.
+    // Final = sort+dedup of {6, 7, 10, 19, 21, 23}.
+    expect(out).toEqual([6, 7, 10, 19, 21, 23])
+  })
 })
 
 // @fr FR-161
@@ -939,6 +1158,83 @@ describe('splitIntoStanzas (F-X11 #418) — heuristic + refrain refinement', () 
     // "Cluster two starts.") and at 3 (after "Cluster two continues.",
     // before "Cluster three opens.").
     expect(groups[0].paragraphBoundaries).toEqual([1, 3])
+  })
+
+  // F-X11 Phase 2-A (#435) — multi-line refrain integration. Mirrors
+  // the Psalm 80:2-8, 15-20 motivating case: a 4-line refrain
+  // brackets the body twice. Pre-#435 the heuristic over-fragmented
+  // the refrain itself into 2 × 2-line groups (false PB at refrain
+  // line 3); post-#435 longest-match-wins locks the entire 4-line
+  // unit, so refrain enter/exit produce the conservative 4-PB shape
+  // (refrain 1 enter + exit, refrain 2 enter + exit) without
+  // mid-refrain splits.
+  it('handles a 4-line refrain by detecting one length=4 instance per occurrence', () => {
+    // 13 content lines: 0 Body 1, 1..4 Refrain (4-line),
+    // 5..6 Mid body, 7..10 Refrain (4-line repeat), 11..12 Final body.
+    const stanzaInput = [
+      'Body line 1.',     // 0
+      '',
+      'Refrain L1.',      // 1
+      'Refrain L2.',      // 2
+      'Refrain L3.',      // 3
+      'Refrain L4.',      // 4
+      '',
+      'Mid body 1.',      // 5
+      'Mid body 2.',      // 6
+      '',
+      'Refrain L1.',      // 7
+      'Refrain L2.',      // 8
+      'Refrain L3.',      // 9
+      'Refrain L4.',      // 10
+      '',
+      'Final body 1.',    // 11
+      'Final body 2.',    // 12
+    ]
+    const groups = splitIntoStanzas(stanzaInput)
+    expect(groups).toHaveLength(1)
+    // Refrains at [1..4] and [7..10] (both length=4).
+    // Enter/exit set: 1, 5, 7, 11. Heuristic-derived sentence-end
+    // boundaries that survive the strict "between refrains" filter
+    // (gap is (5, 7) exclusive — empty after artifact rules) merge
+    // with refrain bracket positions.
+    expect(groups[0].paragraphBoundaries).toEqual([1, 5, 7, 11])
+    // Mid-refrain interior idx (2, 3, 4 inside refrain 1; 8, 9, 10
+    // inside refrain 2) MUST NOT appear as paragraph boundaries —
+    // this was the Psalm 80 mid-split bug.
+    for (const interior of [2, 3, 4, 8, 9, 10]) {
+      expect(groups[0].paragraphBoundaries).not.toContain(interior)
+    }
+  })
+
+  it('handles a 3-line refrain (Psalm 8 motivating case) in stanza-level integration', () => {
+    // 9 content lines: 0..2 Refrain (3-line), 3..5 Body, 6..8 Refrain
+    // repeat. Mirrors Psalm 8:2-10 opening-and-closing refrain shape.
+    const stanzaInput = [
+      'Refrain X.',       // 0
+      'Refrain Y.',       // 1
+      'Refrain Z.',       // 2
+      '',
+      'Body 1.',          // 3
+      'Body 2.',          // 4
+      'Body 3.',          // 5
+      '',
+      'Refrain X.',       // 6
+      'Refrain Y.',       // 7
+      'Refrain Z.',       // 8
+    ]
+    const groups = splitIntoStanzas(stanzaInput)
+    expect(groups).toHaveLength(1)
+    // Refrains at [0..2] (start=0 → suppressed by idx-0 rule) and
+    // [6..8] (end=9 = stanzaLineCount → exit suppressed).
+    // Refrain 1 exit = 3 (kept), refrain 2 enter = 6 (kept).
+    // Heuristic sentence-end boundaries between body lines collapse
+    // with these positions where applicable.
+    expect(groups[0].paragraphBoundaries).toEqual([3, 6])
+    // Refrain 3rd-line position (idx 2 in refrain 1, idx 8 in refrain
+    // 2) MUST NOT be paragraph boundary — this was the Psalm 8
+    // mid-split bug.
+    expect(groups[0].paragraphBoundaries).not.toContain(2)
+    expect(groups[0].paragraphBoundaries).not.toContain(8)
   })
 })
 

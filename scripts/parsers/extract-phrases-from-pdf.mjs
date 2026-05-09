@@ -440,14 +440,21 @@ export function dropColumnArtifactBlanks(thisColLines, otherColLines) {
  *
  *   Layer 2 — refrain detection (post-stanza, applied here in
  *     `refineParagraphBoundariesWithRefrains`). For psalms that
- *     repeat a 2-line refrain (Mongolian liturgy convention — Psalm 46
- *     "Түг түмдийн ЭЗЭН… / Иаковын Тэнгэрбурхан…" repeats), refrain
- *     enter/exit are added as STRONG paragraph boundaries and any
- *     heuristic-derived boundaries that fall STRICTLY BETWEEN refrain
- *     instances are dropped (those are mid-stanza sentence boundaries
- *     that the print does NOT separate with paragraph spacing). For
- *     non-refrain psalms (single-instance content), the refrain layer
- *     is a no-op and the heuristic boundaries pass through unchanged.
+ *     repeat a multi-line refrain (Mongolian liturgy convention —
+ *     2-line "Түг түмдийн ЭЗЭН… / Иаковын Тэнгэрбурхан…" in Psalm 46;
+ *     3-line "ЭЗЭН, бидний Эзэн! / Таны нэр… / Юутай суу алдартай вэ!"
+ *     in Psalm 8; 4-line "Түг түмдийн Тэнгэрбурхан, … / Тэгвэл бид
+ *     аврагдана." in Psalm 80), refrain enter/exit are added as
+ *     STRONG paragraph boundaries and any heuristic-derived boundaries
+ *     that fall STRICTLY BETWEEN refrain instances are dropped (those
+ *     are mid-stanza sentence boundaries that the print does NOT
+ *     separate with paragraph spacing). The detector uses
+ *     longest-match-wins per starting position (#435), so a 4-line
+ *     refrain locks at length=4 instead of fragmenting into 2 × 2-line
+ *     (the pre-#435 mis-split that motivated this generalisation).
+ *     For non-refrain psalms (single-instance content), the refrain
+ *     layer is a no-op and the heuristic boundaries pass through
+ *     unchanged.
  *
  * Pre-F-X11 callers that want the legacy "every blank ends a stanza"
  * shape can still get it via `extractPhrasesFromColumn`'s backward-
@@ -522,83 +529,200 @@ export function splitIntoStanzas(columnLines) {
 }
 
 /**
- * F-X11 follow-up (#418) — detect repeating 2-line refrain instances in
- * a stanza. A "refrain" here is a 2-line text pattern that appears at
- * two or more non-overlapping positions (the inner search starts at
- * `j = i + 2`, so two instances may sit immediately adjacent — `[i, i+1]`
- * followed by `[i+2, i+3]` — though Mongolian liturgical convention more
- * commonly bookends a body with refrains separated by several body
- * lines). Mongolian liturgical convention places a paragraph
- * break in the print before each refrain instance and after each
- * refrain instance.
+ * F-X11 follow-up (#418) → Phase 2-A (#435) — detect repeating
+ * MULTI-line refrain instances in a stanza. A "refrain" is a length-`L`
+ * text window (`2 ≤ L ≤ MAX_REFRAIN_LENGTH`) that appears at two or
+ * more non-overlapping positions. Mongolian liturgical convention
+ * places paragraph spacing before each refrain instance and after each
+ * refrain instance, regardless of the refrain's line length.
  *
- * Why 2-line specifically: empirically the user-reported regression
- * (Psalm 46:2-12 right col) and the audit-doc cataloged refrain
- * patterns are 2-line. 1-line refrains (e.g. "Аллэлуяа") are rare in
- * the body and tend to be marked elsewhere; 3+-line refrains are also
- * uncommon. Restricting to 2-line keeps the false-positive rate low —
- * any pair of identical 2-line sequences with ≥ 2 occurrences in a
- * stanza is a strong refrain signal.
+ * Algorithm — LONGEST-MATCH-WINS per starting position (#435):
  *
- * The detector compares trimmed text (so wrap-indent variations don't
- * defeat the match) and uses a `used` set so a single line can only
- * belong to one refrain instance — this prevents double-counting if
- * the same line happens to start multiple overlapping 2-line patterns.
+ *   For each candidate start `i`, try lengths `len = MAX..2`. For each
+ *   `len`, search ahead for non-overlapping match windows
+ *   `[j, j+len-1]` (`j ≥ i + len`, jumping by `len` after each hit so
+ *   partial overlaps cannot double-count). The FIRST `len` that yields
+ *   `≥ 2` instances locks; shorter lengths are not considered for that
+ *   start position.
+ *
+ * Why longest-match-wins (#435 motivating cases):
+ *
+ *   - Psalm 80:2-8, 15-20 — the 4-line refrain "Түг түмдийн
+ *     Тэнгэрбурхан, / Биднийгээ дахин босгооч, / Нүүр царайгаа
+ *     гэрэлтүүлээч, / Тэгвэл бид аврагдана." used to be detected as
+ *     2 × 2-line by the legacy `length=2 fixed` algorithm: first 2
+ *     lines locked as refrain, last 2 lines locked as a SEPARATE
+ *     refrain. That produced 6 PB enter/exit points per occurrence
+ *     (idx 6, 8, 10 around refrain 1; idx 19, 21, 23 around refrain
+ *     2), splitting the refrain MID-WAY at idx 8 / 21 — visually
+ *     fragmenting the user's reading flow. With longest-match-wins,
+ *     `len=4` locks at i=6 and j=19, producing the conservative
+ *     [6, 10, 19, 23] shape (#434 hotfix verified-correct).
+ *
+ *   - Psalm 8:2-10 — the 3-line opening/closing refrain "ЭЗЭН, бидний
+ *     Эзэн! / Таны нэр бүх газар дэлхийд / Юутай суу алдартай вэ!"
+ *     was previously detected as 2 lines, splitting the 3rd line off
+ *     as a paragraph fragment (PB at idx 2 mid-refrain, idx 26
+ *     mid-refrain). With longest-match-wins, `len=3` locks at i=0 and
+ *     j=24, producing [3, 24] (refrain 1 exit + refrain 2 enter,
+ *     idx-0 suppressed by builder rule).
+ *
+ * Length cap (#435 — `MAX_REFRAIN_LENGTH = 4`):
+ *
+ *   The dispatch capped maxLength at 4 because empirical Mongolian
+ *   liturgical refrains in the corpus are 2 / 3 / 4 lines. 5+-line
+ *   patterns are rare and structurally indistinguishable from
+ *   "two near-identical body stanzas" (false-positive surface). When
+ *   a true 5+-line refrain appears, `len=4` partially detects it
+ *   (4 of N lines locked) — producing slightly under-conservative
+ *   PBs, never over-fragmenting. This is the safe failure mode.
+ *
+ *   The cap is configurable via the optional `maxLength` argument so
+ *   future audits can broaden if a real 5+-line regression surfaces.
+ *
+ * Implementation invariants (carried over from #418):
+ *
+ *   - Trimmed text comparison: leading whitespace differences (e.g.
+ *     refrain at col 3 baseline vs at col 6 wrap-indent) do NOT defeat
+ *     the match.
+ *   - `used` set membership: a single line belongs to at most one
+ *     refrain instance, so 3+ overlapping length candidates cannot
+ *     double-count.
+ *   - Empty-line exclusion: candidate windows containing any
+ *     whitespace-only line are skipped (defensive — empty lines should
+ *     have been stripped upstream in `splitIntoStanzas`).
  *
  * @param {string[]} stanzaLines - lines as they appear in the stanza
  *   (leading whitespace preserved; trimmed during comparison).
+ * @param {number} [maxLength=4] - upper bound on refrain length. The
+ *   default `4` matches the empirical corpus distribution; raise for
+ *   targeted experiments only.
  * @returns {{ start: number, length: number }[]} - sorted by start;
  *   each entry is one refrain instance covering
- *   `stanzaLines[start..start+length-1]`. Returns `[]` if no refrain
- *   pattern repeats at least twice.
+ *   `stanzaLines[start..start+length-1]`. `length` reflects the
+ *   actual matched window size (2..maxLength), not a fixed value.
+ *   Returns `[]` if no refrain pattern repeats at least twice.
  */
-export function detectRefrains(stanzaLines) {
+export const MAX_REFRAIN_LENGTH = 4
+
+export function detectRefrains(stanzaLines, maxLength = MAX_REFRAIN_LENGTH) {
   const trimmed = stanzaLines.map((l) => l.trim())
   const n = trimmed.length
   if (n < 4) return []
+  if (maxLength < 2) return []
+
   const refrains = []
   const used = new Set()
-  for (let i = 0; i < n - 1; i++) {
-    if (used.has(i) || used.has(i + 1)) continue
-    if (trimmed[i].length === 0 || trimmed[i + 1].length === 0) continue
-    const matches = [i]
-    for (let j = i + 2; j < n - 1; j++) {
-      if (used.has(j) || used.has(j + 1)) continue
-      if (trimmed[j] === trimmed[i] && trimmed[j + 1] === trimmed[i + 1]) {
-        matches.push(j)
+
+  // Helper — a window [start, start+len) is "available" iff every line
+  // in it is non-empty and not yet bound to another refrain instance.
+  function windowAvailable(start, len) {
+    if (start + len > n) return false
+    for (let k = 0; k < len; k++) {
+      if (used.has(start + k)) return false
+      if (trimmed[start + k].length === 0) return false
+    }
+    return true
+  }
+
+  // Helper — compare two windows of length `len` for trimmed-text
+  // equality across all positions.
+  function windowsEqual(i, j, len) {
+    for (let k = 0; k < len; k++) {
+      if (trimmed[i + k] !== trimmed[j + k]) return false
+    }
+    return true
+  }
+
+  for (let i = 0; i < n; i++) {
+    if (used.has(i)) continue
+
+    // Cap = min(configured ceiling, structural ceiling). The structural
+    // ceiling `floor((n - i) / 2)` reflects that a length-`len`
+    // refrain at `i` requires at least one ADDITIONAL non-overlapping
+    // window of size `len` after it — total `2*len ≤ n - i`.
+    const cap = Math.min(maxLength, Math.floor((n - i) / 2))
+
+    let chosenLen = 0
+    let chosenMatches = null
+
+    // Longest-match-wins: try lengths from cap down to 2. Lock at the
+    // FIRST length yielding ≥ 2 instances.
+    for (let len = cap; len >= 2; len--) {
+      if (!windowAvailable(i, len)) continue
+
+      const matches = [i]
+      let j = i + len
+      while (j + len <= n) {
+        if (windowAvailable(j, len) && windowsEqual(i, j, len)) {
+          matches.push(j)
+          j += len // jump past this match — non-overlapping
+        } else {
+          j++
+        }
+      }
+
+      if (matches.length >= 2) {
+        chosenLen = len
+        chosenMatches = matches
+        break
       }
     }
-    if (matches.length >= 2) {
-      for (const m of matches) {
-        refrains.push({ start: m, length: 2 })
-        used.add(m)
-        used.add(m + 1)
+
+    if (chosenMatches !== null) {
+      for (const m of chosenMatches) {
+        refrains.push({ start: m, length: chosenLen })
+        for (let k = 0; k < chosenLen; k++) {
+          used.add(m + k)
+        }
       }
     }
   }
+
   refrains.sort((a, b) => a.start - b.start)
   return refrains
 }
 
 /**
- * F-X11 follow-up (#418) — refine heuristic paragraph boundaries using
- * detected refrain structure. When refrains are present (≥ 2 instances
- * of a repeating pattern), refrain enter/exit boundaries are STRONG
- * paragraph signals; any heuristic-derived boundary that falls strictly
- * between two consecutive refrain instances is dropped (it's a
- * mid-stanza sentence boundary that the print does not separate with
- * paragraph spacing).
+ * F-X11 follow-up (#418) → Phase 2-A (#435) — refine heuristic
+ * paragraph boundaries using detected refrain structure. When refrains
+ * are present (≥ 2 instances of a repeating pattern of 2..k lines),
+ * refrain enter/exit boundaries are STRONG paragraph signals; any
+ * heuristic-derived boundary that falls strictly between two
+ * consecutive refrain instances is dropped (it's a mid-stanza sentence
+ * boundary that the print does not separate with paragraph spacing).
+ *
+ * Multi-line refrain support (#435): the function reads `r.length`
+ * from each refrain entry, so 2-line, 3-line, and 4-line refrains
+ * (the empirical corpus range) all produce correct enter/exit
+ * positions without code change. Length-2 refrains keep the legacy
+ * Psalm 46 behaviour; length-3 and length-4 refrains were the
+ * motivating regressions for the Phase 2-A generalisation.
  *
  * Worked examples:
  *
- *   - Psalm 46:2-12 right col (the canonical regression case from
- *     review #411): heuristic produces [8, 10, 13, 15, 16, 17, 18, 20]
- *     (over-fragments mid-stanza sentence boundaries). Refrain
- *     detector finds 2 instances at [8, 9] and [18, 19]. Refrain
- *     enter/exit: 8, 10, 18, 20. The "between refrain instances"
- *     range is (10, 18) exclusive → drops 13, 15, 16, 17. Final:
- *     [8, 10, 18, 20] — matches the user-confirmed-correct set
- *     (= [7, 9, 17, 19] after header strip in builder).
+ *   - Psalm 46:2-12 right col (#418 — 2-line refrain): heuristic
+ *     produces [8, 10, 13, 15, 16, 17, 18, 20] (over-fragments
+ *     mid-stanza sentence boundaries). Refrain detector finds 2
+ *     instances at [8, 9] and [18, 19] (length=2). Refrain enter/exit:
+ *     8, 10, 18, 20. The "between refrain instances" range is (10, 18)
+ *     exclusive → drops 13, 15, 16, 17. Final: [8, 10, 18, 20] —
+ *     matches the user-confirmed-correct set (= [7, 9, 17, 19] after
+ *     header strip in builder).
+ *
+ *   - Psalm 80:2-8, 15-20 block 0 (#435 — 4-line refrain): refrain
+ *     detector finds 2 instances at start=6 length=4 and start=19
+ *     length=4. Refrain enter/exit: 6, 10, 19, 23 (each `r.start +
+ *     r.length` reflects the 4-line span). Pre-#435, the legacy
+ *     length=2-fixed detector locked 4 false 2-line refrains at
+ *     [6,7], [8,9], [19,20], [21,22], producing PBs that fragmented
+ *     the refrain mid-way (idx 8, 21).
+ *
+ *   - Psalm 8:2-10 block 0 (#435 — 3-line refrain): refrain detector
+ *     finds 2 instances at start=0 length=3 and start=24 length=3.
+ *     Refrain enter/exit: 0 (suppressed by idx-0 rule), 3, 24, 27
+ *     (suppressed when 27 = stanzaLineCount). Final pinned set:
+ *     [3, 24] — matches the #434 hotfix conservative shape.
  *
  *   - Psalm with no refrain: refrain detector returns []. This
  *     function returns the heuristic boundaries unchanged — refrain-
