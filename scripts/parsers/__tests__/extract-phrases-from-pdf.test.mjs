@@ -206,6 +206,33 @@ describe('dropColumnArtifactBlanks (F-X11)', () => {
     expect(dropColumnArtifactBlanks(lines, undefined)).toEqual(lines)
     expect(dropColumnArtifactBlanks(lines, [])).toEqual(lines)
   })
+
+  // F-X11 follow-up batch (#426 — review #419 M-2): defensive test for
+  // `otherColLines` shorter than `thisColLines`. Production `splitColumns`
+  // emits row-aligned EQUAL-length streams, so this length-mismatch path
+  // is never hit by the live extractor today. The function still has to
+  // behave defensively (out-of-range index → treat as blank → keep the
+  // blank in `out`) because future `splitColumns` refactors could break
+  // the equal-length invariant silently. Without this guard the regression
+  // would surface as paragraph-boundary corruption in fixtures whose
+  // length depends on the other-column stream — far downstream from the
+  // root cause. Asserting the defensive behaviour here ensures the
+  // contract is locked even though current callers don't exercise it.
+  it('treats out-of-range otherColLines as blank (defensive contract for length mismatch)', () => {
+    const left = ['line A', '', 'line B', '', 'line C']
+    // Right col stops at index 2 — last 2 rows of left have NO paired
+    // other-col row. The blank at index 3 should be KEPT (out-of-range
+    // = treated as blank → not a column-split artifact). Within range,
+    // index 1 still drops because right[1] has content.
+    const right = ['', 'right has content', '']
+    expect(dropColumnArtifactBlanks(left, right)).toEqual([
+      'line A',
+      // index 1 dropped (right has content at the same row)
+      'line B',
+      '', // index 3: out of range, kept as blank (defensive)
+      'line C',
+    ])
+  })
 })
 
 // @fr FR-161
@@ -648,6 +675,55 @@ describe('detectRefrains (F-X11 #418)', () => {
       { start: 10, length: 2 },
     ])
   })
+
+  // F-X11 follow-up batch (#426 — review #419 N-5): negative tests for
+  // 1-line repetitions (must NOT match — refrain detection is strictly
+  // 2-line) and a true 3-line refrain (the detector still only locks
+  // 2 of the 3 lines because the algorithm is fixed at length=2; this
+  // is the documented limitation).
+  it('does NOT match a single line that repeats (1-line refrain not supported)', () => {
+    // Mimics "Аллэлуяа" repetition — 1-line acclamation that the
+    // detector intentionally ignores. The lines BETWEEN the
+    // repetitions are also varied so no 2-line pattern emerges.
+    const stanza = [
+      'Аллэлуяа',
+      'First body line.',
+      'Second body line.',
+      'Аллэлуяа',
+      'Third body line.',
+      'Fourth body line.',
+      'Аллэлуяа',
+    ]
+    expect(detectRefrains(stanza)).toEqual([])
+  })
+
+  it('only locks the first 2 lines of a repeating 3-line refrain (length is fixed at 2)', () => {
+    // True 3-line refrain pattern repeats: [A, B, C] at indices 0,1,2
+    // and 5,6,7. The detector finds [A, B] match → refrain locked at
+    // length=2 only. Line C (line 2 / 7) is NOT protected by the
+    // refrain layer; downstream `refineParagraphBoundariesWithRefrains`
+    // will still treat C as a regular line. This is documented
+    // behaviour — Mongolian liturgical refrains are predominantly
+    // 2-line in the print, and broadening to ≥3 lines requires
+    // explicit data-quality input (deferred until a real 3-line
+    // regression surfaces).
+    const stanza = [
+      'Refrain line A',
+      'Refrain line B',
+      'Refrain line C',
+      'Body line 1.',
+      'Body line 2.',
+      'Refrain line A',
+      'Refrain line B',
+      'Refrain line C',
+      'Final body.',
+    ]
+    const refrains = detectRefrains(stanza)
+    expect(refrains).toEqual([
+      { start: 0, length: 2 },
+      { start: 5, length: 2 },
+    ])
+  })
 })
 
 // @fr FR-161
@@ -713,6 +789,62 @@ describe('refineParagraphBoundariesWithRefrains (F-X11 #418)', () => {
     // r.start=0 → suppressed; r.start+r.length=2 → kept; second
     // instance contributes 6 (start) and 8 (after).
     expect(out).toEqual([2, 6, 8])
+  })
+
+  // F-X11 follow-up batch (#426 — review #419 N-3): explicit boundary
+  // equality cases. Pre-#426 the "strictly between" filter `b > after &&
+  // b < beforeNext` was implicitly correct on equality because Set-based
+  // dedup (N-2) and the strict `>`/`<` operators conspire to handle
+  // `b === after` (refrain exit position) and `b === beforeNext` (next
+  // refrain enter position) correctly: the heuristic boundary survives
+  // the filter (not strictly between) AND collapses against the refrain
+  // enter/exit add via Set membership. These tests pin that contract.
+  it('preserves a heuristic boundary that EQUALS a refrain exit position (b === after)', () => {
+    // refrains at [3,4] and [10,11]. exit of first = 5; heuristic
+    // includes 5 (would be a sentence-end-shaped boundary right at the
+    // refrain's exit row). The filter must NOT drop it (5 is NOT
+    // strictly between (5, 10)) — and the Set dedup must collapse it
+    // against the refrain-exit add.
+    const heuristic = [5]
+    const refrains = [
+      { start: 3, length: 2 },
+      { start: 10, length: 2 },
+    ]
+    const out = refineParagraphBoundariesWithRefrains(heuristic, refrains, 20)
+    // Refrain enter/exit set = {3, 5, 10, 12}. Heuristic 5 is preserved
+    // and dedup'd against refrain exit 5. Final = sorted unique union.
+    expect(out).toEqual([3, 5, 10, 12])
+  })
+
+  it('preserves a heuristic boundary that EQUALS the next refrain enter position (b === beforeNext)', () => {
+    // refrains at [3,4] and [10,11]. enter of next = 10; heuristic
+    // includes 10 (sentence-end-shaped boundary right at the next
+    // refrain's enter row). The filter must NOT drop it (10 is NOT
+    // strictly between (5, 10)) — and the Set dedup must collapse it
+    // against the refrain-enter add.
+    const heuristic = [10]
+    const refrains = [
+      { start: 3, length: 2 },
+      { start: 10, length: 2 },
+    ]
+    const out = refineParagraphBoundariesWithRefrains(heuristic, refrains, 20)
+    expect(out).toEqual([3, 5, 10, 12])
+  })
+
+  it('drops a heuristic boundary 1 step inside the gap (b === after + 1, strictly between)', () => {
+    // Tight regression-guard for the strict-inequality filter — the
+    // boundary one row past the refrain exit IS strictly between
+    // refrain instances and SHOULD drop. Pin this so a regression to
+    // `>=` or `<=` surfaces here rather than as a real over-fragment
+    // user report.
+    const heuristic = [6]
+    const refrains = [
+      { start: 3, length: 2 },
+      { start: 10, length: 2 },
+    ]
+    const out = refineParagraphBoundariesWithRefrains(heuristic, refrains, 20)
+    // 6 is dropped; only refrain enter/exit survive.
+    expect(out).toEqual([3, 5, 10, 12])
   })
 })
 

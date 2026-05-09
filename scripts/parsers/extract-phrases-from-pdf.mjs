@@ -524,8 +524,11 @@ export function splitIntoStanzas(columnLines) {
 /**
  * F-X11 follow-up (#418) — detect repeating 2-line refrain instances in
  * a stanza. A "refrain" here is a 2-line text pattern that appears at
- * two or more non-overlapping positions (separated by ≥ 2 lines) in
- * the same stanza. Mongolian liturgical convention places a paragraph
+ * two or more non-overlapping positions (the inner search starts at
+ * `j = i + 2`, so two instances may sit immediately adjacent — `[i, i+1]`
+ * followed by `[i+2, i+3]` — though Mongolian liturgical convention more
+ * commonly bookends a body with refrains separated by several body
+ * lines). Mongolian liturgical convention places a paragraph
  * break in the print before each refrain instance and after each
  * refrain instance.
  *
@@ -625,8 +628,12 @@ export function refineParagraphBoundariesWithRefrains(
   // refrain instances — those are mid-stanza sentence-end clusters,
   // not real paragraph breaks. Heuristic boundaries before the first
   // refrain or after the last are preserved as-is (they may be
-  // legitimate non-refrain breaks in the same stanza).
-  const merged = []
+  // legitimate non-refrain breaks in the same stanza). Boundaries
+  // that EQUAL refrain enter/exit positions (b === after or
+  // b === beforeNext) are preserved here — they coincide with
+  // refrain bracket markers and are deduplicated against
+  // `refrainEnterExit` in the merge below.
+  const mergedSet = new Set()
   for (const b of heuristicBoundaries) {
     let dropAsBetween = false
     for (let k = 0; k < refrains.length - 1; k++) {
@@ -637,15 +644,20 @@ export function refineParagraphBoundariesWithRefrains(
         break
       }
     }
-    if (!dropAsBetween) merged.push(b)
+    if (!dropAsBetween) mergedSet.add(b)
   }
 
-  // Add refrain enter/exit (deduplicated).
+  // Add refrain enter/exit. Set membership keeps dedup O(1) — refactor
+  // from `merged.includes(rb)` (O(N×M)) per review #419 N-2. Stanzas
+  // are <50 lines so the perf delta is negligible, but the Set is the
+  // idiomatic shape and keeps future widening (e.g. multi-refrain
+  // stanzas with overlapping enter/exit positions) honest without a
+  // dedup-bug surface.
   for (const rb of refrainEnterExit) {
-    if (!merged.includes(rb)) merged.push(rb)
+    mergedSet.add(rb)
   }
 
-  return merged.sort((a, b) => a - b)
+  return [...mergedSet].sort((a, b) => a - b)
 }
 
 /**
