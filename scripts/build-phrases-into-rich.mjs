@@ -43,11 +43,24 @@
  * The CLI here therefore accepts `--ref <key>` to attach a ref to a single-
  * file extractor output, or expects `refs:[]` shape for batch mode.
  *
+ * Curator review queue (F-X11 follow-up batch — #426, review #419 M-1):
+ *
+ *   The extractor sets `needsReview: true` on stanzas where Stage 1
+ *   (visual indent) and Stage 2 (sentence-end heuristic) disagree. The
+ *   builder collects these flags into a `reviewQueue` array in the
+ *   result, and the CLI persists them to
+ *   `.claude/scaffold/phrase-extract-review-queue.json` (override with
+ *   `--review-queue <path>`, suppress with `--no-review-queue`). The
+ *   queue is a SEPARATE channel from the rich-AST schema — `phrases`
+ *   and `paragraphBoundaries` still inject into the matched stanza
+ *   blocks, but `needsReview` is never written to rich.json.
+ *
  * CLI:
  *
  *   node scripts/build-phrases-into-rich.mjs --extractor-out <json> \
  *     [--target src/data/loth/prayers/commons/psalter-texts.rich.json] \
- *     [--ref "Psalm 110:1-5, 7"] [--dry-run]
+ *     [--ref "Psalm 110:1-5, 7"] [--dry-run] \
+ *     [--review-queue <path>] [--no-review-queue]
  *
  * Module API (preferred for tests):
  *
@@ -61,6 +74,15 @@ import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
 
 const DEFAULT_TARGET = 'src/data/loth/prayers/commons/psalter-texts.rich.json'
+
+/**
+ * F-X11 follow-up batch (#426 — review #419 M-1) — sidecar location for
+ * the curator review queue (Stage 3 `needsReview` flags from the extractor).
+ * The queue is intentionally separate from `psalter-texts.rich.json` to
+ * keep the rich-AST schema surface stable; curators audit this file when
+ * the builder reports flagged stanzas.
+ */
+const DEFAULT_REVIEW_QUEUE_PATH = '.claude/scaffold/phrase-extract-review-queue.json'
 
 /**
  * Compare two strings for stanza-first-line match. Trims whitespace; on
@@ -397,8 +419,62 @@ function countMatchingPrefix(stream, start, richTexts) {
 }
 
 /**
+ * F-X11 follow-up batch (#426 — review #419 M-1) — collect Stage 3
+ * `needsReview` flags from extractor stanzas into a curator review queue.
+ * The flag is set when Stage 1 (visual indent) and Stage 2 (sentence-end +
+ * capital-start punctuation heuristic) disagree on phrase boundaries; the
+ * stanza is still injected (Stage 1 wins), but the curator should audit
+ * the result before relying on it. Pre-#426 the flag was only surfaced by
+ * the EXTRACTOR CLI's `--review-out` sidecar; the BUILDER (which is what
+ * `node scripts/build-phrases-into-rich.mjs` runs in batch jobs) silently
+ * dropped it on the floor — `needsReview` had 0 occurrences in the
+ * builder source. The 124 deferred refs batch re-extraction would
+ * therefore have shipped any disagreements without curator visibility.
+ *
+ * The queue is a SEPARATE channel from rich.json (no schema change). It
+ * carries enough context (ref, stanzaIndex, firstLine, lineCount) for a
+ * curator to locate each flagged stanza without having to re-run the
+ * extractor. The CLI persists it to
+ * `.claude/scaffold/phrase-extract-review-queue.json`.
+ *
+ * @param {{ ref: string, stanzas: { stanzaIndex?: number, lines: string[], needsReview?: boolean, phrases: any[] }[] }[]} batches
+ * @returns {{
+ *   ref: string,
+ *   stanzaIndex: number,
+ *   firstLine: string,
+ *   lineCount: number,
+ * }[]}
+ */
+export function collectReviewQueue(batches) {
+  const queue = []
+  for (const batch of batches) {
+    for (let i = 0; i < (batch.stanzas?.length ?? 0); i++) {
+      const stanza = batch.stanzas[i]
+      if (!stanza?.needsReview) continue
+      queue.push({
+        ref: batch.ref,
+        stanzaIndex: stanza.stanzaIndex ?? i,
+        firstLine: (stanza.lines?.[0] ?? '').trim(),
+        lineCount: stanza.lines?.length ?? 0,
+      })
+    }
+  }
+  return queue
+}
+
+/**
  * Plan + apply all batches against the rich data. Atomic: if ANY batch
  * has issues, no mutation happens — returns `{ ok: false, issues }`.
+ *
+ * F-X11 follow-up batch (#426) — also surfaces `reviewQueue` (a list of
+ * `{ ref, stanzaIndex, firstLine, lineCount }` for every extractor stanza
+ * with `needsReview: true`) regardless of whether the atomic gate passes.
+ * The queue is independent of `data`: even when the gate fails the queue
+ * still tells the curator which stanzas the extractor flagged. The CLI
+ * writes it to `.claude/scaffold/phrase-extract-review-queue.json` so a
+ * batch job can surface curator-needed audits without changing rich.json
+ * schema. Schema for the queue entries is documented on
+ * `collectReviewQueue` above.
  *
  * @param {Record<string, any>} richData
  * @param {{ ref: string, stanzas: { stanzaIndex?: number, lines: string[], phrases: any[] }[] }[]} batches
@@ -407,9 +483,11 @@ function countMatchingPrefix(stream, start, richTexts) {
  *   data?: Record<string, any>,
  *   plan?: { ref: string, updates: any[] }[],
  *   issues?: { ref: string, error: string, [key: string]: any }[],
+ *   reviewQueue: { ref: string, stanzaIndex: number, firstLine: string, lineCount: number }[],
  * }}
  */
 export function injectPhrasesIntoRichData(richData, batches) {
+  const reviewQueue = collectReviewQueue(batches)
   // 1. Plan every batch first; collect issues without mutating.
   const planned = []
   const allIssues = []
@@ -453,7 +531,7 @@ export function injectPhrasesIntoRichData(richData, batches) {
 
   // 2. Atomic gate.
   if (allIssues.length > 0) {
-    return { ok: false, issues: allIssues, plan: planned }
+    return { ok: false, issues: allIssues, plan: planned, reviewQueue }
   }
 
   // 3. Apply (deep clone the touched refs so the caller's input is intact).
@@ -503,7 +581,7 @@ export function injectPhrasesIntoRichData(richData, batches) {
       stanzasRich: { ...ref.stanzasRich, blocks },
     }
   }
-  return { ok: true, data, plan: planned }
+  return { ok: true, data, plan: planned, reviewQueue }
 }
 
 /**
@@ -593,7 +671,8 @@ function cliMain() {
   if (argv.length === 0 || argv.includes('--help')) {
     process.stdout.write(
       'Usage: node scripts/build-phrases-into-rich.mjs ' +
-        '--extractor-out <json> [--target <rich.json>] [--ref <key>] [--dry-run]\n',
+        '--extractor-out <json> [--target <rich.json>] [--ref <key>] ' +
+        '[--review-queue <path>] [--no-review-queue] [--dry-run]\n',
     )
     process.exit(argv.length === 0 ? 1 : 0)
   }
@@ -609,6 +688,42 @@ function cliMain() {
 
   const result = injectPhrasesIntoRichData(richData, batches)
   process.stdout.write(renderDryRun(result) + '\n')
+
+  // F-X11 follow-up batch (#426 — review #419 M-1): always surface the
+  // curator review queue regardless of atomic gate result. When the gate
+  // fails the data isn't written, but the queue still tells the curator
+  // which extractor stanzas need their attention. `--no-review-queue`
+  // suppresses persistence (handy for ephemeral CI checks), and
+  // `--review-queue <path>` overrides the default sidecar location.
+  // `--dry-run` also suppresses persistence so a dry run never mutates
+  // the queue file (parallel to its `data` non-write semantics).
+  const writeReviewQueue =
+    !args['no-review-queue'] &&
+    !args['dry-run'] &&
+    Array.isArray(result.reviewQueue) &&
+    result.reviewQueue.length > 0
+  if (writeReviewQueue) {
+    const reviewQueuePath = resolve(
+      args['review-queue'] || DEFAULT_REVIEW_QUEUE_PATH,
+    )
+    writeFileSync(
+      reviewQueuePath,
+      JSON.stringify(result.reviewQueue, null, 2) + '\n',
+      'utf-8',
+    )
+    process.stderr.write(
+      `note: ${result.reviewQueue.length} stanza(s) flagged needsReview, ` +
+        `wrote curator queue to ${reviewQueuePath}\n`,
+    )
+  } else if (
+    Array.isArray(result.reviewQueue) &&
+    result.reviewQueue.length > 0
+  ) {
+    process.stderr.write(
+      `note: ${result.reviewQueue.length} stanza(s) flagged needsReview ` +
+        `(queue not persisted: --no-review-queue or --dry-run)\n`,
+    )
+  }
 
   if (!result.ok) {
     process.exit(3)

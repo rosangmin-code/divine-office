@@ -22,6 +22,7 @@ import {
   injectPhrasesIntoRichData,
   planRefUpdates,
   renderDryRun,
+  collectReviewQueue,
 } from '../build-phrases-into-rich.mjs'
 
 // Helpers — build minimal rich-AST stanza blocks.
@@ -520,6 +521,134 @@ describe('injectPhrasesIntoRichData — F-X11 paragraphBoundaries', () => {
     expect(
       first.data['Idem PB Ref'].stanzasRich.blocks[0].paragraphBoundaries,
     ).toEqual([2, 3])
+  })
+})
+
+// @fr FR-161
+// F-X11 follow-up batch (#426 — review #419 M-1) — extractor `needsReview`
+// flag must propagate from extractor stanzas to a curator review queue
+// surfaced on the builder result. Pre-#426 the flag was silently dropped
+// inside `injectPhrasesIntoRichData`; the production batch builder
+// (`scripts/build-phrases-into-rich.mjs`) had 0 occurrences of
+// `needsReview`, so the 124 deferred refs re-extraction would have shipped
+// any Stage 1↔Stage 2 disagreements without curator visibility. The fix
+// keeps the rich-AST schema unchanged (no `needsReview` field on stanza
+// blocks) and emits a SEPARATE channel via `result.reviewQueue`; the CLI
+// persists it to `.claude/scaffold/phrase-extract-review-queue.json`.
+describe('collectReviewQueue + injectPhrasesIntoRichData — needsReview surfacing (#426 M-1)', () => {
+  it('surfaces flagged stanzas as a queue with ref + first line + line count', () => {
+    const queue = collectReviewQueue([
+      {
+        ref: 'Psalm Q',
+        stanzas: [
+          {
+            stanzaIndex: 0,
+            lines: ['  ok line A', '  ok line B'],
+            phrases: [{ lineRange: [0, 1], indent: 0 }],
+            needsReview: false,
+          },
+          {
+            stanzaIndex: 1,
+            lines: ['  flagged line A', '  flagged line B', '  flagged line C'],
+            phrases: [
+              { lineRange: [0, 0], indent: 0 },
+              { lineRange: [1, 1], indent: 0 },
+              { lineRange: [2, 2], indent: 0 },
+            ],
+            needsReview: true,
+          },
+        ],
+      },
+    ])
+    expect(queue).toEqual([
+      {
+        ref: 'Psalm Q',
+        stanzaIndex: 1,
+        firstLine: 'flagged line A',
+        lineCount: 3,
+      },
+    ])
+  })
+
+  it('returns an empty queue when no stanza is flagged', () => {
+    const queue = collectReviewQueue([
+      {
+        ref: 'Psalm OK',
+        stanzas: [
+          {
+            stanzaIndex: 0,
+            lines: ['line'],
+            phrases: [{ lineRange: [0, 0], indent: 0 }],
+            needsReview: false,
+          },
+        ],
+      },
+    ])
+    expect(queue).toEqual([])
+  })
+
+  it('surfaces reviewQueue on the inject result alongside data (atomic gate PASS)', () => {
+    const richData = {
+      'PB Ref': richRef([richStanzaBlock('verse a', ['verse b', 'verse c'])]),
+    }
+    const result = injectPhrasesIntoRichData(richData, [
+      {
+        ref: 'PB Ref',
+        stanzas: [
+          {
+            stanzaIndex: 0,
+            lines: ['verse a', 'verse b', 'verse c'],
+            phrases: [
+              { lineRange: [0, 0], indent: 0 },
+              { lineRange: [1, 1], indent: 0 },
+              { lineRange: [2, 2], indent: 0 },
+            ],
+            needsReview: true,
+          },
+        ],
+      },
+    ])
+    expect(result.ok).toBe(true)
+    expect(result.reviewQueue).toEqual([
+      {
+        ref: 'PB Ref',
+        stanzaIndex: 0,
+        firstLine: 'verse a',
+        lineCount: 3,
+      },
+    ])
+    // The needsReview flag MUST NOT leak into rich.json.
+    const block = result.data['PB Ref'].stanzasRich.blocks[0]
+    expect(block.needsReview).toBeUndefined()
+  })
+
+  it('surfaces reviewQueue even when the atomic gate FAILS (curator still gets visibility)', () => {
+    const richData = { 'Existing Ref': richRef([richStanzaBlock('a')]) }
+    const result = injectPhrasesIntoRichData(richData, [
+      {
+        ref: 'Missing Ref', // triggers REF_NOT_FOUND
+        stanzas: [
+          {
+            stanzaIndex: 0,
+            lines: ['unmatched first line'],
+            phrases: [{ lineRange: [0, 0], indent: 0 }],
+            needsReview: true,
+          },
+        ],
+      },
+    ])
+    expect(result.ok).toBe(false)
+    expect(result.issues[0].error).toBe('REF_NOT_FOUND')
+    // The queue still tells the curator which extractor stanza needed
+    // attention even though no rich.json mutation happened.
+    expect(result.reviewQueue).toEqual([
+      {
+        ref: 'Missing Ref',
+        stanzaIndex: 0,
+        firstLine: 'unmatched first line',
+        lineCount: 1,
+      },
+    ])
   })
 })
 
