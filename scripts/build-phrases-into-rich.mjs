@@ -419,6 +419,62 @@ function countMatchingPrefix(stream, start, richTexts) {
 }
 
 /**
+ * Curator queue bulk-hotfix (#447 — audit #446) — header artifact filter.
+ *
+ * The multi-page gather inside `processOne` walks 2-5 columns per ref via
+ * `MULTI_PAGE_DEPTH=4`; each scanned column produces stanzas, and ANY of
+ * them with Stage 1↔Stage 2 disagreement is flagged `needsReview` and
+ * pushed to the curator queue regardless of whether `injectPhrasesIntoRichData`
+ * actually used the column (line-count match drove the inject decision).
+ *
+ * The audit (#446 docs/audit-curator-queue-2026-05-09.md) found 70-80% of
+ * the 206-entry queue is SCAN BYPRODUCTS — page titles ("Дуулал N"), book
+ * sections ("Магтаал…"), the doxology ("Эцэг, Хүү, Ариун Сүнсэнд…"),
+ * day/season/page headers ("Бямба…", "3 ДУГААР ДОЛОО ХОНОГ", Roman
+ * numeral dividers "I" / "II", etc.). 12/12 PDF spot-checks confirmed
+ * these never correspond to an actually-injected stanza, so suppressing
+ * them at queue-collection time has zero rich.json impact.
+ *
+ * Pattern catalog (Categories A-D from §2 of the audit):
+ *   - A. Page-title:        `Дуулал \d+`
+ *   - B. Book-section:      `Магтаал[\t ]…`
+ *   - C. Doxology:          `Эцэг, Хүү, Ариун Сүнсэнд…`
+ *                           `Оройн даатгал залбирал`
+ *                           `Дууллын залбирал`
+ *                           `Шад (дуулал|магтаал)`
+ *   - D. Day/season/page:   `Бямба…`
+ *                           `[1-4] ДУГААР ДОЛОО ХОНОГ`
+ *                           `Ариун долоо хоног`
+ *                           `Амилалтын улирал`
+ *                           `Дөчин хоногийн…`
+ *                           `12 сарын \d…`
+ *                           `I{1,2}$` (exact "I" or "II" Roman dividers)
+ *
+ * Note on alternation precedence: `I{1,2}$` is anchored only at end-of-
+ * string (the `$` does NOT distribute across alternatives — JS regex
+ * alternation has lower precedence than concatenation), so a body line
+ * starting with "I am a Roman who…" is NOT filtered. This is deliberate —
+ * only bare divider lines are noise.
+ */
+const HEADER_ARTIFACT_RE =
+  /^(Дуулал \d+|Магтаал[\t ]|Эцэг, Хүү, Ариун Сүнсэнд|Оройн даатгал залбирал|Дууллын залбирал|Шад (дуулал|магтаал)|Бямба|[1-4] ДУГААР ДОЛОО ХОНОГ|Ариун долоо хоног|Амилалтын улирал|Дөчин хоногийн|12 сарын \d|I{1,2}$)/
+
+/**
+ * Curator queue bulk-hotfix (#447) — true if `firstLine` matches one of
+ * the header / section / page-title artifact patterns documented above.
+ * Trims the input first; tolerates `null`/`undefined`. Exported for unit
+ * testability so each catalog entry can be pinned independently of
+ * `collectReviewQueue` internals.
+ *
+ * @param {string} firstLine - the trimmed-or-untrimmed first line of an
+ *   extractor stanza.
+ * @returns {boolean}
+ */
+export function isHeaderArtifact(firstLine) {
+  return HEADER_ARTIFACT_RE.test((firstLine || '').trim())
+}
+
+/**
  * F-X11 follow-up batch (#426 — review #419 M-1) — collect Stage 3
  * `needsReview` flags from extractor stanzas into a curator review queue.
  * The flag is set when Stage 1 (visual indent) and Stage 2 (sentence-end +
@@ -437,6 +493,26 @@ function countMatchingPrefix(stream, start, richTexts) {
  * extractor. The CLI persists it to
  * `.claude/scaffold/phrase-extract-review-queue.json`.
  *
+ * Curator queue bulk-hotfix (#447 — audit #446):
+ *
+ *   1. Header filter — stanzas whose `firstLine` matches `isHeaderArtifact`
+ *      (Categories A-D from audit §2 — page titles, book sections,
+ *      doxology, day/season/page headers, Roman dividers) are dropped at
+ *      queue-collection time. 12/12 PDF spot-checks in #446 confirmed
+ *      these never correspond to an injected stanza, so the filter has
+ *      zero rich.json impact. ~70-80 of 206 entries (35-40%) suppressed.
+ *
+ *   2. (firstLine, lineCount) dedupe — the multi-page gather scans the
+ *      same column window from neighbouring pages, surfacing the same
+ *      `(firstLine, lineCount)` shape multiple times across refs (audit
+ *      Category E — Cross-ref firstLine duplicate ~50 overlapping with
+ *      A-D). The dedupe set is shared across the whole `batches` input
+ *      (NOT per-ref) so cross-ref duplicates collapse to a single queue
+ *      entry. Different `lineCount` for the same `firstLine` is preserved
+ *      (different cap-windows can be different stanzas).
+ *
+ * Combined effect (per audit §4): 206 → ~50-80 entries (60-75% reduction).
+ *
  * @param {{ ref: string, stanzas: { stanzaIndex?: number, lines: string[], needsReview?: boolean, phrases: any[] }[] }[]} batches
  * @returns {{
  *   ref: string,
@@ -447,15 +523,30 @@ function countMatchingPrefix(stream, start, richTexts) {
  */
 export function collectReviewQueue(batches) {
   const queue = []
+  // Bulk-hotfix #447 — dedupe scope is the WHOLE batches input (cross-ref),
+  // not per-ref. Audit #446 §2 Cat E (~50 overlapping cross-ref duplicates)
+  // is the noise class this collapses.
+  const seen = new Set()
   for (const batch of batches) {
     for (let i = 0; i < (batch.stanzas?.length ?? 0); i++) {
       const stanza = batch.stanzas[i]
       if (!stanza?.needsReview) continue
+      const firstLine = (stanza.lines?.[0] ?? '').trim()
+      const lineCount = stanza.lines?.length ?? 0
+      // Bulk-hotfix #447 — header/section/page-title artifact filter.
+      if (isHeaderArtifact(firstLine)) continue
+      // Bulk-hotfix #447 — (firstLine, lineCount) dedupe across the batch.
+      // JSON.stringify gives a collision-free key for the 2-tuple; firstLine
+      // can contain any unicode (including tabs / quotes) and lineCount is
+      // a small integer.
+      const dedupeKey = JSON.stringify([firstLine, lineCount])
+      if (seen.has(dedupeKey)) continue
+      seen.add(dedupeKey)
       queue.push({
         ref: batch.ref,
         stanzaIndex: stanza.stanzaIndex ?? i,
-        firstLine: (stanza.lines?.[0] ?? '').trim(),
-        lineCount: stanza.lines?.length ?? 0,
+        firstLine,
+        lineCount,
       })
     }
   }
