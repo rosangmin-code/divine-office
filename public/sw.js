@@ -1,3 +1,8 @@
+// v8 — #410: F-X9/X10/X12 fix cohort. psalter-headers data 재생성 (77
+// entries, 시편 제목/성경구절 prefix/suffix 노이즈 제거), psalter-texts
+// 119 refs +660 LOC re-injection (PDF 들여쓰기 wrap continuation 정상
+// 분류), intercessions-section.tsx renderer (응답구절 italic 헤리스틱).
+// HTML byte 출력이 변하므로 v7 precache snapshot 과 어긋날 수 있어 bump.
 // v7 — #361: hour-card-list 의 라벨 옆 `→` 화살표를 모바일에서 숨김
 // (`hidden md:inline` + aria-hidden). HTML byte 출력 (className 문자열 +
 // span 가시성) 이 바뀌므로 v6 precache snapshot 과 어긋날 수 있어 bump.
@@ -10,7 +15,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v7'
+const CACHE_VERSION = 'divine-office-v8'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
