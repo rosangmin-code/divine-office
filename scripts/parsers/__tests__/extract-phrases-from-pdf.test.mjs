@@ -32,6 +32,8 @@ import { dirname, resolve } from 'node:path'
 import {
   extractPhrasesFromColumn,
   detectBaselineCol,
+  detectRefrains,
+  refineParagraphBoundariesWithRefrains,
   splitIntoStanzas,
   dropColumnArtifactBlanks,
   runStage1,
@@ -532,5 +534,317 @@ describe('extractPhrasesFromColumn — Stage 3 review queue', () => {
       { lineRange: [0, 0], indent: 0 },
       { lineRange: [1, 1], indent: 0 },
     ])
+  })
+})
+
+// @fr FR-161
+// F-X11 follow-up (#418) — refrain detection + cross-column artifact
+// filter. Targets the #411-review MAJOR finding: extractor over-fragmented
+// Psalm 46:2-12 (4 spurious mid-stanza paragraph boundaries promoted from
+// every-verse-period sentence boundaries that happened to align with
+// column-split artifact blanks). The fix is two-layered:
+//
+//   1. `dropColumnArtifactBlanks` is now invoked from the live path in
+//      `extractPhrasesFromColumn` (when `otherColumnLines` is supplied)
+//      so the heuristic in `splitIntoStanzas` sees a stream where
+//      surviving 1-blanks are predominantly TRUE PDF blanks, not col-A
+//      blanks created by col-B content presence.
+//   2. `detectRefrains` + `refineParagraphBoundariesWithRefrains` add
+//      refrain enter/exit as STRONG paragraph boundaries and drop
+//      heuristic boundaries that fall strictly between refrain
+//      instances — those are mid-stanza sentence boundaries that the
+//      print does NOT separate with paragraph spacing.
+//
+// Together the two layers preserve real refrain-bracket paragraph
+// breaks (Psalm 46 [7, 9, 17, 19] in data block coords = [8, 10, 18, 20]
+// in raw extractor coords with header at line 0) while suppressing
+// over-fragmentation.
+describe('detectRefrains (F-X11 #418)', () => {
+  it('detects 2-line refrain repeating twice in a stanza', () => {
+    const stanza = [
+      'Бид итгэдэг.',
+      'Тэр бидэнтэй хамт.',
+      'Refrain line A',
+      'Refrain line B',
+      'Stanza body lives here.',
+      'Another stanza body line.',
+      'Refrain line A',
+      'Refrain line B',
+      'Final body line.',
+    ]
+    const refrains = detectRefrains(stanza)
+    expect(refrains).toEqual([
+      { start: 2, length: 2 },
+      { start: 6, length: 2 },
+    ])
+  })
+
+  it('returns [] when no 2-line pattern repeats', () => {
+    const stanza = [
+      'Each line is unique here.',
+      'The next is also distinct.',
+      'And this third one too.',
+      'No repetition anywhere.',
+      'Final unique line.',
+    ]
+    expect(detectRefrains(stanza)).toEqual([])
+  })
+
+  it('returns [] for a stanza shorter than 4 lines', () => {
+    expect(detectRefrains(['a', 'b'])).toEqual([])
+    expect(detectRefrains(['a', 'b', 'c'])).toEqual([])
+  })
+
+  it('treats whitespace-only lines as non-matching (single instance only)', () => {
+    const stanza = [
+      'Line one.',
+      '',
+      'Line three.',
+      '',
+      'Line five.',
+    ]
+    // Empty lines are skipped entirely (length === 0 check); no refrain.
+    expect(detectRefrains(stanza)).toEqual([])
+  })
+
+  it('compares trimmed text so leading whitespace does not defeat the match', () => {
+    const stanza = [
+      'Body line 1',
+      'Body line 2',
+      '   Refrain A',     // wrap-style indent
+      '   Refrain B',
+      'Mid stanza.',
+      'Another mid.',
+      'Refrain A',         // baseline indent
+      'Refrain B',
+    ]
+    const refrains = detectRefrains(stanza)
+    expect(refrains).toEqual([
+      { start: 2, length: 2 },
+      { start: 6, length: 2 },
+    ])
+  })
+
+  it('handles 3+ refrain instances without overlap', () => {
+    const stanza = [
+      'Intro line.',
+      'Setup line.',
+      'Refrain X',
+      'Refrain Y',
+      'Stanza A body.',
+      'More A body.',
+      'Refrain X',
+      'Refrain Y',
+      'Stanza B body.',
+      'More B body.',
+      'Refrain X',
+      'Refrain Y',
+      'Final body.',
+    ]
+    const refrains = detectRefrains(stanza)
+    expect(refrains).toEqual([
+      { start: 2, length: 2 },
+      { start: 6, length: 2 },
+      { start: 10, length: 2 },
+    ])
+  })
+})
+
+// @fr FR-161
+describe('refineParagraphBoundariesWithRefrains (F-X11 #418)', () => {
+  it('drops heuristic boundaries that fall strictly between refrain instances', () => {
+    // Mirror the Psalm 46:2-12 over-fragmentation pattern:
+    // heuristic = [8, 10, 13, 15, 16, 17, 18, 20] with refrains at
+    // [8, 9] and [18, 19]. Expected refined: [8, 10, 18, 20].
+    const heuristic = [8, 10, 13, 15, 16, 17, 18, 20]
+    const refrains = [
+      { start: 8, length: 2 },
+      { start: 18, length: 2 },
+    ]
+    const out = refineParagraphBoundariesWithRefrains(heuristic, refrains, 30)
+    expect(out).toEqual([8, 10, 18, 20])
+  })
+
+  it('returns heuristic boundaries unchanged when fewer than 2 refrains', () => {
+    const heuristic = [3, 7, 11]
+    const out = refineParagraphBoundariesWithRefrains(
+      heuristic,
+      [{ start: 5, length: 2 }],
+      20,
+    )
+    expect(out).toEqual([3, 7, 11])
+  })
+
+  it('adds refrain enter/exit even when heuristic is empty (the production Psalm 46 case after artifact filter)', () => {
+    const out = refineParagraphBoundariesWithRefrains(
+      [],
+      [
+        { start: 8, length: 2 },
+        { start: 18, length: 2 },
+      ],
+      30,
+    )
+    expect(out).toEqual([8, 10, 18, 20])
+  })
+
+  it('preserves heuristic boundaries OUTSIDE refrain zones (before first / after last)', () => {
+    // Heuristic at 3 (before first refrain) and 23 (after last) — both
+    // legitimate non-refrain breaks. Refrain instances bracket the
+    // middle. The refined set keeps 3 and 23 alongside refrain
+    // enter/exit.
+    const heuristic = [3, 8, 10, 18, 20, 23]
+    const refrains = [
+      { start: 8, length: 2 },
+      { start: 18, length: 2 },
+    ]
+    const out = refineParagraphBoundariesWithRefrains(heuristic, refrains, 25)
+    expect(out).toEqual([3, 8, 10, 18, 20, 23])
+  })
+
+  it('does not emit a 0-index refrain start (idx-0 is never a paragraph boundary by schema convention)', () => {
+    const out = refineParagraphBoundariesWithRefrains(
+      [],
+      [
+        { start: 0, length: 2 },
+        { start: 6, length: 2 },
+      ],
+      10,
+    )
+    // r.start=0 → suppressed; r.start+r.length=2 → kept; second
+    // instance contributes 6 (start) and 8 (after).
+    expect(out).toEqual([2, 6, 8])
+  })
+})
+
+// @fr FR-161
+describe('extractPhrasesFromColumn — F-X11 #418 cross-column live integration', () => {
+  it('Psalm 46:2-12 right col (book p.153) with both columns: paragraphBoundaries=[8,10,18,20] (refrain enter/exit ONLY)', () => {
+    // The user-reported regression case from review #411. With both
+    // columns supplied, dropColumnArtifactBlanks removes col-split
+    // artifact blanks; detectRefrains identifies the 2-line refrain
+    // ("Түг түмдийн ЭЗЭН бидэнтэй хамт / Иаковын Тэнгэрбурхан бидний
+    // хүчит цайз.") repeating twice; refineParagraphBoundariesWithRefrains
+    // drops the spurious mid-stanza sentence-end boundaries (13, 15,
+    // 16, 17 that the pre-#418 heuristic produced).
+    const { lines, otherColumnLines } = loadBothColumns(77, 'right')
+    const out = extractPhrasesFromColumn(lines, { otherColumnLines })
+    expect(out.stanzas).toHaveLength(1)
+    expect(out.stanzas[0].paragraphBoundaries).toEqual([8, 10, 18, 20])
+
+    // Sanity-check that the stanza's lines around each paragraph
+    // boundary match the user's confirmed-correct refrain framing.
+    const refrainLine = 'Түг түмдийн ЭЗЭН бидэнтэй хамт'
+    const refrainTail = 'Иаковын Тэнгэрбурхан бидний хүчит цайз.'
+    expect(out.stanzas[0].lines[8].trim()).toBe(refrainLine)
+    expect(out.stanzas[0].lines[9].trim()).toBe(refrainTail)
+    expect(out.stanzas[0].lines[18].trim()).toBe(refrainLine)
+    expect(out.stanzas[0].lines[19].trim()).toBe(refrainTail)
+  })
+
+  it('Psalm 46:2-12 right col WITHOUT otherColumnLines stays in legacy single-column mode (no paragraphBoundaries)', () => {
+    // Backward-compat: legacy fixture-only callers MUST get the
+    // pre-F-X11 shape. paragraphBoundaries is always [] under
+    // splitOnEveryBlank because every blank already ended a stanza.
+    const { lines } = loadBothColumns(77, 'right')
+    const out = extractPhrasesFromColumn(lines)
+    for (const stanza of out.stanzas) {
+      expect(stanza.paragraphBoundaries).toEqual([])
+    }
+  })
+})
+
+// @fr FR-161
+describe('splitIntoStanzas (F-X11 #418) — heuristic + refrain refinement', () => {
+  it('rejects every-verse-sentence-end over-fragmentation when refrain detection covers the cluster', () => {
+    // Synthetic stanza modelled on Psalm 46 mid-stanza body: every line
+    // ends with a period, every next line opens with a Cyrillic capital,
+    // and 1-blank rows separate them (column-split artifacts in the
+    // production layout). Without refrain detection these would all be
+    // promoted to paragraph boundaries; with refrain detection they
+    // drop because they fall strictly between two refrain instances.
+    const stanzaInput = [
+      'First verse ends.',
+      '',
+      'Refrain alpha',
+      'Refrain beta.',
+      '',
+      'Mid one ends.',
+      '',
+      'Mid two ends.',
+      '',
+      'Mid three ends.',
+      '',
+      'Refrain alpha',
+      'Refrain beta.',
+      '',
+      'Final body line.',
+    ]
+    const groups = splitIntoStanzas(stanzaInput)
+    expect(groups).toHaveLength(1)
+    // 9 content lines: 0 First / 1 Refrain alpha / 2 Refrain beta /
+    // 3 Mid one / 4 Mid two / 5 Mid three / 6 Refrain alpha / 7 Refrain beta /
+    // 8 Final.
+    // Refrain instances at [1,2] and [6,7] → enter/exit boundaries 1, 3, 6, 8.
+    // Heuristic between-refrain boundaries (4, 5) are dropped.
+    expect(groups[0].paragraphBoundaries).toEqual([1, 3, 6, 8])
+  })
+
+  it('non-refrain stanza preserves heuristic-only boundaries (Psalm 24-shaped)', () => {
+    // Each verse cluster is unique; sentence-end + capital-start fires
+    // cleanly without over-fragmentation. Refrain detector returns []
+    // and the heuristic's output passes through unchanged.
+    const stanzaInput = [
+      'Cluster one ends.',
+      '',
+      'Cluster two starts.',
+      'Cluster two continues.',
+      '',
+      'Cluster three opens.',
+    ]
+    const groups = splitIntoStanzas(stanzaInput)
+    expect(groups).toHaveLength(1)
+    // Boundary at index 1 (after "Cluster one ends.", before
+    // "Cluster two starts.") and at 3 (after "Cluster two continues.",
+    // before "Cluster three opens.").
+    expect(groups[0].paragraphBoundaries).toEqual([1, 3])
+  })
+})
+
+// @fr FR-161
+describe('SENTENCE_END_RE / STARTS_UPPER_RE edge cases (F-X11 #418 NIT-3 carry)', () => {
+  it('curly closing-quote after period still terminates a sentence', () => {
+    const groups = splitIntoStanzas([
+      'They said the word.”',
+      '',
+      'Next opens with capital.',
+    ])
+    expect(groups[0].paragraphBoundaries).toEqual([1])
+  })
+
+  it('Latin uppercase start after Cyrillic period still triggers boundary', () => {
+    const groups = splitIntoStanzas([
+      'Эзэн юм.',
+      '',
+      'Alleluja!',
+    ])
+    expect(groups[0].paragraphBoundaries).toEqual([1])
+  })
+
+  it('comma at end of prev line does NOT promote 1-blank to paragraph (mid-clause guard)', () => {
+    const groups = splitIntoStanzas([
+      'Comma-terminated clause,',
+      '',
+      'Next line still capital',
+    ])
+    expect(groups[0].paragraphBoundaries).toEqual([])
+  })
+
+  it('lowercase next-line start does NOT promote (continuation guard)', () => {
+    const groups = splitIntoStanzas([
+      'Sentence terminator here.',
+      '',
+      'lowercase wrapping line',
+    ])
+    expect(groups[0].paragraphBoundaries).toEqual([])
   })
 })
