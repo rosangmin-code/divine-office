@@ -131,14 +131,38 @@ describe('psalter-texts.rich.json — wrap-rate invariants (F-X10)', () => {
     expect(foundUserCase).toBe(true)
   })
 
-  // F-X11 (#408) — user-reported paragraph breaks around the refrain.
-  // PDF p.153 has visible paragraph spacing AFTER "Уулс сүртэйгээр
-  // ганхан чичрэхэд ч айхгүй." (before refrain start) and AFTER
-  // "Иаковын Тэнгэрбурхан бидний хүчит цайз." (refrain end → next
-  // verse cluster). Both must register as `paragraphBoundaries[]`
-  // entries on the rich.json stanza so the renderer surfaces the
-  // visual gap.
-  it('Psalm 46:2-12 user-reported paragraph break before refrain start is preserved', () => {
+  // F-X11 (#408 / #411 review / #417 hotfix) — user-reported paragraph
+  // breaks around the refrain. PDF p.153 (full_pdf.txt L5103-5131) has
+  // visible paragraph spacing at FOUR refrain enter/exit points:
+  //   - L7  (idx  7) "Түг түмдийн ЭЗЭН ..." — refrain 1 START (after
+  //                  stanza 1 close "Уулс сүртэйгээр ... айхгүй.")
+  //   - L9  (idx  9) "Тэнгэрбурханы хотыг," — stanza 2 START (after
+  //                  refrain 1 close "Иаковын ... хүчит цайз.")
+  //   - L17 (idx 17) "Түг түмдийн ЭЗЭН ..." — refrain 2 START (after
+  //                  stanza 2 close "Дуу гарахад нь газар хайлав.")
+  //   - L19 (idx 19) "Ирж, Тэнгэрбурханы үйлсийг," — stanza 3 START
+  //                  (after refrain 2 close)
+  //
+  // The #408 extractor heuristic over-fragmented stanza 2 by treating
+  // every sentence-end as a paragraph break (extra entries at lines
+  // 12 / 14 / 15 / 16). #411 review confirmed PDF has NO visual gap at
+  // those positions, and #417 hotfix scrubbed them via conservative
+  // override. The exact-equality assertion below pins the data to the
+  // 4-entry shape so a future extractor regression cannot silently
+  // re-introduce mid-stanza fragmentation.
+  it('Psalm 46:2-12 paragraphBoundaries are exactly the 4 user-reported refrain enter/exit points', () => {
+    const data = loadRich()
+    const psalm = data['Psalm 46:2-12']
+    expect(psalm).toBeDefined()
+    const block0 = psalm.stanzasRich?.blocks?.[0]
+    expect(block0).toBeDefined()
+    expect(block0.kind).toBe('stanza')
+    // Exact-equality (sorted) — rejects both omissions AND additions.
+    const sorted = [...(block0.paragraphBoundaries ?? [])].sort((a, b) => a - b)
+    expect(sorted).toEqual([7, 9, 17, 19])
+  })
+
+  it('Psalm 46:2-12 user-reported paragraph break before refrain 1 start is preserved', () => {
     const data = loadRich()
     const psalm = data['Psalm 46:2-12']
     expect(psalm).toBeDefined()
@@ -146,17 +170,15 @@ describe('psalter-texts.rich.json — wrap-rate invariants (F-X10)', () => {
     expect(block0).toBeDefined()
     expect(block0.kind).toBe('stanza')
     const boundaries = new Set(block0.paragraphBoundaries ?? [])
-    // Find the line index of "Түг түмдийн ЭЗЭН бидэнтэй хамт" (first
-    // refrain line). The boundary BEFORE this line is the user-reported
-    // break.
-    const refrainStartIdx = block0.lines.findIndex(
+    // First "Түг түмдийн ЭЗЭН ..." line = refrain 1 start (line 7).
+    const refrain1StartIdx = block0.lines.findIndex(
       (l) => (l.spans?.[0]?.text ?? '').startsWith('Түг түмдийн ЭЗЭН'),
     )
-    expect(refrainStartIdx).toBeGreaterThan(0)
-    expect(boundaries.has(refrainStartIdx)).toBe(true)
+    expect(refrain1StartIdx).toBeGreaterThan(0)
+    expect(boundaries.has(refrain1StartIdx)).toBe(true)
   })
 
-  it('Psalm 46:2-12 user-reported paragraph break after refrain (before "Тэнгэрбурханы хотыг") is preserved', () => {
+  it('Psalm 46:2-12 user-reported paragraph break after refrain 1 (before "Тэнгэрбурханы хотыг") is preserved', () => {
     const data = loadRich()
     const psalm = data['Psalm 46:2-12']
     const block0 = psalm.stanzasRich?.blocks?.[0]
@@ -166,6 +188,61 @@ describe('psalter-texts.rich.json — wrap-rate invariants (F-X10)', () => {
     )
     expect(idx).toBeGreaterThan(0)
     expect(boundaries.has(idx)).toBe(true)
+  })
+
+  it('Psalm 46:2-12 user-reported paragraph break before refrain 2 start is preserved', () => {
+    const data = loadRich()
+    const psalm = data['Psalm 46:2-12']
+    const block0 = psalm.stanzasRich?.blocks?.[0]
+    const boundaries = new Set(block0.paragraphBoundaries ?? [])
+    // Second "Түг түмдийн ЭЗЭН ..." occurrence = refrain 2 start.
+    let occurrence = 0
+    let refrain2StartIdx = -1
+    block0.lines.forEach((l, i) => {
+      if ((l.spans?.[0]?.text ?? '').startsWith('Түг түмдийн ЭЗЭН')) {
+        occurrence += 1
+        if (occurrence === 2) refrain2StartIdx = i
+      }
+    })
+    expect(refrain2StartIdx).toBeGreaterThan(0)
+    expect(boundaries.has(refrain2StartIdx)).toBe(true)
+  })
+
+  it('Psalm 46:2-12 user-reported paragraph break after refrain 2 (before "Ирж, Тэнгэрбурханы үйлсийг,") is preserved', () => {
+    const data = loadRich()
+    const psalm = data['Psalm 46:2-12']
+    const block0 = psalm.stanzasRich?.blocks?.[0]
+    const boundaries = new Set(block0.paragraphBoundaries ?? [])
+    const idx = block0.lines.findIndex(
+      (l) => (l.spans?.[0]?.text ?? '').startsWith('Ирж, Тэнгэрбурханы үйлсийг'),
+    )
+    expect(idx).toBeGreaterThan(0)
+    expect(boundaries.has(idx)).toBe(true)
+  })
+
+  it('Psalm 46:2-12 stanza-internal sentence-end lines are NOT paragraph boundaries (over-fragmentation guard)', () => {
+    const data = loadRich()
+    const psalm = data['Psalm 46:2-12']
+    const block0 = psalm.stanzasRich?.blocks?.[0]
+    const boundaries = new Set(block0.paragraphBoundaries ?? [])
+    // Stanza 2 internal sentence-end lines that the #408 extractor
+    // heuristic mis-classified as paragraph breaks (idx 12, 14, 15,
+    // 16). PDF p.153 has no visual gap at any of these, so they MUST
+    // be absent from the override-pinned shape (regression guard
+    // against extractor #418 follow-up re-introducing them).
+    const stanza2InternalTexts = [
+      'Тэнгэрбурхан тэхий голд нь бөгөөд', // idx 12
+      'Тэнгэрбурхан түүнд үүр цайхад тусална.', // idx 14
+      'Улс үндэстнүүд түрхэрч, хаанчлалууд ганхжээ.', // idx 15
+      'Дуу гарахад нь газар хайлав.', // idx 16
+    ]
+    for (const text of stanza2InternalTexts) {
+      const idx = block0.lines.findIndex(
+        (l) => (l.spans?.[0]?.text ?? '') === text,
+      )
+      expect(idx).toBeGreaterThan(0) // line must be present in stanza 2
+      expect(boundaries.has(idx)).toBe(false)
+    }
   })
 
   it('overall multi-line wrap rate >= 13% across phrase-injected refs (post-FU-1 floor)', () => {
