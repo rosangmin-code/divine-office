@@ -1,3 +1,9 @@
+// v9 — #443: F-X11 Phase 2-B 데이터 변경 반영. 새 detectRefrains
+// 일반화 heuristic (3+/4-line refrain 지원) 으로 124 refs 재추출,
+// Psalm 24:1-10 + Daniel 3:52-57 multi-line refrain paragraphBoundaries
+// 신규 detect, Psalm 46/80/8 hotfix SSOT consolidation. HTML byte
+// 출력 (paragraph 분할 단위) 이 변하므로 v8 precache snapshot 과
+// 어긋날 수 있어 bump. v8 잔존 시 깨진 paragraph 렌더링 노출 위험.
 // v8 — #410: F-X9/X10/X12 fix cohort. psalter-headers data 재생성 (77
 // entries, 시편 제목/성경구절 prefix/suffix 노이즈 제거), psalter-texts
 // 119 refs +660 LOC re-injection (PDF 들여쓰기 wrap continuation 정상
@@ -15,7 +21,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v8'
+const CACHE_VERSION = 'divine-office-v9'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
