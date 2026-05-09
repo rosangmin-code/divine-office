@@ -110,8 +110,26 @@ export function IntercessionsSection({
               >
                 <div>{p.versicle}</div>
                 {p.response && (
-                  <div data-role="intercessions-response" className="mt-1">
-                    <span className="text-red-700 dark:text-red-400">- </span>
+                  // F-X12 Phase A.1 (#425) — structured petitions[].response
+                  // mirrors the PDF visual cue: each per-petition response
+                  // (the line prefixed with `-` in the PDF) renders italic.
+                  // PDF spot-check (audit doc §3.5):
+                  //   p67 Sun Lauds:    "Эзэн, Та бол бидний амь болон аврал билээ." italic
+                  //   p75 Sun Vespers:  "Эзэн, Таны хаанчлал орших болтугай." italic
+                  //   p83 Mon Lauds:    "Эзэн, Та бидэнд Сүнсээ хайрлана уу." italic
+                  // The structured `response` field is parsed by
+                  // `parseIntercessions` (lib/hours/intercessions.ts) from the
+                  // post-`-` segment, so we know it is the italic response —
+                  // no heuristic / regex match required (vs the legacy
+                  // items[] path which uses LEGACY_INTERCESSION_REFRAIN_LEAD_RE).
+                  // Idempotent: italic is applied via stable className, so
+                  // repeated renders of the same petition produce identical
+                  // markup; no double-italic compounding possible.
+                  <div
+                    data-role="intercessions-response"
+                    className="mt-1 italic"
+                  >
+                    <span className="not-italic text-red-700 dark:text-red-400">- </span>
                     {p.response}
                   </div>
                 )}
