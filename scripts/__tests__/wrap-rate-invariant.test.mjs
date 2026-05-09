@@ -245,6 +245,91 @@ describe('psalter-texts.rich.json — wrap-rate invariants (F-X10)', () => {
     }
   })
 
+  // F-X11 Phase 2-hotfix (#434) — Psalm 80:2-8, 15-20 conservative
+  // override. Phase 2 (#427) bulk-injected paragraphBoundaries via the
+  // detectRefrains heuristic mis-split the 4-line refrain
+  //   "Түг түмдийн Тэнгэрбурхан, / Биднийгээ дахин босгооч, /
+  //    Нүүр царайгаа гэрэлтүүлээч, / Тэгвэл бид аврагдана."
+  // into two 2-line halves, producing PB [6, 8, 10, 19, 21, 23] with
+  // unwanted mid-refrain splits at idx 8 and idx 21. PDF p.246-248
+  // (full_pdf.txt L8341-8410 verbatim) shows the refrain as a single
+  // 4-line group at L8347-8350 (1st occurrence) and L8360-8363 (2nd
+  // occurrence) — visual gap exists ONLY at refrain enter/exit, not
+  // at the mid-split. Conservative shape pins boundaries to the four
+  // refrain enter/exit points only.
+  it('Psalm 80:2-8, 15-20 paragraphBoundaries pin to 4 refrain enter/exit points (no mid-refrain split)', () => {
+    const data = loadRich()
+    const psalm = data['Psalm 80:2-8, 15-20']
+    expect(psalm).toBeDefined()
+    const block0 = psalm.stanzasRich?.blocks?.[0]
+    expect(block0).toBeDefined()
+    expect(block0.kind).toBe('stanza')
+    const sorted = [...(block0.paragraphBoundaries ?? [])].sort((a, b) => a - b)
+    expect(sorted).toEqual([6, 10, 19, 23])
+  })
+
+  it('Psalm 80:2-8, 15-20 4-line refrain interior lines are NOT paragraph boundaries (mid-split guard)', () => {
+    const data = loadRich()
+    const psalm = data['Psalm 80:2-8, 15-20']
+    const block0 = psalm.stanzasRich?.blocks?.[0]
+    const boundaries = new Set(block0.paragraphBoundaries ?? [])
+    // The Phase 2 bulk-inject mis-split here at idx 8 (refrain 1 line 3)
+    // and idx 21 (refrain 2 line 3). PDF has no visual gap at these
+    // positions — they must be absent from the conservative shape.
+    const refrainInteriorTexts = [
+      // idx 8 — refrain 1, line 3 (3rd of 4)
+      'Нүүр царайгаа гэрэлтүүлээч,',
+    ]
+    for (const text of refrainInteriorTexts) {
+      // findIndex on FIRST occurrence (idx 8). The text recurs at idx 21
+      // (refrain 2 line 3); the same `boundaries.has(idx21) === false`
+      // assertion is implied by the exact-equality test above.
+      const idx = block0.lines.findIndex(
+        (l) => (l.spans?.[0]?.text ?? '') === text,
+      )
+      expect(idx).toBeGreaterThan(0) // line must be present
+      expect(boundaries.has(idx)).toBe(false)
+    }
+    // Belt-and-braces: explicitly assert idx 21 is NOT a boundary.
+    expect(boundaries.has(21)).toBe(false)
+  })
+
+  // F-X11 Phase 2-hotfix (#434) — Psalm 8:2-10 conservative override.
+  // Phase 2 (#427) detectRefrains mis-detected the 3-line refrain
+  //   "ЭЗЭН, бидний Эзэн! / Таны нэр бүх газар дэлхийд /
+  //    Юутай суу алдартай вэ!"
+  // as 2 lines only, producing PB [2, 24, 26] which splits each
+  // refrain occurrence between its 2nd and 3rd line. PDF p.283
+  // (full_pdf.txt L9628-9654 verbatim) shows the refrain as one
+  // continuous 3-line group at L9628-9630 (opening) and L9652-9654
+  // (closing). Conservative shape: refrain 1 occupies idx 0-2 (block
+  // boundary itself, no PB at idx 0 — builder no-op rule), verse body
+  // idx 3-23, refrain 2 idx 24-26. Boundaries at idx 3 (verse start
+  // after refrain 1) and idx 24 (refrain 2 enter after verse end).
+  it('Psalm 8:2-10 paragraphBoundaries pin to refrain 1 exit + refrain 2 enter (3-line refrain integrity)', () => {
+    const data = loadRich()
+    const psalm = data['Psalm 8:2-10']
+    expect(psalm).toBeDefined()
+    const block0 = psalm.stanzasRich?.blocks?.[0]
+    expect(block0).toBeDefined()
+    expect(block0.kind).toBe('stanza')
+    const sorted = [...(block0.paragraphBoundaries ?? [])].sort((a, b) => a - b)
+    expect(sorted).toEqual([3, 24])
+  })
+
+  it('Psalm 8:2-10 3-line refrain closing line is NOT a paragraph boundary (mid-split guard)', () => {
+    const data = loadRich()
+    const psalm = data['Psalm 8:2-10']
+    const block0 = psalm.stanzasRich?.blocks?.[0]
+    const boundaries = new Set(block0.paragraphBoundaries ?? [])
+    // The Phase 2 bulk-inject mis-split each refrain by leaving
+    // "Юутай суу алдартай вэ!" (line 3 of 3) as a paragraph boundary
+    // (idx 2 in refrain 1, idx 26 in refrain 2). The closing line is
+    // refrain interior, not a paragraph break.
+    expect(boundaries.has(2)).toBe(false)
+    expect(boundaries.has(26)).toBe(false)
+  })
+
   it('overall multi-line wrap rate >= 13% across phrase-injected refs (post-FU-1 floor)', () => {
     const data = loadRich()
     let total = 0
