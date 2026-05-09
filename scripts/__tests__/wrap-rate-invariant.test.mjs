@@ -149,6 +149,47 @@ describe('psalter-texts.rich.json — wrap-rate invariants (F-X10)', () => {
     expect(rate).toBeGreaterThanOrEqual(0.13)
   })
 
+  // NIT batch #409 (review #402 NIT-FU-3): 13% wrap-rate floor leaves
+  // only ~16-phrase margin at the post-FU-1 baseline (324/2362 ≈
+  // 13.7%). This margin monitor surfaces the buffer as a soft signal
+  // (warn-only) so future corrective sweeps can spot creep toward the
+  // floor before it crosses. The assertion stays loose — the only
+  // hard contract is the 13% floor above and the FU-4 max-span /
+  // ratio invariants below; this test never fails on its own. It
+  // simply records margin via expect-pass + a console.warn when
+  // buffer drops below WARN_BUFFER_PHRASES so reviewers see the
+  // narrowing in vitest output.
+  it('wrap-rate margin monitor: surface buffer above 13% floor (warn-only)', () => {
+    const FLOOR = 0.13
+    const WARN_BUFFER_PHRASES = 10
+    const data = loadRich()
+    let total = 0
+    let multi = 0
+    for (const payload of Object.values(data)) {
+      for (const block of payload.stanzasRich?.blocks ?? []) {
+        if (block.kind !== 'stanza') continue
+        for (const phrase of block.phrases ?? []) {
+          total++
+          if (phrase.lineRange[1] > phrase.lineRange[0]) multi++
+        }
+      }
+    }
+    expect(total).toBeGreaterThan(0)
+    const rate = multi / total
+    // Exact phrase-count margin: how many multi-line phrases could be
+    // demoted to single before tripping the FLOOR.
+    const minMultiAtFloor = Math.ceil(FLOOR * total)
+    const bufferPhrases = multi - minMultiAtFloor
+    if (bufferPhrases < WARN_BUFFER_PHRASES) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[wrap-rate margin] buffer narrowing — ${bufferPhrases} phrases above ${FLOOR * 100}% floor (multi=${multi}, total=${total}, rate=${(rate * 100).toFixed(2)}%). Consider raising FLOOR or auditing recent phrase-data sweep.`,
+      )
+    }
+    // Soft contract — never fails. Only asserts the buffer is computable.
+    expect(Number.isFinite(bufferPhrases)).toBe(true)
+  })
+
   it(`max phrase span <= ${MAX_PHRASE_SPAN} lines per stanza block (FU-4 over-merge guard)`, () => {
     const data = loadRich()
     const violations = []

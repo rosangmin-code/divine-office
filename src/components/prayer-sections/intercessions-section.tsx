@@ -4,17 +4,22 @@ import { RichContent } from './rich-content'
 import { DirectiveBlock, partitionDirectives } from './directive-block'
 
 // F-X12 Phase A (#374): legacy-path heuristic — when a petition line ends with
-// "...залбирцгаая" (cohortative "let us pray") plus optional `:`/`.`, the
-// IMMEDIATELY following item is the intercession's response refrain. PDF
-// renders this refrain in italics; we mirror that visual cue. Narrow scope:
-// only matches the exact stem "залбирцгаая" (audit §3.5 — keeps recall low
-// to avoid italicizing normal versicle/response pairs). Other cohortative
-// suffixes (e.g. "алдаршуулцгаая") are intentionally excluded; extend
-// case-by-case on user follow-up.
+// "...залбирцгаая" (cohortative "let us pray") plus optional sentence-end
+// punctuation, the IMMEDIATELY following item is the intercession's response
+// refrain. PDF renders this refrain in italics; we mirror that visual cue.
+// Narrow scope: only matches the exact stem "залбирцгаая" (audit §3.5 —
+// keeps recall low to avoid italicizing normal versicle/response pairs).
+// Other cohortative suffixes (e.g. "алдаршуулцгаая") are intentionally
+// excluded; extend case-by-case on user follow-up.
 //
-// Trailing-whitespace tolerant; punctuation optional (covers ":" / "." /
-// bare). Cyrillic-only stem keeps ASCII keyword interactions impossible.
-export const LEGACY_INTERCESSION_REFRAIN_LEAD_RE = /залбирцгаая[:.]?\s*$/
+// Trailing-whitespace tolerant; punctuation optional and covers `:` / `.` /
+// `;` / `!` / `?` / bare (NIT batch #409 — review #382 NIT-2 expansion;
+// future PDF petition variants may use any sentence-end form). Cyrillic-only
+// stem keeps ASCII keyword interactions impossible. The `u` flag aligns this
+// regex with the F-X9 cohort patterns (`extract-psalter-headers.js:262`,
+// `psalter-headers.test.ts:238`) for codebase consistency (NIT batch #409 —
+// review #382 NIT-1).
+export const LEGACY_INTERCESSION_REFRAIN_LEAD_RE = /залбирцгаая[:;.!?]?\s*$/u
 
 export function IntercessionsSection({
   section,
