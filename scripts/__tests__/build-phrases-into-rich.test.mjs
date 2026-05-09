@@ -1741,3 +1741,264 @@ describe('planRefUpdates — F-X11 WI-A2 wrap-tolerant matcher (#452)', () => {
     ])
   })
 })
+
+// @fr FR-161 NFR-009j
+//
+// F-X11 Phase 2-D (#463) — translatePhrases() lineRange dedup.
+//
+// The fix lives inside the (un-exported) translatePhrases() helper, so
+// the test exercises it through `planRefUpdates` (which feeds windowed
+// entries to translatePhrases and returns the resulting phrases array).
+//
+// The two production-shape scenarios (Psalm 16:1-6 b0 and
+// Psalm 137:1-6 b1) collapsed two extractor phrases onto the same
+// rich-relative `[k, k]` after the upstream coord→windowIndex translation,
+// surfacing as duplicate `{ lineRange: [3, 3] }` (resp. `[2, 2]`) entries
+// in the injected phrases list. Pinning both shapes here guards against
+// the user-visible NFR-009j 0-OVERLAP regression.
+describe('translatePhrases lineRange dedup (F-X11 Phase 2-D #463)', () => {
+  it('drops a duplicate single-line entry when two extractor phrases collapse onto the same rich line', () => {
+    // Production-minimal shape: 4 rich lines + 5 extractor phrases where
+    // phrases[3] and phrases[4] both target line index 3 (the same
+    // single rich line). Without dedup the planner emits both as
+    // `{ lineRange: [3, 3], ... }` — the renderer would print the line
+    // twice. Mirrors the Psalm 16:1-6 b0 #457-flagged shape (phrases[3]
+    // and phrases[4] both `[3, 3]`).
+    const richSlots = [
+      {
+        block: richStanzaBlock('Намайг хамгаалаач', [
+          'Учир нь би',
+          'Би ЭЗЭНд',
+          'Танаас өөр',
+        ]),
+        blockIndex: 0,
+      },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: ['Намайг хамгаалаач', 'Учир нь би', 'Би ЭЗЭНд', 'Танаас өөр'],
+        // Two source phrases both terminating at line 3. The dedup pass
+        // must keep the first survivor (in sorted order) and drop the
+        // second.
+        phrases: [
+          { lineRange: [0, 0], indent: 0 },
+          { lineRange: [1, 1], indent: 0 },
+          { lineRange: [2, 2], indent: 0 },
+          { lineRange: [3, 3], indent: 0 },
+          { lineRange: [3, 3], indent: 0 },
+        ],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    expect(out.issues).toEqual([])
+    expect(out.updates).toHaveLength(1)
+    // Critical invariant: every emitted lineRange tuple is unique.
+    const ranges = out.updates[0].phrases.map((p) =>
+      `${p.lineRange[0]}:${p.lineRange[1]}`,
+    )
+    expect(new Set(ranges).size).toBe(ranges.length)
+    expect(out.updates[0].phrases).toEqual([
+      { lineRange: [0, 0], indent: 0 },
+      { lineRange: [1, 1], indent: 0 },
+      { lineRange: [2, 2], indent: 0 },
+      { lineRange: [3, 3], indent: 0 },
+    ])
+  })
+
+  it('Psalm 16:1-6 b0 production shape — 4 rich lines + duplicate `[3, 3]` collapses to 4 unique phrases', () => {
+    // Mirrors the dispatch's call-out: rich block has 4 lines and the
+    // extractor produces 5 phrases where phrases[3] + phrases[4] both
+    // map to line 3. The injected phrases list must carry exactly 4
+    // unique entries with `[3, 3]` appearing once.
+    const richSlots = [
+      {
+        block: richStanzaBlock('Line A', ['Line B', 'Line C', 'Line D']),
+        blockIndex: 0,
+      },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: ['Line A', 'Line B', 'Line C', 'Line D'],
+        phrases: [
+          { lineRange: [0, 0], indent: 0 },
+          { lineRange: [1, 1], indent: 0 },
+          { lineRange: [2, 2], indent: 0 },
+          { lineRange: [3, 3], indent: 0 },
+          { lineRange: [3, 3], indent: 0 },
+        ],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    expect(out.issues).toEqual([])
+    expect(out.updates[0].phrases).toHaveLength(4)
+    expect(out.updates[0].phrases.filter((p) => p.lineRange[0] === 3)).toHaveLength(1)
+  })
+
+  it('Psalm 137:1-6 b1 production shape — duplicate `[2, 2]` collapses to 4 unique phrases', () => {
+    const richSlots = [
+      {
+        block: richStanzaBlock('Line A', ['Line B', 'Line C', 'Line D']),
+        blockIndex: 0,
+      },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: ['Line A', 'Line B', 'Line C', 'Line D'],
+        phrases: [
+          { lineRange: [0, 0], indent: 0 },
+          { lineRange: [1, 1], indent: 0 },
+          { lineRange: [2, 2], indent: 0 },
+          { lineRange: [2, 2], indent: 0 },
+          { lineRange: [3, 3], indent: 0 },
+        ],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    expect(out.issues).toEqual([])
+    expect(out.updates[0].phrases).toHaveLength(4)
+    expect(out.updates[0].phrases.filter((p) => p.lineRange[0] === 2)).toHaveLength(1)
+  })
+
+  it('keeps multi-line phrases distinct from the single-line backfill of the same start index', () => {
+    // Defensive: a multi-line phrase `[2, 3]` should NOT be dropped by a
+    // later single-line `[2, 2]` extractor phrase — they have different
+    // lineRange tuples even though they share start index 2.
+    const richSlots = [
+      {
+        block: richStanzaBlock('Line A', ['Line B', 'Line C', 'Line D']),
+        blockIndex: 0,
+      },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: ['Line A', 'Line B', 'Line C', 'Line D'],
+        phrases: [
+          { lineRange: [0, 0], indent: 0 },
+          { lineRange: [1, 1], indent: 0 },
+          { lineRange: [2, 3], indent: 0 },
+        ],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    expect(out.issues).toEqual([])
+    // Three explicit phrases — none should be dedup'd. (No backfill
+    // needed: lines 0..3 are all covered.)
+    expect(out.updates[0].phrases).toEqual([
+      { lineRange: [0, 0], indent: 0 },
+      { lineRange: [1, 1], indent: 0 },
+      { lineRange: [2, 3], indent: 0 },
+    ])
+  })
+})
+
+// @fr FR-161 NFR-009j
+//
+// F-X11 Phase 2-D (#463) — phrase.indent propagation from rich line.indent.
+//
+// Per dispatch-#463 §B (Psalm 30:2-13 indent fix): when a rich block's
+// lines all carry `line.indent === 1` (e.g. an antiphon block sitting
+// one visual-indent step above the column baseline), the extractor's
+// own phrase.indent is 0 (because the extractor's per-column baseline
+// detection silently absorbs the entire block's indent). The renderer
+// then renders flush-left. The fix: when every rich line covered by a
+// phrase shares one numeric `line.indent`, override `phrase.indent` to
+// match.
+describe('planRefUpdates phrase.indent propagation (F-X11 Phase 2-D #463)', () => {
+  function richStanzaBlockWithIndents(linesAndIndents) {
+    return {
+      kind: 'stanza',
+      lines: linesAndIndents.map(([text, indent]) => ({
+        spans: [{ kind: 'text', text }],
+        indent,
+      })),
+    }
+  }
+
+  it('overrides phrase.indent=0 to match the rich line.indent=1 when uniform across the phrase', () => {
+    const richSlots = [
+      {
+        block: richStanzaBlockWithIndents([
+          ['Antiphon line A', 1],
+          ['Antiphon line B', 1],
+          ['Antiphon line C', 1],
+        ]),
+        blockIndex: 0,
+      },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: ['Antiphon line A', 'Antiphon line B', 'Antiphon line C'],
+        // Extractor saw the whole block at its own baseline → indent 0.
+        phrases: [
+          { lineRange: [0, 0], indent: 0 },
+          { lineRange: [1, 1], indent: 0 },
+          { lineRange: [2, 2], indent: 0 },
+        ],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    expect(out.issues).toEqual([])
+    // After propagation every phrase should carry indent=1 — matching
+    // the rich line's indent so the renderer's pl-12 path engages.
+    expect(out.updates[0].phrases).toEqual([
+      { lineRange: [0, 0], indent: 1 },
+      { lineRange: [1, 1], indent: 1 },
+      { lineRange: [2, 2], indent: 1 },
+    ])
+  })
+
+  it('preserves a per-phrase per-line indent disagreement when rich lines mix indent values within one phrase', () => {
+    // Mixed-indent phrase: don't silently widen. Keep the extractor's
+    // value when uniformity check fails.
+    const richSlots = [
+      {
+        block: richStanzaBlockWithIndents([
+          ['Mixed A', 1],
+          ['Mixed B', 0],
+        ]),
+        blockIndex: 0,
+      },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: ['Mixed A', 'Mixed B'],
+        // One phrase straddles two rich lines with different indents.
+        phrases: [{ lineRange: [0, 1], indent: 0 }],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    expect(out.issues).toEqual([])
+    expect(out.updates[0].phrases).toEqual([{ lineRange: [0, 1], indent: 0 }])
+  })
+
+  it('Psalm 30:2-13 b4 mixed-indent shape — every uniform phrase tracks its rich line.indent', () => {
+    // 10-line block, indents [1,1,1,1,1,1,1,1,0,1]: 8 of 10 are at
+    // indent 1, line 8 at indent 0, line 9 at indent 1. Each extractor
+    // single-line phrase should propagate the matching line.indent.
+    const linesAndIndents = [
+      ['L0', 1], ['L1', 1], ['L2', 1], ['L3', 1], ['L4', 1],
+      ['L5', 1], ['L6', 1], ['L7', 1], ['L8', 0], ['L9', 1],
+    ]
+    const richSlots = [
+      { block: richStanzaBlockWithIndents(linesAndIndents), blockIndex: 0 },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: linesAndIndents.map(([t]) => t),
+        phrases: linesAndIndents.map((_, i) => ({ lineRange: [i, i], indent: 0 })),
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    expect(out.issues).toEqual([])
+    const expectedIndents = linesAndIndents.map(([, ind]) => ind)
+    const actualIndents = out.updates[0].phrases.map((p) => p.indent)
+    expect(actualIndents).toEqual(expectedIndents)
+  })
+})

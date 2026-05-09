@@ -332,7 +332,24 @@ function main() {
   }
 
   // Build atomic batch from PASS refs.
-  const passResults = results.filter((r) => r.verdict === 'PASS')
+  // F-X11 Phase 2-D (#463) — `--only` accepts a `|`-separated allow-list
+  // of ref strings to actually inject. (Pipe is the chosen separator
+  // because Mongolian psalter ref names contain both commas and
+  // semicolons — e.g. "Revelation 4:11; 5:9-10, 12".) PASS refs OUTSIDE
+  // that allow-list are dropped from the batch so their existing
+  // rich.json entries are preserved verbatim. Use case: stage rolling
+  // adoption of a builder change (e.g. dedup + indent propagation in
+  // #463) by injecting just the affected cohort first, deferring
+  // broader re-injection.
+  let passResults = results.filter((r) => r.verdict === 'PASS')
+  if (typeof args.only === 'string' && args.only.length > 0) {
+    const allowed = new Set(args.only.split('|').map((s) => s.trim()).filter(Boolean))
+    const before = passResults.length
+    passResults = passResults.filter((r) => allowed.has(r.ref))
+    process.stdout.write(
+      `\n--only filter: ${passResults.length} of ${before} PASS refs kept (allow-list size ${allowed.size})\n`,
+    )
+  }
   const batches = passResults.map((r) => ({ ref: r.ref, stanzas: r.extractorStanzas }))
   const aggregate = injectPhrasesIntoRichData(richData, batches)
   const reviewQueue = collectReviewQueue(batches)
@@ -432,11 +449,28 @@ function main() {
     // Persist review queue regardless of dry-run, but ONLY when we are
     // actually writing data (so a curator audit doesn't go stale against
     // unchanged rich.json). M-1 from review-419.
-    mkdirSync(dirname(REVIEW_QUEUE_PATH), { recursive: true })
-    writeFileSync(REVIEW_QUEUE_PATH, JSON.stringify(reviewQueue, null, 2) + '\n', 'utf-8')
-    process.stdout.write(
-      `review queue: ${reviewQueue.length} stanza(s) flagged → ${REVIEW_QUEUE_PATH}\n`,
-    )
+    //
+    // F-X11 Phase 2-D (#463) — when `--only` filtered the batch to a
+    // small cohort, the resulting `reviewQueue` only reflects those
+    // refs. Writing it would clobber the full 145-entry queue with a
+    // partial slice. Skip the write under `--only` and surface the
+    // skip in the log so a follow-up full-corpus inject can re-stamp
+    // the queue.
+    if (typeof args.only === 'string' && args.only.length > 0) {
+      process.stdout.write(
+        `review queue: WRITE SKIPPED (--only partial inject; existing queue preserved)\n`,
+      )
+    } else {
+      mkdirSync(dirname(REVIEW_QUEUE_PATH), { recursive: true })
+      writeFileSync(
+        REVIEW_QUEUE_PATH,
+        JSON.stringify(reviewQueue, null, 2) + '\n',
+        'utf-8',
+      )
+      process.stdout.write(
+        `review queue: ${reviewQueue.length} stanza(s) flagged → ${REVIEW_QUEUE_PATH}\n`,
+      )
+    }
   }
 }
 
