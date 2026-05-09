@@ -346,7 +346,8 @@ export function dropSpuriousBlanks(columnLines, baseline) {
 }
 
 /**
- * F-X11 (#408) — drop column-split artifact blanks before stanza splitting.
+ * F-X11 (#408 + #418) — drop column-split artifact blanks before stanza
+ * splitting.
  *
  * `splitColumns` produces left/right streams of EQUAL length: every
  * physical-page row maps to one row in BOTH streams. When the OTHER column
@@ -366,6 +367,15 @@ export function dropSpuriousBlanks(columnLines, baseline) {
  * The resulting stream has only "real" blanks (where both columns were
  * blank at that physical row) — those are the input to the paragraph-
  * vs-stanza distinction in `splitIntoStanzas`.
+ *
+ * F-X11 follow-up (#418) — promoted from dead-export to LIVE PATH.
+ * `extractPhrasesFromColumn` now invokes this when `otherColumnLines` is
+ * provided so artifact 1-blanks no longer become spurious paragraph
+ * boundaries via the sentence-end + capital-start heuristic. The
+ * #411-review false-positive on Psalm 46:2-12 right col (where every
+ * verse-ending line happened to align with a left-col content row,
+ * promoting mid-stanza sentence boundaries to paragraph boundaries) is
+ * the canonical motivating case.
  *
  * Backward-compat: when `otherColLines` is undefined or shorter than
  * `thisColLines`, the function is a no-op pass-through (legacy callers
@@ -407,22 +417,43 @@ export function dropColumnArtifactBlanks(thisColLines, otherColLines) {
  *     index in the current `lines[]` is then appended to
  *     `paragraphBoundaries`; otherwise the blank is treated as a
  *     column-split artifact and skipped (kept inside the stanza, no
- *     boundary marker). The sentence-end heuristic is essential here
- *     because cross-column blank verification (the audit's "둘 다
- *     column blank" rule) gives false negatives on the user-reported
- *     Psalm 46:2-12 layout — left col carries a different psalm whose
- *     content rows align with right-col paragraph blanks, so the
- *     "blank in BOTH columns" check would never fire. Sentence-end
- *     punctuation + uppercase-start matches the visual contract used by
- *     the original Stage 2 cross-checker (`runStage2`).
+ *     boundary marker). The sentence-end heuristic alone is the
+ *     "weak" signal — it correctly identifies real paragraph breaks
+ *     but also fires on every stanza-internal sentence boundary,
+ *     causing the Psalm 46:2-12 over-fragmentation that the #411
+ *     review flagged.
  *   - 2+-blank → STANZA boundary (flush current stanza, start new
  *     one). This part is unchanged from pre-F-X11 behaviour.
  *
+ * F-X11 follow-up (#418) — strengthens paragraph boundary detection
+ * with a TWO-LAYER signal stack to reduce false positives on
+ * column-split-artifact-heavy layouts:
+ *
+ *   Layer 1 — column-split artifact filter (caller's responsibility,
+ *     applied via `dropColumnArtifactBlanks` in
+ *     `extractPhrasesFromColumn` before this function runs). When
+ *     OTHER col has content at the same physical row as THIS col's
+ *     blank, the blank is dropped before stanza splitting. After this
+ *     filter the surviving 1-blanks are predominantly TRUE PDF
+ *     blanks (both cols blank at that physical row) — the heuristic
+ *     in this function then operates on a high-signal stream.
+ *
+ *   Layer 2 — refrain detection (post-stanza, applied here in
+ *     `refineParagraphBoundariesWithRefrains`). For psalms that
+ *     repeat a 2-line refrain (Mongolian liturgy convention — Psalm 46
+ *     "Түг түмдийн ЭЗЭН… / Иаковын Тэнгэрбурхан…" repeats), refrain
+ *     enter/exit are added as STRONG paragraph boundaries and any
+ *     heuristic-derived boundaries that fall STRICTLY BETWEEN refrain
+ *     instances are dropped (those are mid-stanza sentence boundaries
+ *     that the print does NOT separate with paragraph spacing). For
+ *     non-refrain psalms (single-instance content), the refrain layer
+ *     is a no-op and the heuristic boundaries pass through unchanged.
+ *
  * Pre-F-X11 callers that want the legacy "every blank ends a stanza"
  * shape can still get it via `extractPhrasesFromColumn`'s backward-
- * compat shim (`explodeParagraphBoundariesToStanzas`) — it explodes
- * each surviving paragraph boundary into a stanza split when no
- * `otherColumnLines` is supplied (single-column fixture mode).
+ * compat shim (`splitOnEveryBlank`) — it splits each blank as a
+ * stanza boundary when no `otherColumnLines` is supplied (single-
+ * column fixture mode).
  *
  * @param {string[]} columnLines
  * @returns {{ lines: string[], paragraphBoundaries: number[] }[]}
@@ -473,7 +504,148 @@ export function splitIntoStanzas(columnLines) {
     blankRun = 0
   }
   flushStanza()
-  return stanzas
+
+  // F-X11 follow-up (#418) — refine paragraph boundaries with refrain
+  // detection. Mongolian liturgical psalms commonly bracket a repeated
+  // 2-line refrain with paragraph spacing in print. When the heuristic
+  // also fires on stanza-internal sentence boundaries between refrain
+  // instances (the Psalm 46 over-fragmentation pattern), prefer the
+  // refrain-bracket structure as the source of truth.
+  return stanzas.map((s) => ({
+    lines: s.lines,
+    paragraphBoundaries: refineParagraphBoundariesWithRefrains(
+      s.paragraphBoundaries,
+      detectRefrains(s.lines),
+      s.lines.length,
+    ),
+  }))
+}
+
+/**
+ * F-X11 follow-up (#418) — detect repeating 2-line refrain instances in
+ * a stanza. A "refrain" here is a 2-line text pattern that appears at
+ * two or more non-overlapping positions (separated by ≥ 2 lines) in
+ * the same stanza. Mongolian liturgical convention places a paragraph
+ * break in the print before each refrain instance and after each
+ * refrain instance.
+ *
+ * Why 2-line specifically: empirically the user-reported regression
+ * (Psalm 46:2-12 right col) and the audit-doc cataloged refrain
+ * patterns are 2-line. 1-line refrains (e.g. "Аллэлуяа") are rare in
+ * the body and tend to be marked elsewhere; 3+-line refrains are also
+ * uncommon. Restricting to 2-line keeps the false-positive rate low —
+ * any pair of identical 2-line sequences with ≥ 2 occurrences in a
+ * stanza is a strong refrain signal.
+ *
+ * The detector compares trimmed text (so wrap-indent variations don't
+ * defeat the match) and uses a `used` set so a single line can only
+ * belong to one refrain instance — this prevents double-counting if
+ * the same line happens to start multiple overlapping 2-line patterns.
+ *
+ * @param {string[]} stanzaLines - lines as they appear in the stanza
+ *   (leading whitespace preserved; trimmed during comparison).
+ * @returns {{ start: number, length: number }[]} - sorted by start;
+ *   each entry is one refrain instance covering
+ *   `stanzaLines[start..start+length-1]`. Returns `[]` if no refrain
+ *   pattern repeats at least twice.
+ */
+export function detectRefrains(stanzaLines) {
+  const trimmed = stanzaLines.map((l) => l.trim())
+  const n = trimmed.length
+  if (n < 4) return []
+  const refrains = []
+  const used = new Set()
+  for (let i = 0; i < n - 1; i++) {
+    if (used.has(i) || used.has(i + 1)) continue
+    if (trimmed[i].length === 0 || trimmed[i + 1].length === 0) continue
+    const matches = [i]
+    for (let j = i + 2; j < n - 1; j++) {
+      if (used.has(j) || used.has(j + 1)) continue
+      if (trimmed[j] === trimmed[i] && trimmed[j + 1] === trimmed[i + 1]) {
+        matches.push(j)
+      }
+    }
+    if (matches.length >= 2) {
+      for (const m of matches) {
+        refrains.push({ start: m, length: 2 })
+        used.add(m)
+        used.add(m + 1)
+      }
+    }
+  }
+  refrains.sort((a, b) => a.start - b.start)
+  return refrains
+}
+
+/**
+ * F-X11 follow-up (#418) — refine heuristic paragraph boundaries using
+ * detected refrain structure. When refrains are present (≥ 2 instances
+ * of a repeating pattern), refrain enter/exit boundaries are STRONG
+ * paragraph signals; any heuristic-derived boundary that falls strictly
+ * between two consecutive refrain instances is dropped (it's a
+ * mid-stanza sentence boundary that the print does not separate with
+ * paragraph spacing).
+ *
+ * Worked examples:
+ *
+ *   - Psalm 46:2-12 right col (the canonical regression case from
+ *     review #411): heuristic produces [8, 10, 13, 15, 16, 17, 18, 20]
+ *     (over-fragments mid-stanza sentence boundaries). Refrain
+ *     detector finds 2 instances at [8, 9] and [18, 19]. Refrain
+ *     enter/exit: 8, 10, 18, 20. The "between refrain instances"
+ *     range is (10, 18) exclusive → drops 13, 15, 16, 17. Final:
+ *     [8, 10, 18, 20] — matches the user-confirmed-correct set
+ *     (= [7, 9, 17, 19] after header strip in builder).
+ *
+ *   - Psalm with no refrain: refrain detector returns []. This
+ *     function returns the heuristic boundaries unchanged — refrain-
+ *     less psalms keep the existing F-X11 behaviour.
+ *
+ * @param {number[]} heuristicBoundaries - sorted asc, from `splitIntoStanzas`.
+ * @param {{ start: number, length: number }[]} refrains - sorted asc.
+ * @param {number} stanzaLineCount
+ * @returns {number[]} - sorted asc, deduplicated.
+ */
+export function refineParagraphBoundariesWithRefrains(
+  heuristicBoundaries,
+  refrains,
+  stanzaLineCount,
+) {
+  if (refrains.length < 2) return heuristicBoundaries
+
+  const refrainEnterExit = new Set()
+  for (const r of refrains) {
+    if (r.start > 0) refrainEnterExit.add(r.start)
+    if (r.start + r.length < stanzaLineCount) {
+      refrainEnterExit.add(r.start + r.length)
+    }
+  }
+
+  // Drop heuristic boundaries that fall STRICTLY BETWEEN consecutive
+  // refrain instances — those are mid-stanza sentence-end clusters,
+  // not real paragraph breaks. Heuristic boundaries before the first
+  // refrain or after the last are preserved as-is (they may be
+  // legitimate non-refrain breaks in the same stanza).
+  const merged = []
+  for (const b of heuristicBoundaries) {
+    let dropAsBetween = false
+    for (let k = 0; k < refrains.length - 1; k++) {
+      const after = refrains[k].start + refrains[k].length
+      const beforeNext = refrains[k + 1].start
+      if (b > after && b < beforeNext) {
+        dropAsBetween = true
+        break
+      }
+    }
+    if (!dropAsBetween) merged.push(b)
+  }
+
+  // Add refrain enter/exit (deduplicated).
+  for (const rb of refrainEnterExit) {
+    if (!merged.includes(rb)) merged.push(rb)
+  }
+
+  return merged.sort((a, b) => a - b)
 }
 
 /**
@@ -599,17 +771,34 @@ export function extractPhrasesFromColumn(columnLines, options = {}) {
   const baseline = options.baseline ?? detectBaselineCol(columnLines)
   const hasOtherCol =
     Array.isArray(options.otherColumnLines) && options.otherColumnLines.length > 0
-  // F-X11 (#408) — paragraph detection happens INSIDE `splitIntoStanzas`
-  // via a sentence-terminator + capital-start heuristic, NOT via
-  // cross-column blank verification (which gives false negatives when
-  // the other column has unrelated content at the paragraph-break row,
-  // e.g. user-reported Psalm 46:2-12 page 153 right col where left col
-  // runs an unrelated closing-prayer body across both paragraph blank
-  // rows). `dropColumnArtifactBlanks` is intentionally NOT used here;
-  // the heuristic alone is sufficient to filter spurious blanks
-  // (mid-clause comma-terminated lines never promote to paragraph
-  // boundaries even when surrounded by 1-blank gaps).
-  const cleaned = dropSpuriousBlanks(columnLines, baseline)
+  // F-X11 follow-up (#418) — when both column streams are available,
+  // first drop column-split artifact blanks (THIS col blank, OTHER col
+  // content). After this filter the surviving 1-blanks are
+  // predominantly TRUE PDF blanks (both cols visually blank at that
+  // physical row), so the sentence-end + capital-start heuristic
+  // applied later in `splitIntoStanzas` no longer over-fragments on
+  // mid-stanza sentence boundaries that happened to land at column-
+  // split artifact rows (the Psalm 46:2-12 right col regression
+  // pattern from review #411).
+  //
+  // For the user-reported real paragraph breaks (Psalm 46 refrain
+  // enter/exit) `dropColumnArtifactBlanks` ALSO removes those rows
+  // because the left col carries unrelated closing-prayer content at
+  // the same physical y. The remediation for that is post-stanza
+  // refrain detection (`refineParagraphBoundariesWithRefrains`,
+  // invoked from inside `splitIntoStanzas`): repeated 2-line refrain
+  // instances are recognised by text equality and reinstated as
+  // paragraph boundaries.
+  //
+  // Together the two layers (column-aware artifact filter +
+  // text-pattern refrain detection) preserve real refrain-bracket
+  // paragraph breaks while suppressing every-verse-period over-
+  // fragmentation. Legacy single-column callers (no
+  // `otherColumnLines`) fall through unchanged.
+  const filtered = hasOtherCol
+    ? dropColumnArtifactBlanks(columnLines, options.otherColumnLines)
+    : columnLines
+  const cleaned = dropSpuriousBlanks(filtered, baseline)
   // F-X11 backward-compat: in legacy single-column mode (no
   // `otherColumnLines`), the test fixtures expect "every blank ends a
   // stanza" — that's how the pre-F-X11 dataset was authored. Switch
