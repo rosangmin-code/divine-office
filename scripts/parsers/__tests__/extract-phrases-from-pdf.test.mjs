@@ -33,6 +33,7 @@ import {
   extractPhrasesFromColumn,
   detectBaselineCol,
   splitIntoStanzas,
+  dropColumnArtifactBlanks,
   runStage1,
   runStage2,
   crossCheckDisagrees,
@@ -51,6 +52,25 @@ function loadColumn(physicalPage, side) {
   const stream = split.find((s) => s.column === side)
   if (!stream) throw new Error(`no ${side} column for page ${physicalPage}`)
   return stream.lines
+}
+
+/**
+ * F-X11 (#408) — fixture loader that returns BOTH columns. Used by tests
+ * that exercise the production CLI flow (column-aware artifact filtering)
+ * via `extractPhrasesFromColumn(thisCol, { otherColumnLines: otherCol })`.
+ * Mirrors what `extractPhrasesFromPdf` does in the live extractor.
+ */
+function loadBothColumns(physicalPage, side) {
+  const txt = readFileSync(
+    resolve(FIXTURE_DIR, `psalter-physical-${String(physicalPage).padStart(3, '0')}.txt`),
+    'utf-8',
+  )
+  const split = splitColumns(txt, [physicalPage])
+  const target = split.find((s) => s.column === side)
+  if (!target) throw new Error(`no ${side} column for page ${physicalPage}`)
+  const otherSide = side === 'left' ? 'right' : 'left'
+  const other = split.find((s) => s.column === otherSide)
+  return { lines: target.lines, otherColumnLines: other?.lines ?? [] }
 }
 
 // @fr FR-161
@@ -80,25 +100,109 @@ describe('detectBaselineCol', () => {
 
 // @fr FR-161
 describe('splitIntoStanzas', () => {
-  it('groups consecutive non-blank lines and skips empty ones', () => {
+  // F-X11 (#408) — paragraph-aware splitting:
+  //   1-blank between content lines → paragraph boundary within stanza
+  //   ONLY when the prev line ends with sentence-terminator punctuation
+  //   AND the next line starts with an uppercase letter (the same
+  //   cross-check that Stage 2 uses for phrase boundaries; PDF visual
+  //   paragraph breaks consistently land at sentence ends).
+  //   Mid-clause 1-blanks (comma-terminated, lowercase wraps) are
+  //   treated as column-split artifacts and ignored.
+  //   2+-blank → new stanza (unchanged from pre-F-X11).
+  //   Each emitted stanza carries `{ lines, paragraphBoundaries }`
+  //   (the latter is the in-stanza line index where each within-stanza
+  //   paragraph begins).
+  it('treats 2+-blank as stanza boundary; 1-blank with sentence-end heuristic as paragraph break', () => {
     const groups = splitIntoStanzas([
-      '   a',
-      '      b',
+      '   First clause part,', // ends with comma → no boundary even with 1-blank
+      '      lowercase wrap',
       '',
       '',
-      '   c',
-      '   d',
+      '   Second sentence ends.', // ends with period
+      '   Continuing clause,',
       '',
-      '   e',
+      '   Final sentence opens.', // capital-start AFTER period → boundary
     ])
-    expect(groups).toHaveLength(3)
-    expect(groups[0]).toEqual(['   a', '      b'])
-    expect(groups[1]).toEqual(['   c', '   d'])
-    expect(groups[2]).toEqual(['   e'])
+    // 2-blank → new stanza.
+    // 1-blank between "Continuing clause," and "Final sentence opens." has
+    // prev=comma → NO boundary (mid-clause artifact).
+    expect(groups).toHaveLength(2)
+    expect(groups[0].lines).toEqual([
+      '   First clause part,',
+      '      lowercase wrap',
+    ])
+    expect(groups[0].paragraphBoundaries).toEqual([])
+    expect(groups[1].lines).toEqual([
+      '   Second sentence ends.',
+      '   Continuing clause,',
+      '   Final sentence opens.',
+    ])
+    // prev "Continuing clause," — comma, NOT a paragraph boundary.
+    expect(groups[1].paragraphBoundaries).toEqual([])
+  })
+
+  it('promotes 1-blank to paragraph boundary when sentence-end + capital-start match', () => {
+    // Mirrors user-reported Psalm 46:2-12 right col — content row,
+    // single artifact blank, content row whose prev ended with `.` and
+    // next starts capital → real paragraph break.
+    const groups = splitIntoStanzas([
+      'Уулс сүртэйгээр ганхан чичрэхэд ч айхгүй.',
+      '',
+      'Түг түмдийн ЭЗЭН бидэнтэй хамт',
+      'Иаковын Тэнгэрбурхан бидний хүчит цайз.',
+      '',
+      'Тэнгэрбурханы хотыг,',
+    ])
+    expect(groups).toHaveLength(1)
+    expect(groups[0].lines).toEqual([
+      'Уулс сүртэйгээр ганхан чичрэхэд ч айхгүй.',
+      'Түг түмдийн ЭЗЭН бидэнтэй хамт',
+      'Иаковын Тэнгэрбурхан бидний хүчит цайз.',
+      'Тэнгэрбурханы хотыг,',
+    ])
+    // Boundaries: before "Түг" (idx 1, prev ends in period, capital
+    // start) AND before "Тэнгэрбурханы" (idx 3, same).
+    expect(groups[0].paragraphBoundaries).toEqual([1, 3])
   })
 
   it('returns an empty array for all-blank input', () => {
     expect(splitIntoStanzas(['', '', ''])).toEqual([])
+  })
+
+  it('treats leading blanks as no-op (no boundary at index 0)', () => {
+    const groups = splitIntoStanzas(['', 'Sentence ends.', 'Next clause,'])
+    expect(groups).toHaveLength(1)
+    expect(groups[0].lines).toEqual(['Sentence ends.', 'Next clause,'])
+    expect(groups[0].paragraphBoundaries).toEqual([])
+  })
+})
+
+// @fr FR-161
+// F-X11 (#408) — column-split artifact detection. `splitColumns` emits a
+// blank in the target column whenever the OTHER column has content at the
+// same physical row (typical 2-up landscape layout). Those blanks are
+// pure layout artifacts — not visual paragraph breaks. The filter drops
+// them before stanza splitting so 1-blank vs 2+-blank counts reflect
+// real PDF spacing only.
+describe('dropColumnArtifactBlanks (F-X11)', () => {
+  it('drops blanks where the other column has content at the same row', () => {
+    const left = ['line A', '', 'line B', '', 'line C']
+    const right = ['', 'left col running', '', 'left col running', '']
+    // Row 1, 3 in left col are blank but right col has content → drop.
+    expect(dropColumnArtifactBlanks(left, right)).toEqual(['line A', 'line B', 'line C'])
+  })
+
+  it('preserves blanks where BOTH columns are blank (real paragraph rows)', () => {
+    const left = ['line A', '', 'line B']
+    const right = ['', '', '']
+    // Row 1 is blank in BOTH columns → real PDF blank row, keep.
+    expect(dropColumnArtifactBlanks(left, right)).toEqual(['line A', '', 'line B'])
+  })
+
+  it('is a pass-through when the other-column stream is undefined (legacy mode)', () => {
+    const lines = ['a', '', 'b']
+    expect(dropColumnArtifactBlanks(lines, undefined)).toEqual(lines)
+    expect(dropColumnArtifactBlanks(lines, [])).toEqual(lines)
   })
 })
 

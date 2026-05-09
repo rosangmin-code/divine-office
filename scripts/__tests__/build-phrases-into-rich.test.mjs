@@ -61,6 +61,9 @@ describe('planRefUpdates', () => {
           { lineRange: [0, 0], indent: 0 },
           { lineRange: [1, 1], indent: 0 },
         ],
+        // F-X11 (#408) — empty array when extractor stanza has no
+        // `paragraphBoundaries` (this fixture has none).
+        paragraphBoundaries: [],
         richFirstLine: 'ЭЗЭН миний Эзэнд',
       },
     ])
@@ -379,6 +382,144 @@ describe('injectPhrasesIntoRichData — idempotency', () => {
     ])
     expect(result.ok).toBe(true)
     expect(result.data['Strip Ref'].stanzasRich.blocks[0].phrases).toBeUndefined()
+  })
+})
+
+// @fr FR-161
+// F-X11 (#408) — paragraphBoundaries injection. Builder must translate
+// extractor-stanza-relative paragraph boundary indices into rich-block-
+// relative indices via the same flat-stream window mapping the phrase
+// translation already uses.
+describe('injectPhrasesIntoRichData — F-X11 paragraphBoundaries', () => {
+  it('translates within-stanza paragraph boundaries to rich-block-relative indices', () => {
+    // Single rich stanza of 4 lines. Extractor reports the same 4 lines
+    // with one within-stanza paragraph boundary at index 2 ("paragraph
+    // break before line 2").
+    const richData = {
+      'PB Ref': richRef([
+        richStanzaBlock('verse a', ['verse b', 'verse c', 'verse d']),
+      ]),
+    }
+    const result = injectPhrasesIntoRichData(richData, [
+      {
+        ref: 'PB Ref',
+        stanzas: [
+          {
+            stanzaIndex: 0,
+            lines: ['verse a', 'verse b', 'verse c', 'verse d'],
+            phrases: [
+              { lineRange: [0, 0], indent: 0 },
+              { lineRange: [1, 1], indent: 0 },
+              { lineRange: [2, 2], indent: 0 },
+              { lineRange: [3, 3], indent: 0 },
+            ],
+            paragraphBoundaries: [2],
+          },
+        ],
+      },
+    ])
+    expect(result.ok).toBe(true)
+    const block = result.data['PB Ref'].stanzasRich.blocks[0]
+    expect(block.paragraphBoundaries).toEqual([2])
+  })
+
+  it('translates boundaries across multi-stanza extractor flat stream (Psalm 110-style join)', () => {
+    // Rich block holds 4 lines that span 2 extractor stanzas; the second
+    // extractor stanza has a paragraph boundary at its line 1. The
+    // boundary should appear at rich-block-relative index 3.
+    const richData = {
+      'Span Ref': richRef([
+        richStanzaBlock('a', ['b', 'c', 'd']),
+      ]),
+    }
+    const result = injectPhrasesIntoRichData(richData, [
+      {
+        ref: 'Span Ref',
+        stanzas: [
+          {
+            stanzaIndex: 0,
+            lines: ['a', 'b'],
+            phrases: [{ lineRange: [0, 1], indent: 0 }],
+          },
+          {
+            stanzaIndex: 1,
+            lines: ['c', 'd'],
+            phrases: [
+              { lineRange: [0, 0], indent: 0 },
+              { lineRange: [1, 1], indent: 0 },
+            ],
+            paragraphBoundaries: [1], // before "d"
+          },
+        ],
+      },
+    ])
+    expect(result.ok).toBe(true)
+    const block = result.data['Span Ref'].stanzasRich.blocks[0]
+    // Window is [a, b, c, d]; paragraph boundary "before d" sits at
+    // window index 3.
+    expect(block.paragraphBoundaries).toEqual([3])
+  })
+
+  it('drops paragraphBoundaries field when extractor now reports none', () => {
+    const seeded = {
+      'Strip PB Ref': richRef([
+        {
+          ...richStanzaBlock('a', ['b']),
+          phrases: [{ lineRange: [0, 1], indent: 0 }],
+          paragraphBoundaries: [1],
+        },
+      ]),
+    }
+    const result = injectPhrasesIntoRichData(seeded, [
+      {
+        ref: 'Strip PB Ref',
+        stanzas: [
+          {
+            stanzaIndex: 0,
+            lines: ['a', 'b'],
+            phrases: [{ lineRange: [0, 1], indent: 0 }],
+            // no paragraphBoundaries — must clear the previously-set field
+          },
+        ],
+      },
+    ])
+    expect(result.ok).toBe(true)
+    const block = result.data['Strip PB Ref'].stanzasRich.blocks[0]
+    expect(block.paragraphBoundaries).toBeUndefined()
+    // phrases still set (independent field).
+    expect(block.phrases).toEqual([{ lineRange: [0, 1], indent: 0 }])
+  })
+
+  it('idempotent under repeated apply with paragraphBoundaries', () => {
+    const richData = {
+      'Idem PB Ref': richRef([
+        richStanzaBlock('a', ['b', 'c', 'd']),
+      ]),
+    }
+    const batch = {
+      ref: 'Idem PB Ref',
+      stanzas: [
+        {
+          stanzaIndex: 0,
+          lines: ['a', 'b', 'c', 'd'],
+          phrases: [
+            { lineRange: [0, 0], indent: 0 },
+            { lineRange: [1, 1], indent: 0 },
+            { lineRange: [2, 2], indent: 0 },
+            { lineRange: [3, 3], indent: 0 },
+          ],
+          paragraphBoundaries: [2, 3],
+        },
+      ],
+    }
+    const first = injectPhrasesIntoRichData(richData, [batch])
+    expect(first.ok).toBe(true)
+    const second = injectPhrasesIntoRichData(first.data, [batch])
+    expect(second.ok).toBe(true)
+    expect(JSON.stringify(second.data)).toBe(JSON.stringify(first.data))
+    expect(
+      first.data['Idem PB Ref'].stanzasRich.blocks[0].paragraphBoundaries,
+    ).toEqual([2, 3])
   })
 })
 

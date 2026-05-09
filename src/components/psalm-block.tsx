@@ -127,6 +127,15 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
             // policy. Falls back to the legacy line-by-line render when
             // `phrases` is absent or empty (regression-safe additive).
             if (block.phrases && block.phrases.length > 0) {
+              // F-X11 (#408) — within-stanza paragraph boundaries. When a
+              // phrase's first-line index appears in
+              // `paragraphBoundaries`, prepend `mt-3` to that phrase's
+              // span so a smaller-than-stanza-but-larger-than-phrase gap
+              // renders above it (matches the PDF's visual paragraph
+              // spacing within a verse cluster — see audit doc §5.2).
+              const paragraphBoundarySet = new Set(
+                block.paragraphBoundaries ?? [],
+              )
               return (
                 <p
                   key={bi}
@@ -168,11 +177,14 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
                       : isDoxology
                       ? 'psalm-phrase-doxology'
                       : 'psalm-phrase'
+                    const isParagraphStart = paragraphBoundarySet.has(start)
+                    const paragraphClass = isParagraphStart ? ' mt-3' : ''
                     return (
                       <span
                         key={pi}
                         data-role={dataRole}
-                        className={`block${indentClass ? ' ' + indentClass : ''}${roleClass}`}
+                        data-paragraph-boundary={isParagraphStart ? 'true' : undefined}
+                        className={`block${indentClass ? ' ' + indentClass : ''}${roleClass}${paragraphClass}`}
                       >
                         {phraseText}
                       </span>
@@ -181,6 +193,17 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
                 </p>
               )
             }
+            // F-X11 (#408) — within-stanza paragraph boundaries also
+            // apply on the legacy line-render path. When `phrases` is
+            // absent (or empty) but `paragraphBoundaries` is set,
+            // prepend `mt-3` to the matching `<span>` so the
+            // paragraph gap renders even before phrase data exists.
+            // This keeps paragraph rendering decoupled from phrase
+            // injection — F-X11 paragraph fix can land standalone for
+            // refs that don't yet have phrases.
+            const legacyParagraphBoundarySet = new Set(
+              block.paragraphBoundaries ?? [],
+            )
             return (
               <p
                 key={bi}
@@ -193,11 +216,14 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
                   const isRefrain = line.role === 'refrain'
                   const refrainClass = isRefrain ? ' text-red-700 dark:text-red-400' : ''
                   const text = line.spans.map((sp) => sp.text ?? '').join('')
+                  const isParagraphStart = legacyParagraphBoundarySet.has(li)
+                  const paragraphClass = isParagraphStart ? ' mt-3' : ''
                   return (
                     <span
                       key={li}
                       data-role={isRefrain ? 'psalm-stanza-refrain' : undefined}
-                      className={`block${indentClass ? ' ' + indentClass : ''}${refrainClass}`}
+                      data-paragraph-boundary={isParagraphStart ? 'true' : undefined}
+                      className={`block${indentClass ? ' ' + indentClass : ''}${refrainClass}${paragraphClass}`}
                     >
                       {text}
                     </span>
