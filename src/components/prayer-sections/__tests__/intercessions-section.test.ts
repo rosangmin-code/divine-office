@@ -49,6 +49,20 @@ describe('LEGACY_INTERCESSION_REFRAIN_LEAD_RE — cohortative trigger', () => {
     expect(re.test('хандан залбирцгаая.')).toBe(true)
   })
 
+  it('matches "залбирцгаая;" — trailing semicolon (NIT batch #409, review #382)', () => {
+    // Punctuation class expanded to `[:;.!?]?` so future PDF petition
+    // variants using `;` / `!` / `?` still trigger the refrain heuristic.
+    expect(re.test('хандан залбирцгаая;')).toBe(true)
+  })
+
+  it('matches "залбирцгаая!" — trailing exclamation (NIT batch #409, review #382)', () => {
+    expect(re.test('хандан залбирцгаая!')).toBe(true)
+  })
+
+  it('matches "залбирцгаая?" — trailing question mark (NIT batch #409, review #382)', () => {
+    expect(re.test('хандан залбирцгаая?')).toBe(true)
+  })
+
   it('matches "залбирцгаая" — bare cohortative (no punct)', () => {
     expect(re.test('хандан залбирцгаая')).toBe(true)
   })

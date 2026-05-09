@@ -387,7 +387,15 @@ describe('FR-160-C psalter-headers catalog', () => {
           missing.push({ ref: fixture.ref, page: fixture.page })
           continue
         }
-        if (match.preface_text.startsWith(fixture.pdfTitle)) {
+        // NIT batch #409 (review #390 NIT-FU-1): widened from
+        // `startsWith` to `includes` so the invariant catches not only
+        // first-line fallback regressions (where the title appears at
+        // the start of preface_text) but also mid-string and trailing
+        // regressions (where a future extractor change might splice the
+        // title elsewhere). False-positive risk is low — `pdfTitle` is
+        // a section header that should not appear inside body prose for
+        // the listed PDF-only refs.
+        if (match.preface_text.includes(fixture.pdfTitle)) {
           violations.push({
             ref: fixture.ref,
             page: fixture.page,
