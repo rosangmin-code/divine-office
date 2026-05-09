@@ -1332,6 +1332,372 @@ describe('planRefUpdates — F-X11 WI-A2 wrap-tolerant matcher (#452)', () => {
     ])
   })
 
+  // ── F-X11 WI-A2-2 (#456) — REVERSE direction wrap-tolerant tests ──
+  //
+  // Mirror of the forward tests above: rich.json carries a phrase-split
+  // (R-8 result — a logical line broken into 2-3 short rich lines, with
+  // the trailing lines starting lowercase as wrap-continuation markers)
+  // and the extractor has the same logical line wrap-MERGED into a
+  // single physical row. Pre-#456 the matcher tried only forward bridge
+  // (rich-merged ← ext-split); the symmetric prefix-trap on
+  // `stanzaFirstLineMatches` collapsed the second rich line into the
+  // first via 12-char prefix tolerance and silently de-synced the
+  // remainder of the window. Post-#456 a `tryBridgeRich` mirror absorbs
+  // 2-3 rich lines into a single ext stream row with the same
+  // `isWrapContinuation` guard the forward direction uses (lowercase
+  // start, no opening punctuation, no leading digit), and a
+  // `bridgeMatch` length-similarity gate prevents the 12-char prefix
+  // accepting wildly-mismatched concat lengths.
+
+  // ── Positive: single reverse bridge (production-shape, Revelation
+  // 4:11; 5:9-10, 12 b1 lines 14-15 mechanism) ──────────────────────
+  // rich = ['Алдар ба', 'магтаалыг авах зохистой нь Тэр мөн.'] (2 lines,
+  //        rich.0 short, rich.1 lowercase wrap continuation)
+  // stream = ['Алдар ба магтаалыг авах зохистой нь Тэр мөн.'] (1 merged)
+  it('bridges 2 rich lines into one stream row when next rich is wrap continuation', () => {
+    const richSlots = [
+      {
+        block: richStanzaBlock('Алдар ба', [
+          'магтаалыг авах зохистой нь Тэр мөн.',
+        ]),
+        blockIndex: 0,
+      },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: ['Алдар ба магтаалыг авах зохистой нь Тэр мөн.'],
+        // ext phrase covering its single line maps to BOTH rich lines
+        // via the reverse-bridge collapse.
+        phrases: [{ lineRange: [0, 0], indent: 0 }],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    expect(out.issues).toEqual([])
+    expect(out.updates).toHaveLength(1)
+    // The single ext line maps to BOTH rich windowIndices [0, 1] via
+    // the reverse-bridge lookup duplication; phrase translation
+    // collects all hits and produces a contiguous range [0, 1].
+    expect(out.updates[0].phrases).toEqual([
+      { lineRange: [0, 1], indent: 0 },
+    ])
+  })
+
+  // ── Positive: 3-rich-line reverse bridge (deeper rich split) ─────────
+  // rich = ['Эхний', 'дунд', 'төгсгөл.'] (3 short rich lines, two lowercase)
+  // stream = ['Эхний дунд төгсгөл.'] (1 merged)
+  it('bridges 3 rich lines into one stream row via deeper lookahead', () => {
+    const richSlots = [
+      {
+        block: richStanzaBlock('Эхний', ['дунд', 'төгсгөл.']),
+        blockIndex: 0,
+      },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: ['Эхний дунд төгсгөл.'],
+        phrases: [{ lineRange: [0, 0], indent: 0 }],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    expect(out.issues).toEqual([])
+    expect(out.updates).toHaveLength(1)
+    expect(out.updates[0].phrases).toEqual([
+      { lineRange: [0, 2], indent: 0 },
+    ])
+  })
+
+  // ── Negative: rich[N+1] is a new stanza first line (capital) ─────────
+  // The reverse bridge MUST refuse to absorb a capital-leading rich line
+  // even when stream is meaningfully longer than rich[N], so a new
+  // sentence / verse / page-footer fragment cannot be silently merged
+  // into the previous logical line.
+  it('does NOT reverse-bridge when next rich is capital-leading (new stanza)', () => {
+    const richSlots = [
+      {
+        block: richStanzaBlock('Алдар ба', ['Магтаалыг авах зохистой.']),
+        blockIndex: 0,
+      },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: ['Алдар ба магтаалыг авах зохистой.'],
+        phrases: [{ lineRange: [0, 0], indent: 0 }],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    // Reverse bridge MUST refuse (capital М on rich.1 fails the
+    // wrap-continuation guard). After refusal: direct-match on rich.0
+    // vs ext.0 succeeds via 12-char prefix tolerance (both share
+    // 'Алдар ба' as their leading 8 chars), consuming the single ext
+    // line. rich.1 then has no ext partner — alignAtProbe returns null
+    // at every probe, so the diagnostic falls through to
+    // LINE_COUNT_MISMATCH (richLineCount=2, extractorLineCount=1, the
+    // count of rich lines that 12-char-prefix-matched against the
+    // single ext line). Both LINE_COUNT_MISMATCH and
+    // NO_MATCHING_EXTRACTOR_STANZA are legitimate error surfaces here —
+    // what matters is that the bridge did NOT silently absorb the
+    // capital-leading rich.1.
+    expect(out.updates).toEqual([])
+    expect(out.issues).toHaveLength(1)
+    expect(['LINE_COUNT_MISMATCH', 'NO_MATCHING_EXTRACTOR_STANZA']).toContain(
+      out.issues[0].kind,
+    )
+  })
+
+  // ── Negative: rich[N+1] is digit-leading (page-footer / verse-num) ───
+  it('does NOT reverse-bridge when next rich is digit-leading', () => {
+    const richSlots = [
+      {
+        block: richStanzaBlock('Эхний мөр', ['132 хуудас']),
+        blockIndex: 0,
+      },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: ['Эхний мөр 132 хуудас'],
+        phrases: [{ lineRange: [0, 0], indent: 0 }],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    // Same shape as the capital-leading case — reverse bridge refuses
+    // on the digit guard, direct match consumes the single ext line,
+    // rich.1 left without a partner. The diagnostic falls through to
+    // LINE_COUNT_MISMATCH or NO_MATCHING_EXTRACTOR_STANZA depending on
+    // whether the residue can be re-probed. The invariant under test
+    // is "bridge refused"; either error is acceptable.
+    expect(out.updates).toEqual([])
+    expect(out.issues).toHaveLength(1)
+    expect(['LINE_COUNT_MISMATCH', 'NO_MATCHING_EXTRACTOR_STANZA']).toContain(
+      out.issues[0].kind,
+    )
+  })
+
+  // ── Multi-block window: reverse bridge in the middle of a stanza ─────
+  // rich = ['Эхний', 'Алдар ба', 'магтаалыг…', 'Сүүлчийн']
+  // stream = ['Эхний', 'Алдар ба магтаалыг…', 'Сүүлчийн']
+  // The middle two rich lines collapse into one stream row; first /
+  // last align 1-1.
+  it('reverse-bridges only the affected rich pair within a multi-line window', () => {
+    const richSlots = [
+      {
+        block: richStanzaBlock('Эхний', [
+          'Алдар ба',
+          'магтаалыг авах зохистой нь Тэр мөн.',
+          'Сүүлчийн',
+        ]),
+        blockIndex: 0,
+      },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: [
+          'Эхний',
+          'Алдар ба магтаалыг авах зохистой нь Тэр мөн.',
+          'Сүүлчийн',
+        ],
+        phrases: [
+          { lineRange: [0, 0], indent: 0 },
+          { lineRange: [1, 1], indent: 0 },
+          { lineRange: [2, 2], indent: 0 },
+        ],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    expect(out.issues).toEqual([])
+    expect(out.updates).toHaveLength(1)
+    // Phrase translation: ext line 0 → rich window 0; ext line 1 → rich
+    // windows {1, 2} (reverse-bridged); ext line 2 → rich window 3.
+    expect(out.updates[0].phrases).toEqual([
+      { lineRange: [0, 0], indent: 0 },
+      { lineRange: [1, 2], indent: 0 }, // expanded across reverse pair
+      { lineRange: [3, 3], indent: 0 },
+    ])
+  })
+
+  // ── Forward + reverse mixed in one window ────────────────────────────
+  // rich = ['Гарыг минь дайтахад,', 'Алдар ба', 'магтаалыг…']
+  //        (rich.0 forward-bridged from 2 stream rows; rich.1+rich.2
+  //         reverse-bridged into 1 stream row)
+  // stream = ['Гарыг', 'минь дайтахад,', 'Алдар ба магтаалыг…']
+  it('handles forward + reverse bridges in the same window', () => {
+    const richSlots = [
+      {
+        block: richStanzaBlock('Гарыг минь дайтахад,', [
+          'Алдар ба',
+          'магтаалыг авах зохистой нь Тэр мөн.',
+        ]),
+        blockIndex: 0,
+      },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: [
+          'Гарыг',
+          'минь дайтахад,',
+          'Алдар ба магтаалыг авах зохистой нь Тэр мөн.',
+        ],
+        phrases: [
+          { lineRange: [0, 1], indent: 0 },
+          { lineRange: [2, 2], indent: 0 },
+        ],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    expect(out.issues).toEqual([])
+    expect(out.updates).toHaveLength(1)
+    // Forward phrase [0,1] (2 ext rows → rich window 0) collapses to
+    // rich line 0; reverse phrase [2,2] (1 ext row → rich windows 1+2)
+    // expands to [1,2].
+    expect(out.updates[0].phrases).toEqual([
+      { lineRange: [0, 0], indent: 0 },
+      { lineRange: [1, 2], indent: 0 },
+    ])
+  })
+
+  // ── Paragraph boundaries on reverse-bridged groups ───────────────────
+  // ext stanza paragraphBoundaries[1] marks "before ext line 1".
+  // After reverse-bridge, ext line 1 maps to rich windows 1+2. Only the
+  // FIRST (windowIndex 1) inherits the source's isParagraphStart; the
+  // continuation (windowIndex 2) is suppressed. The translated PB list
+  // therefore contains 1 (NOT 2) — semantic invariant: PB cannot fall
+  // BETWEEN reverse-bridged rich lines (they're intra-source-line).
+  it('suppresses isParagraphStart on reverse-bridge continuation rich lines', () => {
+    const richSlots = [
+      {
+        block: richStanzaBlock('Эхний', [
+          'Алдар ба',
+          'магтаалыг авах зохистой нь Тэр мөн.',
+          'Сүүлчийн',
+        ]),
+        blockIndex: 0,
+      },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: [
+          'Эхний',
+          'Алдар ба магтаалыг авах зохистой нь Тэр мөн.',
+          'Сүүлчийн',
+        ],
+        phrases: [
+          { lineRange: [0, 0], indent: 0 },
+          { lineRange: [1, 1], indent: 0 },
+          { lineRange: [2, 2], indent: 0 },
+        ],
+        paragraphBoundaries: [1, 2],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    expect(out.issues).toEqual([])
+    expect(out.updates).toHaveLength(1)
+    // PB at ext line 1 maps to rich window 1 only (window 2 is the
+    // reverse-bridge continuation, isParagraphStart suppressed). PB at
+    // ext line 2 maps to rich window 3.
+    expect(out.updates[0].paragraphBoundaries).toEqual([1, 3])
+  })
+
+  // ── Length-similarity guard (regression: Tobit 13:8-11 b8) ──────────
+  // The 12-char prefix tolerance in `stanzaFirstLineMatches` would
+  // accidentally accept a clearly-too-long reverse-bridged concat as
+  // matching a short ext line whenever they share their leading 12
+  // chars. The `bridgeMatch` length-similarity gate (delta ≤ max(4,
+  // 0.15 × max-len)) rejects such cases so bridge failure cleanly
+  // surfaces a real alignment failure (NO_MATCHING_EXTRACTOR_STANZA)
+  // rather than silently accepting and de-syncing the next step.
+  it('rejects reverse-bridge when concat length is wildly different from stream line', () => {
+    // rich.0 ≈ 31 chars, rich.1 lowercase 16 chars. Concat ≈ 48 chars.
+    // ext.0 ≈ 32 chars (single-char typography drift on 'Эзэний' suffix).
+    // 12-char prefix would accept the bridge if used naively; bridgeMatch
+    // delta=16 vs max-allowed=ceil(0.15 × 48)=8 rejects it.
+    const richSlots = [
+      {
+        block: richStanzaBlock('Сэтгэл минь Эзэний, агуу Хааныг', [
+          'ерөөн магтагтун.',
+        ]),
+        blockIndex: 0,
+      },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: [
+          'Сэтгэл минь Эзэнийг, агуу Хааныг',
+          'ерөөн магтагтун.',
+        ],
+        phrases: [
+          { lineRange: [0, 0], indent: 0 },
+          { lineRange: [1, 1], indent: 0 },
+        ],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    // Reverse bridge correctly REJECTS (length delta > tolerance).
+    // Direct 1-1 match succeeds via 12-char prefix on 'Сэтгэл минь '
+    // (typography drift). rich.1 / ext.1 align exactly. PASSES.
+    expect(out.issues).toEqual([])
+    expect(out.updates).toHaveLength(1)
+  })
+
+  // ── Production-shape regression: Revelation 4:11; 5:9-10, 12 b1 ─────
+  // rich block 1 has 16 lines including the trailing pair
+  // ('Алдар ба', 'магтаалыг авах зохистой нь Тэр мөн.'). The ext stream
+  // has the same 16-element prefix but lines 14+15 are merged into a
+  // single 'Алдар ба магтаалыг авах зохистой нь Тэр мөн.' (15 ext
+  // lines total). Pre-#456 this reported rich=16 ext=15 / atomic gate
+  // FAIL. Post-#456 the reverse bridge collapses the trailing rich pair.
+  it('Revelation 4:11; 5:9-10, 12 b1 production-shape regression: bridges trailing rich-split pair', () => {
+    const richTrailing = [
+      'Эзэн болох Христ минь,',
+      'Хуйлмал номыг авч,',
+      'Лацнуудыг нь нээх зохистой нь Та мөн.',
+      'Учир нь Та нядлуулсан бөгөөд',
+      'Өөрийн цусаар бүх овог, хэл,',
+      'Ард түмэн болон үндэстнүүдээс',
+      'Тэнгэрбурханд ариун хүмүүсийг',
+      'Арилжин авч өгсөн билээ.',
+      'Та тэднийг Тэнгэрбурханы маань төлөөх',
+      'Хаанчлал ба тахилч нар болгосон.',
+      'Тэд дэлхий дээр хаанчлах болно.',
+      'Нядлуулсан Хурга',
+      'Хүч, баялаг, мэргэн ухаан,',
+      'Сүр хүч, хүндэтгэл,',
+      'Алдар ба',
+      'магтаалыг авах зохистой нь Тэр мөн.',
+    ]
+    const richSlots = [
+      {
+        block: richStanzaBlock(richTrailing[0], richTrailing.slice(1)),
+        blockIndex: 0,
+      },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: [
+          ...richTrailing.slice(0, 14),
+          'Алдар ба магтаалыг авах зохистой нь Тэр мөн.',
+        ],
+        phrases: richTrailing
+          .slice(0, 14)
+          .map((_, i) => ({ lineRange: [i, i], indent: 0 }))
+          .concat([{ lineRange: [14, 14], indent: 0 }]),
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    expect(out.issues).toEqual([])
+    expect(out.updates).toHaveLength(1)
+    // Last phrase covers the merged pair: rich windows 14+15.
+    const lastPhrase = out.updates[0].phrases[out.updates[0].phrases.length - 1]
+    expect(lastPhrase).toEqual({ lineRange: [14, 15], indent: 0 })
+  })
+
   // ── End-to-end via injectPhrasesIntoRichData (atomic gate path) ──────
   // The same shape but exercised through the production entry point used
   // by both `scripts/build-phrases-into-rich.mjs` CLI and
