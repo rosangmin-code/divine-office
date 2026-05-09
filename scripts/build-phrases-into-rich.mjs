@@ -648,7 +648,33 @@ function translatePhrases(window, extractorStanzas) {
     phrases.push({ lineRange: [i, i], indent: 0 })
   }
   phrases.sort((a, b) => a.lineRange[0] - b.lineRange[0])
-  return phrases
+  // F-X11 Phase 2-D (#463) — lineRange dedup pass.
+  //
+  // Two source-side mechanisms can produce two phrase entries with the
+  // SAME rich-relative `lineRange` after the upstream coord→windowIndex
+  // translation:
+  //   1. Two extractor phrases that start at neighbouring lines but, via
+  //      FORWARD-bridge merging (#452 cross-column wrap), both collapse
+  //      onto the same single rich line — both end up with `[k, k]`.
+  //   2. Adjacent extractor phrases that, after REVERSE-bridge fan-out
+  //      (#456 ext-line-split-across-rich-rows), both clip to the same
+  //      `[k, k]` window slice (because the same windowIndex is the
+  //      only one inside the window for both source lines).
+  //
+  // Without dedup the renderer renders the same rich line twice, which
+  // surfaces as the user-visible NFR-009j 0-OVERLAP regression caught in
+  // #457 (Psalm 16:1-6 b0 phrases[3]+[4] / Psalm 137:1-6 b1
+  // phrases[2]+[3] both lineRange [3,3] / [2,2] respectively). Keep the
+  // first occurrence (sort already runs by start) and drop the rest.
+  const seenLineRange = new Set()
+  const deduped = []
+  for (const p of phrases) {
+    const key = `${p.lineRange[0]}:${p.lineRange[1]}`
+    if (seenLineRange.has(key)) continue
+    seenLineRange.add(key)
+    deduped.push(p)
+  }
+  return deduped
 }
 
 /**
@@ -796,9 +822,45 @@ export function planRefUpdates(richStanzaSlots, extractorStanzas) {
       }
     })
     consumed.push([windowStart, alignment.windowEnd])
+    const translatedPhrases = translatePhrases(windowEntries, extractorStanzas)
+    // F-X11 Phase 2-D (#463) — propagate rich block line.indent into
+    // phrase.indent.
+    //
+    // Background: extractor's `phrases[i].indent` is derived from the
+    // PDF column position relative to the per-column baseline (Stage 1
+    // visual-indent). For a stanza whose entire body sits at one
+    // visual-indent step above its column baseline (e.g. Psalm 30:2-13
+    // antiphon block at PDF baseline+PHRASE_INDENT_STEP), that whole
+    // block's extractor `indent` is 0 even though every rich line carries
+    // `line.indent === 1`. The renderer's `phrase.indent === 0 → pl-6`
+    // path then renders a flush-left line — the regression
+    // dispatch-#463 calls out as "Psalm 30:2-13 b0/b2/b4 phrase.indent
+    // flatten".
+    //
+    // Fix: when EVERY rich line in the phrase's coverage carries the
+    // same numeric `line.indent` value, override `phrase.indent` to
+    // match. Mixed-indent phrases (rare — a phrase straddling a 0/1
+    // change) keep the extractor value to avoid silently widening when
+    // the source data already disagrees with itself.
+    const richLines = slot.block.lines || []
+    for (const phrase of translatedPhrases) {
+      const start = phrase.lineRange[0]
+      const end = phrase.lineRange[1]
+      if (start < 0 || end >= richLines.length) continue
+      const headIndent = Number(richLines[start]?.indent) || 0
+      let uniform = true
+      for (let i = start + 1; i <= end; i++) {
+        const li = Number(richLines[i]?.indent) || 0
+        if (li !== headIndent) {
+          uniform = false
+          break
+        }
+      }
+      if (uniform) phrase.indent = headIndent
+    }
     updates.push({
       blockIndex: slot.blockIndex,
-      phrases: translatePhrases(windowEntries, extractorStanzas),
+      phrases: translatedPhrases,
       paragraphBoundaries: translateParagraphBoundaries(windowEntries),
       richFirstLine,
     })

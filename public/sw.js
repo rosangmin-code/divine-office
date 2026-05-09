@@ -1,3 +1,14 @@
+// v11 — #463: F-X11 Phase 2-D 데이터 변경 반영. translatePhrases() lineRange
+// dedup pass 추가 (Psalm 16:1-6 b0 / Psalm 137:1-6 b1 의 NFR-009j 0-OVERLAP
+// 회귀 fix — 두 phrase 가 같은 [k,k] 로 collapse 되어 화면에 같은 line 2회
+// 렌더되던 결함) + 빌더의 phrase.indent 가 rich line.indent 를 채택하도록
+// propagation 추가 (Psalm 30:2-13 b0/b2/b4 antiphon block 의 indent flatten
+// fix). 추가로 #456 WI-A2-2 reverse-bridge matcher 로 newly-PASS 가 된
+// 3 refs (Revelation 4:11; 5:9-10, 12 b1, Revelation 11:17-18; 12:10b-12a b0,
+// Psalm 65:2-9 b0) 도 처음으로 phrases inject. 총 6 refs delta. HTML byte
+// 출력 (phrase 단위 indent + 중복 line 제거) 이 바뀌므로 v10 precache
+// snapshot 과 어긋날 수 있어 bump. v10 잔존 시 Psalm 16/137 의 중복
+// 렌더링 버그가 그대로 노출됨.
 // v10 — #453: F-X11 Phase 2-C 데이터 변경 반영. #452 matcher-side wrap-
 // tolerant 비교 도입으로 6 refs (Psalm 16/21/30/119:105-112/137/144:1-10)
 // 가 DRIFT_LINE_COUNT → PASS 전환, paragraphBoundaries + phrases 신규
@@ -29,7 +40,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v10'
+const CACHE_VERSION = 'divine-office-v11'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
