@@ -983,6 +983,128 @@ export function extractPhrasesFromColumn(columnLines, options = {}) {
   return { baselineCol: baseline, stanzas }
 }
 
+// DRIFT WI-A (#449, audit #448) — page-footer pattern used by
+// `splitOnEveryBlank` to distinguish a real stanza-terminator blank from
+// a print page-break blank that happens to fall mid-stanza. Mirrors the
+// F-X13 #444 catalog (`scripts/extract-psalter-headers.js` and
+// `scripts/dev/page-header-filter.mjs`) — kept inline here to avoid a
+// module-shape mismatch (those callers are mixed CommonJS / ESM).
+//
+// Patterns (each matches a SINGLE column-stream line, fully anchored):
+//   - Bare page number  : `^\s*\d{1,4}\s*$` (e.g. "62", "169" — possibly
+//                          with trailing tabs)
+//   - Numbered page+wk  : `^\s*\d{1,4}\s+\d+\s+(дугаар|...)\s+долоо\s+хоног...$`
+//                          (e.g. "168    2 дугаар долоо хоног")
+//   - Week marker only  : `^\s*\d+\s+(дугаар|...)\s+долоо\s+хоног\s*$`
+//                          (e.g. "1 дугаар долоо хоног")
+//   - Weekday header    : `^\s*<weekday> гарагийн <time> [N]?$`
+//                          (e.g. "Бямба гарагийн орой", "Ням гарагийн өглөө 169")
+//
+// All patterns are full-line — no body prose can match. The `^...$`
+// anchors are essential for false-positive avoidance (a body line that
+// merely starts with "169" or contains "Бямба гарагийн" must NOT match).
+const _PF_WEEKDAYS = ['Ням', 'Даваа', 'Мягмар', 'Лхагва', 'Пүрэв', 'Баасан', 'Бямба']
+const PAGE_FOOTER_BARE_PAGE_RE = /^\s*\d{1,4}\s*$/u
+const PAGE_FOOTER_NUMBERED_WEEK_RE = /^\s*\d{1,4}\s+\d+\s+(?:дугаар|дүгээр|дэх|дахь)\s+долоо\s+хоног\s*$/u
+const PAGE_FOOTER_WEEK_MARKER_RE = /^\s*\d+\s+(?:дугаар|дүгээр|дэх|дахь)\s+долоо\s+хоног\s*$/u
+const PAGE_FOOTER_WEEKDAY_RE = new RegExp(
+  `^\\s*(?:${_PF_WEEKDAYS.join('|')})\\s+гарагийн\\s+\\S+(?:\\s+\\d{1,4})?\\s*$`,
+  'u',
+)
+
+/**
+ * DRIFT WI-A (#449) — true when `line` is a print page-break artifact:
+ * a bare page number, a numbered week marker, a standalone week marker,
+ * or a weekday running header. Returns `false` for blanks (caller treats
+ * blanks separately) and for any body prose.
+ *
+ * Exported for unit-testability; the module also uses it inline from
+ * `splitOnEveryBlank`'s lookahead.
+ *
+ * @param {string} line
+ * @returns {boolean}
+ */
+export function isPageFooterLine(line) {
+  const t = (line || '').trim()
+  if (t.length === 0) return false
+  if (PAGE_FOOTER_BARE_PAGE_RE.test(t)) return true
+  if (PAGE_FOOTER_NUMBERED_WEEK_RE.test(t)) return true
+  if (PAGE_FOOTER_WEEK_MARKER_RE.test(t)) return true
+  if (PAGE_FOOTER_WEEKDAY_RE.test(t)) return true
+  return false
+}
+
+/**
+ * DRIFT WI-A (#449) — lookahead helper for `splitOnEveryBlank`. Given
+ * the index of a blank line, decide whether the blank-bounded run that
+ * follows is a print page-break artifact (bridge) or a real
+ * stanza-terminator (flush).
+ *
+ * Returns the index of the LAST line to consume (the trailing blank
+ * before body resume), or `-1` when no bridge is detected. Caller
+ * should jump past the returned index and continue extending the
+ * current stanza without flushing.
+ *
+ * Bridge shape (per audit #448 §3):
+ *
+ *   blankIndex      → blank
+ *   blankIndex+1..k → ZERO or MORE blanks
+ *   k+1..m          → ONE or MORE page-footer lines (with optional
+ *                     interleaved blanks)
+ *   m+1..n          → ZERO or MORE blanks
+ *   n+1             → first non-blank, non-footer line (body resume)
+ *
+ * Total span `bodyResumeIndex - blankIndex` MUST be in [2, 7]. The
+ * minimum 2 covers the tightest realistic case (blank + footer + body);
+ * 7 covers the loosest observed (blank + blank + 2 footer lines + 2
+ * blanks + 1 footer = 7 lines before body). Outside this band the
+ * lookahead refuses (a single body blank would otherwise pull in
+ * unrelated downstream content).
+ *
+ * Edge cases:
+ *
+ *   - End of stream with no body resume → return -1 (caller will
+ *     flush any buffered current stanza as normal).
+ *   - Page-footer-looking line directly after blank with NO subsequent
+ *     body → return -1 (no bridge; the trailing footer/fragment will
+ *     be handled by the caller's normal stanza flush, then dropped
+ *     by `stripPageHeadersFromStanzas` downstream).
+ *   - Body line directly after blank (no page-footer at all) → return
+ *     -1 (the typical real stanza boundary).
+ *
+ * @param {string[]} lines
+ * @param {number} blankIndex - index of the seed blank line.
+ * @returns {number} last consumed index, or -1 when no bridge.
+ */
+function detectPageFooterBridge(lines, blankIndex) {
+  const MAX_WINDOW = 7
+  const MIN_WINDOW = 2
+  let i = blankIndex + 1
+  let footerCount = 0
+  // Walk forward consuming blanks + page-footer lines until we either
+  // hit a body line, fall off the end, or exceed the window cap.
+  while (i < lines.length && i - blankIndex <= MAX_WINDOW) {
+    const t = lines[i].trim()
+    if (t.length === 0) {
+      i++
+      continue
+    }
+    if (isPageFooterLine(lines[i])) {
+      footerCount++
+      i++
+      continue
+    }
+    // Hit a body-resume candidate at index `i`.
+    if (footerCount === 0) return -1
+    const span = i - blankIndex
+    if (span < MIN_WINDOW || span > MAX_WINDOW) return -1
+    return i - 1
+  }
+  // Fell off the end OR exceeded the window without finding a body
+  // resume → no bridge.
+  return -1
+}
+
 /**
  * F-X11 (#408) — backward-compat splitter for legacy single-column
  * callers. Mirrors the pre-F-X11 behaviour: every blank ends the
@@ -991,21 +1113,44 @@ export function extractPhrasesFromColumn(columnLines, options = {}) {
  * `paragraphBoundaries: []` so downstream consumers don't need a
  * legacy-vs-live branch).
  *
+ * DRIFT WI-A (#449, audit #448) — page-footer-aware blank bridging.
+ * When a blank is followed by a tight `{blank}* {page-footer}+ {blank}*`
+ * window (3..7 lines) AND a body line resumes after, treat the entire
+ * window as a SINGLE bridging blank (no flush; current stanza
+ * continues). This recovers logical stanzas that the print page break
+ * fragments into two halves — audit #448 CAT 1 (~17-19 of 24
+ * DRIFT_LINE_COUNT entries projected). Non-page-footer blanks still
+ * flush as before (no false-positive surface — the lookahead requires
+ * at least one tight footer-pattern line within the window).
+ *
  * @param {string[]} columnLines
  * @returns {{ lines: string[], paragraphBoundaries: number[] }[]}
  */
 function splitOnEveryBlank(columnLines) {
   const stanzas = []
   let current = []
-  for (const line of columnLines) {
+  let i = 0
+  while (i < columnLines.length) {
+    const line = columnLines[i]
     if (line.trim().length === 0) {
+      // DRIFT WI-A — page-footer-aware bridge: when this blank is the
+      // start of a `{blank}* {footer}+ {blank}*` window, skip the
+      // whole window and keep the stanza open.
+      const bridgeEnd = current.length > 0 ? detectPageFooterBridge(columnLines, i) : -1
+      if (bridgeEnd > i) {
+        i = bridgeEnd + 1
+        continue
+      }
+      // Legacy: every blank flushes the current stanza.
       if (current.length > 0) {
         stanzas.push({ lines: current, paragraphBoundaries: [] })
         current = []
       }
-    } else {
-      current.push(line)
+      i++
+      continue
     }
+    current.push(line)
+    i++
   }
   if (current.length > 0) {
     stanzas.push({ lines: current, paragraphBoundaries: [] })

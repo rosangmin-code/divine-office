@@ -35,6 +35,7 @@ import {
   detectRefrains,
   refineParagraphBoundariesWithRefrains,
   splitIntoStanzas,
+  isPageFooterLine,
   dropColumnArtifactBlanks,
   runStage1,
   runStage2,
@@ -1325,5 +1326,290 @@ describe('SENTENCE_END_RE / STARTS_UPPER_RE edge cases (F-X11 #418 NIT-3 carry)'
       'lowercase wrapping line',
     ])
     expect(groups[0].paragraphBoundaries).toEqual([])
+  })
+})
+
+// @fr FR-161
+// DRIFT WI-A (#449, audit #448) — `splitOnEveryBlank` is the legacy
+// single-column shim used by `extractPhrasesFromColumn` when
+// `otherColumnLines` is absent (test fixtures, dev-only callers). The
+// pre-#449 splitter terminated stanzas at EVERY blank, which fragmented
+// logical stanzas at PDF page-break boundaries (rich.json holds them as
+// one block, the splitter saw two). The fix adds a tight lookahead
+// window: when a blank is followed by `{blank}* {page-footer}+ {blank}*`
+// (3..7 lines) AND a body line resumes after, treat the entire run as
+// ONE bridging blank — current stanza continues, no flush.
+//
+// Page-footer patterns mirror F-X13 #444 (extract-psalter-headers.js):
+//   - bare page number ("62", "169", with optional trailing tabs)
+//   - numbered week marker ("168 2 дугаар долоо хоног")
+//   - week marker only ("1 дугаар долоо хоног")
+//   - weekday header ("Бямба гарагийн орой", "Ням гарагийн өглөө 169")
+//
+// Tests pin: each pattern variant bridges; non-page-footer blanks
+// still flush (regression guard); window-cap edge cases; false-positive
+// guards (body lines that look numeric, body Roman dividers etc.).
+describe('isPageFooterLine + splitOnEveryBlank page-footer bridge (#449)', () => {
+  // --- isPageFooterLine catalog coverage --------------------------------
+
+  it('isPageFooterLine: bare page number (any length 1-4 digits)', () => {
+    expect(isPageFooterLine('62')).toBe(true)
+    expect(isPageFooterLine('168')).toBe(true)
+    expect(isPageFooterLine('  9  ')).toBe(true)
+    expect(isPageFooterLine('1234')).toBe(true)
+    // Trailing tabs are common in pdftotext layout output.
+    expect(isPageFooterLine('62\t\t')).toBe(true)
+  })
+
+  it('isPageFooterLine: numbered week marker ("<page> <week> дугаар долоо хоног")', () => {
+    expect(isPageFooterLine('168    2 дугаар долоо хоног')).toBe(true)
+    expect(isPageFooterLine('62  1 дугаар долоо хоног')).toBe(true)
+    expect(isPageFooterLine('168 4 дахь долоо хоног')).toBe(true)
+  })
+
+  it('isPageFooterLine: standalone week marker (no leading page number)', () => {
+    expect(isPageFooterLine('1 дугаар долоо хоног')).toBe(true)
+    expect(isPageFooterLine('2 дүгээр долоо хоног')).toBe(true)
+    expect(isPageFooterLine('3 дэх долоо хоног')).toBe(true)
+    expect(isPageFooterLine('4 дахь долоо хоног')).toBe(true)
+  })
+
+  it('isPageFooterLine: weekday header (with or without trailing page number)', () => {
+    expect(isPageFooterLine('Бямба гарагийн орой')).toBe(true)
+    expect(isPageFooterLine('Ням гарагийн өглөө')).toBe(true)
+    expect(isPageFooterLine('Ням гарагийн өглөө 169')).toBe(true)
+    expect(isPageFooterLine('Даваа гарагийн орой 85')).toBe(true)
+    expect(isPageFooterLine('Лхагва гарагийн өдөр')).toBe(true)
+  })
+
+  // --- isPageFooterLine false-positive guards --------------------------
+
+  it('isPageFooterLine: regression — blank / null / undefined safe', () => {
+    expect(isPageFooterLine('')).toBe(false)
+    expect(isPageFooterLine('   ')).toBe(false)
+    expect(isPageFooterLine(null)).toBe(false)
+    expect(isPageFooterLine(undefined)).toBe(false)
+  })
+
+  it('isPageFooterLine: regression — body prose is NOT filtered', () => {
+    // Body line that contains "Бямба" but is not a header.
+    expect(isPageFooterLine('Бямба гэдэг бол долоо хоногийн сүүлийн өдөр.')).toBe(false)
+    // Numbered verse line — "1." starts with a digit but is not a bare
+    // page number (the `^\s*\d+\s*$` pattern rejects trailing punctuation
+    // and prose).
+    expect(isPageFooterLine('1. Эхэнд Тэнгэрбурхан тэнгэр газрыг бүтээв.')).toBe(false)
+    // Body line that contains a Roman divider "I" mid-content is NOT a
+    // bare-page-number (different pattern; covered by header filter, not
+    // page-footer filter).
+    expect(isPageFooterLine('I Corinthians 13')).toBe(false)
+    // Body Cyrillic prose.
+    expect(isPageFooterLine('Эзэнийг магтагтун.')).toBe(false)
+  })
+
+  // --- splitOnEveryBlank page-footer bridging --------------------------
+  //
+  // Indirect testing via `extractPhrasesFromColumn` (no `otherColumnLines`
+  // so the legacy splitter fires). The bridge collapses a tight
+  // page-footer window into a single bridging blank — the input fixture
+  // simulates a realistic PDF page-break sequence. Output: ONE stanza
+  // covering both halves of the body.
+
+  function legacyStanzas(lines) {
+    // Force the legacy `splitOnEveryBlank` path: omit `otherColumnLines`.
+    const result = extractPhrasesFromColumn(lines, {})
+    return result.stanzas.map((s) => s.lines)
+  }
+
+  it('bridges {blank}+{page#}+{week-marker}+{blank} page-break window (Daniel 3 shape)', () => {
+    // Mirrors the canonical 4-line page-break observed in the PDF
+    // (parsed_data/full_pdf.txt lines 1931-1934):
+    //   {blank} {bare-page} {numbered-week-marker} {body-resume}
+    const stanzas = legacyStanzas([
+      'Уулс болон толгод оо, –',
+      '', // ← page-break blank
+      '62',
+      '62  1 дугаар долоо хоног',
+      '', // ← (one trailing blank; body resumes after)
+      'Эзэнийг магтагтун.',
+      'Байгаль дэлхийн хамаг ургамалууд аа,',
+    ])
+    // Pre-#449: would have split at the first blank into 3+ stanzas
+    // (one for "Уулс…", one or none for the footer lines, one for the
+    // body resume). With bridging: ONE stanza spans both halves.
+    expect(stanzas).toHaveLength(1)
+    expect(stanzas[0]).toEqual([
+      'Уулс болон толгод оо, –',
+      'Эзэнийг магтагтун.',
+      'Байгаль дэлхийн хамаг ургамалууд аа,',
+    ])
+  })
+
+  it('bridges {blank}+{page#}+{weekday-header}+{blank} variant', () => {
+    // Mirrors the weekday-header form (e.g. "Бямба гарагийн орой" at the
+    // bottom-of-page running header).
+    const stanzas = legacyStanzas([
+      'Танаас өөр сайн сайхан гэж надад үгүй” гэж',
+      '',
+      '169',
+      'Бямба гарагийн орой',
+      '',
+      'хэлэв.',
+      'Газар дэлхийд байгаа ариун хүмүүсийн тухайд',
+    ])
+    expect(stanzas).toHaveLength(1)
+    expect(stanzas[0]).toEqual([
+      'Танаас өөр сайн сайхан гэж надад үгүй” гэж',
+      'хэлэв.',
+      'Газар дэлхийд байгаа ариун хүмүүсийн тухайд',
+    ])
+  })
+
+  it('bridges multi-blank cushion (window cap=7 with extra blanks)', () => {
+    // Loosest realistic case from the audit: 2 leading blanks + 2
+    // footer lines + 2 trailing blanks = 7-line window (max).
+    const stanzas = legacyStanzas([
+      'Body line A',
+      '',
+      '',
+      '169',
+      'Бямба гарагийн орой',
+      '',
+      '',
+      'Body line B',
+    ])
+    expect(stanzas).toHaveLength(1)
+    expect(stanzas[0]).toEqual(['Body line A', 'Body line B'])
+  })
+
+  it('bridges single page-footer line with no trailing blank (3-line min window)', () => {
+    // Tightest case: blank + footer + body-resume = 3 lines.
+    const stanzas = legacyStanzas([
+      'Body line A',
+      '',
+      '169',
+      'Body line B',
+    ])
+    expect(stanzas).toHaveLength(1)
+    expect(stanzas[0]).toEqual(['Body line A', 'Body line B'])
+  })
+
+  // --- splitOnEveryBlank: regression guards (false-positive surface) ---
+
+  it('regression — non-page-footer blank still flushes (real stanza boundary)', () => {
+    // A regular body-to-body blank with NO footer signature must NOT be
+    // bridged — it is a real stanza terminator that the splitter has
+    // always honoured.
+    const stanzas = legacyStanzas([
+      'Stanza A line 1',
+      'Stanza A line 2',
+      '',
+      'Stanza B line 1',
+      'Stanza B line 2',
+    ])
+    expect(stanzas).toHaveLength(2)
+    expect(stanzas[0]).toEqual(['Stanza A line 1', 'Stanza A line 2'])
+    expect(stanzas[1]).toEqual(['Stanza B line 1', 'Stanza B line 2'])
+  })
+
+  it('regression — body line that LOOKS like a page number does NOT trigger bridge', () => {
+    // The bare-page-number pattern requires `^\s*\d{1,4}\s*$` — a body
+    // line "1." or "1." or "1.\tBody" would NOT match. But we add a
+    // numeric verse marker as a body-bridge regression: a line of just
+    // "1" between two body lines would actually MATCH the bare-page
+    // pattern. The bridge requires a `body-resume` line AFTER the
+    // footer — so a 3-line input "Body / blank / 1" with NO body resume
+    // also does NOT bridge. Test the reverse pathway: when the body
+    // RESUMES and the line is numeric-only, it WOULD bridge — but that
+    // case is documented as expected (the splitter cannot distinguish
+    // a real numeric body line from a page number; the corpus-level
+    // mitigation is that real Mongolian liturgical body never reduces
+    // to a single integer line).
+    //
+    // What we explicitly guard against: a body-blank pair with body
+    // RESUMING (no footer) → must flush, not bridge.
+    const stanzas = legacyStanzas([
+      'Body before',
+      '',
+      'Body after (NOT a page footer)',
+    ])
+    expect(stanzas).toHaveLength(2) // flushed normally
+  })
+
+  it('regression — page-footer at end-of-input with no body-resume → flushes (no bridge)', () => {
+    // Edge case: page-footer is the LAST content. No body-resume line
+    // follows, so the bridge refuses (would otherwise discard the
+    // current stanza unsafely). The page-footer fragment is appended
+    // to the body without a bridging blank, then becomes ONE final
+    // stanza. (The legacy splitter has no second blank to split on,
+    // so the `169 / Бямба гарагийн орой` lines just continue the
+    // body stanza after the failed-bridge flush.)
+    const stanzas = legacyStanzas([
+      'Body line A',
+      'Body line B',
+      '',
+      '169',
+      'Бямба гарагийн орой',
+    ])
+    // Two stanzas: the body (flushed at the failed-bridge blank), then
+    // the footer-only fragment that follows it.
+    expect(stanzas).toHaveLength(2)
+    expect(stanzas[0]).toEqual(['Body line A', 'Body line B'])
+    expect(stanzas[1]).toEqual(['169', 'Бямба гарагийн орой'])
+  })
+
+  it('regression — empty current stanza (input starts with blank) does NOT bridge', () => {
+    // The bridge requires `current.length > 0` so a leading blank in
+    // the input does not consume the subsequent footer (it would lose
+    // the very first body line otherwise). The leading blank just
+    // no-ops (no flush, no bridge); the footer + body lines then
+    // accumulate into ONE stanza together because there is no second
+    // blank to split them. Downstream `stripPageHeadersFromStanzas`
+    // would remove the footer line from the resulting stanza.
+    const stanzas = legacyStanzas([
+      '',
+      '169',
+      'Body line',
+    ])
+    expect(stanzas).toHaveLength(1)
+    expect(stanzas[0]).toEqual(['169', 'Body line'])
+  })
+
+  it('regression — Roman numeral divider on its own does NOT match page-footer (different pattern)', () => {
+    // The page-footer catalog explicitly does NOT include Roman
+    // dividers (those are caught by the SECTION-divider catalog
+    // upstream, not the page-footer catalog). A blank + bare "I" +
+    // body MUST flush at the blank — the bridge does NOT fire, so
+    // "I" and "Body line B" accumulate into the SAME post-flush
+    // stanza (no second blank to split them).
+    const stanzas = legacyStanzas([
+      'Body line A',
+      '',
+      'I',
+      'Body line B',
+    ])
+    // Two stanzas: pre-flush body, then "I" + body together.
+    expect(stanzas).toHaveLength(2)
+    expect(stanzas[0]).toEqual(['Body line A'])
+    expect(stanzas[1]).toEqual(['I', 'Body line B'])
+  })
+
+  it('regression — pre-#449 dataset shape: typical 2-blank stanza separator still flushes', () => {
+    // The legacy fixtures relied on `splitOnEveryBlank` to terminate at
+    // EVERY blank — even between two body sections separated by a single
+    // blank. The bridge does not affect this: the single body-to-body
+    // blank has no footer in the lookahead, so it falls back to flush.
+    const stanzas = legacyStanzas([
+      'Verse 1 line a',
+      'Verse 1 line b',
+      '',
+      'Verse 2 line a',
+      'Verse 2 line b',
+      '',
+      'Verse 3 line a',
+    ])
+    expect(stanzas).toHaveLength(3)
+    expect(stanzas[0]).toEqual(['Verse 1 line a', 'Verse 1 line b'])
+    expect(stanzas[1]).toEqual(['Verse 2 line a', 'Verse 2 line b'])
+    expect(stanzas[2]).toEqual(['Verse 3 line a'])
   })
 })
