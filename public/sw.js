@@ -1,3 +1,11 @@
+// v10 — #453: F-X11 Phase 2-C 데이터 변경 반영. #452 matcher-side wrap-
+// tolerant 비교 도입으로 6 refs (Psalm 16/21/30/119:105-112/137/144:1-10)
+// 가 DRIFT_LINE_COUNT → PASS 전환, paragraphBoundaries + phrases 신규
+// inject. Psalm 21:2-8, 14 block 0 PB=[8] (송영 구분), 그 외 5 refs 는
+// phrases-only (PB 빈 배열, line-level grouping 만 추가). 추가로 Isaiah
+// 61:10-62:5, Psalm 88:2-10 (newly-PASS, 미주입 잔여) 도 phrases inject.
+// HTML byte 출력 (phrase 단위 wrap 적용) 이 바뀌므로 v9 precache snapshot
+// 과 어긋날 수 있어 bump. v9 잔존 시 신규 phrase wrap 미적용 위험.
 // v9 — #443: F-X11 Phase 2-B 데이터 변경 반영. 새 detectRefrains
 // 일반화 heuristic (3+/4-line refrain 지원) 으로 124 refs 재추출,
 // Psalm 24:1-10 + Daniel 3:52-57 multi-line refrain paragraphBoundaries
@@ -21,7 +29,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v9'
+const CACHE_VERSION = 'divine-office-v10'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
