@@ -44359,6 +44359,36 @@
               ],
               "indent": 1
             }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 1
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
+              ],
+              "indent": 1
+            }
           ]
         },
         {
@@ -44406,6 +44436,36 @@
                   "kind": "text",
                   "text": "Хэн маань мөнхөд шатсаар амьдарч чадах вэ?”"
                 }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                3
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                4,
+                4
               ],
               "indent": 0
             }
@@ -44463,7 +44523,7 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Муу үзэхгүйн тулд нүдээ анигч нь"
+                  "text": "Мууг үзэхгүйн тулд нүдээ анигч нь"
                 }
               ],
               "indent": 0
@@ -44476,6 +44536,43 @@
                 }
               ],
               "indent": 1
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                4
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                5,
+                6
+              ],
+              "indent": 0
             }
           ]
         },
@@ -44515,6 +44612,36 @@
                   "kind": "text",
                   "text": "Ус нь элбэг байх болно."
                 }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
               ],
               "indent": 0
             }
@@ -47223,7 +47350,7 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "хэрэн хэсүүлсээр явжээ."
+                  "text": "хэрэн хэсүүчлэхээр явжээ."
                 }
               ],
               "indent": 1
@@ -47552,7 +47679,7 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Далайнууд ба"
+                  "text": "Далайнуудад ба"
                 }
               ],
               "indent": 0
@@ -48425,7 +48552,7 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Хэн ч бас гэж тооцогдох болно."
+                  "text": "Хэн ч биш гэж тооцогдох болно."
                 }
               ],
               "indent": 0
