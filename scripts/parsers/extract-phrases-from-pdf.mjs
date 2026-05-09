@@ -579,6 +579,12 @@ export function splitIntoStanzas(columnLines) {
  *
  *   The cap is configurable via the optional `maxLength` argument so
  *   future audits can broaden if a real 5+-line regression surfaces.
+ *   Surfacing channel: `phrase-extract-review-queue.json` (curator
+ *   queue) — if a 5+-line antiphon enters the deferred-refs population
+ *   and the curator flags it, raise `MAX_REFRAIN_LENGTH` to 5 (or pass
+ *   an explicit `maxLength` from the call site for a scoped fix). The
+ *   conservative default avoids over-fitting on near-duplicate body
+ *   stanzas in the current corpus.
  *
  * Implementation invariants (carried over from #418):
  *
@@ -591,6 +597,20 @@ export function splitIntoStanzas(columnLines) {
  *   - Empty-line exclusion: candidate windows containing any
  *     whitespace-only line are skipped (defensive — empty lines should
  *     have been stripped upstream in `splitIntoStanzas`).
+ *
+ * KNOWN LIMITATION — sub-pattern aliasing (#436 codex peer N-1):
+ *
+ *   The algorithm is per-start longest-match, NOT global longest-match.
+ *   A short refrain that locks first at start `i` can occlude a longer
+ *   composite refrain that would have been visible globally — e.g.
+ *   `['A','B','A','B','C','D','A','B','C','D']` locks the 2-line 'AB'
+ *   at `i=0` before the 4-line 'ABCD' at `i=2` can be considered. The
+ *   Mongolian liturgical corpus does not exercise this case (multi-line
+ *   refrains have unique opening lines that do not echo elsewhere in
+ *   body text), so the cheaper per-start scan is correct in practice.
+ *   Future audit may switch to global-longest if a real regression
+ *   surfaces — `phrase-extract-review-queue.json` (curator queue) is
+ *   the surfacing channel.
  *
  * @param {string[]} stanzaLines - lines as they appear in the stanza
  *   (leading whitespace preserved; trimmed during comparison).

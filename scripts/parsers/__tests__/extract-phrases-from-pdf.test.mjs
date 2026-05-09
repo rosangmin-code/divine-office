@@ -622,6 +622,20 @@ describe('detectRefrains (F-X11 #418)', () => {
     expect(detectRefrains(['a', 'b', 'c'])).toEqual([])
   })
 
+  // F-X11 NIT batch (#445 — review #436 N-3): smallest viable refrain
+  // case. n=4 stanza with a length-2 refrain repeated twice (cap =
+  // min(maxLength=4, floor((4-0)/2)) = 2) is the tightest input the
+  // algorithm accepts. Pre-#445 this case was implied by trace but not
+  // directly asserted; this test pins the boundary so future cap math
+  // changes (e.g. raising the n<4 floor or tightening the structural
+  // ceiling) cannot silently regress smallest-stanza detection.
+  it('detects a length-2 refrain in the smallest viable stanza (n=4)', () => {
+    expect(detectRefrains(['A', 'B', 'A', 'B'])).toEqual([
+      { start: 0, length: 2 },
+      { start: 2, length: 2 },
+    ])
+  })
+
   it('treats whitespace-only lines as non-matching (single instance only)', () => {
     const stanza = [
       'Line one.',
@@ -887,6 +901,43 @@ describe('detectRefrains (F-X11 #418)', () => {
     expect(refrains).toEqual([
       { start: 0, length: 3 },
       { start: 3, length: 3 },
+    ])
+  })
+
+  // F-X11 NIT batch (#445 — review #436 N-4): 4 instances × 3-line
+  // refrain (Daniel 3:52-57 doxology pattern). Live PDF spot-check
+  // (review #436 §3) confirmed the new algorithm detects this
+  // 4-instance shape on book p.179 right column, but the unit suite
+  // previously only asserted up to 3 instances of a 2-line refrain.
+  // This test pins the multi-line × many-instance combination —
+  // critical for Daniel 3 because Phase 2-B includes it in the
+  // deferred-refs population, and a regression would silently drop
+  // refrain bracketing on the most-iterated canticle in the corpus.
+  it('detects 4 instances of a 3-line refrain (Daniel 3:52-57 doxology pattern)', () => {
+    const stanza = [
+      'Та магтагдах болтугай',
+      'болон',
+      'олонтаа алдаршуулагдах болтугай.',
+      'Verse 52 body.',
+      'Та магтагдах болтугай',
+      'болон',
+      'олонтаа алдаршуулагдах болтугай.',
+      'Verse 53 body.',
+      'Та магтагдах болтугай',
+      'болон',
+      'олонтаа алдаршуулагдах болтугай.',
+      'Verse 54 body.',
+      'Та магтагдах болтугай',
+      'болон',
+      'олонтаа алдаршуулагдах болтугай.',
+      'Verse 55 body.',
+    ]
+    const refrains = detectRefrains(stanza)
+    expect(refrains).toEqual([
+      { start: 0, length: 3 },
+      { start: 4, length: 3 },
+      { start: 8, length: 3 },
+      { start: 12, length: 3 },
     ])
   })
 })
