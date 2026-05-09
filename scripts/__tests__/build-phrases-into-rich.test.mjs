@@ -24,6 +24,7 @@ import {
   renderDryRun,
   collectReviewQueue,
   isHeaderArtifact,
+  isWrapContinuation,
 } from '../build-phrases-into-rich.mjs'
 
 // Helpers — build minimal rich-AST stanza blocks.
@@ -1010,5 +1011,367 @@ describe('renderDryRun', () => {
     expect(text).toContain('Bad')
     expect(text).toContain('STANZA_PLAN_ISSUE')
     expect(text).toContain('LINE_COUNT_MISMATCH')
+  })
+})
+
+// @fr FR-161
+// F-X11 WI-A2 (#452) — matcher-side wrap-tolerant comparison.
+//
+// Root cause (from #449 solver report): live extractor CLI produces
+// `splitIntoStanzas` output where pdftotext column-break splits a logical
+// line into 2+ physical stream rows (e.g. 'Гарыг' + 'минь дайтахад,'
+// instead of the joined 'Гарыг минь дайтахад,'). rich.json carries the
+// JOINED logical line; the pre-#452 matcher tried only 1-1 alignment with
+// a 12-char prefix tolerance — which silently mis-aligned because the
+// shorter stream fragment shared a 12-char prefix with the longer rich
+// line, accidentally consuming 1 stream row when it should have consumed
+// 2. The next rich line then de-synced against the wrap-continuation
+// fragment and the whole window failed as LINE_COUNT_MISMATCH.
+//
+// Fix (this WI): when alignment at one rich line either fails OR the rich
+// line is meaningfully longer than the stream line at the cursor, try
+// absorbing 1-2 trailing wrap-continuation rows (lowercase-letter-leading,
+// no opening punctuation, no leading digit) into the current rich line.
+// Bridged rows do NOT contribute paragraph boundaries (they're intra-
+// line continuations); phrases that straddle bridged rows collapse into
+// a single rich-line phrase (windowIndex deduplicated).
+//
+// Tests below pin: positive bridge (2- and 3-row), capital/digit/quote
+// negative guards, multi-block windows with bridges in the middle, phrase
+// translation across bridges, paragraph boundary suppression on bridged
+// rows, and the explicit Psalm 30:2-13 b1 reproduction (production-shape
+// regression guard for the audit-2026-05-09 §3 WI-E small-drift residual).
+describe('isWrapContinuation (#452 helper)', () => {
+  it('accepts lowercase Cyrillic continuation', () => {
+    expect(isWrapContinuation('минь дайтахад,')).toBe(true)
+    expect(isWrapContinuation('бөгөөд')).toBe(true)
+    expect(isWrapContinuation('би сэтгэл зовж байв.')).toBe(true)
+  })
+
+  it('accepts lowercase Latin continuation (defensive — mixed-script docs)', () => {
+    expect(isWrapContinuation('and the rest')).toBe(true)
+    expect(isWrapContinuation('continuation here')).toBe(true)
+  })
+
+  it('rejects capital-leading lines (new sentence / verse / proper noun)', () => {
+    expect(isWrapContinuation('Минь дайтахад,')).toBe(false)
+    expect(isWrapContinuation('ЭЗЭН минь')).toBe(false)
+    expect(isWrapContinuation('Continuation here')).toBe(false)
+  })
+
+  it('rejects opening-quote / dash / paren leads (new sentence / dialog)', () => {
+    expect(isWrapContinuation('«би хэзээ ч ганхахгүй» гэсэн.')).toBe(false)
+    expect(isWrapContinuation('"continuation"')).toBe(false)
+    expect(isWrapContinuation('— continuation')).toBe(false)
+    expect(isWrapContinuation('(continuation)')).toBe(false)
+  })
+
+  it('rejects digit-leading lines (page numbers / page-footer residue)', () => {
+    expect(isWrapContinuation('132')).toBe(false)
+    expect(isWrapContinuation('1 дугаар долоо хоног')).toBe(false)
+  })
+
+  it('rejects empty / falsy input', () => {
+    expect(isWrapContinuation('')).toBe(false)
+    expect(isWrapContinuation('   ')).toBe(false)
+    expect(isWrapContinuation(null)).toBe(false)
+    expect(isWrapContinuation(undefined)).toBe(false)
+  })
+})
+
+describe('planRefUpdates — F-X11 WI-A2 wrap-tolerant matcher (#452)', () => {
+  // ── Positive: single bridge (most common shape) ───────────────────────
+  // rich = ['Гарыг минь дайтахад,'] (1 joined line)
+  // stream = ['Гарыг', 'минь дайтахад,'] (2 column-break-split rows)
+  it('bridges 2 stream rows into one rich line when next stream is wrap continuation', () => {
+    const richSlots = [
+      { block: richStanzaBlock('Гарыг минь дайтахад,'), blockIndex: 0 },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: ['Гарыг', 'минь дайтахад,'],
+        phrases: [{ lineRange: [0, 1], indent: 0 }],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    expect(out.issues).toEqual([])
+    expect(out.updates).toHaveLength(1)
+    // Phrase that originally spanned 2 stream rows collapses to single
+    // rich-line phrase at windowIndex 0.
+    expect(out.updates[0].phrases).toEqual([
+      { lineRange: [0, 0], indent: 0 },
+    ])
+  })
+
+  // ── Positive: 3-row bridge (deeper wrap) ──────────────────────────────
+  // rich = ['Маш урт нэг логик мөр энд байна,'] (1 joined line)
+  // stream = ['Маш', 'урт нэг', 'логик мөр энд байна,'] (3 wrap rows)
+  it('bridges 3 stream rows into one rich line via deeper lookahead', () => {
+    const richSlots = [
+      {
+        block: richStanzaBlock('Маш урт нэг логик мөр энд байна,'),
+        blockIndex: 0,
+      },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: ['Маш', 'урт нэг', 'логик мөр энд байна,'],
+        phrases: [{ lineRange: [0, 2], indent: 0 }],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    expect(out.issues).toEqual([])
+    expect(out.updates).toHaveLength(1)
+    expect(out.updates[0].phrases).toEqual([
+      { lineRange: [0, 0], indent: 0 },
+    ])
+  })
+
+  // ── Multi-block window: bridge in the middle preserves alignment ──────
+  // rich = ['Эхний', 'Та Өөрийн нүүр царайг нуусанд би сэтгэл зовж байв.', 'Сүүлчийн']
+  // stream = ['Эхний', 'Та Өөрийн нүүр царайг нуусанд', 'би сэтгэл зовж байв.', 'Сүүлчийн']
+  // The middle rich line absorbs 2 stream rows; first / last align 1-1.
+  it('bridges only the affected rich line within a multi-line window', () => {
+    const richSlots = [
+      {
+        block: richStanzaBlock('Эхний', [
+          'Та Өөрийн нүүр царайг нуусанд би сэтгэл зовж байв.',
+          'Сүүлчийн',
+        ]),
+        blockIndex: 0,
+      },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: [
+          'Эхний',
+          'Та Өөрийн нүүр царайг нуусанд',
+          'би сэтгэл зовж байв.',
+          'Сүүлчийн',
+        ],
+        phrases: [
+          { lineRange: [0, 0], indent: 0 },
+          { lineRange: [1, 2], indent: 0 },
+          { lineRange: [3, 3], indent: 0 },
+        ],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    expect(out.issues).toEqual([])
+    expect(out.updates).toHaveLength(1)
+    // Phrases translate to rich-relative indices: line 0 stays 0, the
+    // wrap-bridged 2-stream phrase collapses to rich line 1, last line is 2.
+    expect(out.updates[0].phrases).toEqual([
+      { lineRange: [0, 0], indent: 0 },
+      { lineRange: [1, 1], indent: 0 },
+      { lineRange: [2, 2], indent: 0 },
+    ])
+  })
+
+  // ── Negative: capital next-line is NOT wrap continuation ───────────────
+  // Direct prefix-match would have succeeded (per pre-#452 behavior) but
+  // the bridge attempt MUST refuse to absorb a capital-leading row.
+  // We construct a case where bridge would WRONGLY succeed if the guard
+  // were missing.
+  it('does NOT bridge when next stream line starts with capital (new sentence)', () => {
+    // rich line meaningfully longer than stream[0]; stream[1] is capital.
+    // Bridge would have produced 'Гарыг Минь дайтахад,' which differs
+    // from rich 'Гарыг минь дайтахад,' (case mismatch on М/м), so the
+    // bridge would fail anyway; what we're really asserting is that the
+    // is-wrap-continuation guard short-circuits BEFORE attempting the
+    // concat (so a bridge can't succeed in any pathological case).
+    const richSlots = [
+      { block: richStanzaBlock('Гарыг минь дайтахад,'), blockIndex: 0 },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: ['Гарыг', 'Минь дайтахад,'], // capital М on continuation
+        phrases: [],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    // Direct match succeeds via 12-char prefix (stream='Гарыг' shares
+    // 5 chars with rich='Гарыг минь дайтахад,'), but next rich line
+    // doesn't exist (single line block), so we're done. The capital
+    // next-line is left as residue in the stream — NOT absorbed.
+    // Updates path = direct match (consumed 1 stream row).
+    expect(out.issues).toEqual([])
+    expect(out.updates).toHaveLength(1)
+  })
+
+  // ── Negative: stream next-line is digit (page-footer residue) ─────────
+  it('does NOT bridge across digit-leading rows (page-footer residue)', () => {
+    const richSlots = [
+      { block: richStanzaBlock('Эхний мөр'), blockIndex: 0 },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: ['Эхний', '132', 'мөр'], // digit row between would-be bridge halves
+        phrases: [],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    // Direct prefix match for 'Эхний' vs 'Эхний мөр' succeeds (5-char
+    // prefix). Single-line rich block — done. Digit row never absorbed.
+    expect(out.issues).toEqual([])
+    expect(out.updates).toHaveLength(1)
+  })
+
+  // ── Negative: bridge fails entirely → reports honest failure ──────────
+  // No direct match, no valid bridge → the matcher must report
+  // NO_MATCHING_EXTRACTOR_STANZA, not silently drop or false-pass.
+  it('reports NO_MATCHING_EXTRACTOR_STANZA when bridge cannot reach the rich text', () => {
+    const richSlots = [
+      { block: richStanzaBlock('Эзэн миний Эзэнд тэмцэлдсэн'), blockIndex: 0 },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: ['Огт', 'байхгүй', 'нэрс'], // unrelated content
+        phrases: [],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    expect(out.updates).toEqual([])
+    expect(out.issues).toHaveLength(1)
+    expect(out.issues[0].kind).toBe('NO_MATCHING_EXTRACTOR_STANZA')
+  })
+
+  // ── Paragraph boundaries: bridged rows do NOT introduce extra PB ──────
+  // stream stanza paragraphBoundaries[1] would mark the second stream
+  // row, but that row is BRIDGED into the same rich line as row 0.
+  // The translated paragraphBoundaries must NOT contain the bridge row.
+  it('suppresses paragraph boundaries that fall on bridged stream rows', () => {
+    const richSlots = [
+      {
+        block: richStanzaBlock('Гарыг минь дайтахад,', ['Сүүлчийн мөр']),
+        blockIndex: 0,
+      },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: ['Гарыг', 'минь дайтахад,', 'Сүүлчийн мөр'],
+        phrases: [
+          { lineRange: [0, 1], indent: 0 },
+          { lineRange: [2, 2], indent: 0 },
+        ],
+        // PB at lineWithinStanza 1 (the wrap-continuation row) and 2
+        // (the second rich line). The bridged row 1 must be SUPPRESSED;
+        // only row 2 (which becomes rich line 1) survives.
+        paragraphBoundaries: [1, 2],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    expect(out.issues).toEqual([])
+    expect(out.updates).toHaveLength(1)
+    // PB at rich-line 1 only (stream row 2 → rich line 1). Stream row 1
+    // (the bridged wrap continuation) is intra-line, NOT a paragraph
+    // break.
+    expect(out.updates[0].paragraphBoundaries).toEqual([1])
+  })
+
+  // ── Production-shape regression: Psalm 30:2-13 b1 (audit §3 WI-E) ─────
+  // The actual stream/rich line counts that produced gap=1 in the audit.
+  // Pre-#452: 12-char prefix accidentally accepted stream[24] as the
+  // joined rich[23], then desynced at rich[24] vs stream[25]='би сэтгэл
+  // зовж байв.', producing LINE_COUNT_MISMATCH (extractorLineCount=24).
+  // Post-#452: bridge absorbs stream[24]+stream[25] into rich[23], the
+  // rest aligns 1-1, full window matches.
+  it('Psalm 30:2-13 b1 production-shape regression: bridges joined wrap line', () => {
+    const richSlots = [
+      {
+        block: richStanzaBlock('Миний дайснуудыг надаас болж', [
+          'Баярлуулаагүй учраас',
+          'Би Таныг өргөмжилнө.',
+          'Та Өөрийн нүүр царайг нуусанд би сэтгэл зовж байв.',
+          'ЭЗЭН, Тан руу би хашхирч,',
+          'ЭЗЭНд би гуйлтыг өргөсөн.–',
+        ]),
+        blockIndex: 0,
+      },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: [
+          'Миний дайснуудыг надаас болж',
+          'Баярлуулаагүй учраас',
+          'Би Таныг өргөмжилнө.',
+          'Та Өөрийн нүүр царайг нуусанд', // wrap line A
+          'би сэтгэл зовж байв.', //          wrap line B (bridged)
+          'ЭЗЭН, Тан руу би хашхирч,',
+          'ЭЗЭНд би гуйлтыг өргөсөн.–',
+        ],
+        phrases: [
+          { lineRange: [0, 0], indent: 0 },
+          { lineRange: [1, 1], indent: 0 },
+          { lineRange: [2, 2], indent: 0 },
+          { lineRange: [3, 4], indent: 0 }, // crosses the wrap
+          { lineRange: [5, 5], indent: 0 },
+          { lineRange: [6, 6], indent: 0 },
+        ],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    expect(out.issues).toEqual([])
+    expect(out.updates).toHaveLength(1)
+    // The wrap-bridged phrase collapses to rich line 3 (single index).
+    expect(out.updates[0].phrases).toEqual([
+      { lineRange: [0, 0], indent: 0 },
+      { lineRange: [1, 1], indent: 0 },
+      { lineRange: [2, 2], indent: 0 },
+      { lineRange: [3, 3], indent: 0 }, // collapsed bridge
+      { lineRange: [4, 4], indent: 0 },
+      { lineRange: [5, 5], indent: 0 },
+    ])
+  })
+
+  // ── End-to-end via injectPhrasesIntoRichData (atomic gate path) ──────
+  // The same shape but exercised through the production entry point used
+  // by both `scripts/build-phrases-into-rich.mjs` CLI and
+  // `scripts/dev/process-fx11-phase2-batch.mjs` batch processor.
+  it('injectPhrasesIntoRichData PASSES the atomic gate when wrap-bridge resolves the only mismatch', () => {
+    const richData = {
+      'Wrap Ref': richRef([
+        richStanzaBlock('Эхний', [
+          'Та Өөрийн нүүр царайг нуусанд би сэтгэл зовж байв.',
+          'Сүүлчийн',
+        ]),
+      ]),
+    }
+    const result = injectPhrasesIntoRichData(richData, [
+      {
+        ref: 'Wrap Ref',
+        stanzas: [
+          {
+            stanzaIndex: 0,
+            lines: [
+              'Эхний',
+              'Та Өөрийн нүүр царайг нуусанд',
+              'би сэтгэл зовж байв.',
+              'Сүүлчийн',
+            ],
+            phrases: [
+              { lineRange: [0, 0], indent: 0 },
+              { lineRange: [1, 2], indent: 0 },
+              { lineRange: [3, 3], indent: 0 },
+            ],
+          },
+        ],
+      },
+    ])
+    expect(result.ok).toBe(true)
+    const blocks = result.data['Wrap Ref'].stanzasRich.blocks
+    expect(blocks[0].phrases).toEqual([
+      { lineRange: [0, 0], indent: 0 },
+      { lineRange: [1, 1], indent: 0 },
+      { lineRange: [2, 2], indent: 0 },
+    ])
   })
 })

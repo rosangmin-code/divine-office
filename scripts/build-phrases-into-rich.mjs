@@ -164,6 +164,174 @@ function flattenExtractorStream(extractorStanzas) {
   return stream
 }
 
+// F-X11 WI-A2 (#452) — wrap-tolerant matcher helpers.
+//
+// Cross-column wrap: PDF column-break can split a single logical line into
+// 2-3 stream rows because pdftotext sees a column boundary as a hard line
+// terminator. rich.json carries the JOINED logical line; the extractor
+// stream carries the SPLIT physical lines. Pre-#452 the matcher tried only
+// 1-1 alignment (with a 12-char prefix tolerance for typography drift),
+// which silently mis-aligned in two distinct ways:
+//
+//   1. The prefix-match ACCIDENTALLY succeeded for a wrap-fragment because
+//      `stream[N]` (e.g. 'Та Өөрийн нүүр царайг нуусанд') shares its first
+//      12 chars with `rich[N]` (e.g. 'Та Өөрийн нүүр царайг нуусанд би
+//      сэтгэл зовж байв.' — the joined two-fragment line). Alignment then
+//      desynced at `rich[N+1]` vs the wrap-continuation fragment
+//      `stream[N+1]` (e.g. 'би сэтгэл зовж байв.'), producing
+//      LINE_COUNT_MISMATCH instead of a clean match.
+//
+//   2. When `stream[N]` was so much shorter than `rich[N]` that the
+//      12-char prefix didn't even succeed, the matcher gave up at this
+//      probe entirely — even though concatenating `stream[N] + ' ' +
+//      stream[N+1]` would have produced an exact match.
+//
+// Bridge fix: when alignment fails at a single rich line OR when the rich
+// line is meaningfully longer than the stream line (suggesting wrap
+// happened), try absorbing 1-2 trailing wrap-continuation stream rows into
+// the current rich line. A "wrap continuation" is a row whose first
+// non-whitespace character is a lowercase letter (Cyrillic / Latin) — this
+// is the strong signal in the LotH PDF body that a logical line continues
+// from the previous row. Capital starts (new sentence / verse / proper
+// noun), opening quotes/parens, dashes, and digits are EXCLUDED.
+
+const MAX_WRAP_BRIDGE_DEPTH = 3 // 1 primary + up to 2 absorbed = up to 3 stream rows
+
+/**
+ * F-X11 WI-A2 (#452) — true if `text` looks like a wrap-continuation of the
+ * previous physical line. Conservative: only the lowercase-letter case
+ * passes; anything that could plausibly start a new logical unit (capital,
+ * digit, opening punctuation) is rejected so the bridge cannot accidentally
+ * absorb a new stanza / new sentence / page-footer fragment.
+ *
+ * Cyrillic case is detected via Unicode case sensitivity (`ch.toUpperCase()
+ * !== ch && ch.toLowerCase() === ch`), which correctly handles the Mongolian
+ * Cyrillic alphabet (а-я, ө, ү, plus Latin a-z) without per-script tables.
+ *
+ * @param {string} text
+ * @returns {boolean}
+ */
+export function isWrapContinuation(text) {
+  const t = (text || '').trim()
+  if (!t) return false
+  // Reject opening punctuation that suggests a new sentence / quote /
+  // stanza / dialog turn. Mongolian PDFs use both « » guillemets and
+  // ASCII / curly quotes; cover the common variants here.
+  if (/^[«»"'""„‟''‚‛(\[—–\-]/.test(t)) return false
+  // Reject digit-leading rows (page numbers, verse labels, page-footer
+  // residue from the WI-A bridge — defense in depth).
+  if (/^\d/.test(t)) return false
+  const ch = t[0]
+  // Letter is "lowercase" iff distinct from itself uppercased and equal
+  // to itself lowercased. Non-letters fail (toUpperCase === toLowerCase
+  // for them), which is the desired behaviour.
+  return ch !== ch.toUpperCase() && ch === ch.toLowerCase()
+}
+
+/**
+ * F-X11 WI-A2 (#452) — try to absorb 1-2 trailing wrap-continuation lines
+ * from the stream so that the joined text matches `richText`. Walks
+ * incrementally and returns on the first successful concat (so the
+ * SHORTEST bridge wins, never over-absorbing).
+ *
+ * Returns `{ consumed: 2 | 3 }` on success or `null` on failure. consumed=1
+ * (no bridging) is the direct-match path handled by `tryAlignSingle`, not
+ * reported here.
+ *
+ * @param {{ text: string }[]} stream
+ * @param {number} streamIdx
+ * @param {string} richText
+ * @returns {{ consumed: number } | null}
+ */
+function tryBridgeWrap(stream, streamIdx, richText) {
+  if (streamIdx + 1 >= stream.length) return null
+  let concat = (stream[streamIdx]?.text || '').trim()
+  for (let depth = 1; depth < MAX_WRAP_BRIDGE_DEPTH; depth++) {
+    const i = streamIdx + depth
+    if (i >= stream.length) return null
+    const next = (stream[i]?.text || '').trim()
+    if (!isWrapContinuation(next)) return null
+    concat = concat + ' ' + next
+    if (stanzaFirstLineMatches(concat, richText)) {
+      return { consumed: depth + 1 }
+    }
+  }
+  return null
+}
+
+/**
+ * F-X11 WI-A2 (#452) — align ONE rich line to a starting position in the
+ * stream, allowing wrap-bridge absorption when needed. Returns the number
+ * of stream rows consumed (≥ 1) or `null` when no alignment is possible.
+ *
+ * Order of attempts:
+ *   1. If `richText` is meaningfully longer than `stream[streamIdx]` AND
+ *      `stream[streamIdx+1]` looks like a wrap-continuation, try the
+ *      BRIDGE FIRST. This avoids the false-positive case where the 12-char
+ *      prefix tolerance in `stanzaFirstLineMatches` would accidentally
+ *      accept a wrap-fragment as the whole rich line (and then desync the
+ *      next rich/stream pair).
+ *   2. Otherwise try the direct 1-1 match.
+ *   3. As a final fallback, try the bridge anyway (handles typography
+ *      drift cases where the lengths roughly match but exact + 12-char
+ *      prefix both fail).
+ *
+ * @param {{ text: string }[]} stream
+ * @param {number} streamIdx
+ * @param {string} richText
+ * @returns {{ consumed: number } | null}
+ */
+function tryAlignSingle(stream, streamIdx, richText) {
+  if (streamIdx >= stream.length) return null
+  const sText = (stream[streamIdx]?.text || '').trim()
+  const rText = (richText || '').trim()
+  // Prefer bridge when rich is meaningfully longer than the stream line.
+  // The asymmetry is the strong signal of a column-break wrap: stream
+  // carries the first half, rich carries the joined whole.
+  if (rText.length > sText.length && sText.length > 0) {
+    const bridged = tryBridgeWrap(stream, streamIdx, richText)
+    if (bridged) return bridged
+  }
+  if (stanzaFirstLineMatches(sText, rText)) {
+    return { consumed: 1 }
+  }
+  // Final fallback: bridge for typography-drift cases (lengths similar
+  // but neither exact equality nor 12-char prefix succeeds).
+  const bridged = tryBridgeWrap(stream, streamIdx, richText)
+  if (bridged) return bridged
+  return null
+}
+
+/**
+ * F-X11 WI-A2 (#452) — align the entire `richTexts` sequence to the stream
+ * starting at `probe`, allowing per-rich-line wrap-bridge absorption.
+ *
+ * Returns `{ windowEnd, streamIndices }` on success where
+ * `streamIndices[k]` is the array of stream indices consumed by rich line
+ * `k` (length 1 for direct match, 2-3 for bridged wrap). `windowEnd` is
+ * the LAST stream index consumed (inclusive).
+ *
+ * Returns `null` when no alignment exists at this probe.
+ *
+ * @param {{ text: string }[]} stream
+ * @param {number} probe
+ * @param {string[]} richTexts
+ * @returns {{ windowEnd: number, streamIndices: number[][] } | null}
+ */
+function alignAtProbe(stream, probe, richTexts) {
+  let streamIdx = probe
+  const streamIndices = []
+  for (let k = 0; k < richTexts.length; k++) {
+    const r = tryAlignSingle(stream, streamIdx, richTexts[k])
+    if (!r) return null
+    const indices = []
+    for (let i = 0; i < r.consumed; i++) indices.push(streamIdx + i)
+    streamIndices.push(indices)
+    streamIdx += r.consumed
+  }
+  return { windowEnd: streamIdx - 1, streamIndices }
+}
+
 /**
  * Search the flat extractor stream for a window of `richTexts.length`
  * consecutive lines whose text matches `richTexts` line-by-line (with
@@ -193,15 +361,36 @@ function findWindow(stream, richTexts) {
  * (would happen if rich.json splits a phrase the extractor groups) are
  * dropped — they shouldn't exist when line-by-line text already matches.
  *
- * @param {{ stanzaPos: number, lineWithinStanza: number }[]} window
+ * F-X11 WI-A2 (#452) — window entries can carry `bridgedSourceCoords`
+ * (multiple `(stanzaPos, lineWithinStanza)` pairs from the stream that
+ * were absorbed into a single rich line via cross-column wrap bridge).
+ * All bridged source coords map to the SAME windowIndex so a phrase that
+ * straddles the bridged stream rows collapses into a single rich-line
+ * phrase. Entries without `bridgedSourceCoords` (legacy callers / direct
+ * 1-1 alignment) fall back to the entry's own `(stanzaPos,
+ * lineWithinStanza)`.
+ *
+ * @param {{
+ *   stanzaPos: number,
+ *   lineWithinStanza: number,
+ *   bridgedSourceCoords?: { stanzaPos: number, lineWithinStanza: number }[],
+ * }[]} window
  * @param {{ stanzaIndex?: number, phrases: any[] }[]} extractorStanzas
  */
 function translatePhrases(window, extractorStanzas) {
   // Build a quick lookup: (stanzaPos, lineWithinStanza) → windowIndex.
+  // F-X11 WI-A2 (#452) — when an entry carries bridgedSourceCoords (>1
+  // stream rows merged into one rich line via wrap bridge), every source
+  // coord maps to the SAME windowIndex.
   const lookup = new Map()
   for (let i = 0; i < window.length; i++) {
     const w = window[i]
-    lookup.set(`${w.stanzaPos}:${w.lineWithinStanza}`, i)
+    const coords = w.bridgedSourceCoords || [
+      { stanzaPos: w.stanzaPos, lineWithinStanza: w.lineWithinStanza },
+    ]
+    for (const c of coords) {
+      lookup.set(`${c.stanzaPos}:${c.lineWithinStanza}`, i)
+    }
   }
   const phrases = []
   for (let s = 0; s < extractorStanzas.length; s++) {
@@ -214,29 +403,33 @@ function translatePhrases(window, extractorStanzas) {
       // Old behaviour dropped the entire phrase, leaving rich line 0
       // uncovered → R-6 verifier coverage gap. New behaviour: clip the
       // phrase to the window's intersection so coverage is preserved.
+      //
+      // F-X11 WI-A2 (#452) — when bridge collapsed multiple stream rows
+      // into one rich line, multiple source coords resolve to the SAME
+      // windowIndex. Track UNIQUE windowIndices and require contiguity on
+      // those — not on the source coord count, which would over-count.
       const origStart = phrase.lineRange[0]
       const origEnd = phrase.lineRange[1]
-      let firstInWindow = -1
-      let lastInWindow = -1
+      const hitWindowIndices = []
       for (let li = origStart; li <= origEnd; li++) {
         const wi = lookup.get(`${s}:${li}`)
-        if (wi === undefined) continue
-        if (firstInWindow === -1) firstInWindow = wi
-        lastInWindow = wi
+        if (wi !== undefined) hitWindowIndices.push(wi)
       }
-      if (firstInWindow === -1) continue // phrase outside window entirely
-      // Verify clipped range is contiguous in the window (i.e. all
-      // intermediate window indices between firstInWindow..lastInWindow
-      // come from the same logical phrase).
-      if (lastInWindow - firstInWindow !== /* line count - 1 */ (function () {
-        let n = 0
-        for (let li = origStart; li <= origEnd; li++) {
-          if (lookup.has(`${s}:${li}`)) n++
+      if (hitWindowIndices.length === 0) continue // phrase outside window entirely
+      const firstInWindow = Math.min(...hitWindowIndices)
+      const lastInWindow = Math.max(...hitWindowIndices)
+      // Verify the unique windowIndices form a contiguous range (e.g.
+      // {3} or {3,4,5}) — gaps would indicate a discontiguous clip and
+      // are dropped to keep phrase coverage honest.
+      const uniqueSorted = [...new Set(hitWindowIndices)].sort((a, b) => a - b)
+      let contiguous = true
+      for (let i = 1; i < uniqueSorted.length; i++) {
+        if (uniqueSorted[i] !== uniqueSorted[i - 1] + 1) {
+          contiguous = false
+          break
         }
-        return n - 1
-      })()) {
-        continue // discontiguous — drop
       }
+      if (!contiguous) continue
       phrases.push({
         ...phrase,
         lineRange: [firstInWindow, lastInWindow],
@@ -311,19 +504,21 @@ export function planRefUpdates(richStanzaSlots, extractorStanzas) {
       issues.push({ blockIndex: slot.blockIndex, kind: 'EMPTY_RICH_LINE' })
       continue
     }
-    // Search the stream for an unconsumed window.
+    // F-X11 WI-A2 (#452) — wrap-tolerant alignment. `alignAtProbe` walks
+    // the stream from `probe` and absorbs trailing wrap-continuation rows
+    // into the current rich line when the rich line is meaningfully
+    // longer than the stream line at the alignment cursor. The total
+    // stream rows consumed for a window can therefore be ≥
+    // `richTexts.length`. Probe loop bound `probe < stream.length` lets
+    // alignAtProbe naturally short-circuit on stream exhaustion.
     let windowStart = -1
-    for (let probe = 0; probe <= stream.length - richTexts.length; probe++) {
-      let matchHere = true
-      for (let k = 0; k < richTexts.length; k++) {
-        if (!stanzaFirstLineMatches(stream[probe + k].text, richTexts[k])) {
-          matchHere = false
-          break
-        }
-      }
-      if (!matchHere) continue
-      if (isOverlap(probe, probe + richTexts.length - 1)) continue
+    let alignment = null
+    for (let probe = 0; probe < stream.length; probe++) {
+      const a = alignAtProbe(stream, probe, richTexts)
+      if (!a) continue
+      if (isOverlap(probe, a.windowEnd)) continue
       windowStart = probe
+      alignment = a
       break
     }
     if (windowStart < 0) {
@@ -368,12 +563,32 @@ export function planRefUpdates(richStanzaSlots, extractorStanzas) {
       }
       continue
     }
-    const window = stream.slice(windowStart, windowStart + richTexts.length)
-    consumed.push([windowStart, windowStart + richTexts.length - 1])
+    // F-X11 WI-A2 (#452) — build window entries from the per-rich-line
+    // streamIndices arrays. Each entry's PRIMARY metadata (text,
+    // stanzaPos, lineWithinStanza, isParagraphStart) comes from the FIRST
+    // bridged stream row; bridged subsequent rows contribute their
+    // (stanzaPos, lineWithinStanza) to `bridgedSourceCoords` so phrase
+    // translation can map them all to the same windowIndex. Bridged rows
+    // do NOT contribute paragraph boundaries — wrap continuations are
+    // by definition intra-line, not paragraph breaks.
+    const windowEntries = alignment.streamIndices.map((indices) => {
+      const primary = stream[indices[0]]
+      return {
+        text: primary.text,
+        stanzaPos: primary.stanzaPos,
+        lineWithinStanza: primary.lineWithinStanza,
+        isParagraphStart: primary.isParagraphStart,
+        bridgedSourceCoords: indices.map((si) => ({
+          stanzaPos: stream[si].stanzaPos,
+          lineWithinStanza: stream[si].lineWithinStanza,
+        })),
+      }
+    })
+    consumed.push([windowStart, alignment.windowEnd])
     updates.push({
       blockIndex: slot.blockIndex,
-      phrases: translatePhrases(window, extractorStanzas),
-      paragraphBoundaries: translateParagraphBoundaries(window),
+      phrases: translatePhrases(windowEntries, extractorStanzas),
+      paragraphBoundaries: translateParagraphBoundaries(windowEntries),
       richFirstLine,
     })
   }
