@@ -29,6 +29,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs'
 import { execFileSync } from 'node:child_process'
 import { dirname, join as joinPath, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { bookPageToPhysical } from '../parsers/book-page-mapper.mjs'
 import {
   injectPhrasesIntoRichData,
@@ -64,13 +65,85 @@ const MULTI_PAGE_DEPTH = 4
 // future curator overrides have a clear extension point.
 const EXCLUDE_REFS = new Set([])
 
-function parseArgs(argv) {
+// Phase 2-D MAJOR-1 (#474) — flags whose semantics REQUIRE a non-empty
+// string value. Previously the parser would silently accept the typo
+// shapes
+//   --only=Psalm 16:1-6  → args['only=Psalm 16:1-6']=true (the `=`
+//                          form was unrecognised; args.only stayed
+//                          undefined so the line-345/459 `typeof ===
+//                          'string'` guard bypassed the allow-list and
+//                          ALL 124 PASS refs got re-injected),
+//   --only               → args.only=true (boolean), same bypass,
+//   --only ""            → args.only=true (empty string falsy → next
+//                          branch took true), same bypass,
+//   --only --inject      → args.only=true (next starts with --),
+//                          --inject was then consumed as the value of
+//                          `--only` was skipped so --inject also lost,
+// turning a typo into a silent broad-scope reinject — combined with
+// Phase 2-D MAJOR-2 (39 refs / 331 indent mismatches) the result was
+// unintended cohort-wide phrase.indent rewrites. The fail-loud path
+// below converts every failure mode into a non-zero exit BEFORE any
+// rich.json mutation can happen.
+const VALUE_REQUIRED_KEYS = new Set(['only'])
+
+class ParseArgsError extends Error {
+  constructor(message) {
+    super(message)
+    this.name = 'ParseArgsError'
+  }
+}
+
+export function parseArgs(argv) {
   const args = {}
   for (let i = 0; i < argv.length; i++) {
     const flag = argv[i]
     if (!flag.startsWith('--')) continue
+
+    // `--key=value` form — split on the FIRST `=`. Empty value (e.g.
+    // `--only=`) falls through to the value-required guard below.
+    const eqIdx = flag.indexOf('=')
+    if (eqIdx > -1) {
+      const key = flag.slice(2, eqIdx)
+      const value = flag.slice(eqIdx + 1)
+      if (VALUE_REQUIRED_KEYS.has(key) && value.length === 0) {
+        throw new ParseArgsError(
+          `--${key} requires a non-empty value (got --${key}=).`,
+        )
+      }
+      args[key] = value
+      continue
+    }
+
+    // `--key` (bare) — possibly followed by `value` in next arg.
     const key = flag.slice(2)
     const next = argv[i + 1]
+
+    if (VALUE_REQUIRED_KEYS.has(key)) {
+      // Fail-loud: missing / empty / next-is-flag all mean the user
+      // intended a value but didn't provide one.
+      if (next === undefined) {
+        throw new ParseArgsError(
+          `--${key} requires a non-empty value (got end of arguments).`,
+        )
+      }
+      if (next.startsWith('--')) {
+        throw new ParseArgsError(
+          `--${key} requires a non-empty value (got next flag "${next}"). ` +
+            `Use --${key}=VALUE or --${key} VALUE (with VALUE not starting with --).`,
+        )
+      }
+      if (next.length === 0) {
+        throw new ParseArgsError(
+          `--${key} requires a non-empty value (got empty string).`,
+        )
+      }
+      args[key] = next
+      i++
+      continue
+    }
+
+    // Generic flag — preserve pre-#474 behaviour for boolean / opt-
+    // value flags (--inject, --json out.json, ...).
     if (next && !next.startsWith('--')) {
       args[key] = next
       i++
@@ -474,4 +547,25 @@ function main() {
   }
 }
 
-main()
+// Phase 2-D MAJOR-1 (#474) — main-module guard so that test files
+// `import { parseArgs }` from this file without triggering the CLI
+// pipeline (which would attempt to read `psalter-texts.rich.json` and
+// shell out to pdftotext at module-load time).
+const isInvokedAsScript =
+  process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])
+
+if (isInvokedAsScript) {
+  // Surface ParseArgsError as a non-zero exit so a typo'd `--only=ref`
+  // invocation halts BEFORE buildPageMap / extractor / inject. Other
+  // thrown errors propagate (default node behaviour: stack trace +
+  // non-zero exit).
+  try {
+    main()
+  } catch (err) {
+    if (err instanceof ParseArgsError) {
+      process.stderr.write(`\n[parseArgs] ${err.message}\n`)
+      process.exit(2)
+    }
+    throw err
+  }
+}
