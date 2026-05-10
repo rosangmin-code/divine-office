@@ -1,3 +1,16 @@
+// v19 — #490: F-X11 Phase 2-I3 Jeremiah 31:10-14 b1 typo fix + inject.
+// b1 line 4 'Тэд иржу,' → 'Тэд ирж,' (extra 'у' 제거, PDF 4200 SoT)
+// + b1 line 7 'улмаас баярлатгэнэ.' → 'улмаас гэрэлтэнэ.' (transcription
+// 오류 — non-existent word → "shines/glows", PDF 4203 SoT). 두 typo 가
+// matcher 의 12-char prefix tolerance 를 초과하여 alignAtProbe 가 b1
+// L3 에서 stop 시켜 ext=3 reported (rich=9). 정정 후 b1 9 lines 가
+// PDF 4197-4205 9 lines 와 정합되어 PASS. 동시에 plain catalog
+// (psalter-texts.json) 의 동일 typo 2건도 정정 (rich.json 와 SSOT
+// 일관성). Inject delta: 3 stanza blocks (b0/b1/b2) 에 phrases inject
+// (16 phrases / 0 PB — natural single-paragraph stanzas).
+// HTML byte 출력 (b1 line text 2자 변경 + phrase 단위 indent) 이
+// 변하므로 v18 precache snapshot 과 어긋날 수 있어 bump. v18 잔존
+// 시 'иржу'/'баярлатгэнэ' 오자가 그대로 노출됨.
 // v18 — #485: F-X11 Phase 2-H. G4 depth-progression escalate (#481) 가
 // process-fx11-phase2-batch.mjs depth predicate 변경으로 collateral
 // newly-PASS 가 된 6 refs (1 Samuel 2:1-10, Daniel 3:57-88, 56,
@@ -96,7 +109,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v18'
+const CACHE_VERSION = 'divine-office-v19'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
