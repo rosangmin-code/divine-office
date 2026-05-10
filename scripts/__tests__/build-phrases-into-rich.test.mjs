@@ -2002,3 +2002,133 @@ describe('planRefUpdates phrase.indent propagation (F-X11 Phase 2-D #463)', () =
     expect(actualIndents).toEqual(expectedIndents)
   })
 })
+
+// @fr FR-161 NFR-009j
+//
+// F-X11 Phase 2-F (#477) — skip-if-explicit guard for the propagation
+// rule above. Phase 2-D (#463) introduced the rule to fix Pattern A
+// (phrase.indent=0 + uniform line.indent=1 → propagate). Audit #475
+// (docs/audit-indent-mismatch-2026-05-10.md) showed that the rule also
+// silently flattens intentional non-zero phrase.indent values that
+// disagree with the uniform line.indent — Pattern B (Roman 'I'/'II'
+// centered section markers at line.indent=0 + phrase.indent=2) and
+// Pattern C (short hanging-indent wrap-continuation at line.indent=0 +
+// phrase.indent=1). The guard preserves these explicit non-zero values
+// while still allowing Pattern A propagation and the equal-value no-op.
+describe('planRefUpdates phrase.indent skip-if-explicit guard (F-X11 Phase 2-F #477)', () => {
+  function richStanzaBlockWithIndents(linesAndIndents) {
+    return {
+      kind: 'stanza',
+      lines: linesAndIndents.map(([text, indent]) => ({
+        spans: [{ kind: 'text', text }],
+        indent,
+      })),
+    }
+  }
+
+  it('Pattern B — preserves phrase.indent=2 when uniform line.indent=0 (Roman centered marker)', () => {
+    // Pattern B: a single 'I'/'II' Roman section marker line — extractor
+    // emits phrase.indent=2 (centered above column baseline) but the
+    // rich line carries indent=0 (no rich-side indent applied to a
+    // single marker token). Without the guard, the propagation rule
+    // would overwrite phrase.indent to 0 → renderer flushes left → loses
+    // the centered visual cue.
+    const richSlots = [
+      {
+        block: richStanzaBlockWithIndents([['I', 0]]),
+        blockIndex: 0,
+      },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: ['I'],
+        phrases: [{ lineRange: [0, 0], indent: 2 }],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    expect(out.issues).toEqual([])
+    expect(out.updates[0].phrases).toEqual([
+      { lineRange: [0, 0], indent: 2 },
+    ])
+  })
+
+  it('Pattern C — preserves phrase.indent=1 when uniform line.indent=0 (short hanging-indent wrap)', () => {
+    // Pattern C: a wrap-continuation phrase that visually hangs one
+    // step indented in the PDF but whose rich line stays at indent 0.
+    // Without the guard, phrase.indent collapses to 0 and the renderer
+    // loses the hanging visual.
+    const richSlots = [
+      {
+        block: richStanzaBlockWithIndents([['Continuation snippet', 0]]),
+        blockIndex: 0,
+      },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: ['Continuation snippet'],
+        phrases: [{ lineRange: [0, 0], indent: 1 }],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    expect(out.issues).toEqual([])
+    expect(out.updates[0].phrases).toEqual([
+      { lineRange: [0, 0], indent: 1 },
+    ])
+  })
+
+  it('Pattern A — still propagates phrase.indent=0 → 1 when uniform line.indent=1 (regression check)', () => {
+    // Pattern A is the original Phase 2-D #463 fix scenario. The Phase
+    // 2-F guard MUST NOT regress this — Pattern A is the dominant
+    // 96.4% (319/331) case in the audit and is the behavior the
+    // 29-SAFE reinject relies on.
+    const richSlots = [
+      {
+        block: richStanzaBlockWithIndents([
+          ['Body line A', 1],
+          ['Body line B', 1],
+        ]),
+        blockIndex: 0,
+      },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: ['Body line A', 'Body line B'],
+        phrases: [{ lineRange: [0, 1], indent: 0 }],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    expect(out.issues).toEqual([])
+    expect(out.updates[0].phrases).toEqual([
+      { lineRange: [0, 1], indent: 1 },
+    ])
+  })
+
+  it('equal — keeps phrase.indent=1 when uniform line.indent=1 (no-op equivalent)', () => {
+    // Sanity case: phrase.indent already equals line.indent. The guard
+    // permits propagation (because phrase.indent === headIndent disables
+    // the explicit-non-zero branch), and the propagation step is a
+    // no-op. This ensures the guard does not introduce any side effect
+    // for the most common already-aligned shape.
+    const richSlots = [
+      {
+        block: richStanzaBlockWithIndents([['Aligned line', 1]]),
+        blockIndex: 0,
+      },
+    ]
+    const ext = [
+      {
+        stanzaIndex: 0,
+        lines: ['Aligned line'],
+        phrases: [{ lineRange: [0, 0], indent: 1 }],
+      },
+    ]
+    const out = planRefUpdates(richSlots, ext)
+    expect(out.issues).toEqual([])
+    expect(out.updates[0].phrases).toEqual([
+      { lineRange: [0, 0], indent: 1 },
+    ])
+  })
+})

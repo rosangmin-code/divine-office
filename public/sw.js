@@ -1,3 +1,20 @@
+// v14 — #477: F-X11 Phase 2-F builder propagation guard + 29 SAFE
+// refs reinject. Phase 2-D (#463) 의 phrase.indent ← line.indent
+// propagation 이 의도적 non-zero phrase.indent (Pattern B Roman
+// 'I'/'II' centered marker / Pattern C 짧은 hanging-indent wrap-
+// continuation) 까지 silently flatten 시키던 #475 audit MAJOR-2
+// (39 refs / 331 mismatches) 결함의 build-side fix. skip-if-explicit
+// guard (phrase.indent !== 0 && phrase.indent !== uniformLineIndent
+// → preserve, do NOT propagate) 추가 후 audit GO_WITH_CAVEAT 의
+// 29 SAFE refs (Pattern A only — Isaiah 26:1-6, Psalm 98:1-9 등)
+// 에 한해 reinject, 10 EXCLUDE refs (Pattern B/C contamination —
+// Psalm 49/145/45/62/139/27/132/72/136 + Revelation 15:3-4) 는
+// --only allow-list 에서 의도적으로 제외. post-verifier 결과 SAFE
+// 29 refs 의 mismatch 0, EXCLUDE 10 refs 변경 0 (sha256 baseline
+// 일치). 28 SAFE refs 의 phrase.indent 가 0 → 1 로 정정되어 HTML
+// byte 출력 (phrase 단위 indent class) 이 바뀌므로 v13 precache
+// snapshot 과 어긋날 수 있어 bump. v13 잔존 시 28 refs 의 안티폰
+// /본문 wrap 들여쓰기가 flush-left 로 노출됨.
 // v13 — #473: 1 Samuel 2:1-10 b2 typo fix (PDF SoT 정정). rich.json
 // 한 line text 변경 (`Хамаг үйлсийг dэнслэгч` → `Хамаг үйлийг
 // дэнслэгч` — singular accusative 'үйлийг' per PDF parsed_data
@@ -53,7 +70,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v13'
+const CACHE_VERSION = 'divine-office-v14'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 

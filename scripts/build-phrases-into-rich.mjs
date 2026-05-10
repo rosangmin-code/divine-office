@@ -856,7 +856,19 @@ export function planRefUpdates(richStanzaSlots, extractorStanzas) {
           break
         }
       }
-      if (uniform) phrase.indent = headIndent
+      if (!uniform) continue
+      // F-X11 Phase 2-F (#477) — skip-if-explicit guard for #475 audit
+      // Pattern B/C contamination (intentional non-zero phrase.indent that
+      // disagrees with the uniform line.indent — Roman 'I'/'II' centered
+      // markers, short hanging-indent wrap-continuations). Per audit
+      // verdict GO_WITH_CAVEAT, these explicit non-zero indents must be
+      // preserved across reinject; only Pattern A (phrase.indent=0,
+      // line.indent>0 — extractor per-column-baseline absorption) and the
+      // already-equal case may proceed to propagation.
+      const explicitNonZero =
+        Number(phrase.indent) !== 0 && Number(phrase.indent) !== headIndent
+      if (explicitNonZero) continue
+      phrase.indent = headIndent
     }
     updates.push({
       blockIndex: slot.blockIndex,
