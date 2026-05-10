@@ -93,7 +93,7 @@ describe('public/sw.js — service worker contract', () => {
 
       await event.waitUntil.mock.calls[0][0]
 
-      expect(sw.fakeCaches.open).toHaveBeenCalledWith('divine-office-v14')
+      expect(sw.fakeCaches.open).toHaveBeenCalledWith('divine-office-v15')
       expect(sw.fakeCache.addAll).toHaveBeenCalledWith([
         '/offline.html',
         '/icon.svg',
@@ -119,6 +119,7 @@ describe('public/sw.js — service worker contract', () => {
         'divine-office-v12',
         'divine-office-v13',
         'divine-office-v14',
+        'divine-office-v15',
         'unrelated-cache',
       ])
 
@@ -141,8 +142,9 @@ describe('public/sw.js — service worker contract', () => {
       expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v11')
       expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v12')
       expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v13')
+      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v14')
       expect(sw.fakeCaches.delete).toHaveBeenCalledWith('unrelated-cache')
-      expect(sw.fakeCaches.delete).not.toHaveBeenCalledWith('divine-office-v14')
+      expect(sw.fakeCaches.delete).not.toHaveBeenCalledWith('divine-office-v15')
       expect(sw.claim).toHaveBeenCalled()
     })
   })

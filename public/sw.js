@@ -1,14 +1,27 @@
-// v14 — #476: 1 Samuel 2:1-10 추가 typo fix (b4/b5/b6, PDF SoT 정정).
-// rich.json 3 line text 변경:
-//   - b4 line 4: 'Дордруулдаг' → 'Дордуулдаг' (extra р 제거,
-//     PDF parsed_data/full_pdf.txt:7803 verbatim)
-//   - b5 line 1: 'үнс хогноос өргөмждөө' → 'үнс хогноос өргөхдөө'
-//     (м→х, gd→хд, PDF :7805)
-//   - b6 line 2: 'Гагц гүүнийхээ дээр' → 'Гагц үүнийхээ дээр'
-//     (initial г 제거, semantic '다리'→'이것', PDF :7825)
-// NFR-002 PDF verbatim 정책 엄격 적용 (#473 후속, block-by-block
-// spot-check 으로 발견). HTML byte 출력 (시편 본문 3 line text)
-// 이 바뀌므로 v13 precache snapshot 과 어긋날 수 있어 bump.
+// v15 — #476 + #477 통합 bump (CACHE conflict resolution).
+//
+// #477: F-X11 Phase 2-F builder propagation guard + 29 SAFE refs
+// reinject. Phase 2-D (#463) 의 phrase.indent ← line.indent
+// propagation 이 의도적 non-zero phrase.indent (Pattern B Roman
+// 'I'/'II' centered marker / Pattern C 짧은 hanging-indent wrap-
+// continuation) 까지 silently flatten 시키던 #475 audit MAJOR-2
+// (39 refs / 331 mismatches) 결함의 build-side fix. skip-if-explicit
+// guard (phrase.indent !== 0 && phrase.indent !== uniformLineIndent
+// → preserve, do NOT propagate) 추가 후 audit GO_WITH_CAVEAT 의
+// 29 SAFE refs (Pattern A only — Isaiah 26:1-6, Psalm 98:1-9 등)
+// 에 한해 reinject, 10 EXCLUDE refs (Pattern B/C contamination —
+// Psalm 49/145/45/62/139/27/132/72/136 + Revelation 15:3-4) 는
+// --only allow-list 에서 의도적으로 제외. 28 SAFE refs 의
+// phrase.indent 가 0 → 1 로 정정.
+//
+// #476: 1 Samuel 2:1-10 추가 typo fix (b4/b5/b6, PDF SoT 정정).
+//   - b4 line 4: 'Дордруулдаг' → 'Дордуулдаг' (extra р 제거, PDF :7803)
+//   - b5 line 1: 'үнс хогноос өргөмждөө' → 'үнс хогноос өргөхдөө' (PDF :7805)
+//   - b6 line 2: 'Гагц гүүнийхээ дээр' → 'Гагц үүнийхээ дээр' (PDF :7825)
+//
+// 두 commit 모두 HTML byte 출력 변경 → v13 precache snapshot 과
+// 어긋날 수 있어 v15 으로 한 번에 bump. v14 으로 각각 bump 시도가
+// 동일 line 충돌 → manual resolve 로 v15 통합.
 // v13 — #473: 1 Samuel 2:1-10 b2 typo fix (PDF SoT 정정). rich.json
 // 한 line text 변경 (`Хамаг үйлсийг dэнслэгч` → `Хамаг үйлийг
 // дэнслэгч` — singular accusative 'үйлийг' per PDF parsed_data
@@ -64,7 +77,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v14'
+const CACHE_VERSION = 'divine-office-v15'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
