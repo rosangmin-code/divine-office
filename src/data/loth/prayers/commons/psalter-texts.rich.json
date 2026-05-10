@@ -20760,7 +20760,7 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "далайд хаяг нь Тэр билээ."
+                  "text": "далайд хаягч нь Тэр билээ."
                 }
               ],
               "indent": 1
@@ -48747,6 +48747,36 @@
               ],
               "indent": 1
             }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                4
+              ],
+              "indent": 0
+            }
           ]
         },
         {
@@ -48785,6 +48815,36 @@
                   "kind": "text",
                   "text": "Харагтун, өлсгөлөнгийн өвчнүүд байна!"
                 }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
               ],
               "indent": 0
             }
@@ -48829,6 +48889,22 @@
               ],
               "indent": 1
             }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                3
+              ],
+              "indent": 0
+            }
           ]
         },
         {
@@ -48858,6 +48934,29 @@
                   "kind": "text",
                   "text": "Та биднийг юунд эдгүүлэгүйгээр цохив?"
                 }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
               ],
               "indent": 0
             }
@@ -48902,6 +49001,36 @@
               ],
               "indent": 0
             }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
+              ],
+              "indent": 0
+            }
           ]
         },
         {
@@ -48922,6 +49051,22 @@
                   "kind": "text",
                   "text": "Эцэг өвгөдийнхөө хилэнцийг мэднэ."
                 }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
               ],
               "indent": 0
             }
@@ -48961,8 +49106,38 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Бүү цуцлаач."
+                  "text": "Бүү цуцлаач!"
                 }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
               ],
               "indent": 0
             }
