@@ -126,8 +126,32 @@ export function splitColumns(txtContent, physicalPages) {
 
       // Case A: line ends before the cut column — single-column line, assign
       // to left or right based on where the text sits.
+      //
+      // #492 (Phase 2-I1b) — right-column-short-line guard. Some right-
+      // column lines are short enough that they end BEFORE the detected
+      // cutColumn (e.g. a final 3-char wrap fragment "уу." or a short
+      // closing-prayer line). The pre-#492 first branch
+      // `firstNonSpace < cutColumn - 2 → left` mis-classified those
+      // lines as left-column when their `firstNonSpace` happened to be
+      // close to but below the cut (e.g. firstNonSpace=47, cutColumn=50,
+      // cutColumn-2=48 → 47 < 48 → wrongly assigned to left).
+      // Production-shape regression: Psalm 42:2-6 b3 (book page 196 left
+      // gathered "уу." from PDF physical page 99 right column where
+      // "Та биднийг Өөрийн оршихуйгаар цангуулна / уу." (line wraps).
+      //
+      // Fix: when firstNonSpace is within the right-column zone
+      // (>= max(20, cutColumn - 10) — the same threshold sub-case (a)
+      // of resolveLineGutter uses), push the line to the right column
+      // regardless of whether it reaches the cut.
       if (line.length <= cutColumn) {
-        if (firstNonSpace < cutColumn - 2) {
+        const RIGHT_COL_THRESHOLD = Math.max(20, cutColumn - 10)
+        if (firstNonSpace >= RIGHT_COL_THRESHOLD) {
+          // Right-column-short-line — content starts deep enough to be
+          // structurally part of the right column even though the line
+          // doesn't reach the cut.
+          leftLines.push('')
+          rightLines.push(line)
+        } else if (firstNonSpace < cutColumn - 2) {
           leftLines.push(line)
           rightLines.push('')
         } else if (firstNonSpace > cutColumn + 2) {
@@ -360,6 +384,28 @@ function resolveLineGutter(line, cutColumn) {
     }
   }
   if (best) return { leftEnd: best.start, rightStart: best.end }
+
+  // #492 (Phase 2-I1b) — right-column-only-line guard. When no run
+  // brackets cutColumn AND no run end lands within ±20, the inner runs
+  // we found are intra-content whitespace (between right-column word
+  // tokens, e.g. "тэвчээрийг,  амилалтаараа   шинэ" has 3-space runs
+  // between adjacent right-column words). Without this guard the
+  // "widest run" fallback below would pick one of those intra-content
+  // runs as the gutter, splitting MID-RIGHT-COLUMN-CONTENT and
+  // duplicating the right-column tail into the left stream.
+  // Production-shape regression: Psalm 96:1-13 b0 (book page 318 left
+  // gathered "тэвчээрийг,  амилалтаараа" from physical page 160 right
+  // column closing-prayer body where the line had 45 leading spaces
+  // and inner 3-space runs at positions 68-70 and 75-77).
+  //
+  // Same threshold as the `runs.length === 0` sub-case (a) above —
+  // when the first non-space sits in the right-column zone (no left
+  // content at all), the entire line is right-column and the cut
+  // should be at firstNonSpace (so left slice is empty).
+  const firstNonSpace = line.length - line.trimStart().length
+  if (firstNonSpace >= Math.max(20, cutColumn - 10)) {
+    return { leftEnd: firstNonSpace, rightStart: firstNonSpace }
+  }
 
   // Last resort: widest run.
   let widest = runs[0]

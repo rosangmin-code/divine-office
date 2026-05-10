@@ -127,3 +127,103 @@ describe('splitColumns', () => {
     expect(() => splitColumns(content, [376, 377])).toThrow(/page count mismatch/)
   })
 })
+
+// ─────────────────────────────────────────────────────────────────────
+// #492 Phase 2-I1b — right-column-bleed guards.
+//
+// Pre-#492 the splitter mis-routed two distinct shapes of right-column
+// content into the LEFT stream:
+//
+//   Shape A (Case A short line — Psalm 42:2-6 b3 root cause):
+//     A short right-column wrap fragment ("уу.") that ends BEFORE the
+//     detected cutColumn was classified as left because
+//     `firstNonSpace < cutColumn - 2` (e.g. 47 < 48 with cutColumn=50)
+//     was treated as a "definitely left" signal.
+//
+//   Shape B (Case B inner-runs only — Psalm 96:1-13 b0 root cause):
+//     A right-column-only line whose internal whitespace runs sit DEEP
+//     inside the right column (far past cutColumn) caused
+//     `resolveLineGutter` to fall through to the "widest run" last-resort
+//     fallback, splitting MID-RIGHT-COLUMN-CONTENT and pushing the right-
+//     column tail into the left stream.
+//
+// Both shapes now activate the same `firstNonSpace >= max(20, cutColumn -
+// 10)` right-column-zone guard.
+// ─────────────────────────────────────────────────────────────────────
+
+describe('splitColumns — #492 right-column-bleed guards', () => {
+  // Synthetic helper: build a one-physical-page \f-delimited input with
+  // a generous left-column body to anchor the cutColumn detection at a
+  // predictable value (~48-52). Three "anchor" lines establish a wide
+  // gutter; the test line under inspection is appended after them.
+  function pageWithGutter(testLine) {
+    const anchor1 = ' Эхний мөр                                       Right anchor one'
+    const anchor2 = ' Хоёр дахь                                       Right anchor two'
+    const anchor3 = ' Гурав дахь                                      Right anchor three'
+    return [anchor1, anchor2, anchor3, testLine].join('\n')
+  }
+
+  // ── Shape A: short right-column line (firstNonSpace < cut, length <= cut) ──
+  it('routes a short right-column line to the right stream (Case A guard)', () => {
+    // Test line: 47 leading spaces + "уу." (3 chars). Length = 50.
+    // The pageWithGutter anchors push cutColumn into the high 40s / low
+    // 50s — this line ends AT or BEFORE the cut. Pre-#492 this would
+    // hit the `firstNonSpace < cutColumn - 2 → left` branch.
+    const testLine = ' '.repeat(47) + 'уу.'
+    const content = pageWithGutter(testLine)
+    const result = splitColumns(content, [99])
+    const left = result.find((s) => s.column === 'left')
+    const right = result.find((s) => s.column === 'right')
+    // Test line is the 4th line (index 3).
+    expect(left.lines[3]).toBe('') // no bleed into left
+    expect(right.lines[3]).toMatch(/уу\./) // present in right
+  })
+
+  it('still routes left-column wrap-continuation (firstNonSpace small) to the left', () => {
+    // Regression guard: a deep left-column wrap continuation (e.g.
+    // "    надтай") has firstNonSpace = 4, way below the right-column
+    // threshold. Must continue to be routed left.
+    const testLine = '    надтай'
+    const content = pageWithGutter(testLine)
+    const result = splitColumns(content, [99])
+    const left = result.find((s) => s.column === 'left')
+    const right = result.find((s) => s.column === 'right')
+    expect(left.lines[3]).toMatch(/надтай/)
+    expect(right.lines[3]).toBe('')
+  })
+
+  // ── Shape B: long right-column-only line with inner whitespace runs ──
+  it('routes a right-column-only long line with inner runs to the right stream (resolveLineGutter guard)', () => {
+    // Test line: 45 leading spaces + content with INNER 3-space runs but
+    // NO 3-space run at or near the cutColumn. Pre-#492 the "widest run"
+    // last-resort fallback would split mid-content.
+    // Structure: 45 spaces + "тэвчээрийг,  амилалтаараа   шинэ   горьдол"
+    //   (2 spaces between тэв and ами — NOT a 3-space run)
+    //   (3 spaces between ами and шинэ — a 3-space run at ~col 70)
+    //   (3 spaces between шинэ and горьдол — another 3-space run)
+    const testLine = ' '.repeat(45) + 'тэвчээрийг,  амилалтаараа   шинэ   горьдол'
+    const content = pageWithGutter(testLine)
+    const result = splitColumns(content, [99])
+    const left = result.find((s) => s.column === 'left')
+    const right = result.find((s) => s.column === 'right')
+    // The full right-column content must be intact in the right stream
+    // and absent from the left stream.
+    expect(left.lines[3]).toBe('')
+    expect(right.lines[3]).toMatch(/тэвчээрийг/)
+    expect(right.lines[3]).toMatch(/горьдол/) // no mid-content split
+  })
+
+  it('still routes a normal two-column line correctly (resolveLineGutter direct gutter)', () => {
+    // Regression guard: a true two-column line with a clean gutter must
+    // continue to split with both halves preserved.
+    const testLine = ' Зүүн талын текст                                Right side body'
+    const content = pageWithGutter(testLine)
+    const result = splitColumns(content, [99])
+    const left = result.find((s) => s.column === 'left')
+    const right = result.find((s) => s.column === 'right')
+    expect(left.lines[3]).toMatch(/Зүүн талын текст/)
+    expect(left.lines[3]).not.toMatch(/Right side/)
+    expect(right.lines[3]).toMatch(/Right side body/)
+    expect(right.lines[3]).not.toMatch(/Зүүн талын/)
+  })
+})
