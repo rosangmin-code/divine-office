@@ -32,6 +32,7 @@
 
 import { describe, it, expect } from 'vitest'
 import { injectPhrasesIntoRichData } from '../../build-phrases-into-rich.mjs'
+import { parseArgs } from '../process-fx11-phase2-batch.mjs'
 
 // Helper to build a minimal rich-AST stanza block (mirrors the helper in
 // `scripts/__tests__/build-phrases-into-rich.test.mjs` to keep the
@@ -206,5 +207,86 @@ describe('process-fx11-phase2-batch — integration with wrap-tolerant matcher (
     const issuedRefs = result.issues.map((i) => i.ref)
     expect(issuedRefs).toContain('Unrecoverable Ref')
     expect(richData['Wrap Ref'].stanzasRich.blocks[0].phrases).toBeUndefined()
+  })
+})
+
+// @fr FR-161
+describe('process-fx11-phase2-batch — parseArgs --only fail-open fix (#474 MAJOR-1)', () => {
+  // ── Positive: --only=value (equals form, NEW in #474) ────────────────
+  // Pre-#474 the parser ignored `=` so `--only=Psalm 16:1-6` produced
+  // args['only=Psalm 16:1-6']=true with args.only undefined → the
+  // typeof guard at line 345/459 silently bypassed the allow-list and
+  // ALL 124 PASS refs got re-injected (fail-open). Post-#474 the same
+  // input correctly populates args.only with the ref string.
+  it('--only=Psalm 16:1-6 (equals form) parses to args.only string', () => {
+    const args = parseArgs(['--only=Psalm 16:1-6'])
+    expect(args.only).toBe('Psalm 16:1-6')
+  })
+
+  // ── Positive: --only value (space form, pre-existing behaviour) ──────
+  // Regression guard — the equals-form addition must not break the
+  // already-working space-separated invocation.
+  it('--only Psalm 16:1-6 (space form) parses to args.only string', () => {
+    const args = parseArgs(['--only', 'Psalm 16:1-6'])
+    expect(args.only).toBe('Psalm 16:1-6')
+  })
+
+  // ── Positive: --only=multi-value with the `|` separator ──────────────
+  // The CLI's allow-list semantics (line 346) split on `|` to support
+  // multi-ref injection batches. The equals-form must preserve the
+  // pipe-separated payload verbatim — the splitter is downstream.
+  it('--only=A|B|C (equals + multi-value) preserves pipe-separated payload', () => {
+    const args = parseArgs(['--only=Psalm 16:1-6|Psalm 137:1-6'])
+    expect(args.only).toBe('Psalm 16:1-6|Psalm 137:1-6')
+  })
+
+  // ── Negative: --only (bare) ─────────────────────────────────────────
+  // Pre-#474 this fell into the `else` branch and set args.only=true
+  // (boolean). The typeof guard then bypassed the allow-list →
+  // unintended broad-scope re-inject. Post-#474 throws a fail-loud
+  // ParseArgsError BEFORE any data mutation can begin.
+  it('--only (bare, no value) throws ParseArgsError', () => {
+    expect(() => parseArgs(['--only'])).toThrow(/--only requires a non-empty value/)
+  })
+
+  // ── Negative: --only "" (empty string value) ────────────────────────
+  // Pre-#474 the next-arg falsiness check (`next && !next.startsWith
+  // ('--')`) treated '' as missing → args.only=true. Post-#474 the
+  // length check fires.
+  it('--only "" (empty string value) throws ParseArgsError', () => {
+    expect(() => parseArgs(['--only', ''])).toThrow(/--only requires a non-empty value/)
+  })
+
+  // ── Negative: --only --inject (next is a flag) ──────────────────────
+  // Pre-#474 the `!next.startsWith('--')` branch sent --only to true
+  // and then re-consumed --inject normally — silently swallowing the
+  // user's intent for both flags. Post-#474 the prefix check throws
+  // BEFORE --inject is touched.
+  it('--only --inject (next starts with --) throws ParseArgsError', () => {
+    expect(() => parseArgs(['--only', '--inject'])).toThrow(
+      /--only requires a non-empty value/,
+    )
+  })
+
+  // ── Regression: existing flags unaffected ───────────────────────────
+  // The fail-loud path is scoped to `VALUE_REQUIRED_KEYS`; boolean and
+  // optional-value flags must keep working exactly as pre-#474.
+  it('existing flags (--inject, --json out.json) parse unchanged', () => {
+    const a = parseArgs(['--inject'])
+    expect(a.inject).toBe(true)
+
+    const b = parseArgs(['--json', 'out.json'])
+    expect(b.json).toBe('out.json')
+
+    const c = parseArgs(['--inject', '--json', 'out.json'])
+    expect(c.inject).toBe(true)
+    expect(c.json).toBe('out.json')
+
+    // --inject (bare) followed by --json (bare, no value) → both true.
+    // Pre-#474 behaviour preserved because neither key is in
+    // VALUE_REQUIRED_KEYS.
+    const d = parseArgs(['--inject', '--json'])
+    expect(d.inject).toBe(true)
+    expect(d.json).toBe(true)
   })
 })
