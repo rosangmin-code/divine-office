@@ -1,3 +1,22 @@
+// v18 — #485: F-X11 Phase 2-H. G4 depth-progression escalate (#481) 가
+// process-fx11-phase2-batch.mjs depth predicate 변경으로 collateral
+// newly-PASS 가 된 6 refs (1 Samuel 2:1-10, Daniel 3:57-88, 56,
+// Daniel 3:26-27, 29, 34-41, Isaiah 38:10-14, 17-20, Colossians
+// 1:12-20, Psalm 51:3-19) 의 paragraphBoundaries + phrases 를
+// 처음으로 inject. 모두 page-bridge mechanism (forward gather depth
+// 5+ 로 다음 PDF 페이지의 stanza 까지 매칭) 으로 align (#483 review
+// 6/6 LEGITIMATE 검증). Total: 52 stanza blocks 에 241 phrases +
+// 4 paragraphBoundaries (Daniel 3:57-88, 56 b3 의 refrain-style PB
+// 만 비-empty). HTML byte 출력 (paragraph 분할 + phrase 단위
+// indent + hanging-indent wrap continuation) 이 변하므로 v17
+// precache snapshot 과 어긋날 수 있어 bump.
+// v17 — #482: F-X11 Phase 2-G1.5 Wisdom 9 b4/b5 unmask typo fix
+// (post-G1 propagation). G1 (#480) 이 b1/b3 typo fix 후 b4/b5 가
+// 노출된 mask-shift 로 추가 typo 발견. PDF SoT 정정 (singular ↔
+// plural 어형 + 어간 정정).
+// v16 — #480: F-X11 Phase 2-G1 CAT-T1 typo fix. Wisdom 9:1-6, 9-11
+// + Psalm 135:1-12 의 4 typo (PDF parsed_data 정정). DRIFT 잔여
+// ~10 refs G-band fix 의 첫 단추.
 // v15 — #476 + #477 통합 bump (CACHE conflict resolution).
 //
 // #477: F-X11 Phase 2-F builder propagation guard + 29 SAFE refs
@@ -77,7 +96,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v17'
+const CACHE_VERSION = 'divine-office-v18'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
