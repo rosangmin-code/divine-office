@@ -290,7 +290,51 @@ function classifyResult(result, ref) {
   return { verdict: 'OTHER', detail: k || 'unknown' }
 }
 
-function processOne(ref, page, pdfPath, richData) {
+/**
+ * Predicate for the depth-progression loop in `processOne`. Returns true
+ * when the verdict suggests gathering more pages forward might yield a
+ * PASS at the next depth level.
+ *
+ * Pre-#481 (G4): the loop only continued on `DRIFT_NO_MATCH` /
+ * `INCOMPLETE_COVERAGE` — `DRIFT_LINE_COUNT` broke the loop
+ * unconditionally, so the **under-gather** symptom (extractor produced
+ * fewer lines than rich because the stanza spilled past the gathered
+ * window) was treated as a permanent FAIL even when one more page
+ * forward would have closed the gap. This was the root cause of the
+ * Psalm 118:1-16 b3 isolated-vs-batch verdict mismatch documented in
+ * `docs/audit-drift-final-2026-05-10.md` §3 CAT-T5 (#479 audit).
+ *
+ * Post-#481 the loop ALSO continues on `DRIFT_LINE_COUNT` when
+ * `extractorLineCount < richLineCount` (under-gather). When
+ * `extractorLineCount >= richLineCount` (over-gather or exact-but-
+ * mismatched) escalating cannot help — `gatherStanzas` is monotone-
+ * additive in `depth` (the next iteration only ever ADDS more stream
+ * stanzas; deduped pages are skipped, never removed), so more lines
+ * downstream are guaranteed.
+ */
+export function shouldEscalateDepth(verdictInfo, result, ref) {
+  if (!verdictInfo) return false
+  if (verdictInfo.verdict === 'PASS') return false
+  if (verdictInfo.verdict === 'DRIFT_NO_MATCH') return true
+  if (verdictInfo.verdict === 'INCOMPLETE_COVERAGE') return true
+  if (verdictInfo.verdict === 'DRIFT_LINE_COUNT') {
+    const refIssue = (result?.issues || []).find((i) => i.ref === ref)
+    const rich = refIssue?.richLineCount ?? 0
+    const ext = refIssue?.extractorLineCount ?? 0
+    return ext < rich
+  }
+  return false
+}
+
+/**
+ * Drives the depth-progression loop for a single ref. The optional
+ * `opts.gatherStanzas` override exists so unit tests can drive the loop
+ * with a stubbed gatherer (avoiding pdftotext fork). Production calls
+ * pass no opts — the module-level `gatherStanzas` is used.
+ */
+export function processOne(ref, page, pdfPath, richData, opts = {}) {
+  const gather = opts.gatherStanzas || gatherStanzas
+  const inject = opts.injectPhrasesIntoRichData || injectPhrasesIntoRichData
   const start = bookPageToPhysical(page)
   let lastResult = null
   let lastVerdict = null
@@ -298,7 +342,7 @@ function processOne(ref, page, pdfPath, richData) {
   let extractorStanzas = []
   for (let depth = 0; depth <= MULTI_PAGE_DEPTH; depth++) {
     try {
-      extractorStanzas = gatherStanzas(pdfPath, page, depth)
+      extractorStanzas = gather(pdfPath, page, depth)
     } catch (err) {
       return {
         ref,
@@ -309,17 +353,12 @@ function processOne(ref, page, pdfPath, richData) {
     }
     extractorStanzaCount = extractorStanzas.length
     const batch = [{ ref, stanzas: extractorStanzas }]
-    const result = injectPhrasesIntoRichData(richData, batch)
+    const result = inject(richData, batch)
     const verdictInfo = classifyResult(result, ref)
     lastResult = result
     lastVerdict = verdictInfo
     if (verdictInfo.verdict === 'PASS') break
-    if (
-      verdictInfo.verdict !== 'DRIFT_NO_MATCH' &&
-      verdictInfo.verdict !== 'INCOMPLETE_COVERAGE'
-    ) {
-      break
-    }
+    if (!shouldEscalateDepth(verdictInfo, result, ref)) break
   }
   return {
     ref,
