@@ -1,3 +1,16 @@
+// v13 — #473: 1 Samuel 2:1-10 b2 typo fix (PDF SoT 정정). rich.json
+// 한 line text 변경 (`Хамаг үйлсийг dэнслэгч` → `Хамаг үйлийг
+// дэнслэгч` — singular accusative 'үйлийг' per PDF parsed_data
+// /full_pdf.txt:7791). NFR-002 PDF verbatim 정책 엄격 적용 (user
+// 결정). HTML byte 출력 (시편 본문 한 줄 문자) 이 바뀌므로 v12
+// precache snapshot 과 어긋날 수 있어 bump. v12 잔존 시 구
+// 'үйлсийг' 텍스트가 그대로 노출됨.
+// v12 — #472: F-X11 Phase 2-E 4 typography drift typo fix (Psalm
+// 100 b1 'тулгар' → 'тулгуур', Psalm 110 b3 'хлжэрээгүйг' →
+// 'хижрээгүйг', Psalm 116:10-19 b3 'дээдэлэн' → 'дээдлэн',
+// Tobit 13:1-8 b3 'буулга' → 'буулгаа') + Isaiah 33:13-16 PB
+// inject. HTML byte 출력 (시편 본문 4 line text + Isaiah 33 PB)
+// 이 바뀌므로 v11 precache snapshot 과 어긋날 수 있어 bump.
 // v11 — #463: F-X11 Phase 2-D 데이터 변경 반영. translatePhrases() lineRange
 // dedup pass 추가 (Psalm 16:1-6 b0 / Psalm 137:1-6 b1 의 NFR-009j 0-OVERLAP
 // 회귀 fix — 두 phrase 가 같은 [k,k] 로 collapse 되어 화면에 같은 line 2회
@@ -40,7 +53,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v12'
+const CACHE_VERSION = 'divine-office-v13'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
