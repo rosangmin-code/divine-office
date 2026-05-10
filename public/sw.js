@@ -1,3 +1,14 @@
+// v14 — #476: 1 Samuel 2:1-10 추가 typo fix (b4/b5/b6, PDF SoT 정정).
+// rich.json 3 line text 변경:
+//   - b4 line 4: 'Дордруулдаг' → 'Дордуулдаг' (extra р 제거,
+//     PDF parsed_data/full_pdf.txt:7803 verbatim)
+//   - b5 line 1: 'үнс хогноос өргөмждөө' → 'үнс хогноос өргөхдөө'
+//     (м→х, gd→хд, PDF :7805)
+//   - b6 line 2: 'Гагц гүүнийхээ дээр' → 'Гагц үүнийхээ дээр'
+//     (initial г 제거, semantic '다리'→'이것', PDF :7825)
+// NFR-002 PDF verbatim 정책 엄격 적용 (#473 후속, block-by-block
+// spot-check 으로 발견). HTML byte 출력 (시편 본문 3 line text)
+// 이 바뀌므로 v13 precache snapshot 과 어긋날 수 있어 bump.
 // v13 — #473: 1 Samuel 2:1-10 b2 typo fix (PDF SoT 정정). rich.json
 // 한 line text 변경 (`Хамаг үйлсийг dэнслэгч` → `Хамаг үйлийг
 // дэнслэгч` — singular accusative 'үйлийг' per PDF parsed_data
@@ -53,7 +64,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v13'
+const CACHE_VERSION = 'divine-office-v14'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
