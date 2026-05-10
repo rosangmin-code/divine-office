@@ -1,3 +1,26 @@
+// v22 — #494: F-X11 Phase 2-J — 4 refs phrases inject post-splitter-fix.
+// #492 (Phase 2-I1b) pdftotext-column-splitter right-column-bleed fix
+// 후, batch dryrun 의 verdict 가 변경된 4 refs 를 일괄 inject:
+//   - Psalm 96:1-13       (newly-PASS, 2 stanzas / 27 phrases first inject)
+//   - Psalm 42:2-6        (newly-PASS, 4 stanzas / 49 phrases first inject)
+//   - Jeremiah 31:10-14   (collateral re-inject; phrases bit-identical
+//                          to #490 post-typo-fix state — splitter fix
+//                          had 0 effect on this ref's alignment)
+//   - Psalm 144:11-15     (collateral re-inject; phrases bit-identical
+//                          to #489 post-pageMap-fix state — splitter fix
+//                          had 0 effect on this ref's alignment)
+// Idempotency check (4 refs pre-J vs post-J JSON 비교):
+//   Jer 31 / Ps 144:11 → IDENTICAL (splitter fix delta = 0 on these refs)
+//   Psalm 96 / Psalm 42 → CHANGED (newly-injected, was empty)
+// Post-J dryrun: PASS 123 (was 121, +2 newly-PASS) / DRIFT 1 (Eph 1 만,
+// structural DEFER per #488 pushback). HTML byte 출력 (paragraph 분할
+// + phrase 단위 indent) 변경 → v21 precache snapshot 과 어긋날 수 있어
+// bump.
+// v21 — #491+#493: Jer 14 + Exod 15 typography fix cohort (Phase 2-I1a +
+// 2-I1a.5). #488 pushback (matcher cross-stanza 보강 → typography
+// drift) 후 dev 가 typo + b3 unmask 처리.
+// v20 — #489: F-X11 Phase 2-I2 pageMap fix Psalm 144:11-15 (#451 mirror).
+//   page 483 → 481 정정 + phrases re-align inject.
 // v19 — #490: F-X11 Phase 2-I3 Jeremiah 31:10-14 b1 typo fix + inject.
 // b1 line 4 'Тэд иржу,' → 'Тэд ирж,' (extra 'у' 제거, PDF 4200 SoT)
 // + b1 line 7 'улмаас баярлатгэнэ.' → 'улмаас гэрэлтэнэ.' (transcription
@@ -109,7 +132,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v21'
+const CACHE_VERSION = 'divine-office-v22'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
