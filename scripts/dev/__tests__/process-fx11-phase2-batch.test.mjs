@@ -32,7 +32,11 @@
 
 import { describe, it, expect } from 'vitest'
 import { injectPhrasesIntoRichData } from '../../build-phrases-into-rich.mjs'
-import { parseArgs } from '../process-fx11-phase2-batch.mjs'
+import {
+  parseArgs,
+  processOne,
+  shouldEscalateDepth,
+} from '../process-fx11-phase2-batch.mjs'
 
 // Helper to build a minimal rich-AST stanza block (mirrors the helper in
 // `scripts/__tests__/build-phrases-into-rich.test.mjs` to keep the
@@ -288,5 +292,264 @@ describe('process-fx11-phase2-batch — parseArgs --only fail-open fix (#474 MAJ
     const d = parseArgs(['--inject', '--json'])
     expect(d.inject).toBe(true)
     expect(d.json).toBe(true)
+  })
+})
+
+// @fr FR-161
+describe('process-fx11-phase2-batch — shouldEscalateDepth predicate (#481 G4)', () => {
+  // ── PASS — never escalate ────────────────────────────────────────────
+  it('PASS verdict → no escalation', () => {
+    expect(shouldEscalateDepth({ verdict: 'PASS' }, { ok: true }, 'X')).toBe(false)
+  })
+
+  // ── DRIFT_NO_MATCH — pre-#481 already escalates (regression guard) ───
+  it('DRIFT_NO_MATCH verdict → escalate (pre-#481 behaviour preserved)', () => {
+    expect(
+      shouldEscalateDepth(
+        { verdict: 'DRIFT_NO_MATCH' },
+        { ok: false, issues: [{ ref: 'X', kind: 'NO_MATCHING_EXTRACTOR_STANZA' }] },
+        'X',
+      ),
+    ).toBe(true)
+  })
+
+  // ── INCOMPLETE_COVERAGE — pre-#481 already escalates (regression guard) ──
+  it('INCOMPLETE_COVERAGE verdict → escalate (pre-#481 behaviour preserved)', () => {
+    expect(
+      shouldEscalateDepth(
+        { verdict: 'INCOMPLETE_COVERAGE' },
+        { ok: false, issues: [{ ref: 'X', error: 'INCOMPLETE_COVERAGE' }] },
+        'X',
+      ),
+    ).toBe(true)
+  })
+
+  // ── DRIFT_LINE_COUNT under-gather (NEW post-#481) — escalate ─────────
+  // The Psalm 118:1-16 b3 root cause: rich=2 ext=1 means the stanza
+  // spilled past the gathered window. One more page forward could close
+  // the gap, so the predicate continues.
+  it('DRIFT_LINE_COUNT (ext < rich) → escalate (NEW post-#481, Psalm 118 b3 shape)', () => {
+    expect(
+      shouldEscalateDepth(
+        { verdict: 'DRIFT_LINE_COUNT' },
+        {
+          ok: false,
+          issues: [
+            {
+              ref: 'X',
+              kind: 'LINE_COUNT_MISMATCH',
+              richLineCount: 2,
+              extractorLineCount: 1,
+            },
+          ],
+        },
+        'X',
+      ),
+    ).toBe(true)
+  })
+
+  // ── DRIFT_LINE_COUNT over-gather — DO NOT escalate ───────────────────
+  // gatherStanzas is monotone-additive in `depth`: deeper iterations only
+  // ever ADD more stream stanzas. If we already have ext > rich, deeper
+  // gives even more lines — escalation cannot help.
+  it('DRIFT_LINE_COUNT (ext > rich) → no escalation (over-gather guard)', () => {
+    expect(
+      shouldEscalateDepth(
+        { verdict: 'DRIFT_LINE_COUNT' },
+        {
+          ok: false,
+          issues: [
+            {
+              ref: 'X',
+              kind: 'LINE_COUNT_MISMATCH',
+              richLineCount: 2,
+              extractorLineCount: 5,
+            },
+          ],
+        },
+        'X',
+      ),
+    ).toBe(false)
+  })
+
+  // ── DRIFT_LINE_COUNT exact-but-mismatch — DO NOT escalate ────────────
+  // ext == rich means counts match but content doesn't — adding more
+  // pages would only push us into over-gather territory.
+  it('DRIFT_LINE_COUNT (ext == rich) → no escalation', () => {
+    expect(
+      shouldEscalateDepth(
+        { verdict: 'DRIFT_LINE_COUNT' },
+        {
+          ok: false,
+          issues: [
+            {
+              ref: 'X',
+              kind: 'LINE_COUNT_MISMATCH',
+              richLineCount: 3,
+              extractorLineCount: 3,
+            },
+          ],
+        },
+        'X',
+      ),
+    ).toBe(false)
+  })
+
+  // ── DRIFT_LINE_COUNT with no matching ref issue → no escalation ──────
+  // Defensive: if the issue list doesn't carry the expected counts (e.g.
+  // a different ref's issue surfaced), default to NOT escalating rather
+  // than spinning the loop on missing data.
+  it('DRIFT_LINE_COUNT with missing issue counts → no escalation (defensive)', () => {
+    expect(
+      shouldEscalateDepth({ verdict: 'DRIFT_LINE_COUNT' }, { ok: false, issues: [] }, 'X'),
+    ).toBe(false)
+  })
+
+  // ── REF_NOT_FOUND / OTHER → no escalation ────────────────────────────
+  it('REF_NOT_FOUND → no escalation', () => {
+    expect(shouldEscalateDepth({ verdict: 'REF_NOT_FOUND' }, { ok: false }, 'X')).toBe(
+      false,
+    )
+  })
+  it('OTHER (e.g. EMPTY_RICH_LINE) → no escalation', () => {
+    expect(shouldEscalateDepth({ verdict: 'OTHER' }, { ok: false }, 'X')).toBe(false)
+  })
+})
+
+// @fr FR-161
+describe('process-fx11-phase2-batch — processOne depth-progression loop (#481 G4)', () => {
+  // Helpers — keep test fixtures inline so the integration intent is
+  // readable in one place.
+  function richBlock(...texts) {
+    return {
+      kind: 'stanza',
+      lines: texts.map((text) => ({ spans: [{ kind: 'text', text }], indent: 0 })),
+    }
+  }
+  function extStanza(stanzaIndex, ...texts) {
+    return {
+      stanzaIndex,
+      lines: texts,
+      phrases: texts.map((_, i) => ({ lineRange: [i, i], indent: 0 })),
+    }
+  }
+
+  // ── Production-shape regression: Psalm 118:1-16 b3 (#479 audit §3 CAT-T5) ──
+  // The exact under-gather shape from the audit:
+  //   rich = 2 lines, ext = 1 line at depth=0/1 (stanza spilled past
+  //   the gathered window), depth=2 produces ext = 2 → PASS.
+  //
+  // Pre-#481 the loop broke at depth=0 with DRIFT_LINE_COUNT and
+  // surfaced the same verdict at the end (the depth=2 success was
+  // never reached). Post-#481 the loop escalates and reaches PASS.
+  it('Psalm 118:1-16 b3 production-shape: depth=0/1 under-gather → depth=2 PASS', () => {
+    const ref = 'Psalm 118:1-16'
+    const richData = {
+      [ref]: {
+        stanzasRich: {
+          blocks: [
+            // b0 — antiphon (1 line, always matches)
+            richBlock('Эзэний нэр алдраар ирэгч нь ерөөлтэй еэ!'),
+            // b3 — the under-gather target (2 lines)
+            richBlock('Эзэн миний хүчирхэг нөмөр болон', 'Эзэн надад аврал болсон.'),
+          ],
+        },
+      },
+    }
+    const gatherCalls = []
+    const gatherStub = (_pdf, _page, depth) => {
+      gatherCalls.push(depth)
+      if (depth < 2) {
+        // Under-gather: b3 ext stanza only has the FIRST line. The
+        // second line lives on the next physical page that hasn't been
+        // gathered yet. Wrap-tolerant matcher (#452) cannot bridge a
+        // missing line, so this surfaces LINE_COUNT_MISMATCH ext=1
+        // rich=2.
+        return [
+          extStanza(0, 'Эзэний нэр алдраар ирэгч нь ерөөлтэй еэ!'),
+          extStanza(1, 'Эзэн миний хүчирхэг нөмөр болон'),
+        ]
+      }
+      // depth >= 2: forward-page gather captures the second line.
+      return [
+        extStanza(0, 'Эзэний нэр алдраар ирэгч нь ерөөлтэй еэ!'),
+        extStanza(1, 'Эзэн миний хүчирхэг нөмөр болон', 'Эзэн надад аврал болсон.'),
+      ]
+    }
+    const result = processOne(ref, 175, '/dummy/pdf', richData, {
+      gatherStanzas: gatherStub,
+    })
+    expect(result.verdict).toBe('PASS')
+    // Loop walked depths 0 → 1 → 2; first PASS hit at depth=2 broke out.
+    expect(gatherCalls).toEqual([0, 1, 2])
+  })
+
+  // ── Negative: exhaust max-depth on persistent under-gather ───────────
+  // A genuinely-unrecoverable under-gather must terminate at MULTI_PAGE_DEPTH
+  // and surface DRIFT_LINE_COUNT (no infinite loop). The MULTI_PAGE_DEPTH
+  // constant is 4 (script line 49) — the loop iterates 0..4 inclusive
+  // (5 calls).
+  it('persistent under-gather exhausts MULTI_PAGE_DEPTH then reports DRIFT_LINE_COUNT', () => {
+    const ref = 'Persistent Under-gather Ref'
+    const richData = {
+      [ref]: {
+        stanzasRich: {
+          blocks: [richBlock('Line one', 'Line two missing forever')],
+        },
+      },
+    }
+    const gatherCalls = []
+    const gatherStub = (_pdf, _page, depth) => {
+      gatherCalls.push(depth)
+      // Always return ext=1, rich=2 — under-gather at every depth.
+      return [extStanza(0, 'Line one')]
+    }
+    const result = processOne(ref, 999, '/dummy/pdf', richData, {
+      gatherStanzas: gatherStub,
+    })
+    expect(result.verdict).toBe('DRIFT_LINE_COUNT')
+    // Loop walked all 5 depths (0..4 inclusive — MULTI_PAGE_DEPTH + 1).
+    expect(gatherCalls).toEqual([0, 1, 2, 3, 4])
+  })
+
+  // ── Regression guard: depth=0 PASS short-circuits the loop ───────────
+  // Clean refs (≥ 95% of production batch) match at depth=0; the new
+  // escalation branch must NOT keep iterating past PASS.
+  it('depth=0 PASS short-circuits: gather called exactly once', () => {
+    const ref = 'Clean Ref'
+    const richData = {
+      [ref]: { stanzasRich: { blocks: [richBlock('Line A', 'Line B')] } },
+    }
+    const gatherCalls = []
+    const gatherStub = (_pdf, _page, depth) => {
+      gatherCalls.push(depth)
+      return [extStanza(0, 'Line A', 'Line B')]
+    }
+    const result = processOne(ref, 100, '/dummy/pdf', richData, {
+      gatherStanzas: gatherStub,
+    })
+    expect(result.verdict).toBe('PASS')
+    expect(gatherCalls).toEqual([0])
+  })
+
+  // ── Regression guard: non-escalating verdict short-circuits the loop ──
+  // REF_NOT_FOUND (the dispatched batch references a key absent from
+  // richData) is a fundamentally unrecoverable verdict — gathering more
+  // pages cannot conjure the missing rich entry. The loop must respect
+  // shouldEscalateDepth's `false` and break at depth=0.
+  it('REF_NOT_FOUND at depth=0 does not escalate (non-escalating verdict)', () => {
+    const ref = 'Nonexistent Ref'
+    const richData = {} // ref is absent — inject reports REF_NOT_FOUND
+    const gatherCalls = []
+    const gatherStub = (_pdf, _page, depth) => {
+      gatherCalls.push(depth)
+      return [extStanza(0, 'Anything')]
+    }
+    const result = processOne(ref, 300, '/dummy/pdf', richData, {
+      gatherStanzas: gatherStub,
+    })
+    expect(result.verdict).toBe('REF_NOT_FOUND')
+    // Loop broke at depth=0 — non-escalating verdict short-circuits.
+    expect(gatherCalls).toEqual([0])
   })
 })
