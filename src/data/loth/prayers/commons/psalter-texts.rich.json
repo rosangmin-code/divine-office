@@ -47561,6 +47561,50 @@
               ],
               "indent": 1
             }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                4,
+                4
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                5,
+                5
+              ],
+              "indent": 1
+            }
           ]
         },
         {
@@ -47602,6 +47646,36 @@
               ],
               "indent": 0
             }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
+              ],
+              "indent": 0
+            }
           ]
         },
         {
@@ -47622,6 +47696,22 @@
                   "kind": "text",
                   "text": "Өөрийн өмч болгон Израилийг сонгосон билээ."
                 }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
               ],
               "indent": 0
             }
@@ -47693,6 +47783,50 @@
               ],
               "indent": 1
             }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                4,
+                4
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                5,
+                6
+              ],
+              "indent": 0
+            }
           ]
         },
         {
@@ -47743,6 +47877,36 @@
               ],
               "indent": 0
             }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                3
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                4,
+                4
+              ],
+              "indent": 0
+            }
           ]
         },
         {
@@ -47761,7 +47925,7 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Хүний хүүхдээс,"
+                  "text": "Хүний хүүхэд,"
                 }
               ],
               "indent": 0
@@ -47806,10 +47970,40 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "түүний бүх түшмэдэд илгээсэн юм."
+                  "text": "түүний бүх түшмэд дээр илгээсэн юм."
                 }
               ],
               "indent": 1
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                4
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                5,
+                6
+              ],
+              "indent": 0
             }
           ]
         },
@@ -47885,6 +48079,64 @@
                   "kind": "text",
                   "text": "өгсөн."
                 }
+              ],
+              "indent": 1
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                4,
+                4
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                5,
+                5
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                6,
+                6
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                7,
+                7
               ],
               "indent": 1
             }
@@ -48584,7 +48836,7 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Таны ертөнцийг бүтээсэн үед"
+                  "text": "Таныг ертөнцийг бүтээсэн үед"
                 }
               ],
               "indent": 0
@@ -48602,7 +48854,7 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Таны мэлмийд таалагмжтай зүйлс хийгээд"
+                  "text": "Таны мэлмийд тааламжтай зүйлс хийгээд"
                 }
               ],
               "indent": 0
