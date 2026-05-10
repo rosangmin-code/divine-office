@@ -5826,6 +5826,85 @@
               ],
               "indent": 1
             }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                4,
+                4
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                5,
+                6
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                7,
+                7
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                8,
+                8
+              ],
+              "indent": 1
+            },
+            {
+              "lineRange": [
+                9,
+                9
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                10,
+                11
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                12,
+                13
+              ],
+              "indent": 0
+            }
           ]
         },
         {
@@ -5866,40 +5945,34 @@
                 }
               ],
               "indent": 0
-            },
+            }
+          ],
+          "phrases": [
             {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "өвийг хуваалцахад биднийг боломжтой болгосон"
-                }
+              "lineRange": [
+                0,
+                0
               ],
-              "indent": 0
+              "indent": 1
             },
             {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Эцэгт талархал өргөөсэй хэмээн хүсэж байна."
-                }
+              "lineRange": [
+                1,
+                1
               ],
-              "indent": 0
+              "indent": 1
             },
             {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Тэр биднийг харанхуйн эрх мэдлээс авраад, хайрт"
-                }
+              "lineRange": [
+                2,
+                2
               ],
-              "indent": 0
+              "indent": 1
             },
             {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Хүүгийнхээ хаанчлалд шилжүүлсэн юм."
-                }
+              "lineRange": [
+                3,
+                3
               ],
               "indent": 0
             }
@@ -5932,6 +6005,29 @@
                   "kind": "text",
                   "text": "Гэм нүглүүдийн уучлалыг хүртдэг юм."
                 }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
               ],
               "indent": 0
             }

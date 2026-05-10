@@ -1,3 +1,25 @@
+// v23 — #496: F-X11 Phase 2-K — Eph 1:3-10 b1 restructure (Col 1
+// leakage 제거, F-X11 100% closure). #495 batch review 가 발견한
+// MAJOR data-quality 회귀 fix:
+//   b1 lines 4-7 (4 lines) 가 Colossians 1:12-13 본문이었음 —
+//   초기 데이터 입력 시 인접 reading (Colossians 1:9b-13) 의 본문이
+//   잘못 끼어든 leakage. 사용자 가시화면에 "Эцэгт талархал өргөөсэй
+//   хэмээн хүсэж байна. / Тэр биднийг харанхуйн эрх мэдлээс
+//   авраад, хайрт / Хүүгийнхээ хаанчлалд шилжүүлсэн юм." 등 Col 1
+//   text 가 Eph 1 canticle 자리에 표시되던 회귀.
+//   Fix: rich.json b1 L4-L7 (Col 1 leakage 4 lines) 제거 — b1 = 4
+//   lines 로 축소 (PDF :2836-2839 verbatim 만 유지). 동시에 plain
+//   catalog (psalter-texts.json) 의 동일 leakage 제거 — stanza 1
+//   L3 의 concatenated 'Хишиг ивээлээ бидэнд хүртээсэн билээ.
+//   өвийг хуваалцахад...' 를 'Хишиг ивээлээ бидэнд хүртээсэн
+//   билээ.' 만 유지 + L4-L6 (Col 1 leakage 3 lines) 제거. SSOT
+//   양쪽 동시 정정.
+//   Inject delta: 3 stanza blocks (b0/b1/b2) phrases inject (0 PB —
+//   single-paragraph stanzas).
+//   Phase 2-K Post-fix dryrun: PASS 124 / DRIFT 0 ← F-X11 100%
+//   closure (Eph 1 newly-PASS, 1 잔여 → 0). HTML byte 출력 (b1 4
+//   lines 제거 + phrase 단위 indent) 변경 → v22 precache snapshot
+//   과 어긋날 수 있어 bump.
 // v22 — #494: F-X11 Phase 2-J — 4 refs phrases inject post-splitter-fix.
 // #492 (Phase 2-I1b) pdftotext-column-splitter right-column-bleed fix
 // 후, batch dryrun 의 verdict 가 변경된 4 refs 를 일괄 inject:
@@ -132,7 +154,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v22'
+const CACHE_VERSION = 'divine-office-v23'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
