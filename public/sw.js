@@ -1,3 +1,37 @@
+// v26 — #501: Phase 2 R-2 Pilot — paragraph extractor (Python pdfplumber +
+// y-gap heuristic 1.4× median) 도입. PDF page-physical y-coordinate 측정
+// 으로 stanza-internal 의 line-spacing baseline (median) 대비 ≥1.4× 인
+// 위치를 paragraph 로 분류. Pilot 범위: Psalm 63:2-9 + Psalm 42:2-6 의
+// 6 stanza blocks (PB-applicable 4 + refrain-empty 2).
+//   - Psalm 63:2-9 b0: PB [8] → [2, 8]  (text-based old missed v3 paragraph
+//                                         "Тэнгэрбурхан, Та миний…" — diff
+//                                         vs F-X11 text heuristic surfaced
+//                                         R-1 hypothesis)
+//   - Psalm 63:2-9 b1: PB ∅ → [6]        (new paragraph at "Шөнөжин Таны…")
+//   - Psalm 42:2-6 b0: PB ∅ → [4, 8, 12] (R-1 PoC consistent: PDF body
+//                                         idx 4/8/13 maps to rich idx
+//                                         4/8/12 after 1 wrap-join collapse)
+//   - Psalm 42:2-6 b1 / b2: PB ∅          (6-line + 4-line refrains; gap
+//                                         analysis finds no within-block
+//                                         paragraph — expected)
+//   - Psalm 42:2-6 b3: PB ∅ → [3, 7, 11, 15, 19]  (5 paragraphs across 20
+//                                                  rich lines, 1 wrap-join)
+// Mechanism (scripts/lib/extract-paragraphs-from-pdf.py): pdfplumber.chars
+// → top-cluster lines → column filter (x0 < 297) → walk per-block lines
+// with wrap-tolerant bridge (strict-eq first, then 12-char prefix +
+// length fence) → gap = first_top[i] - last_top[i-1] (bottom-to-top
+// across wrap-joined lines so the bridge does not inflate gaps by one
+// line-spacing per wrap depth) → median across non-null gaps → classify
+// (paragraph if gap ≥ 1.4 × median, stanza-break warning if gap ≥ 1.95 ×
+// median).
+// Node bridge (scripts/build-paragraphs-into-rich.mjs) child_process
+// spawns the Python extractor per-block, parses JSON, replaces rich.json
+// stanza block's paragraphBoundaries (or removes when extractor finds
+// none). Pilot manifest enumerates the 6 blocks; sweep over remaining
+// 122 refs follows in a separate task.
+// HTML byte 출력 (paragraph 분할 위치 변경 → multi-line phrase mt-3
+// boundary 변동) 변경 → v25 precache snapshot 과 어긋날 수 있어 bump.
+// v25 잔존 시 Psalm 63 b0 의 첫 paragraph 분할이 누락된 구 렌더가 노출.
 // v25 — #499: Phase 1 Sweep — phrase grouping rebuild 122 refs (제외
 // Psalm 63/42). #498 pilot 결과를 사용자가 화면 검증 OK 후, 나머지
 // 122 refs (시편 + 구약/신약 찬가 본문) 에 동일한 키릴 대문자 시작 규칙을
@@ -191,7 +225,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v25'
+const CACHE_VERSION = 'divine-office-v26'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
