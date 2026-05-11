@@ -1,3 +1,20 @@
+// v24 — #498: Phase 1 Pilot — phrase grouping rebuild (Psalm 63 + Psalm
+// 42 only). 키릴 대문자 시작 = 새 phrase 시작 규칙으로 multi-line phrase
+// 묶음 (Cyrillic-capital-start rule). The rich.json `phrases` arrays for
+// `Psalm 63:2-9` block 1 and `Psalm 42:2-6` blocks 0/3 collapse adjacent
+// wrap-continuation lines (smart-quote dialogue prefix, lowercase
+// continuation) into single multi-line PhraseGroups:
+//   - Psalm 63:2-9 b1: 13 → 12 phrases  (L4-L5 merge: 'Ам минь
+//     баясгалант уруулаар магтаалуудыг' + 'өргөнө.')
+//   - Psalm 42:2-6 b0: 19 → 18 phrases  (L8-L9 merge: 'Хүмүүс надад'
+//     + '"Чиний Тэнгэрбурхан хаана байна?"…')
+//   - Psalm 42:2-6 b3: 20 → 18 phrases  (L11-L12 + L17-L18 merges:
+//     both quote-prefixed continuation lines)
+// `lines[]` text + `paragraphBoundaries` UNCHANGED — only the phrase
+// grouping. Other 122 refs of psalter-texts.rich.json are NOT touched
+// in this pilot (sweep follows post-user-validation).
+// HTML byte 출력 (phrase span 그룹화) 변경 → v23 precache snapshot 과
+// 어긋날 수 있어 bump. 다른 정적 자산은 변동 없음.
 // v23 — #496: F-X11 Phase 2-K — Eph 1:3-10 b1 restructure (Col 1
 // leakage 제거, F-X11 100% closure). #495 batch review 가 발견한
 // MAJOR data-quality 회귀 fix:
@@ -154,7 +171,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v23'
+const CACHE_VERSION = 'divine-office-v24'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
