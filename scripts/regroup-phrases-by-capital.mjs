@@ -1,34 +1,46 @@
 #!/usr/bin/env node
 /**
- * regroup-phrases-by-capital.mjs — #498 Phase 1 Pilot helper.
+ * regroup-phrases-by-capital.mjs — Phase 1 Pilot helper (#498) + Sweep CLI (#499).
  *
  * Apply `regroupPhrasesByCapitalStart` (exported from
  * `scripts/build-phrases-into-rich.mjs`) to every `kind:'stanza'` block of
- * the refs passed via `--refs`. Reads/writes the target rich.json in place.
+ * the refs passed via `--refs`, OR to every ref of the target file that
+ * carries `stanzasRich.blocks` via `--all-refs` (#499 Sweep).
  *
- * Pilot scope (#498): Psalm 63:2-9 + Psalm 42:2-6. Other refs are NOT
- * touched even when present in the same target file. The 124-ref sweep
- * follows in a separate task after user validation of the pilot output.
+ * Scope notes:
+ *   - Pilot (#498): only `--refs "Psalm 63:2-9" "Psalm 42:2-6"`.
+ *   - Sweep (#499): `--all-refs` rewrites every ref in the file (124).
+ *     The rewrite is IDEMPOTENT — applying twice produces the same JSON.
+ *     The CLI reports per-ref delta so the operator can audit "no-change",
+ *     "merge-N", and "shrink-to-1" cases at a glance.
  *
  * What it does NOT change:
  *   - `lines[]` (text + indent + role) — UNTOUCHED.
  *   - `paragraphBoundaries` — UNTOUCHED (still indexes into `lines[]`).
  *   - Any block whose `kind` is not 'stanza'.
- *   - Any ref not listed in `--refs`.
+ *   - Any ref without `stanzasRich.blocks` (e.g., antiphon-only refs).
  *
  * What it DOES change:
  *   - `phrases` array of each matching stanza block — REPLACED with the
  *     capital-start re-grouping. Empty input → empty output (no crash).
  *
  * CLI:
+ *   # Targeted (pilot) shape:
  *   node scripts/regroup-phrases-by-capital.mjs \
  *     --target src/data/loth/prayers/commons/psalter-texts.rich.json \
  *     --refs "Psalm 63:2-9" "Psalm 42:2-6" \
- *     [--dry-run]
+ *     [--dry-run] [--summary-json <path>]
  *
- *   --dry-run: print before/after phrase counts per block, do not write.
- *   --target:  alternate rich.json (default = canonical psalter file).
- *   --refs:    one or more ref keys (positional after the flag).
+ *   # Sweep shape:
+ *   node scripts/regroup-phrases-by-capital.mjs \
+ *     --all-refs [--dry-run] [--summary-json <path>]
+ *
+ *   --dry-run:        print before/after phrase counts per block, do not write.
+ *   --target:         alternate rich.json (default = canonical psalter file).
+ *   --refs:           one or more ref keys (positional after the flag).
+ *   --all-refs:       rewrite every ref with `stanzasRich.blocks` in the file.
+ *                     Mutually exclusive with --refs.
+ *   --summary-json:   also emit machine-readable per-ref summary to <path>.
  */
 
 import { readFileSync, writeFileSync } from 'node:fs'
@@ -40,13 +52,23 @@ import { regroupPhrasesByCapitalStart } from './build-phrases-into-rich.mjs'
 const DEFAULT_TARGET = 'src/data/loth/prayers/commons/psalter-texts.rich.json'
 
 function parseCliArgs(argv) {
-  const args = { target: DEFAULT_TARGET, refs: [], dryRun: false }
+  const args = {
+    target: DEFAULT_TARGET,
+    refs: [],
+    dryRun: false,
+    allRefs: false,
+    summaryJson: null,
+  }
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i]
     if (a === '--target') {
       args.target = argv[++i]
     } else if (a === '--dry-run') {
       args.dryRun = true
+    } else if (a === '--all-refs') {
+      args.allRefs = true
+    } else if (a === '--summary-json') {
+      args.summaryJson = argv[++i]
     } else if (a === '--refs') {
       // Collect every positional token after --refs until the next flag.
       while (i + 1 < argv.length && !argv[i + 1].startsWith('--')) {
@@ -56,17 +78,48 @@ function parseCliArgs(argv) {
       throw new Error(`Unknown arg: ${a}`)
     }
   }
-  if (!args.refs.length) {
-    throw new Error('At least one --refs <key> is required (pilot scope).')
+  if (args.allRefs && args.refs.length) {
+    throw new Error('--all-refs and --refs are mutually exclusive.')
+  }
+  if (!args.allRefs && !args.refs.length) {
+    throw new Error('Pass --refs <key>… or --all-refs.')
   }
   return args
 }
 
 /**
+ * Collect every ref key whose value carries `stanzasRich.blocks`. Used by
+ * `--all-refs` to drive the sweep (#499). Refs without stanza blocks
+ * (e.g., antiphon-only entries) are skipped silently.
+ */
+export function listStanzaRefs(richData) {
+  const out = []
+  for (const ref of Object.keys(richData)) {
+    const blocks = richData[ref]?.stanzasRich?.blocks
+    if (Array.isArray(blocks) && blocks.some((b) => b?.kind === 'stanza')) {
+      out.push(ref)
+    }
+  }
+  return out
+}
+
+/**
  * Apply capital-start regrouping to every `kind:'stanza'` block of the
  * given ref. Returns a summary the CLI prints (or the test asserts on).
+ *
+ * Scope-preservation contract (#499 Sweep): by default, ONLY blocks that
+ * already carry a non-empty `phrases` array are rewritten. Blocks whose
+ * `phrases` was previously absent or empty are SKIPPED — that path falls
+ * back to the legacy line-render in `psalm-block.tsx`, and we do not
+ * want the sweep to silently flip those refs over to phrase rendering
+ * (different indent classes / hanging indent → visual change for blocks
+ * outside the F-X11 phrase-injection cohort).
+ *
+ * Pass `forceInject: true` to override and inject phrases into every
+ * stanza block regardless of prior state — used by the unit test suite
+ * (and any future task that explicitly opts into broader scope).
  */
-export function regroupRef(richData, ref) {
+export function regroupRef(richData, ref, { forceInject = false } = {}) {
   const refData = richData[ref]
   if (!refData) {
     throw new Error(`Ref not found in target: ${ref}`)
@@ -80,6 +133,22 @@ export function regroupRef(richData, ref) {
     const block = blocks[bi]
     if (block.kind !== 'stanza') continue
     const before = Array.isArray(block.phrases) ? block.phrases.length : 0
+    // Scope guard: only rewrite blocks that already have phrases unless
+    // explicitly overridden. The block's existing `phrases` array (even
+    // when length === 0 means schema-present-but-empty) signals it is in
+    // scope for the phrase-render path.
+    const hasExistingPhrases = Array.isArray(block.phrases) && before > 0
+    if (!forceInject && !hasExistingPhrases) {
+      summary.push({
+        blockIndex: bi,
+        lineCount: (block.lines || []).length,
+        phrasesBefore: before,
+        phrasesAfter: before,
+        multiLinePhrases: [],
+        skipped: 'no-prior-phrases',
+      })
+      continue
+    }
     const newPhrases = regroupPhrasesByCapitalStart(block.lines || [])
     block.phrases = newPhrases
     summary.push({
@@ -99,27 +168,99 @@ function cliMain() {
   const args = parseCliArgs(process.argv.slice(2))
   const targetPath = resolve(process.cwd(), args.target)
   const richData = JSON.parse(readFileSync(targetPath, 'utf8'))
+  const refs = args.allRefs ? listStanzaRefs(richData) : args.refs
   const allSummary = {}
-  for (const ref of args.refs) {
+  for (const ref of refs) {
     allSummary[ref] = regroupRef(richData, ref)
   }
   if (args.dryRun) {
-    console.log('DRY RUN — no write. Summary:')
+    console.log(`DRY RUN — no write. ${refs.length} ref(s). Summary:`)
   } else {
     writeFileSync(targetPath, JSON.stringify(richData, null, 2) + '\n', 'utf8')
-    console.log(`Wrote ${targetPath}. Summary:`)
+    console.log(`Wrote ${targetPath} (${refs.length} ref(s)). Summary:`)
   }
-  for (const ref of args.refs) {
-    console.log(`\n[${ref}]`)
-    for (const s of allSummary[ref]) {
-      console.log(
-        `  block ${s.blockIndex}: ${s.lineCount} lines, ` +
-          `${s.phrasesBefore} → ${s.phrasesAfter} phrases` +
-          (s.multiLinePhrases.length
-            ? `, multi-line: ${JSON.stringify(s.multiLinePhrases)}`
-            : ''),
-      )
+  // Aggregate counters for the sweep summary (#499).
+  let totalBefore = 0
+  let totalAfter = 0
+  let multiLineCount = 0
+  let zeroDeltaRefs = 0
+  const outlierRefs = []
+  for (const ref of refs) {
+    const refBefore = allSummary[ref].reduce(
+      (sum, s) => sum + s.phrasesBefore,
+      0,
+    )
+    const refAfter = allSummary[ref].reduce(
+      (sum, s) => sum + s.phrasesAfter,
+      0,
+    )
+    const refMultiLine = allSummary[ref].reduce(
+      (sum, s) => sum + s.multiLinePhrases.length,
+      0,
+    )
+    totalBefore += refBefore
+    totalAfter += refAfter
+    multiLineCount += refMultiLine
+    if (refBefore === refAfter) {
+      zeroDeltaRefs += 1
+    } else if (refBefore - refAfter >= 5) {
+      // Outlier = ref with >=5 lines collapsing into wrap continuations.
+      // Worth a curator spot-check for over-merging.
+      outlierRefs.push({ ref, before: refBefore, after: refAfter })
     }
+    if (refs.length <= 4 || refBefore !== refAfter) {
+      console.log(`\n[${ref}] total ${refBefore} → ${refAfter} phrases`)
+      for (const s of allSummary[ref]) {
+        console.log(
+          `  block ${s.blockIndex}: ${s.lineCount} lines, ` +
+            `${s.phrasesBefore} → ${s.phrasesAfter} phrases` +
+            (s.multiLinePhrases.length
+              ? `, multi-line: ${JSON.stringify(s.multiLinePhrases)}`
+              : ''),
+        )
+      }
+    }
+  }
+  if (args.allRefs) {
+    console.log(
+      `\n=== Sweep summary: ${refs.length} ref(s) processed ` +
+        `===\n  total phrases: ${totalBefore} → ${totalAfter} ` +
+        `(Δ ${totalAfter - totalBefore})\n` +
+        `  multi-line phrases: ${multiLineCount}\n` +
+        `  zero-delta refs: ${zeroDeltaRefs} / ${refs.length}\n` +
+        `  outlier refs (Δ ≥ -5): ${outlierRefs.length}`,
+    )
+    if (outlierRefs.length) {
+      console.log('  Outlier list:')
+      for (const o of outlierRefs) {
+        console.log(`    - ${o.ref}: ${o.before} → ${o.after}`)
+      }
+    }
+  }
+  if (args.summaryJson) {
+    const summaryPath = resolve(process.cwd(), args.summaryJson)
+    writeFileSync(
+      summaryPath,
+      JSON.stringify(
+        {
+          target: args.target,
+          refs,
+          totals: {
+            refsProcessed: refs.length,
+            phrasesBefore: totalBefore,
+            phrasesAfter: totalAfter,
+            multiLinePhrases: multiLineCount,
+            zeroDeltaRefs,
+          },
+          outliers: outlierRefs,
+          perRef: allSummary,
+        },
+        null,
+        2,
+      ) + '\n',
+      'utf8',
+    )
+    console.log(`Summary JSON written to ${summaryPath}.`)
   }
 }
 

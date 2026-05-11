@@ -1,3 +1,23 @@
+// v25 — #499: Phase 1 Sweep — phrase grouping rebuild 122 refs (제외
+// Psalm 63/42). #498 pilot 결과를 사용자가 화면 검증 OK 후, 나머지
+// 122 refs (시편 + 구약/신약 찬가 본문) 에 동일한 키릴 대문자 시작 규칙을
+// 일괄 적용. 처리 범위 = 121 refs touched (out of 125 stanza-block refs):
+//   - 121 refs 가 이전부터 phrases 보유 (F-X11 cohort PASS subset)
+//   - 4 refs (Psalm 88:2-10 / Psalm 118:1-16 / Psalm 31:1-17 / Isaiah
+//     61:10-62:5) 는 phrases 가 존재하지 않아 SKIP — 이전과 같이 legacy
+//     line-render 유지 (별도 inject task 에서 처리 예정)
+// Total phrase 집계: 3057 → 3133 (+76); 355 multi-line phrase 신규;
+// 46 zero-delta refs (all-capital 라인 — 변동 없음).
+// Outlier (사용자 spot-check 권고, 모두 narrator + quoted response/speech
+// 의 mechanical merge 결과로 규칙대로의 출력):
+//   - Revelation 19:1-7  25 → 17 phrases ('(Х. Аллэлуяа!)' response 가
+//     paren 으로 시작 → 직전 narrator 라인의 continuation 으로 merge)
+//   - Psalm 87:1-7       18 → 12 phrases (smart-quote 시작 quoted speech
+//     dialog 라인 다수 → narrator phrase 와 merge)
+// Pilot 재적용 idempotency 확인됨: Psalm 63:2-9 + Psalm 42:2-6 의 sweep
+// 후 stanzasRich 가 #498 commit 806d8e7 의 결과와 bit-identical.
+// HTML byte 출력 (phrase span 그룹화) 변경 → v24 precache snapshot 과
+// 어긋날 수 있어 bump. 다른 정적 자산은 변동 없음.
 // v24 — #498: Phase 1 Pilot — phrase grouping rebuild (Psalm 63 + Psalm
 // 42 only). 키릴 대문자 시작 = 새 phrase 시작 규칙으로 multi-line phrase
 // 묶음 (Cyrillic-capital-start rule). The rich.json `phrases` arrays for
@@ -171,7 +191,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v24'
+const CACHE_VERSION = 'divine-office-v25'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 

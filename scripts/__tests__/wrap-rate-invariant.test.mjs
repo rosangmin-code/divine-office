@@ -330,18 +330,23 @@ describe('psalter-texts.rich.json — wrap-rate invariants (F-X10)', () => {
     expect(boundaries.has(26)).toBe(false)
   })
 
-  // F-X11 Phase 2-D (#463): floor relaxed 13% → 12.5% to absorb the
-  // 3 newly-PASS refs from #456 reverse-bridge matcher (Revelation
-  // 4:11; 5:9-10, 12 / Revelation 11:17-18; 12:10b-12a / Psalm 65:2-9).
-  // Those refs are canticle / short-reading shapes whose phrases are
-  // overwhelmingly single-line (2 multi-line phrases out of ~35 added),
-  // so injecting them naturally drops the global rate by ~0.1pp. Pre-
-  // injection the post-FU-1 baseline was 332/2541 ≈ 13.07% (just above
-  // the 13% floor); post-injection 334/2576 ≈ 12.97% — a quality
-  // signal that the new refs differ in shape, not a regression in the
-  // existing data. The 12.5% floor still rejects a half-percent drop
-  // from a future phrase-data sweep.
-  it('overall multi-line wrap rate >= 12.5% across phrase-injected refs (post-#463 floor)', () => {
+  // #499 Phase 1 Sweep: floor relaxed 12.5% → 10% to absorb the
+  // capital-start regrouping rebuild across 121 refs (post-pilot
+  // 122-ref sweep + Psalm 63/42 idempotent re-apply). The original
+  // F-X11 / F-X10 floors (13% → 12.5%) were tuned to the PDF-column-
+  // geometry extractor output, which merged adjacent wrap-fragment
+  // lines aggressively. The Phase 1 capital-start rule (см. SoT in
+  // `scripts/build-phrases-into-rich.mjs:regroupPhrasesByCapitalStart`)
+  // merges ONLY when the next line begins with a non-Cyrillic-capital
+  // character (smart-quote, digit, lowercase letter, opening
+  // punctuation). Most Mongolian psalter verse-lines start with a
+  // Cyrillic capital, so the mechanical rule produces fewer multi-line
+  // phrases than the extractor's column-geometry pass — and the rate
+  // drop is structural, not data-quality regression. Post-sweep
+  // baseline: 355 multi-line out of 3133 total ≈ 11.33%. The 10%
+  // floor keeps margin for future corrective sweeps without
+  // re-disturbing the F-X10/F-X11 invariants below (max-span / ratio).
+  it('overall multi-line wrap rate >= 10% across phrase-injected refs (post-#499 floor)', () => {
     const data = loadRich()
     let total = 0
     let multi = 0
@@ -356,22 +361,20 @@ describe('psalter-texts.rich.json — wrap-rate invariants (F-X10)', () => {
     }
     expect(total).toBeGreaterThan(0)
     const rate = multi / total
-    expect(rate).toBeGreaterThanOrEqual(0.125)
+    expect(rate).toBeGreaterThanOrEqual(0.1)
   })
 
-  // NIT batch #409 (review #402 NIT-FU-3): wrap-rate floor leaves
-  // only ~10-phrase margin at the post-#463 baseline (334/2576 ≈
-  // 12.97%, floor 12.5% → ~12 phrase margin). This margin monitor
-  // surfaces the buffer as a soft signal (warn-only) so future
-  // corrective sweeps can spot creep toward the floor before it
-  // crosses. The assertion stays loose — the only hard contract is
-  // the floor above and the FU-4 max-span / ratio invariants below;
-  // this test never fails on its own. It simply records margin via
-  // expect-pass + a console.warn when buffer drops below
-  // WARN_BUFFER_PHRASES so reviewers see the narrowing in vitest
-  // output.
-  it('wrap-rate margin monitor: surface buffer above 12.5% floor (warn-only)', () => {
-    const FLOOR = 0.125
+  // NIT batch #409 (review #402 NIT-FU-3) + #499 sweep recalibration:
+  // wrap-rate floor margin monitor. Post-sweep baseline 355/3133 ≈
+  // 11.33% sits ~42 phrases above the 10% floor (#499 recalibration —
+  // see floor test above for rationale). The monitor surfaces buffer
+  // as a soft signal (warn-only) so future corrective sweeps catch
+  // creep toward the floor before it crosses. The assertion stays
+  // loose — the only hard contract is the floor above and the FU-4
+  // max-span / ratio invariants below; this test never fails on its
+  // own.
+  it('wrap-rate margin monitor: surface buffer above 10% floor (warn-only)', () => {
+    const FLOOR = 0.1
     const WARN_BUFFER_PHRASES = 10
     const data = loadRich()
     let total = 0
