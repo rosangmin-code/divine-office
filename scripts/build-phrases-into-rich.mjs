@@ -120,6 +120,75 @@ function normalizeQuotes(s) {
   return s.replace(/[“”„‟]/g, '"').replace(/[‘’‚‛]/g, "'")
 }
 
+// ─── #498 (Phase 1 Pilot) — capital-start phrase grouping ──────────────────
+//
+// `regroupPhrasesByCapitalStart` rebuilds a stanza's `phrases?:
+// PhraseGroup[]` directly from the rich-AST `lines[]`, using a mechanical
+// rule: every line whose first non-whitespace character is a Cyrillic
+// CAPITAL letter (А–Я + Ё + Mongolian Ө/Ү) starts a NEW phrase; everything
+// else (smart quotes, digits, lowercase letters, opening punctuation) is a
+// wrap continuation that extends the prior phrase's `lineRange` end.
+//
+// Why this exists (vs the extractor-driven `translatePhrases` family above):
+//   - The extractor's grouping relies on PDF column/baseline geometry, which
+//     is unavailable when curators want to re-derive phrase shape from the
+//     existing rich.json content (e.g., post-typography-fix re-grouping
+//     without re-running pdftotext / pdfminer).
+//   - The original method (1 line = 1 phrase) over-fragmented prosaic prose
+//     lines that wrap across multiple short rows: a sentence head followed
+//     by a lowercase-leading continuation should render as ONE viewport-
+//     wrappable phrase, not two. The capital-start rule captures that
+//     intent directly from the rich.json `lines[]` text.
+//
+// Why Mongolian-aware character class (not just `[А-ЯЁ]`):
+//   Mongolian Cyrillic extends the Russian А-Я + Ё set with two capitals:
+//   Ө (U+04E8) and Ү (U+04AE), both common in this project's PDF source
+//   (e.g., Psalm 42 b3 `Өөрийн минь хад…`, `Өстнүүд минь…`). A strict
+//   `/^[А-ЯЁ]/` would silently misclassify those head lines as wrap
+//   continuations and collapse them into the prior phrase. The wider class
+//   `/^[А-ЯЁӨҮ]/` matches the actual alphabet used in the source PDF.
+//
+// Latin uppercase is intentionally EXCLUDED — Latin words in the body are
+// always interpolations (foreign abbreviations, citations), not the start
+// of a new Mongolian sentence/verse, so they should remain wrap continuations.
+//
+// `paragraphBoundaries` is preserved by the caller — this function only
+// rebuilds `phrases`, and `paragraphBoundaries` indexes into `lines[]`,
+// which is unchanged.
+//
+// @param {Array<{spans?: {text?: string}[], indent?: number}>} lines
+// @returns {Array<{lineRange: [number, number], indent: number}>}
+
+const CYRILLIC_CAPITAL_START_RE = /^[А-ЯЁӨҮ]/
+
+export function regroupPhrasesByCapitalStart(lines) {
+  if (!Array.isArray(lines) || lines.length === 0) return []
+  const phrases = []
+  let curStart = 0
+  let curIndent = lines[0]?.indent ?? 0
+  for (let i = 1; i < lines.length; i++) {
+    const text = (lines[i].spans ?? [])
+      .map((sp) => sp.text ?? '')
+      .join('')
+      .replace(/^\s+/, '')
+    const isCapital = CYRILLIC_CAPITAL_START_RE.test(text)
+    if (isCapital) {
+      // Close prior phrase, open new one rooted at lines[i].
+      phrases.push({ lineRange: [curStart, i - 1], indent: curIndent })
+      curStart = i
+      curIndent = lines[i].indent ?? 0
+    }
+    // else: continuation — current phrase's lineRange end will be extended
+    // implicitly when we close it (on the next capital, or at the tail).
+  }
+  // Tail: close the final phrase covering [curStart, lines.length - 1].
+  phrases.push({
+    lineRange: [curStart, lines.length - 1],
+    indent: curIndent,
+  })
+  return phrases
+}
+
 const TRAILING_EM_DASH_RE = /\s*[-–—]\s*$/
 
 function normalizeTypography(s) {

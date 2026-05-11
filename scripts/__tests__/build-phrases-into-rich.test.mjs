@@ -25,7 +25,15 @@ import {
   collectReviewQueue,
   isHeaderArtifact,
   isWrapContinuation,
+  regroupPhrasesByCapitalStart,
 } from '../build-phrases-into-rich.mjs'
+
+// Helper for the #498 capital-start tests — keep the test inputs close to
+// the actual rich-AST shape (spans + indent) without dragging in role
+// metadata, which the capital-start rule does NOT consult.
+function richLine(text, indent = 0) {
+  return { spans: [{ kind: 'text', text }], indent }
+}
 
 // Helpers — build minimal rich-AST stanza blocks.
 function richStanzaBlock(firstLineText, additionalLineTexts = []) {
@@ -2129,6 +2137,316 @@ describe('planRefUpdates phrase.indent skip-if-explicit guard (F-X11 Phase 2-F #
     expect(out.issues).toEqual([])
     expect(out.updates[0].phrases).toEqual([
       { lineRange: [0, 0], indent: 1 },
+    ])
+  })
+})
+
+// #498 — Phase 1 Pilot. Capital-start regrouping rebuilds the `phrases`
+// array directly from the rich-AST `lines[]`, without consulting the
+// extractor stream. The unit tests below pin the rule semantics
+// (Cyrillic capital = new phrase, everything else = wrap continuation)
+// plus the Mongolian-extended character class (Ө/Ү) and the indent
+// inheritance behaviour. The pilot snapshots at the bottom of the
+// describe block freeze the expected output for the two refs that
+// actually changed on disk in this commit.
+// @fr FR-161
+describe('regroupPhrasesByCapitalStart — #498 capital-start rule', () => {
+  it('returns [] on empty input (no crash on degenerate stanzas)', () => {
+    expect(regroupPhrasesByCapitalStart([])).toEqual([])
+    expect(regroupPhrasesByCapitalStart(undefined)).toEqual([])
+    expect(regroupPhrasesByCapitalStart(null)).toEqual([])
+  })
+
+  it('emits a single single-line phrase when there is exactly one line', () => {
+    const lines = [richLine('Эзэн миний Эзэнд')]
+    expect(regroupPhrasesByCapitalStart(lines)).toEqual([
+      { lineRange: [0, 0], indent: 0 },
+    ])
+  })
+
+  it('starts a NEW phrase for every Cyrillic-capital line in a row', () => {
+    // Three consecutive capital-start lines → three single-line phrases.
+    const lines = [
+      richLine('Эзэн миний Эзэнд'),
+      richLine('Таны хүч өргөөсэй'),
+      richLine('Сэтгэл минь Танаар'),
+    ]
+    expect(regroupPhrasesByCapitalStart(lines)).toEqual([
+      { lineRange: [0, 0], indent: 0 },
+      { lineRange: [1, 1], indent: 0 },
+      { lineRange: [2, 2], indent: 0 },
+    ])
+  })
+
+  it('extends the current phrase when the next line starts lowercase (2-line wrap)', () => {
+    // The L5='өргөнө.' pattern from Psalm 63 b1: lowercase-leading wrap
+    // continuation collapses into the prior capital-leading phrase.
+    const lines = [
+      richLine('Ам минь баясгалант уруулаар магтаалуудыг'),
+      richLine('өргөнө.'),
+    ]
+    expect(regroupPhrasesByCapitalStart(lines)).toEqual([
+      { lineRange: [0, 1], indent: 0 },
+    ])
+  })
+
+  it('extends to a 3-line phrase when two lowercase continuations follow a capital', () => {
+    const lines = [
+      richLine('Тэнгэрбурхан минь, Та амгалан агаад'),
+      richLine('сэтгэлийг минь чимдэг бөгөөд'),
+      richLine('магтахаар тэмцэн оршдог.'),
+    ]
+    expect(regroupPhrasesByCapitalStart(lines)).toEqual([
+      { lineRange: [0, 2], indent: 0 },
+    ])
+  })
+
+  it('treats smart-quote prefix (“) as wrap continuation (quoted speech absorbed into prior phrase)', () => {
+    // Production-shape: Psalm 42 b0 L8-L9 — 'Хүмүүс надад' +
+    // '"Чиний Тэнгэрбурхан хаана байна?…'. The quote prefix means the
+    // first letter is U+201C, not a Cyrillic capital, so the line is a
+    // continuation that absorbs the speech fragment into the prior
+    // speech-verb phrase.
+    const lines = [
+      richLine('Хүмүүс надад'),
+      richLine('“Чиний Тэнгэрбурхан хаана байна?” гэж өдөржин хэлэхэд'),
+    ]
+    expect(regroupPhrasesByCapitalStart(lines)).toEqual([
+      { lineRange: [0, 1], indent: 0 },
+    ])
+  })
+
+  it('recognises Mongolian-extended Cyrillic capitals Ө (U+04E8) and Ү (U+04AE) as phrase starters', () => {
+    // Mongolian alphabet adds Ө (U+04E8) and Ү (U+04AE) beyond
+    // Russian А-Я + Ё. They MUST count as capital starts; a strict
+    // [А-ЯЁ] would misclassify them as continuations and over-merge.
+    const lines = [
+      richLine('Нулимс минь'),
+      richLine('Өдөр шөнөгүй миний хоол болов.'),
+      richLine('Үргэлжийн дуулал юм.'),
+    ]
+    expect(regroupPhrasesByCapitalStart(lines)).toEqual([
+      { lineRange: [0, 0], indent: 0 },
+      { lineRange: [1, 1], indent: 0 },
+      { lineRange: [2, 2], indent: 0 },
+    ])
+  })
+
+  it('inherits the head-line indent for each phrase (indent 0 / 1 / 2)', () => {
+    // Phrase indent comes from the line that STARTS the phrase, not the
+    // continuation lines. The wrap continuation's own indent is ignored
+    // for the phrase metadata (it survives at lines[i].indent for the
+    // renderer's hanging-indent computation).
+    const lines = [
+      richLine('Эхэлсэн мөр индент-0', 0),
+      richLine('Шинэ хэллэг индент-1', 1),
+      richLine('Дараагийн хэллэг индент-2', 2),
+    ]
+    expect(regroupPhrasesByCapitalStart(lines)).toEqual([
+      { lineRange: [0, 0], indent: 0 },
+      { lineRange: [1, 1], indent: 1 },
+      { lineRange: [2, 2], indent: 2 },
+    ])
+  })
+
+  it('treats the very first line as a new phrase regardless of leading character', () => {
+    // Even if line[0] happens to start with a lowercase/non-Cyrillic
+    // character (degenerate input — should not happen in real data),
+    // it ALWAYS starts the first phrase. The capital test only gates
+    // subsequent lines.
+    const lines = [
+      richLine('“opens with a quote'),
+      richLine('continuation here too'),
+    ]
+    expect(regroupPhrasesByCapitalStart(lines)).toEqual([
+      { lineRange: [0, 1], indent: 0 },
+    ])
+  })
+
+  it('rejects Latin uppercase as a phrase starter (Cyrillic-only rule)', () => {
+    // Latin words in body text are always interpolations — never the
+    // start of a new Mongolian sentence/verse. They behave as wrap
+    // continuations and extend the prior phrase.
+    const lines = [
+      richLine('Эхний хэллэг'),
+      richLine('ABC interpolation continues here'),
+    ]
+    expect(regroupPhrasesByCapitalStart(lines)).toEqual([
+      { lineRange: [0, 1], indent: 0 },
+    ])
+  })
+
+  it('digit-leading lines are wrap continuations (page numbers / verse labels)', () => {
+    const lines = [
+      richLine('Эхний мөр'),
+      richLine('5 буурай тоо'),
+    ]
+    expect(regroupPhrasesByCapitalStart(lines)).toEqual([
+      { lineRange: [0, 1], indent: 0 },
+    ])
+  })
+
+  it('produces output that satisfies the NFR-009j coverage/non-overlap invariants', () => {
+    // Cross-check: the rebuilt phrases must (a) contiguously cover
+    // every line index, (b) never overlap, (c) start at 0, (d) end at
+    // lines.length - 1. These are the same invariants the
+    // verify-phrase-coverage.js gate enforces in CI.
+    const lines = [
+      richLine('Эхний'), // cap → phrase 0 start
+      richLine('хоёр дахь'), // lower → continuation
+      richLine('Гурав дахь'), // cap → phrase 1 start
+      richLine('дөрөв дэх'), // lower → continuation
+      richLine('Тав дахь'), // cap → phrase 2 start
+    ]
+    const phrases = regroupPhrasesByCapitalStart(lines)
+    expect(phrases).toEqual([
+      { lineRange: [0, 1], indent: 0 },
+      { lineRange: [2, 3], indent: 0 },
+      { lineRange: [4, 4], indent: 0 },
+    ])
+    // Geometric invariants (mirror verify-phrase-coverage.js).
+    expect(phrases[0].lineRange[0]).toBe(0)
+    expect(phrases[phrases.length - 1].lineRange[1]).toBe(lines.length - 1)
+    for (let i = 1; i < phrases.length; i++) {
+      expect(phrases[i].lineRange[0]).toBe(phrases[i - 1].lineRange[1] + 1)
+    }
+  })
+})
+
+// #498 — Phase 1 Pilot snapshots. Pin the exact phrase shape produced
+// for Psalm 63:2-9 and Psalm 42:2-6 so the on-disk rich.json change
+// remains aligned with the rule semantics (and so a future regression
+// in regroupPhrasesByCapitalStart surfaces here before it reaches the
+// data file).
+// @fr FR-161
+describe('regroupPhrasesByCapitalStart — #498 pilot snapshots', () => {
+  it('Psalm 63:2-9 b0 — 13 lines all-capital → 13 single-line phrases (unchanged)', () => {
+    // b0 head lines: Гэм / Тэнгэрбурханыг / Тэнгэрбурхан, … —
+    // all 13 first chars are Cyrillic capitals. Expected output is
+    // identical to the pre-#498 shape; the snapshot freezes that.
+    const lines = [
+      richLine('Гэм нүглийн харанхуйгаас салсан хэнбугай ч', 0),
+      richLine('Тэнгэрбурханыг хүсэн тэмүүлнэ.', 0),
+      richLine('Тэнгэрбурхан, Та миний Тэнгэрбурхан', 1),
+      richLine('Би Таныг эртлэн хайх болой.', 1),
+      richLine('Усгүй, хуурай, ангамал газарт', 1),
+      richLine('Сэтгэл минь Танаар цангаж,', 1),
+      richLine('Бие махбод минь Таныг', 1),
+      richLine('Хүсэн тэмүүлж байна.', 1),
+      richLine('Таныг би ариун газарт хайсан.', 1),
+      richLine('Таны хүч, Таны алдрыг харсан.', 1),
+      richLine('Учир нь хайр энэрэл тань', 1),
+      richLine('Амь амьдралаас илүү.', 1),
+      richLine('Уруул минь Таныг магтана.', 1),
+    ]
+    const phrases = regroupPhrasesByCapitalStart(lines)
+    expect(phrases).toHaveLength(13)
+    expect(phrases.map((p) => p.lineRange)).toEqual([
+      [0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6],
+      [7, 7], [8, 8], [9, 9], [10, 10], [11, 11], [12, 12],
+    ])
+    expect(phrases.map((p) => p.indent)).toEqual([
+      0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    ])
+  })
+
+  it('Psalm 63:2-9 b1 — 13 → 12 phrases via L4-L5 lowercase-wrap merge', () => {
+    // L5 = 'өргөнө.' (Cyrillic lowercase ө at U+04E9) → continuation,
+    // extends L4's phrase to lineRange [4, 5]. All other lines are
+    // capital-starters, so single-line phrases.
+    const lines = [
+      richLine('Ийнхүү би амьддаа Таныг магтана.', 0),
+      richLine('Таны нэрээр би гараа өргөх болно.', 0),
+      richLine('Чөмөг, өөхөнд юм шиг', 0),
+      richLine('Сэтгэл минь цатгалан бөгөөд', 0),
+      richLine('Ам минь баясгалант уруулаар магтаалуудыг', 0),
+      richLine('өргөнө.', 0),
+      richLine('Шөнөжин Таны тухай тунгаан бодохдоо', 0),
+      richLine('Орондоо Таныг би дурсан санана,', 0),
+      richLine('Учир нь Та миний тусламж бөгөөд', 0),
+      richLine('Таны жигүүрийн дор', 0),
+      richLine('Би баясгалантайгаар дуулна.', 0),
+      richLine('Сэтгэл минь Танаас зуурчээ.', 0),
+      richLine('Таны баруун мутар намайг түшиж байна.', 0),
+    ]
+    const phrases = regroupPhrasesByCapitalStart(lines)
+    expect(phrases).toHaveLength(12)
+    expect(phrases.map((p) => p.lineRange)).toEqual([
+      [0, 0], [1, 1], [2, 2], [3, 3], [4, 5], [6, 6],
+      [7, 7], [8, 8], [9, 9], [10, 10], [11, 11], [12, 12],
+    ])
+  })
+
+  it('Psalm 42:2-6 b0 — 19 → 18 phrases via L8-L9 smart-quote merge', () => {
+    // L9 = '“Чиний Тэнгэрбурхан хаана байна?” …' starts with the
+    // U+201C smart quote, not a Cyrillic capital → wrap continuation
+    // of L8 'Хүмүүс надад'. All other lines start with Cyrillic
+    // capitals (including Ө at L11 → must NOT be merged).
+    const lines = [
+      richLine('Буга урсгал усыг', 0),
+      richLine('Хүсэхийн адил', 0),
+      richLine('Тэнгэрбурхан Таныг', 0),
+      richLine('Сэтгэл минь хүснэм.', 0),
+      richLine('Тэнгэрбурханаар, амьд Тэнгэрбурханаар', 0),
+      richLine('Сэтгэл минь цангамуй', 0),
+      richLine('Би хэзээ явж,', 0),
+      richLine('Тэнгэрбурханд бараалхах вэ?', 0),
+      richLine('Хүмүүс надад', 0),
+      richLine('“Чиний Тэнгэрбурхан хаана байна?” гэж өдөржин хэлэхэд', 0),
+      richLine('Нулимс минь', 0),
+      richLine('Өдөр шөнөгүй миний хоол болов.', 0),
+      richLine('Урьд нь би баяр тэмдэглэж буй', 0),
+      richLine('Олон түмний дунд явж,', 0),
+      richLine('Баяр хийгээд талархал өргөх уухайгаар', 0),
+      richLine('Тэднийг Тэнгэрбурханы өргөө уруу', 0),
+      richLine('Цуваагаар дагуулдаг байлаа.', 0),
+      richLine('Эдгээр зүйлийг л би санаж,', 0),
+      richLine('Сэтгэлдээ шаналан өвдөж байна.', 0),
+    ]
+    const phrases = regroupPhrasesByCapitalStart(lines)
+    expect(phrases).toHaveLength(18)
+    expect(phrases.map((p) => p.lineRange)).toEqual([
+      [0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6],
+      [7, 7], [8, 9], [10, 10], [11, 11], [12, 12], [13, 13],
+      [14, 14], [15, 15], [16, 16], [17, 17], [18, 18],
+    ])
+  })
+
+  it('Psalm 42:2-6 b3 — 20 → 18 phrases via TWO smart-quote merges (L11-L12 and L17-L18)', () => {
+    // Two quote-prefixed dialog fragments collapse into their
+    // respective speech-verb heads:
+    //   L11 'Өөрийн минь хад болсон…' (cap Ө starts) → L12
+    //   '“Юунд Та намайг мартсан бэ?' (quote → continuation)
+    //   L17 'Тэд өдөржин надад' (cap Т starts) → L18
+    //   '“Тэнгэрбурхан чинь хаана байна?”…' (quote → continuation)
+    const lines = [
+      richLine('Сэтгэл минь миний дотор цөхөрсөн байна', 0),
+      richLine('Тиймээс би Таныг Иордан нутаг,', 0),
+      richLine('Хермон ба Мизар уулаас дурсдаг', 0),
+      richLine('Таны хүрхрээнүүдийн дуунд', 0),
+      richLine('Оёоргүй гүн оёоргүй гүнийгээ дууддаг.', 0),
+      richLine('Таны давалгаа, долгио', 0),
+      richLine('Намайг нөмрөв.', 0),
+      richLine('ЭЗЭН өдрөөр энэрэл хайраа тушаана', 0),
+      richLine('Шөнөөр Түүний дуу болох', 0),
+      richLine('Амьдралын минь Тэнгэрбурханд хандсан залбирал минь.', 0),
+      richLine('Надтай хамт байна', 0),
+      richLine('Өөрийн минь хад болсон Тэнгэрбурханд би', 0),
+      richLine('“Юунд Та намайг мартсан бэ?', 0),
+      richLine('Юунд би дайсны дарангуйллаас болж', 0),
+      richLine('Гашуудан явна вэ?” гэж хэлнэ', 0),
+      richLine('Ясыг минь бяцлах шиг', 0),
+      richLine('Өстнүүд минь намайг буруутгана.', 0),
+      richLine('Тэд өдөржин надад', 0),
+      richLine('“Тэнгэрбурхан чинь хаана байна?” гэж хэлдэг.', 0),
+      richLine('Сэтгэл минь ээ, чи юунд цөхөрнө вэ?', 0),
+    ]
+    const phrases = regroupPhrasesByCapitalStart(lines)
+    expect(phrases).toHaveLength(18)
+    expect(phrases.map((p) => p.lineRange)).toEqual([
+      [0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6],
+      [7, 7], [8, 8], [9, 9], [10, 10], [11, 12], [13, 13],
+      [14, 14], [15, 15], [16, 16], [17, 18], [19, 19],
     ])
   })
 })
