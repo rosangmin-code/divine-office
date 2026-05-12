@@ -1,3 +1,18 @@
+// v27 — #502: 시편/찬가 본문 왼쪽 여백 통일. Renderer 의 phrase.indent
+// / line.indent 의 영향 제거 (모두 indent=0 = `pl-6 -indent-6` 레벨로
+// 통일, hanging indent 는 wrap continuation 의 시각 구분 보존 위해
+// 유지). 사용자 SoT — Psalm 63 b0 의 line 0-1 (indent=0) vs 2-12
+// (indent=1) 의 들여쓰기 차이가 "갑자기 왼쪽 여백이 넓어지는" 효과
+// 를 일으킴 → 가장 작은 들여쓰기 (현재 indent=0 = pl-6) 로 통일.
+// 영향 범위:
+//   - Phrase mode (block.phrases): pl-12 / pl-18 → pl-6 (indent 1/2)
+//   - Legacy line mode (line.indent): pl-6 / pl-12 → '' (indent 1/2)
+//   - Plain stanzas mode (leading-whitespace encoding): pl-6 / pl-12
+//     → '' (level 1/2; leading whitespace 는 strip 유지)
+// 데이터 (rich.json phrase.indent / line.indent) 는 변경하지 않음 —
+// PDF SoT 보존, renderer 단에서만 무시. HTML className 변경 → v26
+// precache snapshot 과 어긋날 수 있어 bump. v26 잔존 시 구 indent
+// 분기 className 이 노출되어 사용자 issue 가 재현됨.
 // v26 — #501: Phase 2 R-2 Pilot — paragraph extractor (Python pdfplumber +
 // y-gap heuristic 1.4× median) 도입. PDF page-physical y-coordinate 측정
 // 으로 stanza-internal 의 line-spacing baseline (median) 대비 ≥1.4× 인
@@ -225,7 +240,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v26'
+const CACHE_VERSION = 'divine-office-v27'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
