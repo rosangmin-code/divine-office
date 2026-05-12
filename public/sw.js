@@ -1,3 +1,62 @@
+// v28 — #503: Phase 2 R-3 Sweep — 나머지 122 refs (시편 + 구약/신약
+// 찬가) paragraphBoundaries 일괄 재추출. #501 Pilot 의 Python
+// pdfplumber y-gap extractor (1.4× median threshold) 를 rich.json
+// 의 전체 ref/stanza 그리드 (368 stanza blocks across 125 refs) 에
+// 적용. Psalm 42:2-6 + Psalm 63:2-9 (#501 Pilot) 은 idempotent 재계산
+// 으로 bit-identical 결과 (regression guard 통과).
+// 적용 결과 — block-level delta:
+//   - SAME / SAME_EMPTY:    7  (이전 결과 보존: 주로 Pilot 2 refs +
+//                                F-X11 기 정확 매치)
+//   - NEW_EMPTY:          205  (이전 PB 없음 + 새 mechanism 도 없음:
+//                                naturally single-paragraph stanza)
+//   - NEW_ADD / ADD:      123  (이전 PB 없었으나 PDF y-gap 으로 detect:
+//                                대부분 시편 본문의 stanza-internal
+//                                paragraph break — F-X11 text heuristic
+//                                이 놓쳤던 자연 paragraph)
+//   - REMOVE:              13  (F-X11 text heuristic 이 false-positive
+//                                로 추가했던 break: Daniel 3:57-88
+//                                refrain b0/b1/b10/b11, Revelation 19
+//                                refrain b1/b2/b3, Daniel 3:52-57
+//                                b0/b2-b6 — y-gap 으로 검증 시 모두
+//                                refrain continuation 으로 정상 분류)
+//   - DIFF:                19  (PB 수/위치 변화: 대부분 추가 detect.
+//                                Psalm 8:2-10 / Psalm 86:1-17 등이
+//                                기존 [3,24] → [3,10,13,17,21,24] 처럼
+//                                자연 paragraph 풍부하게 인식)
+//   - SKIP:                 1  (Psalm 31:1-17 b1: rich.json L0 에
+//                                section-title 노이즈 "Шөнийн даатгал
+//                                залбирал" 가 포함된 data-quality
+//                                결함 — 별 task. 기존 PB=[] 보존)
+// Total PB entries: 88 → 458 (+370). Refs with PB delta: 102.
+// Pilot idempotency: Psalm 42:2-6 b0=[4,8,12] / b3=[3,7,11,15,19],
+// Psalm 63:2-9 b0=[2,8] / b1=[6] — bit-identical to #501 commit
+// 19fab90.
+// Mechanism 변경사항 vs Pilot extractor:
+//   1. `--column multi` 모드 추가 — 동일 page 의 left+right 두 column
+//      을 동일 line stream 에 흘려 보내고, cross-column 인접 line gap
+//      을 None 으로 처리 (cross-page 와 동일). 한 block 이 column 경계
+//      를 가로지르는 케이스 (Daniel 3:57-88 의 invocation+refrain
+//      pair 가 left col 1줄 / right col 5줄 로 펴진 형태) 지원.
+//   2. Page-header / section-title 노이즈 필터 (`is_page_header_line`
+//      port from scripts/dev/page-header-filter.mjs) — 다른 column /
+//      page 로 walk 시 running header ("Ням гарагийн өглөө 61" 류)
+//      가 line stream 에 끼어들어 매칭 실패하던 root cause.
+//   3. Whitespace-stripped equality (3rd tier in `line_matches` +
+//      `try_wrap_bridge`) — pdfplumber 가 char spacing drift 로 인접
+//      단어 사이 공백을 누락 (예 PDF "хийгээдсүр" vs rich
+//      "хийгээд сүр") 시 fallback 매칭.
+//   4. Reverse-bridge walker (`try_reverse_bridge`) — rich.json 이
+//      1 visual PDF line 을 2~4 logical lines 로 split 한 케이스
+//      (Revelation 4:11 b1 L14+L15 "Алдар ба" + "магтаалыг…",
+//      Revelation 11 b0 L12+L13 "Эдүгээ… ялалт," + "ид чадал,")
+//      를 1 PDF line 으로 absorb 후 consumption=0 으로 표기, gap=0
+//      으로 처리 (paragraph break 미발생).
+// 데이터 변경: rich.json paragraphBoundaries 만 변경, phrases /
+// lines / indent 는 보존. Driver 는
+// `scripts/dev/sweep-paragraphs-into-rich.mjs` (atomic 367-block
+// inject). HTML byte 출력 (paragraph mt-3 위치 변경) 이 변하므로
+// v27 precache snapshot 과 어긋날 수 있어 bump. v27 잔존 시 신규
+// 자연 paragraph 분할이 노출되지 않음.
 // v27 — #502: 시편/찬가 본문 왼쪽 여백 통일. Renderer 의 phrase.indent
 // / line.indent 의 영향 제거 (모두 indent=0 = `pl-6 -indent-6` 레벨로
 // 통일, hanging indent 는 wrap continuation 의 시각 구분 보존 위해
@@ -240,7 +299,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v27'
+const CACHE_VERSION = 'divine-office-v28'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 

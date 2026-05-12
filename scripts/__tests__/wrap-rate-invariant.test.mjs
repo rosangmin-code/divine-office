@@ -294,19 +294,32 @@ describe('psalter-texts.rich.json — wrap-rate invariants (F-X10)', () => {
     expect(boundaries.has(21)).toBe(false)
   })
 
-  // F-X11 Phase 2-hotfix (#434) — Psalm 8:2-10 conservative override.
-  // Phase 2 (#427) detectRefrains mis-detected the 3-line refrain
+  // Psalm 8:2-10 refrain-integrity invariant.
+  //
+  // Background — F-X11 Phase 2 (#427) text-heuristic detectRefrains
+  // mis-detected the 3-line refrain
   //   "ЭЗЭН, бидний Эзэн! / Таны нэр бүх газар дэлхийд /
   //    Юутай суу алдартай вэ!"
-  // as 2 lines only, producing PB [2, 24, 26] which splits each
-  // refrain occurrence between its 2nd and 3rd line. PDF p.283
-  // (full_pdf.txt L9628-9654 verbatim) shows the refrain as one
-  // continuous 3-line group at L9628-9630 (opening) and L9652-9654
-  // (closing). Conservative shape: refrain 1 occupies idx 0-2 (block
-  // boundary itself, no PB at idx 0 — builder no-op rule), verse body
-  // idx 3-23, refrain 2 idx 24-26. Boundaries at idx 3 (verse start
-  // after refrain 1) and idx 24 (refrain 2 enter after verse end).
-  it('Psalm 8:2-10 paragraphBoundaries pin to refrain 1 exit + refrain 2 enter (3-line refrain integrity)', () => {
+  // as 2 lines, producing PB [2, 24, 26] which split each refrain
+  // occurrence between its 2nd and 3rd line. F-X11 Phase 2-hotfix
+  // (#434) installed a conservative override `[3, 24]` (refrain 1
+  // exit + refrain 2 enter only). PDF p.283 (full_pdf.txt L9628-9654
+  // verbatim) confirms the refrain is one continuous 3-line group
+  // at L9628-9630 (opening) and L9652-9654 (closing); verse body
+  // occupies idx 3-23.
+  //
+  // R-3 Sweep (#503) replaces the text heuristic with the pdfplumber
+  // y-gap extractor as the authoritative SoT. The new mechanism
+  // detects additional intra-verse paragraph breaks the PDF visually
+  // carries (idx 10/13/17/21 — verse body internal stanza divisions)
+  // on top of the refrain-exit/enter boundaries. The invariant is
+  // therefore loosened from a hard `.toEqual([3, 24])` pin to the
+  // refrain-integrity contract: idx 3 + idx 24 MUST be in PB
+  // regardless of how many intra-verse breaks the extractor finds.
+  // The companion mid-split guard test below (`boundaries.has(2) ===
+  // false && boundaries.has(26) === false`) continues to enforce
+  // that the refrain itself is never split.
+  it('Psalm 8:2-10 paragraphBoundaries include refrain 1 exit + refrain 2 enter (3-line refrain integrity)', () => {
     const data = loadRich()
     const psalm = data['Psalm 8:2-10']
     expect(psalm).toBeDefined()
@@ -314,7 +327,10 @@ describe('psalter-texts.rich.json — wrap-rate invariants (F-X10)', () => {
     expect(block0).toBeDefined()
     expect(block0.kind).toBe('stanza')
     const sorted = [...(block0.paragraphBoundaries ?? [])].sort((a, b) => a - b)
-    expect(sorted).toEqual([3, 24])
+    // Refrain 1 exit (verse start after the 3-line refrain) — must be present.
+    expect(sorted).toContain(3)
+    // Refrain 2 enter (refrain repeat after the verse body) — must be present.
+    expect(sorted).toContain(24)
   })
 
   it('Psalm 8:2-10 3-line refrain closing line is NOT a paragraph boundary (mid-split guard)', () => {
