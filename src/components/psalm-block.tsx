@@ -149,22 +149,17 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
                       .slice(start, end + 1)
                       .map((l) => l.spans.map((sp) => sp.text ?? '').join(''))
                       .join(' ')
-                    const indent = phrase.indent ?? 0
-                    // FR-161 R-13: hanging indent — preserve the legacy
-                    // phrase first-line indent (0 / 6 / 12 spacing units)
-                    // and add a uniform 6-unit hang for wrap continuation
-                    // lines via `text-indent: -1.5rem` (-indent-6). The
-                    // resulting visual: phrase start matches the prior
-                    // baseline; viewport-wrapped continuation lines are
-                    // pushed in by an additional 1.5rem so wrap is
-                    // visually distinguishable from the next phrase
-                    // boundary (user spec: "구문 wrap 시 들여쓰기 적용").
-                    const indentClass =
-                      indent === 0
-                        ? 'pl-6 -indent-6'
-                        : indent === 1
-                        ? 'pl-12 -indent-6'
-                        : 'pl-18 -indent-6'
+                    // WI #502 — 왼쪽 여백 통일 (사용자 SoT, dispatch 502).
+                    // 이전 (R-13): phrase.indent 0/1/2 → pl-6 / pl-12 /
+                    // pl-18 분기. Psalm 63 b0 line 0-1 vs 2-12 의 indent
+                    // 차이가 화면에서 "갑자기 왼쪽 여백이 넓어지는"
+                    // 효과를 일으킴 → 가장 작은 들여쓰기 (indent=0 =
+                    // pl-6) 로 통일. hanging indent (`-indent-6`) 는
+                    // wrap continuation 의 시각 구분 보존 위해 유지.
+                    // `phrase.indent` 데이터 자체는 rich.json 에 보존
+                    // (PDF SoT) — renderer 단에서만 무시. 향후 PDF
+                    // typography 재현 옵션 등에서 활용 가능.
+                    const indentClass = 'pl-6 -indent-6'
                     const isRefrain = phrase.role === 'refrain'
                     const isDoxology = phrase.role === 'doxology'
                     const roleClass = isRefrain
@@ -211,8 +206,12 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
                 className="whitespace-pre-line font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200"
               >
                 {block.lines.map((line, li) => {
-                  const indent = line.indent ?? 0
-                  const indentClass = indent === 0 ? '' : indent === 1 ? 'pl-6' : 'pl-12'
+                  // WI #502 — 왼쪽 여백 통일. line.indent 무관하게 동일
+                  // 처리 (가장 작은 들여쓰기 = no pl-* modifier, parent
+                  // 의 pl-3 baseline 만 적용). 데이터 line.indent 는
+                  // rich.json 에 보존 (PDF SoT). 자세한 rationale 은
+                  // phrase mode 분기의 코멘트 참고.
+                  const indentClass = ''
                   const isRefrain = line.role === 'refrain'
                   const refrainClass = isRefrain ? ' text-red-700 dark:text-red-400' : ''
                   const text = line.spans.map((sp) => sp.text ?? '').join('')
@@ -238,15 +237,16 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
           {psalm.stanzas.map((stanza, si) => (
             <p key={si} data-role="psalm-stanza" className="whitespace-pre-line font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
               {stanza.map((line, li) => {
-                // Leading whitespace in the JSON encodes a colon/response indent
-                // level — 2 spaces = 1 level. Backward compatible: existing
-                // entries without leading spaces render at indent 0.
+                // WI #502 — 왼쪽 여백 통일. Plain stanzas mode (legacy
+                // fallback) 도 phrase / legacy-line mode 와 같은 정책
+                // 으로 통일: leading whitespace 의 indent encoding 을
+                // 무시하고 모두 동일 baseline 으로 렌더. 데이터 자체
+                // (leading spaces) 는 JSON 보존, renderer 단에서만
+                // strip. 자세한 rationale 은 phrase mode 코멘트 참고.
                 const leading = line.match(/^ */)![0].length
-                const level = Math.min(Math.floor(leading / 2), 2)
                 const trimmed = line.slice(leading)
-                const indentClass = level === 0 ? '' : level === 1 ? 'pl-6' : 'pl-12'
                 return (
-                  <span key={li} className={`block${indentClass ? ' ' + indentClass : ''}`}>{trimmed}</span>
+                  <span key={li} className="block">{trimmed}</span>
                 )
               })}
             </p>

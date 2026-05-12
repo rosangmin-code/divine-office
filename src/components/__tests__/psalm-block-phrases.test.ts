@@ -101,7 +101,14 @@ describe('PsalmBlock — phrase render branch (FR-161 R-4)', () => {
     ).toBe(1)
   })
 
-  it('renders multiple PhraseGroups with correct hanging indent classes (FR-161 R-13)', () => {
+  it('renders multiple PhraseGroups with unified left margin (WI #502 — indent collapsed)', () => {
+    // WI #502: 사용자 SoT — phrase.indent 0/1/2 모두 동일한 왼쪽
+    // 여백 (pl-6 = 가장 작은 들여쓰기 = indent=0 baseline) 로 통일.
+    // 이전 (FR-161 R-13): indent=0 → pl-6, indent=1 → pl-12,
+    // indent=2 → pl-18 분기. Psalm 63 b0 line 0-1 vs 2-12 의 indent
+    // 차이가 "갑자기 왼쪽 여백이 넓어지는" 효과 → 통일.
+    // hanging indent (`-indent-6`) 는 wrap continuation 의 시각
+    // 구분 보존 위해 유지.
     const psalm = makePsalm([
       makeStanzaBlock(['Phrase A start', 'Phrase A wrap', 'Phrase B start'], {
         phrases: [
@@ -114,20 +121,18 @@ describe('PsalmBlock — phrase render branch (FR-161 R-4)', () => {
     // Two phrase spans.
     const phraseSpans = (html.match(/data-role="psalm-phrase[a-z-]*"/g) ?? []).length
     expect(phraseSpans).toBe(2)
-    // First phrase joins lines 0+1 (indent=0 → hanging: `pl-6 -indent-6`).
+    // First phrase joins lines 0+1, indent=0 → `pl-6 -indent-6`.
     expect(html).toContain('Phrase A start Phrase A wrap')
     expect(html).toMatch(/class="block pl-6 -indent-6"[^>]*>Phrase A start Phrase A wrap</)
-    // Second phrase indent=1 → hanging: `pl-12 -indent-6`.
-    expect(html).toMatch(/class="block pl-12 -indent-6"[^>]*>Phrase B start</)
+    // Second phrase indent=1 → ALSO `pl-6 -indent-6` (WI #502 unification).
+    expect(html).toMatch(/class="block pl-6 -indent-6"[^>]*>Phrase B start</)
   })
 
-  // FR-161 R-13: hanging indent — wrap continuation lines indent further
-  // than the phrase first-line via `text-indent: -1.5rem` (-indent-6).
-  // Visual contract: first-line position preserved at legacy indents
-  // (0 / 6 / 12 spacing units); viewport-wrapped continuation lines push
-  // in by an additional 1.5rem so wrap is distinguishable from the next
-  // phrase boundary. User spec: "구문 wrap 시 들여쓰기".
-  it('applies hanging indent classes for all three indent levels (FR-161 R-13)', () => {
+  // WI #502 — 왼쪽 여백 통일 회귀 가드. phrase.indent 0/1/2 모두 동일
+  // className 출력. hanging indent (`-indent-6`) 는 wrap continuation
+  // 의 시각 구분 보존 위해 유지. `phrase.indent` 데이터는 rich.json
+  // 에 PDF SoT 로 보존하되 renderer 단에서만 무시.
+  it('phrase mode: indent 0/1/2 all render with unified `pl-6 -indent-6` (WI #502)', () => {
     const psalm = makePsalm([
       makeStanzaBlock(['Level 0', 'Level 1', 'Level 2'], {
         phrases: [
@@ -138,12 +143,35 @@ describe('PsalmBlock — phrase render branch (FR-161 R-4)', () => {
       }),
     ])
     const html = render(createElement(PsalmBlock, { psalm }))
-    // indent=0 → pl-6 -indent-6 (first line at 0, wrap +6)
+    // All three indent levels collapse to the same className (regression guard).
     expect(html).toMatch(/class="block pl-6 -indent-6"[^>]*>Level 0</)
-    // indent=1 → pl-12 -indent-6 (first line at 6, wrap +6 = 12)
-    expect(html).toMatch(/class="block pl-12 -indent-6"[^>]*>Level 1</)
-    // indent=2 → pl-18 -indent-6 (first line at 12, wrap +6 = 18)
-    expect(html).toMatch(/class="block pl-18 -indent-6"[^>]*>Level 2</)
+    expect(html).toMatch(/class="block pl-6 -indent-6"[^>]*>Level 1</)
+    expect(html).toMatch(/class="block pl-6 -indent-6"[^>]*>Level 2</)
+    // Negative: deeper pl-* modifiers must NOT appear on phrase spans.
+    expect(html).not.toMatch(/data-role="psalm-phrase[a-z-]*"[^>]+class="block pl-12/)
+    expect(html).not.toMatch(/data-role="psalm-phrase[a-z-]*"[^>]+class="block pl-18/)
+  })
+
+  // WI #502 — legacy line mode 통일 회귀 가드. line.indent 0/1/2
+  // 모두 동일 className. legacy mode 는 hanging indent 없이 baseline
+  // (parent 의 pl-3) 만 사용 — 따라서 indent class 는 empty string.
+  it('legacy line mode: line.indent 0/1/2 all render with no `pl-*` modifier (WI #502)', () => {
+    const psalm = makePsalm([
+      makeStanzaBlock(['Line A', 'Line B', 'Line C'], {
+        lineIndents: [0, 1, 2],
+      }),
+    ])
+    const html = render(createElement(PsalmBlock, { psalm }))
+    // Legacy outer keeps whitespace-pre-line; no render-mode marker.
+    expect(html).toContain('whitespace-pre-line')
+    expect(html).not.toContain('data-render-mode="phrase"')
+    // All three lines collapse to `class="block"` (no indent modifier).
+    expect(html).toMatch(/<span class="block">Line A</)
+    expect(html).toMatch(/<span class="block">Line B</)
+    expect(html).toMatch(/<span class="block">Line C</)
+    // Negative: pl-6 / pl-12 must NOT appear on legacy stanza line spans.
+    expect(html).not.toMatch(/<span class="block pl-6">/)
+    expect(html).not.toMatch(/<span class="block pl-12">/)
   })
 
   it('marks phrase.role refrain with data-role + red text class', () => {
