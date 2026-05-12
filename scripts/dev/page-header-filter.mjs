@@ -22,6 +22,22 @@
 //      Filtered ONLY when the title stands ALONE on the line (no body
 //      text alongside) — a body verse like "Магтаалыг өргөгтүн" must
 //      remain visible.
+//
+// F-X16 (#508) extension — 4 additional patterns (sourced from #506
+// audit's F section future-work, observed in F-X14/F-X15 noise cases):
+//
+//   3. Compline section header literal:
+//        - "Шөнийн даатгал залбирал" (added to SECTION_TITLE_TOKENS)
+//
+//   4. Bare nominative weekday header (no genitive 'гарагийн'):
+//        - "Баасан гараг", "Бямба гараг", ...
+//        - Caps variant ("БААСАН ГАРАГ") covered by /i flag.
+//
+//   5. Ordinal week label without leading book page:
+//        - "Эхний Долоо хоног", "Хоёр дахь Долоо хоног",
+//          "Гурав дахь Долоо хоног", "Дөрөв дахь Долоо хоног"
+//        - Distinct from NUMBERED_WEEK_HEADER_RE which requires a
+//          leading "\d+ \d+" page-number prefix.
 
 const PAGE_HEADER_WEEKDAYS = ['Ням', 'Даваа', 'Мягмар', 'Лхагва', 'Пүрэв', 'Баасан', 'Бямба']
 const WEEKDAY_HEADER_RE = new RegExp(
@@ -36,12 +52,26 @@ const SECTION_TITLE_TOKENS = [
   'Шад дуулал',
   'Шад магтаал',
   'Дууллыг төгсгөх залбирал',
+  // F-X16 A-1: Compline section header literal.
+  'Шөнийн даатгал залбирал',
 ]
 // Multi-word entries match their internal whitespace flexibly (PDF
 // occasionally introduces extra spaces between tokens of a title).
 const SECTION_TITLE_RE = new RegExp(
   `^\\s*(?:${SECTION_TITLE_TOKENS.map((t) => t.replace(/\s+/g, '\\s+')).join('|')})\\s*$`,
 )
+// F-X16 A-2/A-3: bare 'Weekday гараг' (nominative, no genitive suffix).
+// /i absorbs the all-caps PDF variant ('БААСАН ГАРАГ') without
+// duplicating the alternation list.
+const BARE_WEEKDAY_HEADER_RE = new RegExp(
+  `^\\s*(?:${PAGE_HEADER_WEEKDAYS.join('|')})\\s+гараг\\s*$`,
+  'i',
+)
+// F-X16 A-4: ordinal week label without leading book page number.
+// Distinguished from NUMBERED_WEEK_HEADER_RE (which requires a leading
+// `\d+ \d+`) by the ordinal word prefix and end-anchor.
+const ORDINAL_WEEK_HEADER_RE =
+  /^\s*(?:Эхний|Хоёр\s+дахь|Гурав\s+дахь|Дөрөв\s+дахь)\s+Долоо\s+хоног\s*$/i
 
 export function isPageHeaderLine(text) {
   const t = (text || '').trim()
@@ -50,6 +80,8 @@ export function isPageHeaderLine(text) {
   if (NUMBERED_WEEK_HEADER_RE.test(t)) return true
   if (BARE_PAGE_NUMBER_RE.test(t)) return true
   if (SECTION_TITLE_RE.test(t)) return true
+  if (BARE_WEEKDAY_HEADER_RE.test(t)) return true
+  if (ORDINAL_WEEK_HEADER_RE.test(t)) return true
   return false
 }
 

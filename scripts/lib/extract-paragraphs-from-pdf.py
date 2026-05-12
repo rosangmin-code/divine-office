@@ -77,6 +77,19 @@ PREFIX_MATCH_LEN = 12
 # (weekday + page number) and occasional standalone section-title
 # tokens; both pollute the line stream when blocks span columns or
 # pages.
+#
+# F-X16 (#508) extension: 4 additional patterns cover Compline section
+# header + bare-weekday + uppercase-weekday + ordinal-week labels that
+# the original four patterns missed (sourced from #506 audit's F section
+# future-work list, observed in F-X14/F-X15 noise cases):
+#
+#   - 'Шөнийн даатгал залбирал' — Compline section header literal
+#   - '<Weekday> гараг' (nominative bare) — page-top day label without
+#     genitive 'гарагийн' + morning/evening + page number
+#   - '<WEEKDAY> ГАРАГ' — caps variant of the above (covered by the
+#     IGNORECASE flag on BARE_WEEKDAY_HEADER_RE)
+#   - '(Эхний|Хоёр дахь|Гурав дахь|Дөрөв дахь) Долоо хоног' — ordinal
+#     week label without leading book-page number
 PAGE_HEADER_WEEKDAYS = ("Ням", "Даваа", "Мягмар", "Лхагва", "Пүрэв", "Баасан", "Бямба")
 WEEKDAY_HEADER_RE = re.compile(
     r"^\s*(?:" + "|".join(PAGE_HEADER_WEEKDAYS) + r")\s+гарагийн\s+\S+\s+\d{1,4}\s*$"
@@ -86,7 +99,25 @@ NUMBERED_WEEK_HEADER_RE = re.compile(
 )
 BARE_PAGE_NUMBER_RE = re.compile(r"^\s*\d{1,4}\s*$")
 SECTION_TITLE_RE = re.compile(
-    r"^\s*(?:Магтаал|Уншлага|Шад\s+дуулал|Шад\s+магтаал|Дууллыг\s+төгсгөх\s+залбирал)\s*$"
+    r"^\s*(?:"
+    r"Магтаал|Уншлага|Шад\s+дуулал|Шад\s+магтаал|"
+    r"Дууллыг\s+төгсгөх\s+залбирал|"
+    r"Шөнийн\s+даатгал\s+залбирал"
+    r")\s*$"
+)
+# F-X16 A-2/A-3: bare 'Weekday гараг' (nominative, no genitive suffix).
+# IGNORECASE absorbs the all-caps PDF variant ('БААСАН ГАРАГ') without
+# duplicating the alternation list.
+BARE_WEEKDAY_HEADER_RE = re.compile(
+    r"^\s*(?:" + "|".join(PAGE_HEADER_WEEKDAYS) + r")\s+гараг\s*$",
+    re.IGNORECASE,
+)
+# F-X16 A-4: ordinal week label without leading book page number.
+# Distinguished from NUMBERED_WEEK_HEADER_RE (which requires a leading
+# `\d+ \d+`) by the ordinal word prefix and end-anchor.
+ORDINAL_WEEK_HEADER_RE = re.compile(
+    r"^\s*(?:Эхний|Хоёр\s+дахь|Гурав\s+дахь|Дөрөв\s+дахь)\s+Долоо\s+хоног\s*$",
+    re.IGNORECASE,
 )
 
 
@@ -103,6 +134,10 @@ def is_page_header_line(text: str) -> bool:
     if BARE_PAGE_NUMBER_RE.match(t):
         return True
     if SECTION_TITLE_RE.match(t):
+        return True
+    if BARE_WEEKDAY_HEADER_RE.match(t):
+        return True
+    if ORDINAL_WEEK_HEADER_RE.match(t):
         return True
     return False
 
