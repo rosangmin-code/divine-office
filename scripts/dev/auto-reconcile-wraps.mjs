@@ -188,14 +188,6 @@ function runExtractor(pdfPath, bookPage, column) {
   return JSON.parse(out)
 }
 
-function flattenExtractor(stanzas) {
-  const flat = []
-  for (const s of stanzas) {
-    for (const line of s.lines) flat.push(line)
-  }
-  return flat
-}
-
 // FR-161 R-9.D — multi-page extractor scope.
 //
 // `reconcileOneRef` originally extracts only `(page, page+1)` of the same
@@ -243,15 +235,6 @@ function findRichStartCandidates(richLines, extLines) {
     ...candidates.filter((c) => c.kind === 'exact').sort((a, b) => a.index - b.index),
     ...candidates.filter((c) => c.kind === 'prefix').sort((a, b) => a.index - b.index),
   ]
-}
-
-/**
- * Backwards-compat shim — picks the first candidate (legacy semantics).
- * Used only when the caller doesn't want the multi-candidate trial path.
- */
-function findRichStart(richLines, extLines) {
-  const cands = findRichStartCandidates(richLines, extLines)
-  return cands.length > 0 ? cands[0].index : -1
 }
 
 /**

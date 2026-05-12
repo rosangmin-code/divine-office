@@ -159,7 +159,13 @@ function indentDistribution(stanzas) {
 }
 
 // ── PDF 샘플 실측 ───────────────────────────────────────────────────────
-async function measurePdfStyles(refs) {
+//
+// `refs` is intentionally unused — pages are derived from PILOT_PAGES (the
+// authoritative pilot page list), and the caller still passes the ref-ids
+// for symmetry with the non-pilot variant of this builder. The parameter
+// stays in the signature with the `_` prefix so the calling convention
+// matches and the warning suppression stays local.
+async function measurePdfStyles(_refs) {
   const bookPages = Object.values(PILOT_PAGES)
   const pages = await extractStyleOverlay({ pdfPath: PDF_PATH, bookPages })
   const HEADING_RUBRIC_PATTERNS = [

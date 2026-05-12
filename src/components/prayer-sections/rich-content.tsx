@@ -367,7 +367,6 @@ function renderBlock(
         <p key={key} className={BODY_CLASS} data-render-mode="phrase">
           {block.phrases.map((phrase, pi) => {
             const [start, end] = phrase.lineRange
-            const phraseSpans = block.lines.slice(start, end + 1).flatMap((l) => l.spans)
             // FR-161 R-13: hanging indent for phrase wrap continuation
             // (default). F-X8 (#300): hymn callers pass `flush={true}`
             // to drop the hanging-indent rule entirely (capital=verse,

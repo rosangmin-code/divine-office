@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const today = getToday()
     return NextResponse.json(today)
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Failed to get today\'s liturgical data' },
       { status: 500 },

@@ -395,7 +395,6 @@ describe('psalter-texts.rich.json — wrap-rate invariants (F-X10)', () => {
     const minMultiAtFloor = Math.ceil(FLOOR * total)
     const bufferPhrases = multi - minMultiAtFloor
     if (bufferPhrases < WARN_BUFFER_PHRASES) {
-      // eslint-disable-next-line no-console
       console.warn(
         `[wrap-rate margin] buffer narrowing — ${bufferPhrases} phrases above ${FLOOR * 100}% floor (multi=${multi}, total=${total}, rate=${(rate * 100).toFixed(2)}%). Consider raising FLOOR or auditing recent phrase-data sweep.`,
       )

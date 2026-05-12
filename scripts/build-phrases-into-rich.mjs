@@ -573,27 +573,6 @@ function alignAtProbe(stream, probe, richTexts) {
 }
 
 /**
- * Search the flat extractor stream for a window of `richTexts.length`
- * consecutive lines whose text matches `richTexts` line-by-line (with
- * quote/whitespace normalisation). Returns the start index of the window
- * in the flat stream, or `-1` if no full match exists.
- *
- * @param {{ text: string }[]} stream
- * @param {string[]} richTexts
- */
-function findWindow(stream, richTexts) {
-  if (richTexts.length === 0) return -1
-  const N = richTexts.length
-  outer: for (let start = 0; start <= stream.length - N; start++) {
-    for (let k = 0; k < N; k++) {
-      if (!stanzaFirstLineMatches(stream[start + k].text, richTexts[k])) continue outer
-    }
-    return start
-  }
-  return -1
-}
-
-/**
  * Translate the extractor's phrase list (whose lineRange is RELATIVE to
  * each extractor stanza) into rich-block-relative phrases by walking the
  * window in the flat stream. Only phrases whose every line in the

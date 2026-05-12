@@ -59,9 +59,12 @@ const loadingTask = pdfjs.getDocument({
 })
 const doc = await loadingTask.promise
 
-// Build OPS reverse lookup once.
+// Build OPS reverse lookup once. The reverse map (`_OP_NAMES`, name keyed by
+// numeric op code) is currently only consulted in ad-hoc debugging — kept
+// for the next PoC iteration, hence the underscore prefix to mark it as
+// intentionally unused at module-scope.
 const OPS = pdfjs.OPS
-const OP_NAMES = Object.fromEntries(
+const _OP_NAMES = Object.fromEntries(
   Object.entries(OPS).map(([name, code]) => [code, name])
 )
 
@@ -152,7 +155,12 @@ for (const pageNum of PAGES) {
   const pageItems = []
   for (const item of textContent.items) {
     if (typeof item.str !== 'string') continue
-    const [a, b, c, d, e, f] = item.transform || [1, 0, 0, 1, 0, 0]
+    // PDF.js `transform` is the standard 2x3 affine [a, b, c, d, e, f].
+    // `b` and `c` (skew/rotate components) aren't consumed by this PoC —
+    // we only record translation (`e`, `f`) and the diagonal scale
+    // (`a`, `d`). Prefix the unused slots so the no-unused-vars rule sees
+    // them as intentional placeholders rather than dead bindings.
+    const [a, _b, _c, d, e, f] = item.transform || [1, 0, 0, 1, 0, 0]
     pageItems.push({
       page: pageNum,
       str: item.str,

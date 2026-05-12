@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { getHymnForHour, getHymnCandidatesForHour } from '../propers-loader'
-import type { DayOfWeek, LiturgicalSeason, HourType } from '../types'
+import type { DayOfWeek, LiturgicalSeason } from '../types'
 
 const DAYS: DayOfWeek[] = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 
