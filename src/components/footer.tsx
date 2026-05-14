@@ -34,7 +34,7 @@ export function Footer() {
         aria-label={expanded ? 'Доод бичвэр нуух' : 'Доод бичвэр харуулах'}
         data-role="footer-toggle"
         data-expanded={expanded ? 'true' : 'false'}
-        className="inline-flex h-7 w-7 items-center justify-center rounded-full text-sm leading-none text-stone-400 transition-colors hover:bg-stone-200 hover:text-stone-600 focus:outline-none dark:text-stone-500 dark:hover:bg-stone-700 dark:hover:text-stone-300"
+        className="inline-flex h-7 w-7 items-center justify-center rounded-full text-sm leading-none text-stone-400 transition-colors hover:bg-stone-200 hover:text-stone-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-liturgical-gold)] dark:text-stone-500 dark:hover:bg-stone-700 dark:hover:text-stone-300"
       >
         <span aria-hidden="true">{expanded ? '▴' : '▾'}</span>
       </button>

@@ -85,4 +85,17 @@ describe('Footer — collapsed default render (FR-162)', () => {
     // would silently break AC4 (keyboard Tab → Space/Enter toggle).
     expect(html).not.toMatch(/<button[^>]*\btabindex="-1"/)
   })
+
+  it('renders a visible focus-visible ring (WCAG 2.4.7 regression guard)', () => {
+    const html = renderFooter()
+    // Tailwind `focus:outline-none` (specificity 0,2,0) overrides the
+    // global `:focus-visible { outline: 2px solid gold }` (0,1,0) rule
+    // in globals.css. The compensating `focus-visible:ring-*` utilities
+    // restore the keyboard focus indicator. Iter 1 → iter 2 regression
+    // (peer review dvo-review msg_20260514T1344380000_8a90).
+    expect(html).toMatch(/<button\b[^>]*\bfocus-visible:ring-2\b/)
+    expect(html).toMatch(
+      /<button\b[^>]*focus-visible:ring-\[var\(--color-liturgical-gold\)\]/,
+    )
+  })
 })
