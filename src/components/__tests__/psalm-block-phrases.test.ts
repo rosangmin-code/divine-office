@@ -174,15 +174,20 @@ describe('PsalmBlock — phrase render branch (FR-161 R-4)', () => {
     expect(html).not.toMatch(/<span class="block pl-12">/)
   })
 
-  it('marks phrase.role refrain with data-role + red text class', () => {
+  // 사용자 directive (2026-05-14): 시편 본문 전체 까만색 통일. refrain
+  // data-role 속성은 보존 (회중 응답 식별 + e2e selector 안정성), 색상
+  // 클래스 (`text-red-*`) 는 제거. doxology 의 italic 만 시각 강세 유지.
+  it('marks phrase.role refrain with data-role but NO red color class (2026-05-14 policy)', () => {
     const psalm = makePsalm([
       makeStanzaBlock(['Refrain text'], {
         phrases: [{ lineRange: [0, 0], indent: 0, role: 'refrain' }],
       }),
     ])
     const html = render(createElement(PsalmBlock, { psalm }))
+    // data-role 메타데이터 보존
     expect(html).toContain('data-role="psalm-phrase-refrain"')
-    expect(html).toMatch(/text-red-700/)
+    // 색상 클래스 부재 — refrain phrase 의 className 에 text-red-* 가 없음
+    expect(html).not.toMatch(/data-role="psalm-phrase-refrain"[^>]+class="[^"]*text-red-/)
     // Joined text present.
     expect(html).toContain('Refrain text')
   })
@@ -357,7 +362,12 @@ describe('PsalmBlock — F-X11 paragraph boundary rendering', () => {
     // 2. paragraph boundary attribute on exactly one span (F-X11 contract)
     const markers = html.match(/data-paragraph-boundary="true"/g) ?? []
     expect(markers.length).toBe(1)
-    // 3. refrain phrase at index 7 carries both red text + mt-3
-    expect(html).toMatch(/data-paragraph-boundary="true"[^>]+class="block pl-6 -indent-6 text-red-700 dark:text-red-400 mt-3"[^>]*>Түг түмдийн/)
+    // 3. refrain phrase at index 7 carries mt-3 paragraph gap.
+    //    사용자 directive (2026-05-14): refrain 색상 클래스 (text-red-*)
+    //    제거 후에도 paragraph boundary (mt-3) 와 indent (pl-6 -indent-6)
+    //    는 보존됨을 확인.
+    expect(html).toMatch(/data-paragraph-boundary="true"[^>]+class="block pl-6 -indent-6 mt-3"[^>]*>Түг түмдийн/)
+    // refrain phrase 의 className 에 red 색상 클래스가 없음을 보강 검증.
+    expect(html).not.toMatch(/data-role="psalm-phrase-refrain"[^>]+class="[^"]*text-red-/)
   })
 })

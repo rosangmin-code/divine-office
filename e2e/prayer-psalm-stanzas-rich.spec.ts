@@ -31,8 +31,14 @@ test.describe('Psalter stanzasRich rendering (FR-153f)', () => {
   })
 
   // @fr FR-153f
-  test('refrain lines carry rubric red colour (§12.1)', async ({ page }) => {
+  // 사용자 directive (2026-05-14): 시편 본문 전체 까만색 통일. PRD §12.1 의
+  // "빨간색 = 회중 응답" rubric 정책에서 refrain 라인은 제외된다 — 시편
+  // 본문 가독성 우선. data-role 메타데이터는 보존하여 회중 응답 식별과
+  // e2e selector 안정성은 유지 (denylist/allowlist 정합화 로직, refrain
+  // 데이터 모델은 영향 없음).
+  test('refrain lines do NOT carry red colour (2026-05-14 black-text policy)', async ({ page }) => {
     const first = page.locator('[data-role="psalm-stanza-refrain"]').first()
-    await expect(first).toHaveClass(/text-red-700/)
+    await expect(first).not.toHaveClass(/text-red-700/)
+    await expect(first).not.toHaveClass(/text-red-400/)
   })
 })

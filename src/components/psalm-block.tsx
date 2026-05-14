@@ -162,11 +162,13 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
                     const indentClass = 'pl-6 -indent-6'
                     const isRefrain = phrase.role === 'refrain'
                     const isDoxology = phrase.role === 'doxology'
-                    const roleClass = isRefrain
-                      ? ' text-red-700 dark:text-red-400'
-                      : isDoxology
-                      ? ' italic'
-                      : ''
+                    // 사용자 directive (2026-05-14): 시편 본문은 refrain 포함
+                    // 전체가 까만색 본문 컬러로 렌더된다. `text-red-700
+                    // dark:text-red-400` 트리거 제거 — data-role 메타데이터
+                    // (`psalm-phrase-refrain`) 는 회중 응답 식별 / e2e
+                    // selector 안정성을 위해 보존. doxology 의 italic 강조는
+                    // 시각 강세를 유지 (색상 통일 정책과 무관).
+                    const roleClass = isDoxology ? ' italic' : ''
                     const dataRole = isRefrain
                       ? 'psalm-phrase-refrain'
                       : isDoxology
@@ -213,7 +215,11 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
                   // phrase mode 분기의 코멘트 참고.
                   const indentClass = ''
                   const isRefrain = line.role === 'refrain'
-                  const refrainClass = isRefrain ? ' text-red-700 dark:text-red-400' : ''
+                  // 사용자 directive (2026-05-14): legacy line mode 도
+                  // refrain 포함 전체 본문이 까만색으로 통일. `text-red-700
+                  // dark:text-red-400` 트리거 제거. data-role 메타데이터
+                  // (`psalm-stanza-refrain`) 는 회중 응답 식별 + e2e selector
+                  // 안정성을 위해 보존.
                   const text = line.spans.map((sp) => sp.text ?? '').join('')
                   const isParagraphStart = legacyParagraphBoundarySet.has(li)
                   const paragraphClass = isParagraphStart ? ' mt-3' : ''
@@ -222,7 +228,7 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
                       key={li}
                       data-role={isRefrain ? 'psalm-stanza-refrain' : undefined}
                       data-paragraph-boundary={isParagraphStart ? 'true' : undefined}
-                      className={`block${indentClass ? ' ' + indentClass : ''}${refrainClass}${paragraphClass}`}
+                      className={`block${indentClass ? ' ' + indentClass : ''}${paragraphClass}`}
                     >
                       {text}
                     </span>
