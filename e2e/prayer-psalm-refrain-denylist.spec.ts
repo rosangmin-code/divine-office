@@ -27,10 +27,12 @@ test.describe('Refrain denylist false-positive cleanup (FR-160-A1)', () => {
   })
 
   // @fr FR-160
+  // 사용자 directive (2026-05-14) 이후: 시편 본문(`data-role="psalm-stanza"`)
+  // 전체가 까만색 통일 → 본 테스트는 모든 시편에서 자동 통과. 그래도 회귀
+  // 가드 가치는 유지된다 (psalm-block.tsx 의 stanza span 에 빨간색이 재
+  // 도입되면 즉시 fail). psalm-header / 'Дуулал' 라벨 등 본문 외 빨간
+  // 글씨는 본 selector 범위 밖이므로 영향 없음.
   test('Psalm 150:1-6 stanza body has no rubric red span', async ({ page }) => {
-    // AC-1 outcome: no .text-red-700 inside the stanza body. We
-    // exclude the psalm header (which legitimately uses red for
-    // 'Дуулал' label + reference) by scoping to data-role="psalm-stanza".
     const ps150 = page.locator('section[aria-label="Psalm 150:1-6"]')
     const redInsideStanza = ps150.locator(
       '[data-role="psalm-stanza"] .text-red-700, [data-role="psalm-stanza"] .text-red-400',
@@ -64,6 +66,8 @@ test.describe('Refrain denylist false-positive cleanup (FR-160-A1)', () => {
   })
 
   // @fr FR-160
+  // 사용자 directive (2026-05-14) 이후: 시편 본문 까만색 통일 → 자동 통과.
+  // 회귀 가드 의미만 유지. (위 Psalm 150 케이스와 동일 정책.)
   test('Psalm 29:1-10 stanza body has no rubric red span', async ({ page }) => {
     await page.goto(`/pray/${DATES.psalterW1Monday}/lauds`)
     const ps29 = page.locator('section[aria-label="Psalm 29:1-10"]')
