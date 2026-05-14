@@ -1,5 +1,6 @@
 'use client'
 
+import { forwardRef } from 'react'
 import type { CalendarListRow } from '@/lib/calendar-list-types'
 import { shouldRowUseRedAccent } from '@/lib/calendar-list-types'
 import { HourCardList } from './hour-card-list'
@@ -30,13 +31,20 @@ interface LiturgicalCalendarRowProps {
   onSelectCelebration: (id: string) => void
 }
 
-export function LiturgicalCalendarRow({
-  row,
-  expanded,
-  selectedCelebrationId,
-  onToggle,
-  onSelectCelebration,
-}: LiturgicalCalendarRowProps) {
+// FR-145 iter 2 MINOR #3 — `forwardRef` on the <li> directly so the
+// parent list can attach a ref for scrollIntoView without an extra
+// content-shim element (which would have broken the HTML5 `<ul> > <li>`
+// content model).
+export const LiturgicalCalendarRow = forwardRef<HTMLLIElement, LiturgicalCalendarRowProps>(function LiturgicalCalendarRow(
+  {
+    row,
+    expanded,
+    selectedCelebrationId,
+    onToggle,
+    onSelectCelebration,
+  },
+  ref,
+) {
   const isAnchor = row.kind === 'today-anchor'
   const useRed = shouldRowUseRedAccent(row)
 
@@ -52,6 +60,7 @@ export function LiturgicalCalendarRow({
 
   return (
     <li
+      ref={ref}
       data-testid="calendar-row"
       data-row-kind={row.kind}
       data-date={row.date}
@@ -132,7 +141,7 @@ export function LiturgicalCalendarRow({
       )}
     </li>
   )
-}
+})
 
 /**
  * Inline variant of {@link CelebrationPicker} that drives selection state

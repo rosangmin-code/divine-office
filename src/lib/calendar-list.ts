@@ -44,11 +44,12 @@ const DOW_CODES: Array<'SUN' | 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT'> = 
 export type { CalendarListRow, CalendarListWindow } from './calendar-list-types'
 export { shouldRowUseRedAccent, shiftDate } from './calendar-list-types'
 
-const MIN_OFFSET = -3650 // ~10 years backward — defensive clamp
-const MAX_OFFSET = 3650 // ~10 years forward
+// Window-extent upper bound (~10 years forward / backward). Callers always
+// pre-clamp to non-negative via `Math.max(0, ...)` so a lower bound is
+// unreachable; only the upper clamp is needed.
+const MAX_OFFSET = 3650
 
 function clampOffset(offset: number): number {
-  if (offset < MIN_OFFSET) return MIN_OFFSET
   if (offset > MAX_OFFSET) return MAX_OFFSET
   return offset
 }

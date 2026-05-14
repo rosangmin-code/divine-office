@@ -19,9 +19,11 @@ import { LiturgicalCalendarRow } from './liturgical-calendar-row'
 //     Each call extends `rows` by a page (default 14 days) by calling
 //     into the server adapter via the bound action.
 //   - Row expand/collapse state is local (`expandedDate`). Selecting a
-//     row scrolls it into view (the synthetic anchor / today row remain
-//     scroll-anchored at mount). Only one row is expanded at a time —
-//     simpler model, matches the "browse calendar then commit" flow.
+//     row scrolls it into view. The scroll target is the row whose
+//     date matches `initialDate ?? todayStr` (so back-links from prayer
+//     pages land the user on the date they were praying, not today).
+//     Only one row is expanded at a time — simpler model, matches the
+//     "browse calendar then commit" flow.
 
 interface LiturgicalCalendarListProps {
   initialRows: CalendarListRow[]
@@ -53,9 +55,14 @@ export function LiturgicalCalendarList({
   pageSize = 14,
 }: LiturgicalCalendarListProps) {
   const [rows, setRows] = useState<CalendarListRow[]>(initialRows)
-  const [expandedDate, setExpandedDate] = useState<string | null>(
-    initialDate ?? todayStr,
-  )
+  // FR-145 iter 2 — the date the auto-scroll-on-mount should target. When
+  // the user back-links from `/pray/2026-05-30/lauds?celebration=...` we
+  // land on `/?date=2026-05-30&...` and the URL anchor (5/30) MUST be
+  // the scroll target rather than today (5/14) — otherwise the user is
+  // dumped back at today and loses their context. (Reviewer iter 1
+  // MAJOR #1.)
+  const focusDate = initialDate ?? todayStr
+  const [expandedDate, setExpandedDate] = useState<string | null>(focusDate)
   // selectedCelebrationId is keyed by date so different days can hold
   // independent picker selections during a single browse session.
   const [selectedByDate, setSelectedByDate] = useState<Record<string, string>>(() => {
@@ -75,6 +82,12 @@ export function LiturgicalCalendarList({
   // typical session never reaches the edge — auto-extend is purely the
   // "user scrolled past the edge" affordance.
   const [hasScrolled, setHasScrolled] = useState(false)
+  // FR-145 iter 2 — once a load attempt returns zero new rows the
+  // corresponding direction is "exhausted" (romcal range hit a wall or
+  // adapter rejects). Latching prevents repeated 0-row fetches when the
+  // sentinel stays in view at the boundary. Reviewer iter 1 NIT #6.
+  const [exhaustedOlder, setExhaustedOlder] = useState(false)
+  const [exhaustedNewer, setExhaustedNewer] = useState(false)
 
   const dataDateRange = useMemo(() => {
     const dateRows = rows.filter((r) => r.kind === 'date')
@@ -86,25 +99,32 @@ export function LiturgicalCalendarList({
 
   const topSentinelRef = useRef<HTMLDivElement | null>(null)
   const bottomSentinelRef = useRef<HTMLDivElement | null>(null)
-  const todayRowRef = useRef<HTMLElement | null>(null)
-  const hasScrolledToToday = useRef(false)
+  const focusRowRef = useRef<HTMLLIElement | null>(null)
+  const hasScrolledToFocus = useRef(false)
 
-  // Auto-scroll: bring today's row into view exactly once on mount.
-  // Done after layout so the row has dimensions.
+  // FR-145 iter 2 NIT #5 — stable ref callback so React doesn't see a
+  // fresh function identity on every render (which would also re-mount
+  // the underlying <li>'s ref binding each pass).
+  const setFocusRowEl = useCallback((el: HTMLLIElement | null) => {
+    focusRowRef.current = el
+  }, [])
+
+  // Auto-scroll: bring the focus row (initialDate ?? today) into view
+  // exactly once on mount. Done after layout so the row has dimensions.
   useEffect(() => {
-    if (hasScrolledToToday.current) return
-    if (!todayRowRef.current) return
-    todayRowRef.current.scrollIntoView({ block: 'center', behavior: 'auto' })
-    hasScrolledToToday.current = true
+    if (hasScrolledToFocus.current) return
+    if (!focusRowRef.current) return
+    focusRowRef.current.scrollIntoView({ block: 'center', behavior: 'auto' })
+    hasScrolledToFocus.current = true
   }, [rows])
 
   // Track real user-driven scroll so the sentinel-triggered extend
   // doesn't fire on initial render (when scroll=0 → top sentinel is
   // already in view). We listen on window and capture the FIRST scroll
-  // event after the autoscroll-to-today has had a chance to settle.
+  // event after the autoscroll-to-focus has had a chance to settle.
   useEffect(() => {
     let armed = false
-    // Defer arming so the auto-scroll-to-today event doesn't count as
+    // Defer arming so the auto-scroll-to-focus event doesn't count as
     // "user scrolled". 200 ms is enough for the smooth/auto scroll to
     // complete in headless and real browsers.
     const armTimer = window.setTimeout(() => {
@@ -123,6 +143,7 @@ export function LiturgicalCalendarList({
 
   const loadOlder = useCallback(async () => {
     if (!hasScrolled) return
+    if (exhaustedOlder) return
     if (loadingOlder || !dataDateRange) return
     setLoadingOlder(true)
     try {
@@ -139,14 +160,19 @@ export function LiturgicalCalendarList({
           const rest = prev.filter((r) => r.kind !== 'today-anchor')
           return anchor ? [anchor, ...newPrepend, ...rest] : [...newPrepend, ...rest]
         })
+      } else {
+        // Boundary hit (romcal range exhausted or all returned rows are
+        // duplicates) — latch and stop firing.
+        setExhaustedOlder(true)
       }
     } finally {
       setLoadingOlder(false)
     }
-  }, [hasScrolled, loadingOlder, dataDateRange, loadWindow, pageSize, rows])
+  }, [hasScrolled, exhaustedOlder, loadingOlder, dataDateRange, loadWindow, pageSize, rows])
 
   const loadNewer = useCallback(async () => {
     if (!hasScrolled) return
+    if (exhaustedNewer) return
     if (loadingNewer || !dataDateRange) return
     setLoadingNewer(true)
     try {
@@ -157,11 +183,13 @@ export function LiturgicalCalendarList({
       const newAppend = more.filter((r) => r.kind === 'date' && !existingDates.has(r.date))
       if (newAppend.length > 0) {
         setRows((prev) => [...prev, ...newAppend])
+      } else {
+        setExhaustedNewer(true)
       }
     } finally {
       setLoadingNewer(false)
     }
-  }, [hasScrolled, loadingNewer, dataDateRange, loadWindow, pageSize, rows])
+  }, [hasScrolled, exhaustedNewer, loadingNewer, dataDateRange, loadWindow, pageSize, rows])
 
   // IntersectionObserver: top sentinel → loadOlder, bottom → loadNewer.
   // We use a small rootMargin so the fetch fires before the user actually
@@ -187,9 +215,18 @@ export function LiturgicalCalendarList({
     }
   }, [loadOlder, loadNewer])
 
-  const handleToggle = useCallback((date: string) => {
-    setExpandedDate((prev) => (prev === date ? null : date))
-  }, [])
+  // FR-145 iter 2 MAJOR #2 — `today-anchor` row shares its `date` with
+  // the real today row (`getTodayAnchorRow` synthesises one for layout
+  // continuity). Without this guard, clicking the anchor's button would
+  // collapse the today row a few entries below via the shared `date`
+  // key. The anchor row has no body to expand, so a click is a no-op.
+  const handleToggle = useCallback(
+    (date: string, kind: CalendarListRow['kind']) => {
+      if (kind !== 'date') return
+      setExpandedDate((prev) => (prev === date ? null : date))
+    },
+    [],
+  )
 
   const handleSelectCelebration = useCallback((date: string, id: string) => {
     setSelectedByDate((prev) => ({ ...prev, [date]: id }))
@@ -200,23 +237,29 @@ export function LiturgicalCalendarList({
       <div ref={topSentinelRef} aria-hidden className="h-1" />
       <ul className="space-y-1">
         {rows.map((row) => {
-          const expanded = !!row.date && expandedDate === row.date && row.kind === 'date'
+          // FR-145 iter 2 MAJOR #2 — discriminate by row.kind, not just
+          // `date`, so the anchor (kind=today-anchor, date=todayStr) and
+          // the real today row (kind=date, date=todayStr) get distinct
+          // React keys. Otherwise React reuses the same fiber and the
+          // anchor inherits the today row's expansion state.
+          const expanded = row.kind === 'date' && expandedDate === row.date
           const selectedId = selectedByDate[row.date] ?? 'default'
-          const refProp = row.isToday
-            ? (el: HTMLElement | null) => {
-                todayRowRef.current = el
-              }
-            : undefined
+          // FR-145 iter 2 MAJOR #1 — focus row is the URL-requested date
+          // (back-link case) OR today (default home visit). Was always
+          // `row.isToday` previously, which dropped users off at today
+          // even when they back-linked from a different day.
+          const isFocusRow = row.kind === 'date' && row.date === focusDate
+          const ref = isFocusRow ? setFocusRowEl : undefined
           return (
-            <RowSlot key={`${row.kind}-${row.date}-${row.kind === 'today-anchor' ? 'anchor' : 'date'}`} refProp={refProp}>
-              <LiturgicalCalendarRow
-                row={row}
-                expanded={expanded}
-                selectedCelebrationId={selectedId}
-                onToggle={() => handleToggle(row.date)}
-                onSelectCelebration={(id) => handleSelectCelebration(row.date, id)}
-              />
-            </RowSlot>
+            <LiturgicalCalendarRow
+              key={`${row.kind}-${row.date}`}
+              ref={ref}
+              row={row}
+              expanded={expanded}
+              selectedCelebrationId={selectedId}
+              onToggle={() => handleToggle(row.date, row.kind)}
+              onSelectCelebration={(id) => handleSelectCelebration(row.date, id)}
+            />
           )
         })}
       </ul>
@@ -230,31 +273,5 @@ export function LiturgicalCalendarList({
         </p>
       )}
     </div>
-  )
-}
-
-/**
- * Tiny wrapper that forwards the ref-callback to the row's <li>. Using a
- * separate slot keeps the LiturgicalCalendarRow pure (no ref plumbing)
- * while still letting the parent observe the today row for scroll-anchor.
- */
-function RowSlot({
-  refProp,
-  children,
-}: {
-  refProp?: (el: HTMLElement | null) => void
-  children: React.ReactNode
-}) {
-  // Wrap the child with a ref-capturing element. We render a fragment-ish
-  // shim that attaches the ref to a relative-positioned span so the row
-  // layout is untouched while still being observable. The shim is
-  // visually invisible.
-  return (
-    <span
-      ref={refProp as unknown as React.Ref<HTMLSpanElement> | undefined}
-      style={{ display: 'contents' }}
-    >
-      {children}
-    </span>
   )
 }
