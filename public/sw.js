@@ -1,3 +1,38 @@
+// v29 — task #4: phrase-injection 파이프라인의 `lines[].role` →
+// `phrases[].role` 전파 fix. `scripts/build-phrases-into-rich.mjs` 의
+// `regroupPhrasesByCapitalStart()` 및 `translatePhrases()` 후처리에 role
+// propagation pass 추가 (conservative tie-break — phrase coverage 내 모든
+// 라인이 동일 defined role 일 때만 phrase.role 부여). 기존 카탈로그는
+// `scripts/migrate-phrase-role-from-lines.mjs` 로 back-fill — 14 refs /
+// 130 phrases 에 phrase.role='refrain' 주입 (이전 phrase mode 렌더에서
+// refrain markup 0건 emit 되던 회귀 해소). 영향 refs:
+//   - Daniel 3:57-88, 56 (44 line.refrain → 38 phrase.refrain via
+//     line-aggregation, uncovered=0)
+//   - Daniel 3:52-57 (19 → 12, uncovered=0)
+//   - Revelation 19:1-7 (12 → 8, 4 uncovered — conservative tie-break
+//     으로 mixed-role phrase 제외 사례)
+//   - Psalm 24:1-10 (6 → 6), 67:2-8 (4 → 4), 8:2-10 (6 → 6),
+//     42:2-6 (4 → 4), 46:2-12 (6 → 6), 99:1-9 (3 → 3),
+//     115:1-13 (3 → 3), 116:10-19 (2 → 2), 80:2-8,15-20 (9 → 9),
+//     136:1-9 (9 → 9), 136:10-26 (20 → 20)
+// 데이터 변경: psalter-texts.rich.json 의 `phrases[].role='refrain'`
+// 필드만 추가 (line.role 은 unchanged, indent/lineRange unchanged).
+// 색상 변화는 없음 — task #3 의 시편 본문 까만색 정책 (text-red-*
+// 트리거 제거) 은 무손상으로 유지.
+//
+// CACHE_VERSION bump 사유 (defensive conservative): SW 의 navigate (HTML)
+// fetch handler 는 `network-only` + offline fallback (lines 357-365 참고)
+// 이므로 HTML byte 출력 변화는 v28 precache snapshot 과 직접 충돌하지
+// 않는다 — PRECACHE_URLS 는 `['/offline.html', '/icon.svg']` 만 보유,
+// rich.json 같은 server-side import 데이터는 SW 시야 밖. 본 bump 의
+// 실질 효과는 정적 자산 (script/style/font/image) 캐시의 강제 재정렬 —
+// 다음 사용자 방문 시 cache-first 정적 자산이 신선한 빌드의 chunk hash
+// 와 다시 정렬됨. CACHE_VERSION bump 정확 criteria (정적 자산 경로/
+// 내용 변경 / 프리캐시 대상 변경 / SW 로직 변경) 어느 것도 본 PR 이
+// strict 하게 트리거하지는 않지만, JSON 데이터 변경이 SSR HTML 출력에
+// 새 markup 130건을 추가하므로 connected-deploy 일관성을 위해
+// conservative bump 채택 (v27/v26 같은 indent/PB 데이터 변경 시점의
+// 운영 관행과 정합).
 // v28 — #503: Phase 2 R-3 Sweep — 나머지 122 refs (시편 + 구약/신약
 // 찬가) paragraphBoundaries 일괄 재추출. #501 Pilot 의 Python
 // pdfplumber y-gap extractor (1.4× median threshold) 를 rich.json
@@ -299,7 +334,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v28'
+const CACHE_VERSION = 'divine-office-v29'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 

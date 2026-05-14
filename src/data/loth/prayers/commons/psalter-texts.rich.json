@@ -516,14 +516,16 @@
                 1,
                 1
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 2,
                 3
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ]
         },
@@ -583,14 +585,16 @@
                 1,
                 1
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 2,
                 3
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ]
         },
@@ -668,7 +672,8 @@
                 1,
                 1
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -682,7 +687,8 @@
                 3,
                 3
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -696,7 +702,8 @@
                 5,
                 5
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             }
           ]
         },
@@ -774,7 +781,8 @@
                 1,
                 1
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -788,7 +796,8 @@
                 3,
                 3
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -802,7 +811,8 @@
                 5,
                 5
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             }
           ]
         },
@@ -880,7 +890,8 @@
                 1,
                 1
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -894,7 +905,8 @@
                 3,
                 3
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -908,7 +920,8 @@
                 5,
                 5
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             }
           ]
         },
@@ -986,7 +999,8 @@
                 1,
                 1
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -1000,7 +1014,8 @@
                 3,
                 3
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -1014,7 +1029,8 @@
                 5,
                 5
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             }
           ]
         },
@@ -1092,7 +1108,8 @@
                 1,
                 1
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -1106,7 +1123,8 @@
                 3,
                 3
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -1120,7 +1138,8 @@
                 5,
                 5
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             }
           ]
         },
@@ -1180,14 +1199,16 @@
                 1,
                 1
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 2,
                 3
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ]
         },
@@ -1265,7 +1286,8 @@
                 1,
                 1
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -1279,7 +1301,8 @@
                 3,
                 3
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -1293,7 +1316,8 @@
                 5,
                 5
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             }
           ]
         },
@@ -1371,7 +1395,8 @@
                 1,
                 1
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -1385,7 +1410,8 @@
                 3,
                 3
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -1399,7 +1425,8 @@
                 5,
                 5
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             }
           ]
         },
@@ -1459,14 +1486,16 @@
                 1,
                 1
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 2,
                 3
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ]
         },
@@ -1526,14 +1555,16 @@
                 1,
                 1
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 2,
                 3
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ]
         },
@@ -1611,7 +1642,8 @@
                 1,
                 1
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -1625,7 +1657,8 @@
                 3,
                 3
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -1639,7 +1672,8 @@
                 5,
                 5
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             }
           ]
         },
@@ -1737,7 +1771,8 @@
                 1,
                 1
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -1751,7 +1786,8 @@
                 3,
                 3
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -1765,14 +1801,16 @@
                 5,
                 5
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 6,
                 7
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ]
         },
@@ -3061,7 +3099,8 @@
                 0,
                 0
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -3082,7 +3121,8 @@
                 6,
                 6
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ]
         },
@@ -3153,7 +3193,8 @@
                 0,
                 0
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -3174,7 +3215,8 @@
                 5,
                 5
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ]
         },
@@ -3254,7 +3296,8 @@
                 0,
                 0
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -3282,7 +3325,8 @@
                 6,
                 6
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ]
         },
@@ -3344,7 +3388,8 @@
                 0,
                 0
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -3365,7 +3410,8 @@
                 4,
                 4
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ]
         }
@@ -6574,21 +6620,24 @@
                 2,
                 2
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 3,
                 3
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 4,
                 4
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -6616,21 +6665,24 @@
                 8,
                 8
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 9,
                 9
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 10,
                 10
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -20170,14 +20222,16 @@
                 7,
                 7
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 8,
                 8
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -20233,14 +20287,16 @@
                 17,
                 17
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 18,
                 18
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -20343,14 +20399,16 @@
                 0,
                 0
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 1,
                 1
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ]
         }
@@ -22730,7 +22788,8 @@
                 8,
                 8
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -22895,7 +22954,8 @@
                 6,
                 6
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -24187,21 +24247,24 @@
                 0,
                 0
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 1,
                 1
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 2,
                 2
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -24355,21 +24418,24 @@
                 24,
                 24
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 25,
                 25
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 26,
                 26
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ],
           "paragraphBoundaries": [
@@ -25217,14 +25283,16 @@
                 2,
                 2
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 3,
                 4
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ]
         },
@@ -25283,7 +25351,8 @@
                 2,
                 3
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ]
         },
@@ -25343,14 +25412,16 @@
                 1,
                 1
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 2,
                 3
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ]
         },
@@ -25410,14 +25481,16 @@
                 1,
                 1
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 2,
                 3
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ]
         },
@@ -25486,14 +25559,16 @@
                 2,
                 2
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 3,
                 4
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ]
         },
@@ -25553,14 +25628,16 @@
                 1,
                 1
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 2,
                 3
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ]
         },
@@ -25626,7 +25703,8 @@
                 2,
                 3
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ]
         }
@@ -26365,7 +26443,8 @@
                 19,
                 19
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -26379,7 +26458,8 @@
                 21,
                 21
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -26400,7 +26480,8 @@
                 24,
                 24
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -27099,7 +27180,8 @@
                 0,
                 0
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -27113,7 +27195,8 @@
                 2,
                 2
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -27192,7 +27275,8 @@
                 1,
                 1
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -27520,7 +27604,8 @@
                 19,
                 19
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ],
           "paragraphBoundaries": [
@@ -34005,14 +34090,16 @@
                 6,
                 6
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 7,
                 7
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -34040,14 +34127,16 @@
                 11,
                 11
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 12,
                 12
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -34413,21 +34502,24 @@
                 7,
                 7
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 8,
                 8
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 9,
                 9
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -34490,21 +34582,24 @@
                 20,
                 20
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 21,
                 21
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 22,
                 22
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -35011,21 +35106,24 @@
                 1,
                 1
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 2,
                 2
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 3,
                 3
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ]
         },
@@ -38598,7 +38696,8 @@
                 2,
                 2
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -38612,7 +38711,8 @@
                 4,
                 4
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -38626,7 +38726,8 @@
                 6,
                 6
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -38640,7 +38741,8 @@
                 9,
                 9
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -38654,7 +38756,8 @@
                 12,
                 12
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -38668,7 +38771,8 @@
                 15,
                 15
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -38682,7 +38786,8 @@
                 17,
                 17
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -38696,7 +38801,8 @@
                 19,
                 19
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -38717,7 +38823,8 @@
                 22,
                 22
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ],
           "paragraphBoundaries": [
@@ -39021,14 +39128,16 @@
                 1,
                 1
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 2,
                 2
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -39042,14 +39151,16 @@
                 4,
                 4
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 5,
                 5
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -39063,7 +39174,8 @@
                 8,
                 8
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -39077,7 +39189,8 @@
                 11,
                 11
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -39091,7 +39204,8 @@
                 14,
                 14
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -39112,7 +39226,8 @@
                 17,
                 17
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -39126,7 +39241,8 @@
                 20,
                 20
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -39140,7 +39256,8 @@
                 22,
                 22
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -39154,7 +39271,8 @@
                 24,
                 24
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -39168,7 +39286,8 @@
                 27,
                 27
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ],
           "paragraphBoundaries": [
@@ -39377,7 +39496,8 @@
                 1,
                 1
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -39391,7 +39511,8 @@
                 4,
                 4
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -39405,7 +39526,8 @@
                 7,
                 7
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -39419,14 +39541,16 @@
                 9,
                 9
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
                 10,
                 10
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -39440,7 +39564,8 @@
                 13,
                 13
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -39454,7 +39579,8 @@
                 16,
                 16
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -39468,7 +39594,8 @@
                 18,
                 18
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ],
           "paragraphBoundaries": [
@@ -50041,7 +50168,8 @@
                 6,
                 6
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -50083,7 +50211,8 @@
                 14,
                 14
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             },
             {
               "lineRange": [
@@ -50331,7 +50460,8 @@
                 13,
                 14
               ],
-              "indent": 0
+              "indent": 0,
+              "role": "refrain"
             }
           ],
           "paragraphBoundaries": [
