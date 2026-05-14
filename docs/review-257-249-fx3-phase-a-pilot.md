@@ -229,7 +229,7 @@ total: 35 stanzas, 0 violations
 #### §6. Full vitest suite
 ```
 $ npm test 2>&1 | tee /tmp/test-out.log | tail -10
-RUN  v4.1.4 /home/min/myproject/divine office/.claude/worktrees/257-divine-review
+RUN  v4.1.4 /home/min/myproject/divineoffice/.claude/worktrees/257-divine-review
 
  Test Files  46 passed (46)
       Tests  888 passed (888)

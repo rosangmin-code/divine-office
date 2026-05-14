@@ -117,7 +117,7 @@
 
 `pair-cli consensus check` → outcome=consensus, round=1.
 
-Decision id: `dec_1` (`/home/min/myproject/divine office/.claude/worktrees/248-divine-review/.claude/pair-working/decision-trails/review-247-nit-batch-6-low-review-finding-cleanu.decision.json`).
+Decision id: `dec_1` (`/home/min/myproject/divineoffice/.claude/worktrees/248-divine-review/.claude/pair-working/decision-trails/review-247-nit-batch-6-low-review-finding-cleanu.decision.json`).
 
 ---
 

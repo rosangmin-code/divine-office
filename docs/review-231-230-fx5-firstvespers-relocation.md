@@ -192,7 +192,7 @@
 ## Tests / lint / typecheck 증거 (R2 amended)
 
 ```
-vitest run (full suite, /home/min/myproject/divine office/.claude/worktrees/230-dev @ 349e43c)
+vitest run (full suite, /home/min/myproject/divineoffice/.claude/worktrees/230-dev @ 349e43c)
   Test Files  44 passed (44)
        Tests  842 passed (842)              ← R1 835 + R2 7 new
    Start at  23:40:28
@@ -218,7 +218,7 @@ eslint (changed files: src/lib/loth-service.ts, src/lib/hours/types.ts,
 ## Tests / lint / typecheck 증거
 
 ```
-vitest run (full suite, /home/min/myproject/divine office/.claude/worktrees/230-dev)
+vitest run (full suite, /home/min/myproject/divineoffice/.claude/worktrees/230-dev)
   Test Files  44 passed (44)
        Tests  835 passed (835)
    Start at  23:28:42

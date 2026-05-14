@@ -305,7 +305,7 @@ handoff-fr160 §2 의 refrain 분류 — Tobit 13:1-8, Isaiah 38:10-14/17-20 의
 ## 검증 명령 (재현)
 
 ```bash
-cd "/home/min/myproject/divine office"
+cd "/home/min/myproject/divineoffice"
 npx vitest run                                              # 718 PASS
 npx tsc --noEmit                                            # 0 errors
 node scripts/verify-phrase-coverage.js --check              # 215 stanzas, 0 violations

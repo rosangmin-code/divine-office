@@ -188,7 +188,7 @@ origin/main 동기화 완료. CACHE_VERSION v4 → v5 (Vercel 재배포 자동 �
 ## 검증 명령 (재현)
 
 ```bash
-cd "/home/min/myproject/divine office"
+cd "/home/min/myproject/divineoffice"
 npx vitest run                                              # 842 PASS
 npx tsc --noEmit                                            # 0 errors
 npm run lint                                                # 0 target errors

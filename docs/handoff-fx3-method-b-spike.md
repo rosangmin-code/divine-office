@@ -19,7 +19,7 @@ Related: docs/review-257-249-fx3-phase-a-pilot.md (#257 R2 권고), docs/handoff
 | Subject question | method-b (per-line phrase remediation) feasibility — D-stage 92 hymn 에서 parallel-epithet collapse F1 회귀 해소 가능? |
 | Method | read-only sweep + PDF ground-truth verification + 3 sub-method projection |
 | Sample | 5-10 parallel-epithet hymn (NEW + PHASED) + flowing-prose 비교군 |
-| Tools | Read, Bash + node sweep scripts (전수 122 hymn), PDF parsed_data direct read (`/home/min/myproject/divine office/parsed_data/full_pdf.txt`) |
+| Tools | Read, Bash + node sweep scripts (전수 122 hymn), PDF parsed_data direct read (`/home/min/myproject/divineoffice/parsed_data/full_pdf.txt`) |
 | Worktree | 286-divine-researcher (base afbd4f1c verified by `pair-cli cowork worktree-verify-base`) |
 | Out of scope | builder 구현, 92 hymn 전체 sweep, viewport visual 검증 (R5 별), 데이터/코드 변경 |
 
@@ -349,7 +349,7 @@ review #280 F2: dispatch wording "OT 매일 visible (Lauds/Vespers/Compline) uni
 - Sweep scripts: `/tmp/sweep-parallel-epithet.mjs`, `/tmp/sweep-flowing-prose.mjs`, `/tmp/sweep-bx-projection.mjs` (worktree 임시, 모두 read-only)
 
 ### PDF source-of-truth (NFR-002)
-- `/home/min/myproject/divine office/parsed_data/full_pdf.txt`
+- `/home/min/myproject/divineoffice/parsed_data/full_pdf.txt`
   - hymn 21 page 897-898: lines 30515-30545
   - hymn 22 page 898: lines 30546-30558
   - hymn 23 page 898-899: lines 30559-30579

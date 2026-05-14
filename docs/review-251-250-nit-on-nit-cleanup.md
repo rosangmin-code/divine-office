@@ -66,7 +66,7 @@
 
 ```
 $ npx vitest run src/lib src/app/api src/components/prayer-sections
- RUN  v4.1.4 /home/min/myproject/divine office/.claude/worktrees/251-divine-review
+ RUN  v4.1.4 /home/min/myproject/divineoffice/.claude/worktrees/251-divine-review
 
  Test Files  35 passed (35)
       Tests  738 passed (738)

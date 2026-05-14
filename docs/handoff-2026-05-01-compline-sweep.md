@@ -143,7 +143,7 @@ Vercel 재배포 (`575cecf` 후) 가 적용된 단말에서 다음 확인:
 ## 검증 명령 (재현)
 
 ```bash
-cd "/home/min/myproject/divine office"
+cd "/home/min/myproject/divineoffice"
 npx vitest run                                              # 781 PASS
 npx tsc --noEmit                                            # 0 errors
 npm run lint                                                # 0 target errors
