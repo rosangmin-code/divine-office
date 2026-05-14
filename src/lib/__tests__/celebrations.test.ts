@@ -161,3 +161,74 @@ describe('assembleHour with celebrationId override', () => {
     expect(withUnknown!.liturgicalDay.nameMn).toBe(base!.liturgicalDay.nameMn)
   })
 })
+
+// task #8 통합 구현 (P1+P2+P4+P5) — 옵션 모델 v2 확정 결정 회귀 가드.
+// 2026-05-14 Ascension Thursday (movable SOLEMNITY):
+//   - default = Ascension (romcal)
+//   - 마티아 사도 (PDF 카탈로그 미포함) → 옵션 미노출
+//   - source = romcal, rank = SOLEMNITY
+// 본 그룹은 PDF-only data policy 의 source-level 회귀 가드이며, 현재
+// 구현 (celebrations.ts: SOLEMNITY rank 에서는 optional 옵션을 append
+// 하지 않음) 에서 자연 통과한다.
+describe('PDF-only data policy — 2026-05-14 Ascension Thursday', () => {
+  it('returns Ascension as the only option on 2026-05-14 (SOLEMNITY rank → default-only)', () => {
+    const result = getCelebrationOptions('2026-05-14')
+    expect(result).not.toBeNull()
+    expect(result!.options).toHaveLength(1)
+    const def = result!.options[0]
+    expect(def.id).toBe(DEFAULT_CELEBRATION_ID)
+    expect(def.isDefault).toBe(true)
+    expect(def.source).toBe('romcal')
+    expect(def.rank).toBe('SOLEMNITY')
+  })
+
+  it('does not expose any Matthias / 05-14 saint slug among the options', () => {
+    const result = getCelebrationOptions('2026-05-14')
+    expect(result).not.toBeNull()
+    const ids = result!.options.map((o) => o.id)
+    // PDF-only 정책: Matthias 영문/몽골어/MM-DD 슬러그 그 어떤 변형도
+    // 카탈로그에 author 되어 있지 않으므로 노출되어서는 안 된다.
+    for (const id of ids) {
+      expect(id).not.toMatch(/matthias|маттиа|маттай|05-14/i)
+    }
+  })
+
+  it('resolveCelebration(2026-05-14, "matthias") falls back to default (id is unknown to the catalog)', () => {
+    const resolved = resolveCelebration('2026-05-14', 'matthias')
+    expect(resolved).not.toBeNull()
+    expect(resolved!.option.isDefault).toBe(true)
+    expect(resolved!.option.id).toBe(DEFAULT_CELEBRATION_ID)
+    expect(resolved!.sanctoralOverride).toBeNull()
+  })
+
+  it('Pentecost (2026-05-24) is similarly SOLEMNITY default-only (PDF-only policy equivalence)', () => {
+    const result = getCelebrationOptions('2026-05-24')
+    expect(result).not.toBeNull()
+    expect(result!.options).toHaveLength(1)
+    expect(result!.options[0].rank).toBe('SOLEMNITY')
+    expect(result!.options[0].id).toBe(DEFAULT_CELEBRATION_ID)
+  })
+})
+
+// Pre-empted feast 알고리즘 — task #8 P5 deliverable.
+// 동일 일자에 PDF 가 author 한 alternative celebration 이 있는 경우 옵션
+// 목록에 alt 가 포함되어야 하고, PDF 미인증 alt 는 절대 노출되어서는 안
+// 된다. 현재 카탈로그에는 해당 시나리오를 만족하는 일자가 없으므로
+// (saturday-mary 외 PDF-authored multi-option day 없음) todo 로 동결.
+describe('Pre-empted feast 알고리즘 (P5 contract — pending PDF data)', () => {
+  it.todo(
+    'when PDF authors an alternative on the same date as a romcal SOLEMNITY/FEAST, options contains BOTH default AND the alt id',
+  )
+
+  it.todo(
+    'when PDF does NOT author an alternative, options never contains a romcal-only or sanctoral-only alt',
+  )
+
+  it.todo(
+    'resolveCelebration honors a PDF-authored alt id and returns its sanctoralOverride payload',
+  )
+
+  it.todo(
+    'on a weekday, PDF-authored optional memorials still surface (back-compat with existing optional-memorials.json loader path)',
+  )
+})
