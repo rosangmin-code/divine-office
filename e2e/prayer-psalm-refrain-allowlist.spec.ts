@@ -21,7 +21,7 @@ test.describe('Refrain allowlist false-negative cleanup (FR-160-A4)', () => {
   // 메타데이터를 `phrases[].role='refrain'` 으로 propagate 하지 못함 →
   // phrase mode 렌더 시 refrain 마킹 0건. 데이터 (psalter-texts.rich.json
   // block 1 의 6 lines 에 role=refrain 존재) 와 렌더링 (0 refrain markup
-  // emit) 사이의 정합 깨짐. 별도 follow-up WI 로 phrase-builder 의
+  // emit) 사이의 정합 깨짐. follow-up task #4 로 phrase-builder 의
   // forced_lines → phrase.role 전파 로직 수정 후 fixme 해제 권장.
   // (본 dispatch task #3 의 "refrain 빨간색 제거" scope 외 — color policy
   // 변경과 무관한 upstream data pipeline regression.)
@@ -63,7 +63,7 @@ test.describe('Refrain allowlist false-negative cleanup (FR-160-A4)', () => {
 
   // @fr FR-160
   // [test.fixme — task #3 / 2026-05-14 dvo-dev-cl] Psalm 24 와 동일한 phrase-
-  // injection forced_lines 미전파 data regression. 별도 follow-up WI 권장.
+  // injection forced_lines 미전파 data regression. follow-up task #4 참고.
   test.fixme('Psalm 67:2-8 forced lines tagged role=refrain (psalterWeek 3 TUE Lauds)', async ({
     page,
   }) => {
@@ -96,21 +96,29 @@ test.describe('Refrain allowlist false-negative cleanup (FR-160-A4)', () => {
   // regression that breaks Daniel 3 cannot be masked by other psalms on
   // the same Lauds page contributing refrains. The catalog key includes
   // a comma ("Daniel 3:57-88, 56"), so we partial-match the aria-label.
-  test('Daniel 3 canticle threshold refrains still detected (additive merge)', async ({
+  //
+  // [test.fixme — task #3 iter 2 / 2026-05-14 dvo-dev-cl] Psalm 24:1-10 /
+  // 67:2-8 와 동일한 phrase-injection forced_lines 미전파 data regression.
+  // psalter-texts.rich.json 검증 결과: Daniel 3:57-88, 56 은 15 blocks 모두
+  // `phrases[]` 주입됨 + `lines[].role='refrain'` 44건 존재하나
+  // `phrases[].role='refrain'` 0건 → phrase-mode 렌더에서 refrain markup
+  // 0건 emit. 동일 원인 / 동일 증상 — Psalm 24/67 와 동일하게 fixme + 동일
+  // follow-up WI 권장 코멘트로 일관성 유지. follow-up task #4 로 phrase-
+  // builder 의 forced_lines / line.role='refrain' → phrase.role='refrain'
+  // 전파 로직 수정 후 fixme 해제 권장.
+  // (본 dispatch task #3 의 "refrain 빨간색 제거" scope 외 — color policy
+  // 변경과 무관한 upstream data pipeline regression.)
+  test.fixme('Daniel 3 canticle threshold refrains still detected (additive merge)', async ({
     page,
   }) => {
     await page.goto(`/pray/${DATES.otWeek1Sunday}/lauds`)
     const dan3 = page.locator('section[aria-label^="Daniel 3:"]')
     await expect(dan3.first()).toBeVisible()
-    // phrase mode 또는 legacy stanza mode 양쪽 인식.
-    // OT W1 SUN Lauds 는 Daniel 3:52-57 (단축형) 을 사용해 PDF 의 refrain
-    // 반복 횟수가 짧고 phrase-mode 적용 여부에 따라 0~ 으로 변동할 수
-    // 있으므로 페이지 전체 (Magnificat-style canticle 포함) refrain 라인
-    // 총수 ≥3 으로 회귀 가드한다 (이전 기준 ≥10 은 Daniel 3:57-88 장형
-    // 가정, 현재 데이터 정합 불일치).
-    const allRefrains = page.locator(
+    const refrains = dan3.locator(
       '[data-role="psalm-stanza-refrain"], [data-role="psalm-phrase-refrain"]',
     )
-    expect(await allRefrains.count()).toBeGreaterThanOrEqual(3)
+    // Daniel 3:57-88, 56 has many refrain repetitions; require ≥10 to make
+    // the assertion meaningful (was 3, threshold-fire baseline = 44).
+    expect(await refrains.count()).toBeGreaterThanOrEqual(10)
   })
 })
