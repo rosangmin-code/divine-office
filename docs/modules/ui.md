@@ -18,6 +18,10 @@
 - `src/components/hour-icon.tsx` — 기도시간별 아이콘
 - `src/components/theme-toggle.tsx` — 다크/라이트 모드 전환
 - `src/components/footer.tsx` — 하단 정보
+- **FR-145 (#8)**: `src/components/liturgical-calendar-list.tsx` — `'use client'` 무한 스크롤 컨테이너 (IntersectionObserver + user-scroll gate). 첫 화면 image.png 형식 전례력 리스트.
+- **FR-145 (#8)**: `src/components/liturgical-calendar-row.tsx` — 단일 행 (헤더 + default celebration + 'or' alternative + 인라인 펼침 시 CelebrationPicker/HourCardList)
+- **FR-145 (#8)**: `src/app/actions/calendar.ts` — `loadCalendarWindowAction` server action (RSC-driven 윈도우 확장)
+- **FR-145 (#8)**: `src/components/celebration-picker.tsx` — optional `onSelectAction` prop (인라인 모드에서 URL mutation 대신 콜백)
 
 ## 관련 데이터 파일
 - 없음 (API를 통해 데이터 수신)
@@ -32,7 +36,7 @@
 
 | ID | 요구사항 | 상태 |
 |----|----------|------|
-| FR-090 | 홈페이지(`/`): 오늘의 전례일 정보 표시, 기도시간 카드 목록(시간 기반 상태 표시 없이 단순 목록), 날짜 전후 이동 네비게이션. 전례일 카드 h2는 `liturgicalDay.nameMn`(몽골어) 단일 표시, 헤더는 몽골어 제목만 유지(영어 부제 "Liturgy of the Hours" 미표시). | 완료 |
+| FR-090 | 홈페이지(`/`): **FR-145 (#8) 이후 — image.png 형식 전례력 리스트**. 헤더 "Огноо" + 동기 행 "(Автомат)" + ±60일 윈도우 (anchor 기준). SOLEMNITY/FEAST 행은 RED+uppercase 강조 (rank 기반, liturgical color 무관), 오늘 행은 gradient highlight, 행 클릭 시 **인라인** CelebrationPicker + HourCardList 펼침. **FR-090 pre-145**: 단일 날짜 카드 (이전 동작 — 더 이상 사용 안 함). 헤더는 몽골어 제목 유지. | 완료 (FR-145 적용 후) |
 | FR-091 | 날짜 선택기(DatePicker)로 임의 날짜 이동을 지원한다. | 완료 |
 | FR-092 | 기도 페이지(`/pray/[date]/[hour]`): 조립된 기도문을 섹션별로 렌더링한다. 상단 헤더의 전례일 부제는 `liturgicalDay.nameMn`(몽골어)으로 표시. | 완료 |
 | FR-093 | 기도 페이지에서 이전/다음 기도시간으로 네비게이션할 수 있다. | 완료 |

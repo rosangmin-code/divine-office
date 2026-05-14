@@ -1,5 +1,6 @@
 import type {
   CelebrationOption,
+  CelebrationOptionKind,
   CelebrationOptionsResult,
   LiturgicalDayInfo,
   SanctoralEntry,
@@ -27,6 +28,19 @@ function isOrdinaryTimeSaturday(day: LiturgicalDayInfo): boolean {
   return d.getUTCDay() === 6
 }
 
+/**
+ * FR-145 (#8) — Classify the romcal-provided default option. The
+ * calendar-list first screen renders weekday-baseline rows in stone and
+ * fixed-sanctoral rows in their liturgical colour (red for solemnity /
+ * feast). The rank carried by `LiturgicalDayInfo` is the authoritative
+ * input; OPTIONAL_MEMORIAL is grouped with fixed-sanctoral here because
+ * romcal's auto-pick for that rank means it has effectively "won" the day
+ * (the alternative form lands via `optional-memorials.json`).
+ */
+function classifyRomcalDefault(rank: LiturgicalDayInfo['rank']): CelebrationOptionKind {
+  return rank === 'WEEKDAY' ? 'weekday-baseline' : 'fixed-sanctoral'
+}
+
 function defaultOption(day: LiturgicalDayInfo): CelebrationOption {
   return {
     id: DEFAULT_CELEBRATION_ID,
@@ -37,6 +51,7 @@ function defaultOption(day: LiturgicalDayInfo): CelebrationOption {
     colorMn: day.colorMn,
     isDefault: true,
     source: 'romcal',
+    kind: classifyRomcalDefault(day.rank),
   }
 }
 
@@ -70,6 +85,7 @@ export function getCelebrationOptions(dateStr: string): CelebrationOptionsResult
         colorMn: COLOR_NAMES_MN[entry.color],
         isDefault: false,
         source: 'optional',
+        kind: 'optional-memorial',
       })
     }
 
@@ -85,6 +101,7 @@ export function getCelebrationOptions(dateStr: string): CelebrationOptionsResult
           colorMn: COLOR_NAMES_MN.WHITE,
           isDefault: false,
           source: 'votive',
+          kind: 'optional-memorial',
         })
       }
     }

@@ -8,19 +8,33 @@ interface CelebrationPickerProps {
   dateStr: string
   options: CelebrationOption[]
   selectedId: string
+  /**
+   * FR-145 (#8) — Optional callback that takes over selection handling
+   * when the picker is rendered inside the calendar-list inline-expand
+   * surface. When omitted, the picker keeps its original behaviour:
+   * mutate `/?date=&celebration=` via `router.replace`. When provided,
+   * the picker delegates to the callback (URL is not touched) — the
+   * caller owns the selection state, typically a React-tree-local
+   * `useState` per expanded row.
+   */
+  onSelectAction?: (id: string) => void
 }
 
-export function CelebrationPicker({ dateStr, options, selectedId }: CelebrationPickerProps) {
+export function CelebrationPicker({ dateStr, options, selectedId, onSelectAction }: CelebrationPickerProps) {
   const router = useRouter()
 
   const handleChange = useCallback(
     (id: string) => {
+      if (onSelectAction) {
+        onSelectAction(id)
+        return
+      }
       const params = new URLSearchParams()
       params.set('date', dateStr)
       if (id !== 'default') params.set('celebration', id)
       router.replace(`/?${params.toString()}`, { scroll: false })
     },
-    [dateStr, router],
+    [dateStr, router, onSelectAction],
   )
 
   if (options.length <= 1) return null
