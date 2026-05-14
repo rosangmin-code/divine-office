@@ -4,7 +4,7 @@
  *
  * FR-161 R-6 — invariant gate for `psalter-texts.rich.json` phrase
  * groups. Walks every `kind:'stanza'` block that carries the optional
- * `phrases?: PhraseGroup[]` (R-2 builder output) and verifies four
+ * `phrases?: PhraseGroup[]` (R-2 builder output) and verifies five
  * invariants per stanza:
  *
  *   1. schema   — each PhraseGroup matches PhraseGroupSchema (R-3).
@@ -13,6 +13,14 @@
  *   3. non-overlap — sorted lineRanges of two phrases never overlap.
  *   4. coverage — sorted lineRanges cover every index of `lines[]`
  *                 contiguously (no gap, no off-by-one tail).
+ *   5. role-uniformity (task #4) — when `phrase.role` is defined, every
+ *                 covered line `lines[start..end]` must carry the SAME
+ *                 `line.role`. Mismatch (e.g. phrase.role='refrain' but
+ *                 one covered line has no role) indicates the conservative
+ *                 tie-break in build-phrases-into-rich.mjs was bypassed,
+ *                 or a manual edit drifted from the SoT. Mirrors the
+ *                 `uniformLineRole` helper (scripts/build-phrases-into-
+ *                 rich.mjs) — single SSOT for the rule.
  *
  * Stanzas without `phrases` are NOT inspected (additive contract from R-2).
  * Refs whose value lacks `stanzasRich.blocks` are silently skipped — those
@@ -165,6 +173,51 @@ function checkStanzaPhrases(stanza) {
       message: `tail gap at lines [${cursor}, ${lineCount - 1}] (uncovered tail)`,
       gap: [cursor, lineCount - 1],
     })
+  }
+
+  // 5. Role uniformity (task #4) — when phrase.role is defined, every
+  // covered line lines[start..end] must share the SAME line.role string.
+  // Conservative tie-break in build-phrases-into-rich.mjs's
+  // `uniformLineRole` helper ensures this — the verifier here is the
+  // post-condition gate (no SoT drift, no manual-edit bypass).
+  //
+  // Skipped when:
+  //   - phrase.role is undefined (no claim to verify).
+  //   - lineCount === 0 (already flagged above).
+  //
+  // Mismatch examples (would flag):
+  //   - phrase.role='refrain' but one covered line has no role
+  //     ('refrain' on phrase, undefined on line — drift).
+  //   - phrase.role='refrain' but one line has role='doxology' (mixed
+  //     bleed across phrase boundary — tie-break bypass).
+  if (lineCount > 0) {
+    const lines = stanza.lines
+    for (let i = 0; i < phrases.length; i++) {
+      const phrase = phrases[i]
+      if (phrase.role === undefined) continue
+      const [start, end] = phrase.lineRange
+      // Bounds already checked above — defensive guard against schema-
+      // skipped phrases (should not reach here since SCHEMA failure
+      // early-returns, but explicit guard is cheap).
+      if (start < 0 || end >= lineCount) continue
+      for (let li = start; li <= end; li++) {
+        const lineRole = lines[li]?.role
+        if (lineRole !== phrase.role) {
+          violations.push({
+            kind: 'ROLE_UNIFORMITY',
+            message:
+              `phrases[${i}] role='${phrase.role}' but lines[${li}] ` +
+              `role='${lineRole === undefined ? '<undefined>' : lineRole}' ` +
+              `(covered lineRange [${start}, ${end}])`,
+            phraseIndex: i,
+            lineIndex: li,
+            phraseRole: phrase.role,
+            lineRole: lineRole === undefined ? null : lineRole,
+          })
+          break // one mismatch per phrase is enough to surface the issue
+        }
+      }
+    }
   }
 
   return violations

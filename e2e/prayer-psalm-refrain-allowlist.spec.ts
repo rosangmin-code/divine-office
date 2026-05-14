@@ -95,8 +95,12 @@ test.describe('Refrain allowlist false-negative cleanup (FR-160-A4)', () => {
   // `phrases[].role` 전파 fix (scripts/build-phrases-into-rich.mjs +
   // scripts/migrate-phrase-role-from-lines.mjs back-fill) 적용 후 정상
   // 통과. Daniel 3:57-88, 56 의 phrase mode 렌더에서 `psalm-phrase-refrain`
-  // 38건 emit (44 line.role='refrain' 중 phrase 경계 mixed-role 6건은
-  // conservative tie-break 으로 제외, ≥10 threshold 만족). test.fixme 해제.
+  // 38건 emit (44 line.role='refrain' 이 line-aggregation 으로 38 phrases
+  // 에 cover — 32 single-line + 6 dual-line phrases; uncovered=0). ≥10
+  // threshold 만족. test.fixme 해제.
+  // conservative tie-break 의 실제 mixed-role skip 사례는 Revelation 19:1-7
+  // 에서 발생 (line.refrain 12 → phrase.refrain 8, 4 line 은 비-refrain
+  // line 과 같은 phrase 에 묶여 phrase.role 미부여) — 본 ref 와 별개.
   test('Daniel 3 canticle threshold refrains still detected (additive merge)', async ({
     page,
   }) => {

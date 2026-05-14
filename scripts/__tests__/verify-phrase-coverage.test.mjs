@@ -176,6 +176,109 @@ describe('verify-phrase-coverage — hymn-shape auto-detect (#249 F-X3 pilot)', 
   })
 })
 
+describe('verify-phrase-coverage — ROLE_UNIFORMITY invariant (task #4)', () => {
+  // Helper: a stanza where each line can carry an optional role string.
+  function roledStanza(lineRoles, phrases) {
+    const lines = lineRoles.map((role, i) => ({
+      spans: [{ kind: 'text', text: `L${i}` }],
+      indent: 0,
+      ...(role === null ? {} : { role }),
+    }))
+    return { kind: 'stanza', lines, phrases }
+  }
+
+  it('PASSes when phrase.role matches every covered line.role', () => {
+    const stanza = roledStanza(
+      ['refrain', 'refrain', 'refrain'],
+      [{ lineRange: [0, 2], indent: 0, role: 'refrain' }],
+    )
+    const v = checkStanzaPhrases(stanza)
+    expect(v.filter((x) => x.kind === 'ROLE_UNIFORMITY')).toEqual([])
+  })
+
+  it('PASSes when phrase.role is undefined regardless of line.role mix', () => {
+    // Mixed line.role but no phrase.role claim → nothing to verify here
+    // (line.role drift is preserved as SoT by the conservative tie-break).
+    const stanza = roledStanza(
+      ['refrain', null, 'refrain'],
+      [{ lineRange: [0, 2], indent: 0 }],
+    )
+    const v = checkStanzaPhrases(stanza)
+    expect(v.filter((x) => x.kind === 'ROLE_UNIFORMITY')).toEqual([])
+  })
+
+  it('FLAGS when phrase.role=refrain but one covered line has no role (drift)', () => {
+    const stanza = roledStanza(
+      ['refrain', null, 'refrain'],
+      [{ lineRange: [0, 2], indent: 0, role: 'refrain' }],
+    )
+    const v = checkStanzaPhrases(stanza)
+    const role = v.find((x) => x.kind === 'ROLE_UNIFORMITY')
+    expect(role).toBeTruthy()
+    expect(role.phraseIndex).toBe(0)
+    expect(role.lineIndex).toBe(1)
+    expect(role.phraseRole).toBe('refrain')
+    expect(role.lineRole).toBe(null)
+  })
+
+  it('FLAGS when phrase.role=refrain but one covered line has a different role (bleed)', () => {
+    // phrase claims refrain, but line 1 is doxology → conservative tie-
+    // break should have skipped marking this phrase. Verifier surfaces
+    // the post-condition violation.
+    const stanza = roledStanza(
+      ['refrain', 'doxology', 'refrain'],
+      [{ lineRange: [0, 2], indent: 0, role: 'refrain' }],
+    )
+    const v = checkStanzaPhrases(stanza)
+    const role = v.find((x) => x.kind === 'ROLE_UNIFORMITY')
+    expect(role).toBeTruthy()
+    expect(role.lineRole).toBe('doxology')
+  })
+
+  it('reports at most one ROLE_UNIFORMITY per phrase (first mismatch wins)', () => {
+    // Both lines 1+2 disagree with phrase.role — but only one violation
+    // surfaces per phrase to keep CI log noise bounded.
+    const stanza = roledStanza(
+      ['refrain', null, null],
+      [{ lineRange: [0, 2], indent: 0, role: 'refrain' }],
+    )
+    const v = checkStanzaPhrases(stanza)
+    const roleViolations = v.filter((x) => x.kind === 'ROLE_UNIFORMITY')
+    expect(roleViolations.length).toBe(1)
+  })
+
+  it('isolates per-phrase claims — only the role-claiming phrase is checked', () => {
+    // 3 phrases, only the middle one claims role=refrain. lines: refrain
+    // / doxology / refrain. The claim-bearing phrase covers [1,1] which
+    // is doxology — flag. The other two phrases (no role claim) are
+    // silent. SCHEMA / COVERAGE / OVERLAP all PASS.
+    const stanza = roledStanza(
+      ['refrain', 'doxology', 'refrain'],
+      [
+        { lineRange: [0, 0], indent: 0 },
+        { lineRange: [1, 1], indent: 0, role: 'refrain' },
+        { lineRange: [2, 2], indent: 0 },
+      ],
+    )
+    const v = checkStanzaPhrases(stanza)
+    const roleViolations = v.filter((x) => x.kind === 'ROLE_UNIFORMITY')
+    expect(roleViolations.length).toBe(1)
+    expect(roleViolations[0].phraseIndex).toBe(1)
+    expect(roleViolations[0].lineRole).toBe('doxology')
+  })
+
+  it('live psalter-texts.rich.json passes ROLE_UNIFORMITY after task #4 migration', () => {
+    // After scripts/migrate-phrase-role-from-lines.mjs back-fill, every
+    // phrase.role=refrain in the catalog must satisfy uniformity against
+    // its covered lines[]. Regression guard.
+    const r = spawnSync('node', [VERIFIER_PATH, '--target', RICH_TARGET], {
+      encoding: 'utf-8',
+    })
+    expect(r.status).toBe(0)
+    expect(r.stdout).toMatch(/0 violations/)
+  }, 20_000)
+})
+
 describe('verify-phrase-coverage — real-data smoke', () => {
   it('exits 0 (no-op) on the live psalter-texts.rich.json (currently no phrases)', () => {
     const r = spawnSync('node', [VERIFIER_PATH, '--target', RICH_TARGET], {

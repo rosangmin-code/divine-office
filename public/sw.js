@@ -6,21 +6,33 @@
 // `scripts/migrate-phrase-role-from-lines.mjs` 로 back-fill — 14 refs /
 // 130 phrases 에 phrase.role='refrain' 주입 (이전 phrase mode 렌더에서
 // refrain markup 0건 emit 되던 회귀 해소). 영향 refs:
-//   - Daniel 3:57-88, 56 (44 line.refrain → 38 phrase.refrain)
-//   - Daniel 3:52-57 (19 → 12)
-//   - Revelation 19:1-7 (12 → 8)
+//   - Daniel 3:57-88, 56 (44 line.refrain → 38 phrase.refrain via
+//     line-aggregation, uncovered=0)
+//   - Daniel 3:52-57 (19 → 12, uncovered=0)
+//   - Revelation 19:1-7 (12 → 8, 4 uncovered — conservative tie-break
+//     으로 mixed-role phrase 제외 사례)
 //   - Psalm 24:1-10 (6 → 6), 67:2-8 (4 → 4), 8:2-10 (6 → 6),
 //     42:2-6 (4 → 4), 46:2-12 (6 → 6), 99:1-9 (3 → 3),
 //     115:1-13 (3 → 3), 116:10-19 (2 → 2), 80:2-8,15-20 (9 → 9),
 //     136:1-9 (9 → 9), 136:10-26 (20 → 20)
 // 데이터 변경: psalter-texts.rich.json 의 `phrases[].role='refrain'`
 // 필드만 추가 (line.role 은 unchanged, indent/lineRange unchanged).
-// HTML 출력에 `data-role="psalm-phrase-refrain"` markup 이 추가로
-// emit 되므로 (이전: 0건; 후: 130건) v28 precache snapshot 과 어긋날
-// 수 있어 bump. v28 잔존 시 refrain phrase 의 data-role 메타데이터가
-// 누락된 채 서빙되어 e2e selector / data 회귀 가드가 깨질 수 있음.
 // 색상 변화는 없음 — task #3 의 시편 본문 까만색 정책 (text-red-*
 // 트리거 제거) 은 무손상으로 유지.
+//
+// CACHE_VERSION bump 사유 (defensive conservative): SW 의 navigate (HTML)
+// fetch handler 는 `network-only` + offline fallback (lines 357-365 참고)
+// 이므로 HTML byte 출력 변화는 v28 precache snapshot 과 직접 충돌하지
+// 않는다 — PRECACHE_URLS 는 `['/offline.html', '/icon.svg']` 만 보유,
+// rich.json 같은 server-side import 데이터는 SW 시야 밖. 본 bump 의
+// 실질 효과는 정적 자산 (script/style/font/image) 캐시의 강제 재정렬 —
+// 다음 사용자 방문 시 cache-first 정적 자산이 신선한 빌드의 chunk hash
+// 와 다시 정렬됨. CACHE_VERSION bump 정확 criteria (정적 자산 경로/
+// 내용 변경 / 프리캐시 대상 변경 / SW 로직 변경) 어느 것도 본 PR 이
+// strict 하게 트리거하지는 않지만, JSON 데이터 변경이 SSR HTML 출력에
+// 새 markup 130건을 추가하므로 connected-deploy 일관성을 위해
+// conservative bump 채택 (v27/v26 같은 indent/PB 데이터 변경 시점의
+// 운영 관행과 정합).
 // v28 — #503: Phase 2 R-3 Sweep — 나머지 122 refs (시편 + 구약/신약
 // 찬가) paragraphBoundaries 일괄 재추출. #501 Pilot 의 Python
 // pdfplumber y-gap extractor (1.4× median threshold) 를 rich.json
