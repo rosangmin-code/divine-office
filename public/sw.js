@@ -1,3 +1,26 @@
+// v29 — task #4: phrase-injection 파이프라인의 `lines[].role` →
+// `phrases[].role` 전파 fix. `scripts/build-phrases-into-rich.mjs` 의
+// `regroupPhrasesByCapitalStart()` 및 `translatePhrases()` 후처리에 role
+// propagation pass 추가 (conservative tie-break — phrase coverage 내 모든
+// 라인이 동일 defined role 일 때만 phrase.role 부여). 기존 카탈로그는
+// `scripts/migrate-phrase-role-from-lines.mjs` 로 back-fill — 14 refs /
+// 130 phrases 에 phrase.role='refrain' 주입 (이전 phrase mode 렌더에서
+// refrain markup 0건 emit 되던 회귀 해소). 영향 refs:
+//   - Daniel 3:57-88, 56 (44 line.refrain → 38 phrase.refrain)
+//   - Daniel 3:52-57 (19 → 12)
+//   - Revelation 19:1-7 (12 → 8)
+//   - Psalm 24:1-10 (6 → 6), 67:2-8 (4 → 4), 8:2-10 (6 → 6),
+//     42:2-6 (4 → 4), 46:2-12 (6 → 6), 99:1-9 (3 → 3),
+//     115:1-13 (3 → 3), 116:10-19 (2 → 2), 80:2-8,15-20 (9 → 9),
+//     136:1-9 (9 → 9), 136:10-26 (20 → 20)
+// 데이터 변경: psalter-texts.rich.json 의 `phrases[].role='refrain'`
+// 필드만 추가 (line.role 은 unchanged, indent/lineRange unchanged).
+// HTML 출력에 `data-role="psalm-phrase-refrain"` markup 이 추가로
+// emit 되므로 (이전: 0건; 후: 130건) v28 precache snapshot 과 어긋날
+// 수 있어 bump. v28 잔존 시 refrain phrase 의 data-role 메타데이터가
+// 누락된 채 서빙되어 e2e selector / data 회귀 가드가 깨질 수 있음.
+// 색상 변화는 없음 — task #3 의 시편 본문 까만색 정책 (text-red-*
+// 트리거 제거) 은 무손상으로 유지.
 // v28 — #503: Phase 2 R-3 Sweep — 나머지 122 refs (시편 + 구약/신약
 // 찬가) paragraphBoundaries 일괄 재추출. #501 Pilot 의 Python
 // pdfplumber y-gap extractor (1.4× median threshold) 를 rich.json
@@ -299,7 +322,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v28'
+const CACHE_VERSION = 'divine-office-v29'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 

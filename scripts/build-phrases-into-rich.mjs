@@ -156,16 +156,52 @@ function normalizeQuotes(s) {
 // rebuilds `phrases`, and `paragraphBoundaries` indexes into `lines[]`,
 // which is unchanged.
 //
-// @param {Array<{spans?: {text?: string}[], indent?: number}>} lines
-// @returns {Array<{lineRange: [number, number], indent: number}>}
+// @param {Array<{spans?: {text?: string}[], indent?: number, role?: string}>} lines
+// @returns {Array<{lineRange: [number, number], indent: number, role?: string}>}
+//
+// task #4 (2026-05-14) — `role` propagation. When EVERY line in a phrase's
+// coverage range carries the same defined `role` (e.g. all `'refrain'`),
+// the phrase inherits that role so phrase-mode rendering can surface the
+// rubric data-role (`psalm-phrase-refrain`) consistently with legacy
+// line-mode. Mixed roles (e.g. one refrain + one plain) → skip
+// propagation; the line-level metadata is preserved so callers can still
+// fall back to legacy line-mode rendering if needed. The tie-break is
+// CONSERVATIVE — partial-role phrases are NOT marked, preventing rubric
+// mistag bleed across phrase boundaries (NFR-009e/NFR-009f data integrity).
 
 const CYRILLIC_CAPITAL_START_RE = /^[А-ЯЁӨҮ]/
+
+/**
+ * Helper — compute the uniform `role` over `lines[start..end]` (inclusive).
+ * Returns the shared role string, or `undefined` when the range is empty,
+ * out-of-bounds, has any mixed/missing role, or the head role is `undefined`.
+ *
+ * Used by both `regroupPhrasesByCapitalStart` (rich-only regroup path)
+ * and the rich-line role propagation pass inside `injectPhrasesIntoRichData`
+ * (extractor-driven path). Single SSOT for the tie-break rule (task #4).
+ */
+function uniformLineRole(lines, start, end) {
+  if (!Array.isArray(lines)) return undefined
+  if (start < 0 || end >= lines.length || start > end) return undefined
+  const head = lines[start]?.role
+  if (head === undefined) return undefined
+  for (let i = start + 1; i <= end; i++) {
+    if (lines[i]?.role !== head) return undefined
+  }
+  return head
+}
 
 export function regroupPhrasesByCapitalStart(lines) {
   if (!Array.isArray(lines) || lines.length === 0) return []
   const phrases = []
   let curStart = 0
   let curIndent = lines[0]?.indent ?? 0
+  const pushPhrase = (start, end, indent) => {
+    const phrase = { lineRange: [start, end], indent }
+    const role = uniformLineRole(lines, start, end)
+    if (role !== undefined) phrase.role = role
+    phrases.push(phrase)
+  }
   for (let i = 1; i < lines.length; i++) {
     const text = (lines[i].spans ?? [])
       .map((sp) => sp.text ?? '')
@@ -174,7 +210,7 @@ export function regroupPhrasesByCapitalStart(lines) {
     const isCapital = CYRILLIC_CAPITAL_START_RE.test(text)
     if (isCapital) {
       // Close prior phrase, open new one rooted at lines[i].
-      phrases.push({ lineRange: [curStart, i - 1], indent: curIndent })
+      pushPhrase(curStart, i - 1, curIndent)
       curStart = i
       curIndent = lines[i].indent ?? 0
     }
@@ -182,10 +218,7 @@ export function regroupPhrasesByCapitalStart(lines) {
     // implicitly when we close it (on the next capital, or at the tail).
   }
   // Tail: close the final phrase covering [curStart, lines.length - 1].
-  phrases.push({
-    lineRange: [curStart, lines.length - 1],
-    indent: curIndent,
-  })
+  pushPhrase(curStart, lines.length - 1, curIndent)
   return phrases
 }
 
@@ -917,6 +950,32 @@ export function planRefUpdates(richStanzaSlots, extractorStanzas) {
         Number(phrase.indent) !== 0 && Number(phrase.indent) !== headIndent
       if (explicitNonZero) continue
       phrase.indent = headIndent
+    }
+    // task #4 (2026-05-14) — rich-line `role` propagation, parallel to the
+    // `indent` pass above. The extractor doesn't know about FR-160-A4
+    // allowlist `forced_lines` or FR-153f threshold-detected refrain
+    // tagging — those live ONLY in `psalter-texts.rich.json` as
+    // `line.role='refrain'`. Without this pass, phrase-mode rendering of
+    // refrain-tagged psalms (e.g. Psalm 24:1-10, 67:2-8, Daniel 3:57-88,
+    // 56) emits 0 `data-role="psalm-phrase-refrain"` markup despite
+    // 6/4/44 `line.role='refrain'` annotations in source data — the gap
+    // task #3 surfaced via 3 `test.fixme()` Markings in
+    // `e2e/prayer-psalm-refrain-allowlist.spec.ts`.
+    //
+    // Tie-break (CONSERVATIVE — shared with `regroupPhrasesByCapitalStart`):
+    //   - All rich lines in the phrase's coverage share the same defined
+    //     role → propagate.
+    //   - Mixed roles or any undefined → skip (line.role preserved on
+    //     `richLines[]`; renderer falls back to legacy line-mode behavior
+    //     if needed, and `lines[].role` is the SoT for downstream audits).
+    //   - Extractor-set explicit `phrase.role` (rare — never observed in
+    //     the current corpus, defensive only) is preserved.
+    for (const phrase of translatedPhrases) {
+      if (phrase.role !== undefined) continue // preserve extractor-set role
+      const start = phrase.lineRange[0]
+      const end = phrase.lineRange[1]
+      const role = uniformLineRole(richLines, start, end)
+      if (role !== undefined) phrase.role = role
     }
     updates.push({
       blockIndex: slot.blockIndex,
