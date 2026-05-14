@@ -21,6 +21,7 @@ Scan: 47 test files contributed 23 unique IDs.
 | FR-045 | `src/lib/__tests__/celebrations.test.ts` | returns only the default option on 04-17 after non-PDF entries removed (FR-045 follow-up A) |
 | FR-124 | `e2e/prayer-sections.spec.ts` | Psalm 119 sub-sections in psalter-texts have distinct content (FR-124) |
 | FR-132 | `e2e/prayer-sections.spec.ts` | psalm-concluding prayer renders when data is present (FR-132) |
+| FR-145 | `src/lib/__tests__/calendar-list.test.ts` | calendar-list helpers (FR-145)<br>getCalendarRow (FR-145)<br>getTodayAnchorRow (FR-145)<br>getCalendarWindow (FR-145) |
 | FR-152 | `e2e/prayer-responsory.spec.ts` | API exposes new 3-field responsory shape (fullResponse, versicle, shortResponse)<br>responsory section carries data-role marker for decoupled selectors |
 | FR-153 | `e2e/pdf-fidelity-pilot.spec.ts` | concluding prayer renders rich overlay without duplicating the section heading<br>responsory uses V./R. markers when rich overlay present<br>no silent regression on non-rich sections (core structure intact) |
 | FR-153 | `e2e/prayer-intercessions.spec.ts` | Advent weekday lauds uses rich overlay (single-node body, no data-role fallback)<br>rich response line renders red hyphen prefix (PDF rubric) |

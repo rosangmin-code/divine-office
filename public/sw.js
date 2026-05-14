@@ -1,3 +1,17 @@
+// v30 — task #8 (FR-145): 첫 화면(`/`) 을 image.png 스타일 전례력
+// list (LiturgicalCalendarList) 로 교체 + CelebrationOption v2
+// (`kind` 분류 필드) + 신규 `loadCalendarWindowAction` server action
+// (`/_next/data` 경유) 추가. 새 라우트는 없음 (기존 `/` + `/pray/[date]/[hour]`
+// 재사용); navigation (HTML) 은 여전히 `network-only` 이므로 첫 화면
+// HTML 변경은 v29 precache snapshot 과 직접 충돌하지 않는다. 그러나:
+//   - 새 클라이언트 컴포넌트 2개 (LiturgicalCalendarList +
+//     LiturgicalCalendarRow) → 빌드 chunk 해시 변동
+//   - 새 server action 엔드포인트 (Next.js 가 자동 생성하는 RPC URL)
+//   - 기존 `/?date=&celebration=` 쿼리 파라미터 의미 확장 (이전 single-day
+//     card 컨텍스트 → 전례력 list anchor 컨텍스트)
+// 위 세 가지 모두 정적 자산 (script chunk) 의 강제 재정렬을 요구하므로
+// conservative bump 적용. PRECACHE_URLS = ['/offline.html', '/icon.svg']
+// 는 변동 없음.
 // v29 — task #4: phrase-injection 파이프라인의 `lines[].role` →
 // `phrases[].role` 전파 fix. `scripts/build-phrases-into-rich.mjs` 의
 // `regroupPhrasesByCapitalStart()` 및 `translatePhrases()` 후처리에 role
@@ -334,7 +348,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v29'
+const CACHE_VERSION = 'divine-office-v30'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 

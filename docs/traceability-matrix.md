@@ -98,6 +98,7 @@
 | NFR-016 | 팔레트 일관성 | `src/app/settings/page.tsx`, `src/app/globals.css` — `liturgical-gold` (`#a8893c` / dark `#c9a961`) 를 설정 활성 강조·토글 스위치에 사용. `liturgical-green` 은 전례 배지·경계에만 한정 | `e2e/settings.spec.ts` — `page-refs switch uses gold when enabled` | 완료 |
 | NFR-017 | 테마 모드 그리드 반응형 | `src/app/settings/page.tsx` — `Горим` 3-way 버튼이 모바일 `grid-cols-1`, sm 이상 `grid-cols-3` | `e2e/settings.spec.ts` — 테마 라디오 그룹 카운트/가시성 (간접) | 완료 |
 | NFR-018 | 모바일 시편 가독성 | `src/components/psalm-block.tsx` — stanza 단위 시각적 그룹화, stanza 간 모바일 `space-y-5` / 데스크톱 `md:space-y-4`, 좌측 `pl-3`; `leading-relaxed` 만으로 줄 간격 처리 | `e2e/mobile.spec.ts` — 375px 뷰포트 가독성 검증 (간접); NFR-013 박스 여백과 함께 체크 | 완료 |
+| FR-145 | 전례력 첫 화면 (image.png 형식) | FR-145 | [PRD §15](../PRD.md#15-전례력-첫-화면-기능) | `src/lib/calendar-list.ts` — 서버 데이터 어댑터: `getCalendarRow(dateStr)`, `getTodayAnchorRow(todayStr)`, `getCalendarWindow(anchor, opts)`<br>`src/lib/calendar-list-types.ts` — 클라이언트-안전 타입 + `shouldRowUseRedAccent`/`shiftDate`<br>`src/lib/types.ts` — `CelebrationOption.kind` (`'automatic'`/`'weekday-baseline'`/`'fixed-sanctoral'`/`'optional-memorial'`) 확장<br>`src/lib/celebrations.ts` — `classifyRomcalDefault` + 모든 option 분기에 `kind` 채움<br>`src/components/liturgical-calendar-list.tsx` — `'use client'` 무한 스크롤 컨테이너 (IntersectionObserver, user-scroll gate)<br>`src/components/liturgical-calendar-row.tsx` — 단일 행 렌더 + 인라인 CelebrationPicker/HourCardList 펼침<br>`src/components/celebration-picker.tsx` — `onSelectAction` prop 추가 (인라인 모드)<br>`src/app/actions/calendar.ts` — `loadCalendarWindowAction` server action<br>`src/app/page.tsx` — 단일 날짜 카드 제거, `LiturgicalCalendarList` 렌더링<br>`public/sw.js` — `CACHE_VERSION` v29 → v30 + rationale heading | `src/lib/__tests__/calendar-list.test.ts` — 16 케이스 (`@fr FR-145`): shiftDate/describeDate, getCalendarRow 평일/Ascension/Saturday Mary, shouldRowUseRedAccent rank 분기, getTodayAnchorRow, getCalendarWindow 윈도우 + clamp<br>`src/lib/__tests__/celebrations.test.ts` — 무회귀 (kind 필드 호환)<br>**e2e 본격 작성은 task #9 산출물**; 본 task 에서는 Playwright headless 시각 검증 + 기존 e2e 무회귀<br>**시각 검증**: `/tmp/sc-today-{light,dark}.png` — 오늘(2026-05-14) 행 highlight + 인라인 시간 카드 펼침, light/dark 양쪽 정상 | 구현 (task #8) |
 
 ---
 
@@ -118,6 +119,7 @@
 | `e2e/date-navigation.spec.ts` | FR-016 |
 | `e2e/page-references.spec.ts` | FR-017, FR-017i, FR-018, FR-019, NFR-007, NFR-008 |
 | `src/lib/__tests__/hours/page-propagation.test.ts` | FR-017, NFR-009 |
+| `src/lib/__tests__/calendar-list.test.ts` | FR-145 |
 | `src/lib/__tests__/settings.test.ts` | FR-018, FR-019, FR-036, NFR-007 |
 | `e2e/guide.spec.ts` | FR-020 |
 | `e2e/ordinarium.spec.ts` | FR-030, FR-037 |

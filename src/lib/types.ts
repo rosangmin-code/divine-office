@@ -492,6 +492,35 @@ export interface OptionalMemorialEntry extends SanctoralEntry {
   color: LiturgicalColor
 }
 
+/**
+ * FR-145 (#8) — `CelebrationOption` v2 classifier. Captures the *category*
+ * of the option as displayed in the calendar-list first screen, on top of
+ * the existing `source` (data origin) discriminator.
+ *
+ * - `automatic`        — the "Today (Automatic)" anchor entry. Synthetic
+ *                        row that links to today's romcal auto-pick. Only
+ *                        the synthetic anchor row's option uses this kind.
+ * - `weekday-baseline` — romcal default that resolves to a plain weekday
+ *                        (rank=WEEKDAY) — e.g. "Wednesday of the 6th week
+ *                        of Eastertide". Rendered in stone (non-red) per
+ *                        user decision 6.
+ * - `fixed-sanctoral`  — romcal default that resolves to a sanctoral
+ *                        celebration with rank ∈
+ *                        {SOLEMNITY, FEAST, MEMORIAL, OPTIONAL_MEMORIAL}.
+ *                        Pre-empts the weekday baseline. RED for solemnity
+ *                        + feast per user decision 6.
+ * - `optional-memorial`— alternative offered alongside the weekday
+ *                        baseline (e.g. "or Our Lady of Fátima"). Sourced
+ *                        from `optional-memorials.json` or the votive
+ *                        `saturday-mary` slot. Per user decision 5/7, only
+ *                        entries with PDF-authored propers are surfaced.
+ */
+export type CelebrationOptionKind =
+  | 'automatic'
+  | 'weekday-baseline'
+  | 'fixed-sanctoral'
+  | 'optional-memorial'
+
 export interface CelebrationOption {
   /** Stable slug used in URL query + API: 'default' | `${mmdd}-${slug}` | 'saturday-mary' */
   id: string
@@ -504,6 +533,15 @@ export interface CelebrationOption {
   isDefault: boolean
   /** Origin of the option — romcal pick, optional-memorials.json entry, or votive (e.g. Saturday Mary) */
   source: 'romcal' | 'optional' | 'votive'
+  /**
+   * FR-145 — display classification used by the calendar-list first
+   * screen (#8). Distinct from `source` (data origin) — `kind` answers
+   * "how should this option be rendered" rather than "where did it come
+   * from". Optional for backward compatibility with pre-FR-145 callers;
+   * callers that don't care about the classification can ignore it.
+   * See `CelebrationOptionKind` for the closed enum.
+   */
+  kind?: CelebrationOptionKind
 }
 
 export interface CelebrationOptionsResult {

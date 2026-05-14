@@ -58,6 +58,7 @@
 | 시편 본문 · stanza | [PRD §9](#9-시편-본문-및-stanza-구조) | FR-120~122 | 전체 완료 |
 | 기도문 선택 | [PRD §13](#13-기도문-선택-기능) | FR-130~131 | 전체 완료 |
 | 축일 선택 | [PRD §14](#14-축일-선택-기능) | FR-140~144 | 완료 |
+| 전례력 첫 화면 (image.png 형식) | [PRD §15](#15-전례력-첫-화면-기능) | FR-145 | 구현 진행 (task #8 P1+P2+P4+P5) |
 
 ---
 
@@ -568,3 +569,102 @@ GET /api/calendar/options/2026-04-25
 GET /api/loth/2026-04-25/lauds?celebration=saturday-mary
 → 200 AssembledHour { liturgicalDay.nameMn: "Төгс жаргалт…", sections: [ ..., concludingPrayer: <성모 마침기도> ] }
 ```
+
+---
+
+## 15. 전례력 첫 화면 기능
+
+### 15.1 배경 및 목적
+
+기존 첫 화면(`/`)은 **단일 날짜**의 시간 카드를 표시했다. 사용자가 일주일 또는 한 달 단위로 전례력을 둘러보거나 미래의 대축일을 확인하려면 매번 날짜를 바꿔가며 페이지를 다시 로드해야 했다. 본 기능은 첫 화면을 **세로 무한 스크롤 전례력 리스트** 로 교체해 (image.png 디자인 참고) 사용자가 한 화면에서 다수의 날짜와 그 날의 축일·기념일 옵션을 살펴볼 수 있게 한다.
+
+### 15.2 사용자 결정 (FR-145 dispatch 2026-05-14 verbatim)
+
+본 섹션의 7가지 결정은 task #7 plan의 결정 포인트에 대한 사용자 답변이며 구현에 그대로 반영되어 있다:
+
+1. **Calendar authority**: General Roman, no transfer. Ascension은 Thursday (자동 pre-empt). 마티아 사도(5/14)는 Ascension에 가려져 미노출.
+2. **Data source**: PDF-authored only 유지. 마티아 propers/label 추가 안 함. 마티아 missing 사례는 **"데이터 없음"** 으로 해결 (UI에 노출하지 않음).
+3. **Auto default**: romcal 추천 — "Today (Автомат)" 동기 행은 romcal pick.
+4. **List window**: 무한 스크롤, 오늘 중심. 행 선택 시 **인라인** 시간 카드 펼침 (별도 panel/route 이동 X).
+5. **Pre-empted feasts**: PDF 데이터 없으면 미노출 (예: 마티아는 alternatives 에 등장하지 않음). 데이터 있는 'or' memorial 만 표시 (예: Saturday Mary on OT Saturday).
+6. **색상**: 현재 `src/lib/mappings.ts` 의 liturgical color RED 룰을 **rank 기반**으로 확장. SOLEMNITY/FEAST 는 calendar-list 에서 빨간 텍스트로 강조 (Ascension은 liturgical color=WHITE 이지만 rank=SOLEMNITY 이므로 빨간색).
+7. **Missing propers**: 데이터 없는 celebration은 옵션 목록에서도 미노출 (label-only fallback 안 함).
+
+### 15.3 기능 요구사항
+
+| ID | 요구사항 | 모듈 | 우선순위 | 상태 |
+|----|----------|------|----------|------|
+| FR-145 | **전례력 첫 화면(`/`)**: image.png 형식의 세로 스크롤 전례력 리스트. 헤더 "Огноо" + 동기 행 "(Автомат)" + 날짜 행들 (각 행: bold `{Mn DOW 3-char} {DD} {M}-р сар` 헤더 + 인덴트 default celebration `nameMn` + 데이터 있는 'or' memorial). SOLEMNITY/FEAST 는 빨간색 + uppercase, 그 외는 stone-text. 오늘 행은 gradient highlight. 행 클릭 시 **인라인** 시간 카드 펼침 (HourCardList 재사용). 무한 스크롤은 사용자 스크롤 후에만 trigger (초기 ±60일 윈도우는 정적 렌더). | UI/데이터 | P1 | 구현 (task #8) |
+
+### 15.4 데이터 모델
+
+```ts
+// src/lib/calendar-list-types.ts — 클라이언트-안전 (no fs/romcal 의존)
+export interface CalendarListRow {
+  kind: 'today-anchor' | 'date'
+  date: string                  // YYYY-MM-DD
+  isToday: boolean              // 오늘이면 highlight
+  dayLabel: string              // 3-char Mn 요일 (e.g. "Пүр")
+  dayOfMonth: number            // 1-31 (anchor row 은 0)
+  month: number                 // 1-12 (anchor row 은 0)
+  defaultCelebration: CelebrationOption  // romcal 추천 default
+  color: LiturgicalColor        // liturgical color (border/text 보조 색상)
+  rank: CelebrationRank         // SOLEMNITY/FEAST/MEMORIAL/OPTIONAL_MEMORIAL/WEEKDAY
+  psalterWeek: 1 | 2 | 3 | 4    // Дуулалтын I/II/III/IV
+  alternatives: CelebrationOption[]      // 'or X' alternative options
+  hoursSummary: { type, nameMn }[]       // 인라인 펼침용 hour 목록
+}
+
+// src/lib/types.ts — CelebrationOption v2
+export type CelebrationOptionKind =
+  | 'automatic'         // "Today (Автомат)" anchor 행
+  | 'weekday-baseline'  // romcal default 가 WEEKDAY rank
+  | 'fixed-sanctoral'   // romcal default 가 SOLEMNITY/FEAST/MEMORIAL/OPTIONAL_MEMORIAL
+  | 'optional-memorial' // 'or X' alternative
+
+export interface CelebrationOption {
+  id: string
+  name: string
+  nameMn: string
+  rank: CelebrationRank
+  color: LiturgicalColor
+  colorMn: string
+  isDefault: boolean
+  source: 'romcal' | 'optional' | 'votive'    // 데이터 출처 (v1 그대로)
+  kind?: CelebrationOptionKind                // FR-145 — UI 분류 (선택적)
+}
+```
+
+### 15.5 구현 상세
+
+- **데이터 어댑터**: `src/lib/calendar-list.ts` — `getCalendarRow(dateStr)` / `getTodayAnchorRow(todayStr)` / `getCalendarWindow(anchorDate, opts)`. 모두 서버 전용 (romcal + propers-loader 의존).
+- **클라이언트-안전 분리**: `src/lib/calendar-list-types.ts` — 타입 + `shouldRowUseRedAccent` / `shiftDate` 같은 순수 함수. 클라이언트 컴포넌트가 fs/romcal 을 끌어들이지 않도록 분리.
+- **UI 컴포넌트**:
+  - 신설: `src/components/liturgical-calendar-list.tsx` — `'use client'`, 무한 스크롤 컨테이너 (IntersectionObserver 기반 sentinel). 사용자 스크롤 후에만 sentinel 발화 — 초기 렌더 시 top sentinel 무한 재귀 방지.
+  - 신설: `src/components/liturgical-calendar-row.tsx` — 단일 행 렌더. 토글 클릭 시 인라인 펼침 (CelebrationPicker + HourCardList).
+  - 수정: `src/components/celebration-picker.tsx` — optional `onSelectAction` prop 추가. 캘린더 리스트 인라인 컨텍스트에서는 URL mutation 대신 콜백으로 선택 처리.
+- **서버 액션**: `src/app/actions/calendar.ts` — `loadCalendarWindowAction(anchorDate, before, after)`. 클라이언트 가시 범위 확장용.
+- **첫 화면 페이지**: `src/app/page.tsx` — 단일 날짜 카드 제거, `LiturgicalCalendarList` 렌더링. 초기 ±60일 윈도우.
+- **라우팅 일치**: `/pray/[date]/[hour]` 라우트는 그대로 유지. 시간 카드 클릭 → 기존 prayer 페이지 진입. Prayer 페이지의 뒤로가기 링크 `/?date=&celebration=` 는 첫 화면 anchor + celebration 선택 동시 보존.
+
+### 15.6 테스트 전략
+
+- **단위 (Vitest)**: `src/lib/__tests__/calendar-list.test.ts` (16 케이스)
+  - `shiftDate` / `describeDate` 헬퍼 정확성.
+  - `getCalendarRow` 평일/축일/Saturday Mary alternative.
+  - `shouldRowUseRedAccent` rank 기반 분기.
+  - `getTodayAnchorRow` 동기 행 생성.
+  - `getCalendarWindow` 윈도우 크기 + clamp.
+- **E2E (Playwright)**: task #9 산출물 (별도 작업). 본 task 에서는 기존 e2e 무회귀만 확인.
+- **시각 검증**: dev 서버 + Playwright headless 스크린샷 (light/dark mode). 결과: 오늘(2026-05-14) Ascension 행이 RED + uppercase 로 highlight, 인라인 펼침 시 hour cards 5종 (firstVespers/firstCompline/lauds/vespers/compline) 정상 렌더.
+
+### 15.7 SW 캐시 영향 + CACHE_VERSION
+
+- Navigation (HTML) 은 `network-only` 유지 — 본 변경은 첫 화면 HTML 출력을 바꾸지만 네트워크에서 항상 새로 가져오므로 캐시 충돌 없음.
+- 새 라우트 없음 (`/` + `/pray/[date]/[hour]` 재사용).
+- 새 클라이언트 컴포넌트 + server action chunk → `CACHE_VERSION` bump `v29 → v30` (conservative). `activate` 훅이 v29 이하 캐시 evict.
+
+### 15.8 알려진 한계 (follow-up 후보)
+
+- **Movable solemnity의 Mongolian nameMn**: Ascension / Pentecost / Trinity Sunday 같이 `sanctoral/{solemnities,feasts,memorials}.json` 에 없는 movable solemnity 는 `buildLiturgicalNameMn` 의 weekday fallback ("N-р долоо хоног") 으로 표시된다. RED + uppercase 처리는 정상 (rank=SOLEMNITY), 단 정식 Mongolian 축일명이 노출되지 않음. **회귀 아님** — 기존 single-day 카드도 동일 동작. 후속 task 에서 propers 의 special-key 룩업으로 보완 권장.
+
