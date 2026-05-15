@@ -183,6 +183,13 @@ export function GospelCanticleSection({
   // propers may author Rich-only seasonal antiphons), and gating purely
   // on `section.antiphon` would silently swallow them.
   const shouldRender = !!section.antiphon || hasRich
+  // WI #29 (2026-05-16) — compline (nuncDimittis) 만 PDF 순서가 안티폰 →
+  // 헤딩 → 본문. vespers (magnificat) / lauds (benedictus) 의 PDF 컨벤션
+  // 추가 확인이 필요해 보수적으로 nuncDimittis 만 swap. WI #27 부록 +
+  // `~/.claude/pair-cowork/scratch/dvo/wi-27/addendum-28.md` 의 PDF page
+  // 258 (인쇄본 514-515) 토요일 끝기도 흐름 증거 참조. lauds/vespers PDF
+  // 컨벤션 확인 후 일반화 가능 (분기 제거 → Option 1).
+  const antiphonFirst = section.canticle === 'nuncDimittis'
   const renderAntiphon = (className: string) =>
     hasRich && section.antiphonRich ? (
       <AntiphonRichBox
@@ -202,6 +209,12 @@ export function GospelCanticleSection({
   return (
     <section aria-label={name} className="mb-4">
       {/*
+        WI #29 — compline 안티폰은 PDF 순서대로 헤딩보다 먼저 (antiphonFirst).
+        vespers/lauds 는 antiphonFirst=false → 기존 컨벤션 (헤딩 → 안티폰).
+      */}
+      {antiphonFirst && shouldRender && renderAntiphon('my-3')}
+
+      {/*
         Heading page ref points at the FIXED ordinarium body (`bodyPage`),
         not the daily propers antiphon page. The antiphon page is rendered
         on the AntiphonBox below. This split prevents the long-standing
@@ -212,7 +225,7 @@ export function GospelCanticleSection({
         {name} <PageRef page={section.bodyPage} />
       </p>
 
-      {shouldRender && renderAntiphon('my-3')}
+      {!antiphonFirst && shouldRender && renderAntiphon('my-3')}
 
       {section.verses && section.verses.length > 0 ? (
         <div className="space-y-1 pl-2">
