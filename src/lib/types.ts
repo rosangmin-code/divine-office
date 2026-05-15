@@ -97,9 +97,32 @@ export const DAY_NAMES_MN: Record<DayOfWeek, string> = {
 // Stage 2 확산 단계에서 `src/lib/prayers/` 카탈로그가 `source` 태그를 실어
 // 반환하므로 "어느 경로(공통/시즌/축일)에서 선택된 기도문인지" 추적 가능.
 
+/**
+ * WI #24 (Opt C) — rubric / rubric-line 의 **의미 분류** (semantic role).
+ *
+ * `kind` 는 시각 hint (rubric span / rubric-line block) 를 결정한다.
+ * `role` 은 그 위에 의미 hint 를 얹는다 — 같은 시각 표현이라도
+ * "그 다음에 후렴이 온다" / "시즌이 바뀐다" / "감탄 marker" / "전구 prefix" 등
+ * 의미가 다를 수 있다. 본 필드는 **비-렌더링 메타데이터**이며 현재 모든
+ * 렌더러는 무시한다 (HTML byte-identical 보장, WI #24 acceptance criteria).
+ *
+ * 채택된 enum (production rubric/rubric-line 사용처 분석 기반):
+ * - `'instruction'`     — 일반 지시문 (default, 명시 안 한 rubric 모두 포함)
+ * - `'season-cue'`      — 시즌 전환 / 시기별 변형 마커. PDF 의 ':' 종결 rubric-line
+ *                         (예: `"Амилалтын улирал:"`) 가 대표 사례. 본 WI 가
+ *                         compline.json 의 2 entries 에 backfill.
+ * - `'refrain-prefix'`  — 후렴 도입 마커. 현재 production 의 `"- "` rubric span 248건
+ *                         이 잠재 후보 (본 WI 에서는 backfill 안 함 — out of scope).
+ * - `'acclamation'`     — 감탄/응답 marker (예: "Аллэлуяа!"). 현재 backfill 없음.
+ *
+ * 향후 새 rubric/rubric-line entry 를 추가할 때 의미가 4 enum 중 하나에
+ * 해당하면 role 을 부착. 부재 시 `'instruction'` 으로 간주 (default).
+ */
+export type RubricRole = 'instruction' | 'season-cue' | 'refrain-prefix' | 'acclamation'
+
 export type PrayerSpan =
   | { kind: 'text'; text: string; emphasis?: ('italic' | 'bold')[] }
-  | { kind: 'rubric'; text: string }           // inline 루브릭(빨간 지시문)
+  | { kind: 'rubric'; text: string; role?: RubricRole }  // inline 루브릭(빨간 지시문)
   | { kind: 'versicle'; text: string }         // V.
   | { kind: 'response'; text: string }         // R.
 
@@ -129,7 +152,7 @@ export type PhraseGroup = {
 
 export type PrayerBlock =
   | { kind: 'para'; spans: PrayerSpan[]; indent?: 0 | 1 | 2 }
-  | { kind: 'rubric-line'; text: string }      // 단독 루브릭 줄(섹션 제목 등)
+  | { kind: 'rubric-line'; text: string; role?: RubricRole }      // 단독 루브릭 줄(섹션 제목 등)
   | {
       kind: 'stanza'
       lines: { spans: PrayerSpan[]; indent: 0 | 1 | 2; role?: 'refrain' | 'doxology' }[]
