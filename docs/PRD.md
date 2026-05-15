@@ -290,6 +290,28 @@ FR-153 pilot (`f604835`) 이후 6개 하위 FR 로 분할 확산 완료. 병렬 
 - **중보기도 파서 (FR-150)**: `src/lib/hours/intercessions.ts`의 `parseIntercessions(raw: string[])`가 JSON 원본을 `{ introduction?, refrain?, petitions: [{ versicle, response? }], closing? }` 구조로 변환. 응답 종결 휴리스틱(마침표/물음표/느낌표로 끝나면 다음 줄을 새 petition으로 판단)으로 다중 라인 응답을 올바르게 병합. lauds/vespers assembler에서 호출하여 `HourSection.intercessions`에 파싱 필드와 raw `items`를 함께 전달. `prayer-renderer.tsx`의 `IntercessionsSection`은 `petitions.length > 0`이면 구조화 뷰(도입부 본문 / 후렴 amber 박스 / 청원 versicle + 빨간 `- ` 접두 응답 / 마침), 그렇지 않으면 기존 flat 리스트 뷰로 폴백 렌더링. PDF 원문은 응답 줄 앞에 빨간 `-`만 두고 별도 `R.`/`Д.` 라벨이 없으므로 라벨 span은 모두 제거.
 - **응송 3부 데이터 + 6행 렌더러 (FR-152)**: `Responsory` 타입과 `ResponsorySchema` 가 `{fullResponse, versicle, shortResponse, page?}` 3필드 (구조는 `src/lib/types.ts`, `src/lib/schemas.ts`). `src/lib/hours/{lauds,vespers,compline}.ts` 가 `HourSection.responsory` variant 로 3필드 그대로 전달. 렌더러 `src/components/prayer-sections/responsory-section.tsx` 는 6행(전체응답 리더 → 전체응답 회중 `- ` → 전구 리더 → 짧은응답 회중 `- ` → 영광송 한 줄 → 전체응답 회중 `- ` 반복) 을 출력하고, `fullResponse`/`shortResponse` 가 둘 다 비어 있으면 Triduum 간소화형식으로 versicle 한 줄만 렌더. 파서는 `scripts/lib/responsory-parser.js` (Glory Be `Эцэг,` 앵커 + V1 토큰 길이로 R1 랩 경계 복원), 데이터 교정 패처는 `scripts/fix-responsories.js` (118건 token-fingerprint 매칭). PDF 원문 텍스트 소스 `parsed_data/full_pdf.txt` 에서 124개 `Хариу залбирал` 블록을 indexAllResponsories 로 색인한 뒤 기존 JSON 의 `(versicle + response)` 지문으로 lookup. 성삼일 간소화형식은 `_note: "Intentionally empty response..."` 플래그로 구별하여 보존.
 
+### 12.4 루브릭 분류 가이드 — `kind` (시각 hint) vs `role` (의미 hint)
+
+> **WI #24 (2026-05-15)** — Opt C 도입. 막토(magtaal) 안티폰 ':' 마커가 "루브릭(지시문)" 이 아니라 **시즌 후렴 전환 cue** 였다는 사용자 directive (#21 / #22) 후속 처리. 시각 정책은 WI #21 에서 이미 처리됨 (까만색); 본 항목은 **데이터 분류** (semantic role) 만 정정.
+
+PrayerSpan / PrayerBlock 의 rubric 계열 노드는 두 축의 메타데이터를 가진다:
+
+| 축 | 필드 | 결정 사항 |
+|----|------|----------|
+| **시각** | `kind` | `'rubric'` (inline span), `'rubric-line'` (단독 줄) — 렌더러가 직접 소비. PDF 의 빨간색/이탤릭 표현 매핑. |
+| **의미** | `role?` ([`RubricRole`](../src/lib/types.ts) — `'instruction' \| 'season-cue' \| 'refrain-prefix' \| 'acclamation'`) | 비-렌더링 메타데이터. 현재 모든 렌더러는 `role` 을 무시하며 HTML 출력은 부착 전후 byte-identical. 향후 의미별 스타일 분기가 필요할 때 hook 으로 사용. |
+
+`role` enum 채택 기준:
+
+- **`'instruction'`** — 일반 전례 지시문 (default). 명시 안 한 모든 rubric/rubric-line 은 `'instruction'` 으로 간주.
+- **`'season-cue'`** — ':' 종결 시즌 전환 cue. 예: `"Амилалтын улирал:"`, `"Амилалтын Найман хоногийн доторх өдрүүдэд:"`. 본 WI 가 `compline.json` 의 2 entries 에 backfill.
+- **`'refrain-prefix'`** — 후렴 도입 마커. 현재 production rubric span 248건 (`"- "` 텍스트) 이 잠재 후보. 본 WI 에서는 backfill 안 함 (별도 WI 필요).
+- **`'acclamation'`** — 감탄/응답 marker (예: "Аллэлуяа!"). 현재 backfill 없음.
+
+**컨벤션**: 새 rubric / rubric-line entry 추가 시 의미가 위 4 enum 중 하나에 해당하면 `role` 부착. 부재 시 자동으로 `'instruction'` 으로 간주된다. 본 분류는 향후 시각 정책 변경 (예: season-cue 만 별도 글머리표) 의 hook 으로 보존되며, schema 는 additive (`.loose()` Zod) 이므로 기존 사용처는 무영향.
+
+회귀 가드는 `src/lib/__tests__/data/rubric-role-classification.test.ts` 가 (a) compline.json 의 ':' 종결 rubric-line 이 `role:"season-cue"` 를 유지하는지, (b) `role` 부착 전후 HTML 이 byte-identical 인지를 함께 검증.
+
 ## 7. PDF 페이지 참조 기능
 
 ### 7.1 기능 요구사항

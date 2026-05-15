@@ -189,7 +189,8 @@
         "blocks": [
           {
             "kind": "rubric-line",
-            "text": "Амилалтын Найман хоногийн доторх өдрүүдэд:"
+            "text": "Амилалтын Найман хоногийн доторх өдрүүдэд:",
+            "role": "season-cue"
           },
           {
             "kind": "para",
@@ -212,7 +213,8 @@
         "blocks": [
           {
             "kind": "rubric-line",
-            "text": "Амилалтын улирал:"
+            "text": "Амилалтын улирал:",
+            "role": "season-cue"
           },
           {
             "kind": "para",
