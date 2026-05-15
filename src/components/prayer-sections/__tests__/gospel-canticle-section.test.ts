@@ -92,7 +92,10 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
     expect(html).toContain('сэрүүн байхад ч хамгаалж')
   })
 
-  it('rich path renders rubric span with red + not-italic override (#207 fix)', () => {
+  it('rich path renders rubric span with not-italic override but NO red (WI #21)', () => {
+    // WI #21 (2026-05-15): 사용자 directive — '막토 안에는 빨간 글씨 필요 없어'
+    // — rubric kind 스팬에서 `text-red-700 dark:text-red-400` 트리거 제거.
+    // `not-italic` 은 부모 AntiphonBox 의 italic 을 상쇄하기 위해 유지.
     const antiphonRich: PrayerText = {
       blocks: [
         {
@@ -107,15 +110,21 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
     const section = makeSection({ antiphonRich })
     const html = render(createElement(GospelCanticleSection, { section }))
     expect(html).toContain('data-render-mode="rich"')
-    expect(html).toContain('text-red-700')
     expect(html).toContain('(Аллэлуяа)')
-    // Rubric escapes parent italic via not-italic (PDF rubric is upright).
+    // WI #21: rubric 스팬에는 red className 이 없어야 함 (안티폰 영역 전체).
+    // 단 섹션 헤딩 (L205) 의 'Сайнмэдээний айлдлын магтаал' 라벨은 별도
+    // path 로 빨간색 그대로이므로 anchor 매칭으로 안티폰 영역만 검증.
     expect(html).toMatch(
-      /<span[^>]*class="[^"]*not-italic[^"]*text-red-700[^"]*"[^>]*>\(Аллэлуяа\)<\/span>/,
+      /<span[^>]*class="not-italic"[^>]*>\(Аллэлуяа\)<\/span>/,
+    )
+    // Rubric span 자체는 red 가 아님 — `class="not-italic"` 단독.
+    expect(html).not.toMatch(
+      /<span[^>]*class="[^"]*text-red-[^"]*"[^>]*>\(Аллэлуяа\)<\/span>/,
     )
   })
 
-  it('rich path renders rubric-line block with red + not-italic override', () => {
+  it('rich path renders rubric-line block with not-italic but NO red (WI #21)', () => {
+    // WI #21 (2026-05-15): rubric-line block 에도 빨간색 제거 적용.
     const antiphonRich: PrayerText = {
       blocks: [
         { kind: 'rubric-line', text: 'Амилалтын улирал:' },
@@ -129,7 +138,11 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
     const html = render(createElement(GospelCanticleSection, { section }))
     expect(html).toContain('Амилалтын улирал:')
     expect(html).toMatch(
-      /<span[^>]*class="[^"]*not-italic[^"]*text-red-700[^"]*"[^>]*>Амилалтын улирал:<\/span>/,
+      /<span[^>]*class="not-italic"[^>]*>Амилалтын улирал:<\/span>/,
+    )
+    // WI #21: rubric-line span 자체는 red 가 아님.
+    expect(html).not.toMatch(
+      /<span[^>]*class="[^"]*text-red-[^"]*"[^>]*>Амилалтын улирал:<\/span>/,
     )
     expect(html).toContain('Эзэн амилсан, аллэлуяа.')
   })

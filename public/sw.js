@@ -1,3 +1,14 @@
+// v33 — WI #21: 막토 (Gospel canticle) 안티폰의 rubric / rubric-line
+// 스팬에서 `text-red-700 dark:text-red-400` 트리거 제거. 사용자 directive
+// (2026-05-15): '막토 안에는 빨간 글씨 필요 없어. 제목은 빨간 글씨 그대로
+// 해.' → `gospel-canticle-section.tsx` L27 (renderAntiphonSpan, kind:'rubric')
+// + L112 (renderAntiphonRich, kind:'rubric-line') 의 두 className 만
+// 색상 제거. kind 메타데이터 / `not-italic` / 데이터 layer (canticles.json,
+// antiphonRich AST) 모두 보존. 섹션 제목 헤딩 (L205) 의 `text-red-700` 은
+// 시스템 공통 컨벤션이므로 그대로 유지. HTML byte 출력 (안티폰 내부 rubric
+// 스팬의 className) 이 변하므로 v32 precache snapshot 과 어긋날 수 있어
+// bump. v32 잔존 시 안티폰 안 부활 시기 overlay '(Аллэлуяа)' /
+// 'Амилалтын улирал:' 등이 그대로 빨간색으로 노출됨.
 // v32 — task #16 (WI-15 follow-up): 끝기도 6개 시편 (Psalm 91:1-16,
 // 31:2-6, 16:1-11, 88:2-19, 4, 134) 의 `phrases` 배열 배포. WI-15
 // 에서 catalog 본문 (lines[]) 만 land 했었고 phrase grouping 은 다음
@@ -374,7 +385,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v32'
+const CACHE_VERSION = 'divine-office-v33'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
