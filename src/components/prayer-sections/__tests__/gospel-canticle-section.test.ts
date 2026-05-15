@@ -301,6 +301,91 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
     }
   })
 
+  // WI #29 (2026-05-16): compline (nuncDimittis) PDF 순서는 안티폰 → 헤딩 →
+  // 본문 → recap 안티폰. PDF page 258 (인쇄본 514-515) 토요일 끝기도 흐름.
+  // vespers (magnificat) / lauds (benedictus) 는 헤딩 → 안티폰 → 본문 →
+  // recap 안티폰 (기존 컨벤션 보존).
+  describe('WI #29 — compline antiphon-first ordering (PDF order)', () => {
+    // Helper: locate the heading `<p ... class="...text-red-700...">`
+    // OPENING tag. The wrapping `<section aria-label="<canticle name>">`
+    // carries the same name string, so plain `indexOf(name)` finds the
+    // aria-label first. Anchoring on the red-class `<p` tag scopes the
+    // index to the heading element only.
+    const HEADING_TAG_RE = /<p[^>]*text-red-700[^>]*>/
+    const headingTagIdx = (html: string): number => {
+      const m = html.match(HEADING_TAG_RE)
+      return m && m.index !== undefined ? m.index : -1
+    }
+
+    it('compline (nuncDimittis) renders antiphon BEFORE heading', () => {
+      const section = makeSection({ canticle: 'nuncDimittis' })
+      const html = render(createElement(GospelCanticleSection, { section }))
+      const antiphonIdx = html.indexOf('data-role="antiphon"')
+      const headingIdx = headingTagIdx(html)
+      expect(antiphonIdx).toBeGreaterThan(-1)
+      expect(headingIdx).toBeGreaterThan(-1)
+      // 안티폰 마커가 헤딩 `<p>` 보다 먼저 등장 → PDF 순서 일치.
+      expect(antiphonIdx).toBeLessThan(headingIdx)
+    })
+
+    it('compline (nuncDimittis) recap antiphon STILL renders after body', () => {
+      const section = makeSection({ canticle: 'nuncDimittis' })
+      const html = render(createElement(GospelCanticleSection, { section }))
+      // 안티폰 마커가 정확히 2번 나와야 함 — 헤딩 위 (PDF 순서) +
+      // 본문 아래 recap. ordering swap 이 recap 을 잃지 않음을 가드.
+      const matches = html.match(/data-role="antiphon"/g) ?? []
+      expect(matches.length).toBe(2)
+    })
+
+    it('vespers (magnificat) PRESERVES legacy heading-first ordering', () => {
+      const section = makeSection({
+        canticle: 'magnificat',
+        antiphon: 'Магнификат шад магтаал.',
+        text: 'Сэтгэл минь Эзэнийг дээдэлнэ.',
+      })
+      const html = render(createElement(GospelCanticleSection, { section }))
+      const headingIdx = headingTagIdx(html)
+      const antiphonIdx = html.indexOf('data-role="antiphon"')
+      expect(headingIdx).toBeGreaterThan(-1)
+      expect(antiphonIdx).toBeGreaterThan(-1)
+      // 헤딩 `<p>` 가 안티폰보다 먼저 등장 → 기존 컨벤션 (회귀 없음).
+      expect(headingIdx).toBeLessThan(antiphonIdx)
+    })
+
+    it('lauds (benedictus) PRESERVES legacy heading-first ordering', () => {
+      const section = makeSection({
+        canticle: 'benedictus',
+        antiphon: 'Бенедиктус шад магтаал.',
+        text: 'Магтан жавхлан өргөе ЭЗЭН Израилийн Тэнгэрбурханд.',
+      })
+      const html = render(createElement(GospelCanticleSection, { section }))
+      const headingIdx = headingTagIdx(html)
+      const antiphonIdx = html.indexOf('data-role="antiphon"')
+      expect(headingIdx).toBeGreaterThan(-1)
+      expect(antiphonIdx).toBeGreaterThan(-1)
+      // 헤딩 `<p>` 가 안티폰보다 먼저 등장 → 기존 컨벤션 (회귀 없음).
+      expect(headingIdx).toBeLessThan(antiphonIdx)
+    })
+
+    it('compline rich-AST antiphon also renders BEFORE heading', () => {
+      const antiphonRich: PrayerText = {
+        blocks: [
+          {
+            kind: 'para',
+            spans: [{ kind: 'text', text: 'Эзэн минь, биднийг сахин хамгаалаач.' }],
+          },
+        ],
+      }
+      const section = makeSection({ canticle: 'nuncDimittis', antiphonRich })
+      const html = render(createElement(GospelCanticleSection, { section }))
+      const antiphonIdx = html.indexOf('data-render-mode="rich"')
+      const headingIdx = headingTagIdx(html)
+      expect(antiphonIdx).toBeGreaterThan(-1)
+      expect(headingIdx).toBeGreaterThan(-1)
+      expect(antiphonIdx).toBeLessThan(headingIdx)
+    })
+  })
+
   it('renders rich path even when plain `antiphon` is empty (#207 gate fix)', () => {
     // Sanctoral / seasonal data may legitimately ship rich-only without
     // a plain string companion — the prior gate `section.antiphon &&`
