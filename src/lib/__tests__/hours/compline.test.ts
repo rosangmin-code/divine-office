@@ -839,10 +839,15 @@ describe('assembleHour() — Compline responsory rich propagation (F-1 #212 L2)'
     // appends the rubric para → at least one `<br/>` between them and
     // the rubric on the new line.
     expect(html).toMatch(/<br\s*\/?>[\s\S]*?Аллэлуяа!/)
-    // Rubric span styling is preserved (red + not-italic) on the
-    // Alleluia text — escaping the parent amber-italic cascade.
+    // WI #21 (2026-05-15): 사용자 directive — '막토 안에는 빨간 글씨 필요
+    // 없어' — rubric 스팬에서 `text-red-700` 트리거 제거. `not-italic`
+    // 만 유지 (부모 amber-italic cascade 를 상쇄, PDF rubric 의 upright
+    // 표시는 보존).
     expect(html).toMatch(
-      /<span[^>]*class="[^"]*not-italic[^"]*text-red-700[^"]*"[^>]*>Аллэлуяа!<\/span>/,
+      /<span[^>]*class="not-italic"[^>]*>Аллэлуяа!<\/span>/,
+    )
+    expect(html).not.toMatch(
+      /<span[^>]*class="[^"]*text-red-[^"]*"[^>]*>Аллэлуяа!<\/span>/,
     )
   })
 
@@ -907,12 +912,22 @@ describe('assembleHour() — Compline responsory rich propagation (F-1 #212 L2)'
     // (c) amber-italic cascade preserved
     expect(html).toContain('text-amber-800')
     expect(html).toContain('italic')
-    // (d) rubric → red + not-italic on the parenthetical span and rubric-line block
+    // (d) WI #21 (2026-05-15): rubric → not-italic only (NO red) on
+    // parenthetical span + rubric-line block. PDF rubric upright 표시는
+    // `not-italic` 으로 보존, 색상은 본문과 통일 (까만색).
     expect(html).toMatch(
-      /<span[^>]*class="[^"]*not-italic[^"]*text-red-700[^"]*"[^>]*>\(Аллэлуяа!\)<\/span>/,
+      /<span[^>]*class="not-italic"[^>]*>\(Аллэлуяа!\)<\/span>/,
     )
     expect(html).toMatch(
-      /<span[^>]*class="[^"]*not-italic[^"]*text-red-700[^"]*"[^>]*>Амилалтын улирал:<\/span>/,
+      /<span[^>]*class="not-italic"[^>]*>Амилалтын улирал:<\/span>/,
+    )
+    // WI #21: 안티폰 영역의 rubric 스팬에는 red className 이 없어야 함.
+    // (섹션 헤딩 'Сайнмэдээний айлдлын магтаал' 은 별도 path 로 red 유지.)
+    expect(html).not.toMatch(
+      /<span[^>]*class="[^"]*text-red-[^"]*"[^>]*>\(Аллэлуяа!\)<\/span>/,
+    )
+    expect(html).not.toMatch(
+      /<span[^>]*class="[^"]*text-red-[^"]*"[^>]*>Амилалтын улирал:<\/span>/,
     )
     // (e) data-render-mode marker untouched
     expect(html).toContain('data-render-mode="rich"')

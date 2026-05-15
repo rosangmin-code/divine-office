@@ -21,10 +21,14 @@ const CANTICLE_NAMES: Record<string, string> = {
 // otherwise leak in via inheritance).
 function renderAntiphonSpan(span: PrayerSpan, key: number): JSX.Element {
   if (span.kind === 'rubric') {
+    // WI #21 (2026-05-15): 사용자 directive — '막토 안에는 빨간 글씨
+    // 필요 없어' — `text-red-700 dark:text-red-400` 트리거 제거. kind
+    // 메타데이터 (`rubric`) 는 향후 정책 변동 hook + 데이터 분류 보존.
+    // `not-italic` 은 부모 AntiphonBox 의 italic 을 상쇄하기 위해 유지.
     return (
       <span
         key={key}
-        className="not-italic text-red-700 dark:text-red-400"
+        className="not-italic"
       >
         {span.text}
       </span>
@@ -103,13 +107,15 @@ function renderAntiphonRich(content: PrayerText): JSX.Element[] {
       // would NOT short-circuit. Production data has no empty
       // rubric-line blocks today; this is type-safety hardening.
       if (!block.text.trim()) continue
-      // PDF rubric line: red + upright (NOT italic). Parent wrapper
-      // is italic, so explicit `not-italic` is required to escape the
-      // amber-italic AntiphonBox styling.
+      // WI #21 (2026-05-15): 사용자 directive — '막토 안에는 빨간 글씨
+      // 필요 없어' — `text-red-700 dark:text-red-400` 트리거 제거. kind
+      // 메타데이터 (`rubric-line`) 는 향후 정책 변동 hook + 데이터 분류
+      // 보존. `not-italic` 은 부모 AntiphonBox 의 italic 을 상쇄하기
+      // 위해 유지 (rubric-line text 는 직립 표시).
       blockOut.push(
         <span
           key={`rubric-${bi}`}
-          className="not-italic text-red-700 dark:text-red-400"
+          className="not-italic"
         >
           {block.text}
         </span>,
