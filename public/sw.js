@@ -1,3 +1,29 @@
+// v32 — task #16 (WI-15 follow-up): 끝기도 6개 시편 (Psalm 91:1-16,
+// 31:2-6, 16:1-11, 88:2-19, 4, 134) 의 `phrases` 배열 배포. WI-15
+// 에서 catalog 본문 (lines[]) 만 land 했었고 phrase grouping 은 다음
+// 단계로 분리됨. 본 bump 는 `scripts/regroup-phrases-by-capital.mjs
+// --force-inject` 로 6개 entry 에 FR-161 capital-start phrase grouping
+// 을 일괄 주입 (총 147 phrases, multi-line wrap-continuation 22건).
+// 데이터 변경 surface — `psalter-texts.rich.json` 의 6 stanza block 에
+// `phrases?: PhraseGroup[]` 필드만 추가 (lines/indent/paragraphBoundaries/
+// role propagation 모두 unchanged). 기존 121 refs 의 phrases 는 손상
+// 무 (atomic — only 6 targeted refs touched).
+// 시각적 효과 — 6 entry 가 legacy line-render fallback (FR-161 R-3 분기
+// 비활성) → phrase render path 로 전환. 일반 시편의 capital-start
+// indent grouping + paragraphBoundaries 와 동일 trace.
+// CACHE_VERSION bump 사유 (defensive conservative): SW navigate (HTML)
+// 는 `network-only` 라 직접 충돌 없음. 그러나 SSR HTML 출력에 147 새
+// markup 추가 + 정적 자산 (script chunk) hash 변동 가능 — connected-
+// deploy 일관성을 위해 v31→v32 채택 (v28/v29 같은 phrase-mode 데이터
+// 변경 시점의 운영 관행 정합).
+// PRECACHE_URLS = ['/offline.html', '/icon.svg'] 는 변동 없음. WI-15
+// (v30→v31) 는 changelog 코멘트가 빠졌으나 본 entry 에서 함께
+// documented.
+// v31 — task #15 (WI-15): 끝기도 6개 시편 (Psalm 91:1-16, 31:2-6,
+// 16:1-11, 88:2-19, 4, 134) 의 PDF 본문 (lines[]) 을 catalog 에
+// verbatim 추가. phrases 배열은 follow-up (task #16, v32 참고) 으로
+// 분리. CACHE_VERSION bump 사유: SSR HTML 출력에 6 신규 entry 의
+// 라인 본문 markup 추가 (130 → 136 entries) → 정적 자산 hash 변동.
 // v30 — task #8 (FR-145): 첫 화면(`/`) 을 image.png 스타일 전례력
 // list (LiturgicalCalendarList) 로 교체 + CelebrationOption v2
 // (`kind` 분류 필드) + 신규 `loadCalendarWindowAction` server action
@@ -348,7 +374,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v31'
+const CACHE_VERSION = 'divine-office-v32'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 

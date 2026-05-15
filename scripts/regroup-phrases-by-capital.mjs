@@ -40,6 +40,16 @@
  *   --refs:           one or more ref keys (positional after the flag).
  *   --all-refs:       rewrite every ref with `stanzasRich.blocks` in the file.
  *                     Mutually exclusive with --refs.
+ *   --force-inject:   override the "no-prior-phrases" scope guard and inject
+ *                     capital-start phrases into every targeted stanza block
+ *                     regardless of prior state. Used when seeding phrases
+ *                     for refs added AFTER the F-X11 sweep cohort (#499) —
+ *                     e.g. WI-15 끝기도 시편 6개 catalog entries whose lines[]
+ *                     were land-ed verbatim from PDF SoT but never went
+ *                     through the original PDF-extract→regroup chain. The
+ *                     final visual result is identical to the canonical
+ *                     F-X11 cohort (regrouped per task #498/#499), so this
+ *                     flag is the simpler bridge for late-seeded refs.
  *   --summary-json:   also emit machine-readable per-ref summary to <path>.
  */
 
@@ -57,6 +67,7 @@ function parseCliArgs(argv) {
     refs: [],
     dryRun: false,
     allRefs: false,
+    forceInject: false,
     summaryJson: null,
   }
   for (let i = 0; i < argv.length; i++) {
@@ -67,6 +78,8 @@ function parseCliArgs(argv) {
       args.dryRun = true
     } else if (a === '--all-refs') {
       args.allRefs = true
+    } else if (a === '--force-inject') {
+      args.forceInject = true
     } else if (a === '--summary-json') {
       args.summaryJson = argv[++i]
     } else if (a === '--refs') {
@@ -171,7 +184,7 @@ function cliMain() {
   const refs = args.allRefs ? listStanzaRefs(richData) : args.refs
   const allSummary = {}
   for (const ref of refs) {
-    allSummary[ref] = regroupRef(richData, ref)
+    allSummary[ref] = regroupRef(richData, ref, { forceInject: args.forceInject })
   }
   if (args.dryRun) {
     console.log(`DRY RUN — no write. ${refs.length} ref(s). Summary:`)
