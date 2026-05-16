@@ -809,6 +809,30 @@ export type HourSection =
       // `antiphon` string. Sourced from
       // `HourPropers.gospelCanticleAntiphonRich` via assembler wiring.
       antiphonRich?: PrayerText
+      /**
+       * WI #35 — within-canticle paragraph boundaries for the `verses[]`
+       * body. Each entry is a 0-based `verses[]` index at which a
+       * paragraph break should render. Boundary is BEFORE the listed
+       * index: e.g. `[4, 6]` means an extra spacing gap is rendered
+       * above `verses[4]` and `verses[6]` (before-line semantics — same
+       * convention as the psalm F-X11 #408 `PrayerBlock.stanza
+       * .paragraphBoundaries`).
+       *
+       * Absent / empty array → no within-canticle paragraph spacing
+       * (regression-safe additive — this is how every pre-WI-35
+       * canticle entry renders today). Index 0 is a no-op (a paragraph
+       * break at the very start of the canticle body is the body
+       * boundary itself).
+       *
+       * Renderer contract: `gospel-canticle-section.tsx` verses path
+       * prepends `mt-3` to any `<p>` whose 0-based index appears in
+       * this set. Mirrors the within-stanza paragraph spacing the psalm
+       * renderer applies on the F-X11 path (`psalm-block.tsx:129-191`).
+       *
+       * Sourced from `canticles.json#{benedictus|magnificat|nuncDimittis}
+       * .paragraphBoundaries`, passed through `resolveGospelCanticle()`.
+       */
+      paragraphBoundaries?: number[]
     }
   | {
       type: 'intercessions'
