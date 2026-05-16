@@ -1,3 +1,16 @@
+// v37 — WI #39: hymn (Магтуу) section 빨간 글씨 19건 까망 처리.
+// 사용자 directive (2026-05-16): '다른 거 필요 없어. 19건 해결해.' →
+// `hymn-section.tsx` L32 + L42 의 헤딩 className `text-sm font-semibold
+// text-red-700 dark:text-red-400` 에서 색상 제거 (헤딩 1건). 본문 refrain
+// 18건은 `prayer-sections/rich-content.tsx` 의 renderBlock stanza phrase
+// 분기 (L377) 에서 `isRefrain ? RUBRIC_CLASS` 트리거 제거 — `psalm-block.tsx`
+// 의 GOAL #1 fix(psalter+sw): #3 시편 refrain 까망 패턴과 동일. `data-role=
+// "psalm-phrase-refrain"` 메타데이터는 회중 응답 식별 / e2e selector 안정성을
+// 위해 보존. doxology italic 강세는 무변경. RichContent 의 다른 caller
+// (short-reading / responsory / intercessions / concluding-prayer / psalmPrayer
+// natural-flow) 는 refrain phrase 를 emit 하지 않으므로 회귀 없음. HTML byte
+// 출력 (Магтуу 헤딩 + refrain span className) 변동으로 v36 precache snapshot
+// 과 어긋날 수 있어 conservative bump.
 // v33 — WI #21: 막토 (Gospel canticle) 안티폰의 rubric / rubric-line
 // 스팬에서 `text-red-700 dark:text-red-400` 트리거 제거. 사용자 directive
 // (2026-05-15): '막토 안에는 빨간 글씨 필요 없어. 제목은 빨간 글씨 그대로
@@ -385,7 +398,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v36'
+const CACHE_VERSION = 'divine-office-v37'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
