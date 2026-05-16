@@ -439,6 +439,140 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
     })
   })
 
+  // WI #35 (2026-05-16) — within-canticle paragraph boundaries 시각 표현.
+  // 시편 F-X11 #408 의 `paragraphBoundaries` 패턴을 막토 verses path 로 차용.
+  // canticles.json 의 3 막토 entry 모두 `paragraphBoundaries: number[]` 가
+  // PDF (인쇄 page 34/40/515) 와 대조해 인코딩되며, 본 분기에서 해당 인덱스
+  // verse 의 `<p>` 위에 `mt-3` 을 prepend.
+  describe('WI #35 — paragraphBoundaries → mt-3 inject (within-canticle paragraph spacing)', () => {
+    it('positive: paragraphBoundaries set 일 때 해당 인덱스 verse `<p>` 에 mt-3 + data-paragraph-boundary', () => {
+      const section = makeSection({
+        canticle: 'magnificat',
+        antiphon: 'Магнификат шад магтаал.',
+        // PDF page 40 단락 구조 mock — verses[0..3] = 단락 1,
+        // verses[4..5] = 단락 2, verses[6..7] = 단락 3.
+        verses: [
+          'Verse line 0.',
+          'Verse line 1.',
+          'Verse line 2.',
+          'Verse line 3.',
+          'Verse line 4.',
+          'Verse line 5.',
+          'Verse line 6.',
+          'Verse line 7.',
+        ],
+        paragraphBoundaries: [4, 6],
+      })
+      const html = render(createElement(GospelCanticleSection, { section }))
+      // 모든 verse 가 `data-role="gospel-canticle-verse"` 가짐 (색상-독립
+      // stable selector).
+      const verseTagCount = (
+        html.match(/data-role="gospel-canticle-verse"/g) ?? []
+      ).length
+      expect(verseTagCount).toBe(8)
+      // verses[4] / verses[6] 에 `mt-3` + `data-paragraph-boundary="true"`.
+      expect(html).toMatch(
+        /<p[^>]*data-role="gospel-canticle-verse"[^>]*data-paragraph-boundary="true"[^>]*class="[^"]*mt-3[^"]*"[^>]*>Verse line 4\./,
+      )
+      expect(html).toMatch(
+        /<p[^>]*data-role="gospel-canticle-verse"[^>]*data-paragraph-boundary="true"[^>]*class="[^"]*mt-3[^"]*"[^>]*>Verse line 6\./,
+      )
+      // verses[0] / verses[3] 등 paragraphBoundaries 외 인덱스는 `mt-3`
+      // 없음 + `data-paragraph-boundary` attribute 없음.
+      expect(html).not.toMatch(
+        /<p[^>]*data-role="gospel-canticle-verse"[^>]*data-paragraph-boundary="true"[^>]*>Verse line 0\./,
+      )
+      expect(html).not.toMatch(
+        /<p[^>]*data-role="gospel-canticle-verse"[^>]*data-paragraph-boundary="true"[^>]*>Verse line 3\./,
+      )
+      expect(html).not.toMatch(
+        /<p[^>]*data-role="gospel-canticle-verse"[^>]*data-paragraph-boundary="true"[^>]*>Verse line 5\./,
+      )
+    })
+
+    it('negative (additive contract): paragraphBoundaries 부재 → 기존 spacing 유지, 어떤 verse 에도 mt-3 / data-paragraph-boundary 없음', () => {
+      const section = makeSection({
+        canticle: 'magnificat',
+        antiphon: 'Магнификат шад магтаал.',
+        verses: ['L0.', 'L1.', 'L2.'],
+        // paragraphBoundaries 의도적으로 누락 — pre-WI-35 데이터 shape.
+      })
+      const html = render(createElement(GospelCanticleSection, { section }))
+      // 모든 verse 에 data-role anchor 부착 (회귀 가드).
+      expect((html.match(/data-role="gospel-canticle-verse"/g) ?? []).length).toBe(3)
+      // 어떤 verse 에도 `mt-3` 없음 (균일 `space-y-1` 만 적용).
+      expect(html).not.toMatch(
+        /<p[^>]*data-role="gospel-canticle-verse"[^>]*class="[^"]*mt-3[^"]*"/,
+      )
+      // 어떤 verse 에도 `data-paragraph-boundary="true"` 없음.
+      expect(html).not.toMatch(
+        /data-role="gospel-canticle-verse"[^>]*data-paragraph-boundary="true"/,
+      )
+      // 외곽 `space-y-1` baseline 유지.
+      expect(html).toMatch(/<div[^>]*class="[^"]*space-y-1[^"]*"/)
+    })
+
+    it('empty paragraphBoundaries array 도 부재와 동일 동작 (defensive)', () => {
+      const section = makeSection({
+        canticle: 'benedictus',
+        antiphon: 'Бенедиктус шад магтаал.',
+        verses: ['L0.', 'L1.', 'L2.'],
+        paragraphBoundaries: [],
+      })
+      const html = render(createElement(GospelCanticleSection, { section }))
+      expect((html.match(/data-role="gospel-canticle-verse"/g) ?? []).length).toBe(3)
+      expect(html).not.toMatch(
+        /<p[^>]*data-role="gospel-canticle-verse"[^>]*class="[^"]*mt-3[^"]*"/,
+      )
+      expect(html).not.toMatch(
+        /data-role="gospel-canticle-verse"[^>]*data-paragraph-boundary="true"/,
+      )
+    })
+
+    it('benedictus 실제 canticles.json paragraphBoundaries=[1,2,3,4,5,8,12,14,16] 와 동일 동작', () => {
+      // PDF page 34 의 10 단락 구조를 그대로 재현. verses[]는 실제
+      // canticles.json benedictus 의 19 entry, paragraphBoundaries 도 동일.
+      const section = makeSection({
+        canticle: 'benedictus',
+        antiphon: 'Бенедиктус шад магтаал.',
+        verses: Array.from({ length: 19 }, (_, i) => `B-${i}.`),
+        paragraphBoundaries: [1, 2, 3, 4, 5, 8, 12, 14, 16],
+      })
+      const html = render(createElement(GospelCanticleSection, { section }))
+      // mt-3 가 정확히 9번 (paragraphBoundaries 길이) 등장.
+      const mt3Count = (
+        html.match(/data-role="gospel-canticle-verse"[^>]*data-paragraph-boundary="true"[^>]*class="[^"]*mt-3/g) ?? []
+      ).length
+      expect(mt3Count).toBe(9)
+      // 경계 인덱스 verse 들이 모두 boundary 표시.
+      expect(html).toMatch(/data-paragraph-boundary="true"[^>]*>B-1\./)
+      expect(html).toMatch(/data-paragraph-boundary="true"[^>]*>B-16\./)
+      // 비-경계 인덱스 verse (예: 0, 6, 7, 10, 13, 15, 17, 18) 는 boundary 미부착.
+      expect(html).not.toMatch(/data-paragraph-boundary="true"[^>]*>B-0\./)
+      expect(html).not.toMatch(/data-paragraph-boundary="true"[^>]*>B-7\./)
+      expect(html).not.toMatch(/data-paragraph-boundary="true"[^>]*>B-18\./)
+    })
+
+    it('canticles.json source — 3 막토 entry 모두 paragraphBoundaries 부착되어 있음', async () => {
+      // canticles.json SSOT 직접 import 해서 데이터 보존 검증.
+      const data = (await import('@/data/loth/ordinarium/canticles.json'))
+        .default as Record<string, { paragraphBoundaries?: number[]; verses?: string[] }>
+      // 3 entry 모두 paragraphBoundaries: number[] non-empty.
+      expect(data.benedictus.paragraphBoundaries).toEqual([1, 2, 3, 4, 5, 8, 12, 14, 16])
+      expect(data.magnificat.paragraphBoundaries).toEqual([4, 6, 8, 9])
+      expect(data.nuncDimittis.paragraphBoundaries).toEqual([1, 2])
+      // 모든 boundary 인덱스가 verses[] 범위 안 + 0 이 아님 (스키마 가드).
+      for (const key of ['benedictus', 'magnificat', 'nuncDimittis'] as const) {
+        const verses = data[key].verses ?? []
+        const bounds = data[key].paragraphBoundaries ?? []
+        for (const b of bounds) {
+          expect(b).toBeGreaterThan(0)
+          expect(b).toBeLessThan(verses.length)
+        }
+      }
+    })
+  })
+
   it('renders rich path even when plain `antiphon` is empty (#207 gate fix)', () => {
     // Sanctoral / seasonal data may legitimately ship rich-only without
     // a plain string companion — the prior gate `section.antiphon &&`

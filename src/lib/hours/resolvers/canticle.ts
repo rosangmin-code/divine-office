@@ -9,12 +9,26 @@ import { lookupRef } from '../../bible-loader'
  * seasonal antiphon. Passed straight through to the returned HourSection so
  * the renderer (C-3b/wi-002) can prefer the AST over the plain `antiphon`
  * string. `undefined` is the legacy path (plain antiphon only).
+ *
+ * `paragraphBoundaries` (WI #35) — optional within-canticle paragraph
+ * boundary markers for the `verses[]` body. 0-based verses indices at
+ * which a paragraph break should render (before-line semantics — same
+ * convention as the psalm F-X11 #408 stanza paragraphBoundaries). Passed
+ * straight through to the returned HourSection so the renderer can
+ * inject `mt-3` at those indices. Absent → legacy uniform spacing.
  */
 export function resolveGospelCanticle(
   hour: HourType,
   canticlesData: Record<
     string,
-    { ref: string; titleMn: string; verses?: string[]; doxology?: string; page?: number }
+    {
+      ref: string
+      titleMn: string
+      verses?: string[]
+      doxology?: string
+      page?: number
+      paragraphBoundaries?: number[]
+    }
   >,
   antiphon: string,
   page?: number,
@@ -48,6 +62,9 @@ export function resolveGospelCanticle(
       page,
       bodyPage,
       antiphonRich,
+      // WI #35 — passthrough within-canticle paragraph boundaries. Absent
+      // in source data → undefined → renderer uses legacy uniform spacing.
+      paragraphBoundaries: canticleInfo.paragraphBoundaries,
     }
   }
 

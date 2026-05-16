@@ -240,21 +240,38 @@ export function GospelCanticleSection({
       {!antiphonFirst && shouldRender && renderAntiphon('my-3')}
 
       {section.verses && section.verses.length > 0 ? (
-        <div className="space-y-1 pl-2">
-          {section.verses.map((verse, vi) => (
-            <p
-              key={vi}
-              className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200"
-            >
-              {verse}
-            </p>
-          ))}
-          {section.doxology && (
-            <p className="mt-2 font-serif text-sm italic text-stone-500 dark:text-stone-400">
-              {section.doxology}
-            </p>
-          )}
-        </div>
+        // WI #35 — within-canticle paragraph boundaries (시편 F-X11 #408
+        // 패턴 차용). `section.paragraphBoundaries` 에 포함된 0-based
+        // verses 인덱스의 `<p>` 위에 `mt-3` 을 prepend 해서 PDF page
+        // 34/40/515 의 단락 spacing 을 표현. 부재 / 빈 array → 기존
+        // 균일 `space-y-1` 만 적용 (additive contract, regression-safe).
+        // `data-role` / `data-paragraph-boundary` 데이터 attribute 는
+        // 색상-독립 e2e selector anchor (CLAUDE.md "data-role 우선" 정책).
+        (() => {
+          const paragraphSet = new Set(section.paragraphBoundaries ?? [])
+          return (
+            <div className="space-y-1 pl-2">
+              {section.verses!.map((verse, vi) => {
+                const isParagraphStart = paragraphSet.has(vi)
+                return (
+                  <p
+                    key={vi}
+                    data-role="gospel-canticle-verse"
+                    data-paragraph-boundary={isParagraphStart ? 'true' : undefined}
+                    className={`font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200${isParagraphStart ? ' mt-3' : ''}`}
+                  >
+                    {verse}
+                  </p>
+                )
+              })}
+              {section.doxology && (
+                <p className="mt-2 font-serif text-sm italic text-stone-500 dark:text-stone-400">
+                  {section.doxology}
+                </p>
+              )}
+            </div>
+          )
+        })()
       ) : section.text ? (
         <div className="space-y-1 pl-2">
           {section.text.split('\n').map((line, li) => (
