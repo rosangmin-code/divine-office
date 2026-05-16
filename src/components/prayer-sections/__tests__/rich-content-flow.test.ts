@@ -717,7 +717,12 @@ describe('RichContent — flush=true (F-X8 #300 — Магтуу 줄바꿈 규�
     )
   })
 
-  it('flush=true keeps refrain styling (RUBRIC_CLASS) on refrain phrases', () => {
+  // WI #39 (2026-05-16): hymn (Магтуу) refrain phrase 의 빨간색 트리거 제거.
+  // 사용자 directive — '다른 거 필요 없어. 19건 해결해.' → renderBlock stanza
+  // phrase 분기에서 `isRefrain ? RUBRIC_CLASS` 제거. data-role 메타데이터
+  // (`psalm-phrase-refrain`) 는 회중 응답 식별 / e2e selector 안정성을 위해
+  // 보존. psalm-block.tsx 의 GOAL #1 (시편 본문 까망) 과 동일한 패턴.
+  it('flush=true preserves refrain data-role but emits NO red color class', () => {
     const content = makeContent([
       makeStanzaBlock(['Дахилт: Эзэн Бурхан', 'Бид магтан дуулъя'], {
         phrases: [
@@ -730,8 +735,11 @@ describe('RichContent — flush=true (F-X8 #300 — Магтуу 줄바꿈 규�
       createElement(RichContent, { content, flush: true }),
     )
     expect(html).not.toMatch(/-indent-6/)
-    // Refrain colour class survives flush mode (orthogonal axis).
-    expect(html).toMatch(/text-red-700/)
+    // WI #39: refrain phrase 의 className 에 text-red-* 색상 클래스 없음.
+    expect(html).not.toMatch(
+      /data-role="psalm-phrase-refrain"[^>]+class="[^"]*text-red-/,
+    )
+    // 색상은 없어도 data-role 메타데이터는 보존 (selector 안정성).
     const refrainSpans = (html.match(/data-role="psalm-phrase-refrain"/g) ?? [])
       .length
     expect(refrainSpans).toBe(2)

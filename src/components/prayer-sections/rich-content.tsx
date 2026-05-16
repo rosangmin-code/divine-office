@@ -374,11 +374,14 @@ function renderBlock(
             const indent = phraseHangingIndentClass(phrase.indent, flush)
             const isRefrain = phrase.role === 'refrain'
             const isDoxology = phrase.role === 'doxology'
-            const roleClass = isRefrain
-              ? RUBRIC_CLASS
-              : isDoxology
-              ? 'italic'
-              : ''
+            // 사용자 directive (2026-05-16, WI #39): hymn(Магтуу) refrain 포함
+            // 본문 전체가 까만색 본문 컬러로 렌더된다. `text-red-700
+            // dark:text-red-400` 트리거 제거 — data-role 메타데이터
+            // (`psalm-phrase-refrain`) 는 회중 응답 식별 / e2e selector 안정성을
+            // 위해 보존. doxology 의 italic 강조는 시각 강세 유지 (색상 통일
+            // 정책과 무관). psalm-block.tsx 의 GOAL #1 fix(psalter+sw): #3 과
+            // 동일한 패턴 — rich-content.tsx 도 hymn refrain 에 적용.
+            const roleClass = isDoxology ? 'italic' : ''
             const dataRole = isRefrain
               ? 'psalm-phrase-refrain'
               : isDoxology
