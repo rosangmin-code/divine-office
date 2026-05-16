@@ -1,3 +1,17 @@
+// v38 — WI #41: gospel-canticle 헤딩 빨강 복원 (#25/#30 매핑 오류 revert).
+// 사용자 directive (2026-05-16): '되돌리기 진행해' → `gospel-canticle-
+// section.tsx` L233-238 헤딩 className 의 색상 클래스 `text-stone-800
+// dark:text-stone-200` 를 `text-red-700 dark:text-red-400` 로 복원.
+// 배경 — WI #25/#30 은 사용자의 'magtuu/막토' 보고를 gospel-canticle
+// (Benedictus / Magnificat / Nunc Dimittis) 으로 잘못 매핑해 헤딩을
+// 까망 처리했음. 사용자 진짜 의도는 hymn (Магтуу) 영역으로 WI #39 에서
+// 별도 해결됨. gospel-canticle 헤딩 까망은 다른 prayer-section 헤딩
+// 빨강 컨벤션 + PDF rubric 컨벤션과 비대칭이라 revert 가 정합.
+// `data-role="canticle-heading"` 색상-독립 anchor 는 WI #30 도입 그대로
+// 보존 (e2e selector 안정성 + ordering test #29 anchor). HTML byte 출력
+// (헤딩 span className) 이 변하므로 v37 precache snapshot 과 어긋날 수
+// 있어 conservative bump. v37 잔존 시 3 hour (lauds/vespers/compline)
+// 헤딩이 까망 그대로 노출되어 의도된 빨강 복원이 안 보임.
 // v37 — WI #39: hymn (Магтуу) section 빨간 글씨 19건 까망 처리.
 // 사용자 directive (2026-05-16): '다른 거 필요 없어. 19건 해결해.' →
 // `hymn-section.tsx` L32 + L42 의 헤딩 className `text-sm font-semibold
@@ -398,7 +412,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v37'
+const CACHE_VERSION = 'divine-office-v38'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
