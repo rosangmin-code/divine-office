@@ -81,7 +81,7 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
       {/* Psalm title & reference */}
       <div className="mb-2">
         <span className="text-xs font-medium uppercase tracking-wider text-red-700 dark:text-red-400">
-          {psalm.psalmType === 'canticle' ? 'Магтуу' : 'Дуулал'}
+          {psalm.psalmType === 'canticle' ? 'Магтаал' : 'Дуулал'}
         </span>
         <h4 className="text-sm font-semibold text-red-700 dark:text-red-400">
           {psalm.reference} <PageRef page={psalm.page} />
