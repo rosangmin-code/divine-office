@@ -221,7 +221,19 @@ export function GospelCanticleSection({
         confusion where users opened the PDF to e.g. p722 expecting the
         Magnificat body and found only the seasonal antiphon (task #11).
       */}
-      <p className="text-sm font-semibold text-red-700 dark:text-red-400">
+      {/*
+        WI #30 (2026-05-16) — 사용자 directive 반전. GOAL #20 "제목은 빨간
+        글씨 그대로 해" → 본 WI 에서 까망 처리 (시각 거슬림 정정 결정).
+        `text-red-700 dark:text-red-400` 색상 className 제거, body text
+        color 명시 (stone-800 / stone-200 dark). `data-role="canticle-
+        heading"` 는 ordering 회귀 가드 테스트의 stable anchor 로 추가 —
+        이전에 text-red-700 클래스에 결합돼 있던 anchor 를 색상-독립
+        구조 anchor 로 이관 (WI #29 deferred nit 해소).
+      */}
+      <p
+        data-role="canticle-heading"
+        className="text-sm font-semibold text-stone-800 dark:text-stone-200"
+      >
         {name} <PageRef page={section.bodyPage} />
       </p>
 

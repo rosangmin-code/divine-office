@@ -772,17 +772,16 @@ describe('assembleHour() — Compline responsory rich propagation (F-1 #212 L2)'
     }
   })
 
-  // @fr FR-NEW (F-X1 #217 + #223 redo)
+  // @fr FR-NEW (F-X1 #217 + #223 redo + WI #30 / GOAL #26 inline 반전)
   // 사용자 모바일 검증 surface — Eastertide Saturday compline Nunc Dimittis
   // antiphon must (a) carry Alleluia on the plain string path
   // (post-`mergeComplineDefaults` re-augmentation) AND (b) carry the
-  // Alleluia rubric on the rich AST as its OWN trailing para block
-  // (#223 line-break shape — the renderer surfaces a `<br/>` between
-  // blocks so Аллэлуяа falls on a new line, NOT inlined to the right
-  // edge of the body para).
+  // Alleluia rubric INLINE in the LAST body para's spans (#30 inline
+  // shape — 사용자 directive 2026-05-16 "줄바꿈 후에 들어오면 안돼.
+  // 문장 뒤에 바로 붙을 수 있도록").
   // Non-Eastertide variant follows in the next test to guard against
   // over-augmentation.
-  it('Eastertide Saturday (2026-05-02 SAT) → Nunc Dimittis carries Alleluia on plain + appends NEW rubric para on rich (#223 line-break)', async () => {
+  it('Eastertide Saturday (2026-05-02 SAT) → Nunc Dimittis carries Alleluia INLINE in last para spans (#30 inline shape)', async () => {
     const result = await assembleHour('2026-05-02', 'compline')
     expect(result).not.toBeNull()
     const gc = result!.sections.find((s): s is Extract<import('../../types').HourSection, { type: 'gospelCanticle' }> => s.type === 'gospelCanticle')
@@ -792,40 +791,32 @@ describe('assembleHour() — Compline responsory rich propagation (F-1 #212 L2)'
     // post-merge re-augmentation must re-fire the helper so the plain
     // string ends with Alleluia.
     expect(gc!.antiphon).toMatch(/Аллэлуяа!\s*$/)
-    // Rich path — `applySeasonalAntiphonRich` (#223 redo) appends a NEW
-    // para block carrying ONLY the rubric span. The renderer's
-    // inter-block `<br/>` produces the line break the user expected.
+    // Rich path — WI #30: `applySeasonalAntiphonRich` 가 마지막 para 의
+    // spans 끝에 separator + rubric span 을 inline append. 새 블록 추가
+    // 없음 (별 <p> 가 아니어서 renderer 의 inter-block `<br/>` 발생 안 함).
     expect(gc!.antiphonRich).toBeDefined()
     const blocks = gc!.antiphonRich!.blocks
     const lastBlock = blocks[blocks.length - 1]
     expect(lastBlock.kind).toBe('para')
-    if (lastBlock.kind !== 'para') throw new Error('expected trailing para')
-    // The trailing block is rubric-only — no leading-space text span,
-    // no body text. This shape is what triggers the `<br/>` separator
-    // when the previous block was the body para.
-    expect(lastBlock.spans).toEqual([
-      { kind: 'rubric', text: 'Аллэлуяа!' },
-    ])
-    // Penultimate block (the body para) MUST NOT carry an inline
-    // Alleluia rubric — guards against the pre-redo regression where
-    // the helper inlined `[' ', '(Аллэлуяа!)']` into the body spans.
-    const penultBlock = blocks[blocks.length - 2]
-    if (penultBlock.kind === 'para') {
-      const lastBodySpan = penultBlock.spans[penultBlock.spans.length - 1]
-      if (lastBodySpan.kind === 'rubric' || lastBodySpan.kind === 'text') {
-        expect(lastBodySpan.text).not.toMatch(/Аллэлуяа/)
-      }
-    }
+    if (lastBlock.kind !== 'para') throw new Error('expected last para')
+    // The LAST block (body para) 가 spans 끝에 separator + rubric 을 가짐.
+    const spans = lastBlock.spans
+    expect(spans.length).toBeGreaterThanOrEqual(3)
+    const trailingRubric = spans[spans.length - 1]
+    expect(trailingRubric).toEqual({ kind: 'rubric', text: 'Аллэлуяа!' })
+    const separator = spans[spans.length - 2]
+    expect(separator).toEqual({ kind: 'text', text: ' ' })
+    // 그 앞 span 은 body text (rubric 으로 끝나지 않음 — 인라인 시작 spot).
+    const lastBodySpan = spans[spans.length - 3]
+    expect(['text', 'response', 'versicle']).toContain(lastBodySpan.kind)
   })
 
-  // @fr FR-NEW (#223 redo) — renderer-level acceptance: assembleHour →
-  // GospelCanticleSection emits a real `<br/>` between the body para
-  // and the rubric-only Alleluia para. Without this break, the user
-  // sees Аллэлуяа glued to the body's right edge (the #223 regression
-  // surface). Reads the production rich overlay (real
-  // commons/compline/SAT.rich.json) so the test catches data-shape
-  // drift in addition to helper logic.
-  it('Eastertide Saturday compline rendered antiphon HTML carries `<br/>` before Аллэлуяа (#223 line-break end-to-end)', async () => {
+  // @fr FR-NEW (WI #30 / GOAL #26) — renderer-level acceptance: assembleHour →
+  // GospelCanticleSection 가 body 와 Аллэлуяа 사이에 `<br/>` 를 emit 하지
+  // 않음 (inline shape). 사용자 directive 2026-05-16 "줄바꿈 후에 들어오면
+  // 안돼" 직접 가드. Reads the production rich overlay (real
+  // commons/compline/SAT.rich.json) so the test catches data-shape drift.
+  it('Eastertide Saturday compline rendered antiphon HTML has Аллэлуяа INLINE (no `<br/>` before it — #30 inline shape)', async () => {
     const { renderToStaticMarkup } = await import('react-dom/server')
     const { createElement } = await import('react')
     const { GospelCanticleSection } = await import('../../../components/prayer-sections/gospel-canticle-section')
@@ -834,15 +825,20 @@ describe('assembleHour() — Compline responsory rich propagation (F-1 #212 L2)'
     const gc = result!.sections.find((s): s is Extract<import('../../types').HourSection, { type: 'gospelCanticle' }> => s.type === 'gospelCanticle')
     expect(gc).toBeDefined()
     const html = renderToStaticMarkup(createElement(GospelCanticleSection, { section: gc! }))
-    // Renderer emits one `<br/>` per inter-block boundary. The
-    // Eastertide overlay typically ships a single body para; the helper
-    // appends the rubric para → at least one `<br/>` between them and
-    // the rubric on the new line.
-    expect(html).toMatch(/<br\s*\/?>[\s\S]*?Аллэлуяа!/)
-    // WI #21 (2026-05-15): 사용자 directive — '막토 안에는 빨간 글씨 필요
-    // 없어' — rubric 스팬에서 `text-red-700` 트리거 제거. `not-italic`
-    // 만 유지 (부모 amber-italic cascade 를 상쇄, PDF rubric 의 upright
-    // 표시는 보존).
+    // WI #30 — Аллэлуяа 가 마지막 body span 직후에 inline 으로 등장.
+    // <br/> 가 body 마침표와 Аллэлуяа 사이에 emit 되지 않음.
+    expect(html).toMatch(
+      /нойрсож болно\.<\/span><span> <\/span><span[^>]*class="not-italic"[^>]*>Аллэлуяа!<\/span>/,
+    )
+    // 안티폰 영역에 `<br/>` 자체가 없음 (단일 para — 다중 블록 분리 없음).
+    const antiphonRe = /<div[^>]*data-role="antiphon"[\s\S]*?<\/div>/
+    const antiphonMatch = html.match(antiphonRe)
+    expect(antiphonMatch).toBeTruthy()
+    if (antiphonMatch) {
+      // 첫 번째 안티폰 (recap 아닌) 내부에 <br/> 부재.
+      expect(antiphonMatch[0]).not.toMatch(/<br\s*\/?>/)
+    }
+    // WI #21 (2026-05-15): rubric span 빨간색 없음, `not-italic` 만.
     expect(html).toMatch(
       /<span[^>]*class="not-italic"[^>]*>Аллэлуяа!<\/span>/,
     )
