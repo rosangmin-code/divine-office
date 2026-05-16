@@ -299,24 +299,21 @@ describe('applySeasonalAntiphonRich', () => {
     expect(applySeasonalAntiphonRich(empty, 'EASTER')).toEqual(empty)
   })
 
-  // F-X1 redo (#223) — block-level append: a NEW para block carrying
-  // only the rubric span is appended at the END of rich.blocks. The
-  // renderer surfaces this across the inter-block `<br/>` separator,
-  // producing the line break the user reported as missing.
-  it('appends a NEW para block containing the Alleluia rubric span at the END in EASTER (#223 line-break shape)', () => {
+  // WI #30 / GOAL #26 (2026-05-16) — F-X1 #223 의 block-level append 반전.
+  // 사용자 directive: 'шад магтаал 끝에 오는 알렐루야가 줄바꿈 후에 들어
+  // 오면 안돼. 문장 뒤에 바로 붙을 수 있도록 해줘'. 마지막 para 의 spans
+  // 끝에 separator + rubric span inline append (별 블록 아님).
+  it('appends Аллэлуяа INLINE to the last para spans in EASTER (#30 inline shape)', () => {
     const out = applySeasonalAntiphonRich(baseRich, 'EASTER')
     expect(out).toBeDefined()
-    expect(out!.blocks).toHaveLength(2)
-    // Original body para — untouched (input not mutated, spans unchanged).
+    // 블록 개수 변동 없음 — 기존 1개 para 그대로, 새 블록 추가 안 함.
+    expect(out!.blocks).toHaveLength(1)
     const bodyBlock = out!.blocks[0]
     if (bodyBlock.kind !== 'para') throw new Error('expected body para')
+    // spans 끝에 separator (' ') + rubric span Inline append 됨.
     expect(bodyBlock.spans).toEqual([
       { kind: 'text', text: 'Эзэн бол миний хүч.' },
-    ])
-    // New rubric-only para — produces a `<br/>` break before rendering.
-    const rubricBlock = out!.blocks[1]
-    if (rubricBlock.kind !== 'para') throw new Error('expected rubric-only para')
-    expect(rubricBlock.spans).toEqual([
+      { kind: 'text', text: ' ' },
       { kind: 'rubric', text: 'Аллэлуяа!' },
     ])
   })
@@ -360,10 +357,9 @@ describe('applySeasonalAntiphonRich', () => {
     expect(applySeasonalAntiphonRich(already, 'EASTER')).toEqual(already)
   })
 
-  // F-X1 redo (#223) — multi-block input gets the rubric appended as a
-  // new para block at the very END (not inlined into the last body para).
-  // All preceding blocks are preserved verbatim.
-  it('appends a NEW rubric-only para at the END when multi-block (rubric-line preface + body paras)', () => {
+  // WI #30 / GOAL #26 — multi-block input: rubric inline appended to the
+  // LAST para's spans (not as separate block). 다른 블록들은 verbatim 보존.
+  it('appends Аллэлуяа INLINE to the LAST para spans when multi-block (#30 inline shape)', () => {
     const multi: PrayerText = {
       blocks: [
         { kind: 'rubric-line', text: 'Амилалтын улирал:' },
@@ -373,20 +369,19 @@ describe('applySeasonalAntiphonRich', () => {
     }
     const out = applySeasonalAntiphonRich(multi, 'EASTER')
     expect(out).toBeDefined()
-    expect(out!.blocks).toHaveLength(4)
-    // Existing 3 blocks preserved verbatim — no inline mutation.
+    // 블록 수 동일 (3 → 3). 새 블록 추가 없음.
+    expect(out!.blocks).toHaveLength(3)
+    // 앞 2 블록 verbatim 보존.
     expect(out!.blocks[0]).toEqual({ kind: 'rubric-line', text: 'Амилалтын улирал:' })
     expect((out!.blocks[1] as { spans: unknown }).spans).toEqual([
       { kind: 'text', text: 'first.' },
     ])
+    // 마지막 para spans 끝에 separator + rubric 추가됨 (inline).
     expect((out!.blocks[2] as { spans: unknown }).spans).toEqual([
       { kind: 'text', text: 'last.' },
+      { kind: 'text', text: ' ' },
+      { kind: 'rubric', text: 'Аллэлуяа!' },
     ])
-    // NEW para appended at the end — only the rubric span.
-    expect(out!.blocks[3]).toEqual({
-      kind: 'para',
-      spans: [{ kind: 'rubric', text: 'Аллэлуяа!' }],
-    })
   })
 
   it('returns input unchanged when no para block exists (stanza/rubric-line only)', () => {
@@ -445,6 +440,8 @@ describe('applySeasonalAntiphonRich', () => {
   // Task #222 — mirror the plain helper's closing-period insertion (line
   // 33-35) on the rich path. Production data ends with punctuation already,
   // so this only fires for hand-authored entries that omit the closer.
+  // WI #30 / GOAL #26: rubric inline 모드. body span 끝에 마침표 추가 후
+  // separator + rubric span 이 같은 para spans 끝에 inline append 됨.
   it('appends a closing period to the last text-bearing span when missing (#222 mirror)', () => {
     const noPeriod: PrayerText = {
       blocks: [
@@ -456,13 +453,15 @@ describe('applySeasonalAntiphonRich', () => {
     }
     const out = applySeasonalAntiphonRich(noPeriod, 'EASTER')
     expect(out).toBeDefined()
-    expect(out!.blocks).toHaveLength(2)
+    expect(out!.blocks).toHaveLength(1)
     const body = out!.blocks[0]
     if (body.kind !== 'para') throw new Error('expected body para')
-    expect(body.spans).toEqual([{ kind: 'text', text: 'Эзэн бол хүч.' }])
-    const rubric = out!.blocks[1]
-    if (rubric.kind !== 'para') throw new Error('expected rubric para')
-    expect(rubric.spans).toEqual([{ kind: 'rubric', text: 'Аллэлуяа!' }])
+    // 마침표 추가 + inline separator + rubric.
+    expect(body.spans).toEqual([
+      { kind: 'text', text: 'Эзэн бол хүч.' },
+      { kind: 'text', text: ' ' },
+      { kind: 'rubric', text: 'Аллэлуяа!' },
+    ])
   })
 
   it('leaves an existing closing punctuation untouched (#222 no double period)', () => {
@@ -476,8 +475,14 @@ describe('applySeasonalAntiphonRich', () => {
     }
     const out = applySeasonalAntiphonRich(withQuestion, 'EASTER')
     expect(out).toBeDefined()
+    expect(out!.blocks).toHaveLength(1)
     const body = out!.blocks[0]
     if (body.kind !== 'para') throw new Error('expected body para')
-    expect(body.spans).toEqual([{ kind: 'text', text: 'Хэн вэ?' }])
+    // 마침표 추가 안 됨 (이미 `?` 로 닫혀 있음) + separator + rubric inline.
+    expect(body.spans).toEqual([
+      { kind: 'text', text: 'Хэн вэ?' },
+      { kind: 'text', text: ' ' },
+      { kind: 'rubric', text: 'Аллэлуяа!' },
+    ])
   })
 })

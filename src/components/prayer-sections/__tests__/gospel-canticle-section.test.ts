@@ -306,12 +306,16 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
   // vespers (magnificat) / lauds (benedictus) 는 헤딩 → 안티폰 → 본문 →
   // recap 안티폰 (기존 컨벤션 보존).
   describe('WI #29 — compline antiphon-first ordering (PDF order)', () => {
-    // Helper: locate the heading `<p ... class="...text-red-700...">`
+    // Helper: locate the heading `<p ... data-role="canticle-heading">`
     // OPENING tag. The wrapping `<section aria-label="<canticle name>">`
     // carries the same name string, so plain `indexOf(name)` finds the
-    // aria-label first. Anchoring on the red-class `<p` tag scopes the
-    // index to the heading element only.
-    const HEADING_TAG_RE = /<p[^>]*text-red-700[^>]*>/
+    // aria-label first. Anchoring on `data-role="canticle-heading"`
+    // scopes the index to the heading element only — color-independent.
+    //
+    // WI #30 anchor migration: #29 iter 1 anchor 는 text-red-700 클래스에
+    // 결합돼 있었음. 본 WI 에서 헤딩 색상 까망 처리하면서 색상-독립 구조
+    // anchor 로 이관 (CLAUDE.md selector 원칙 일치 — 데이터-role 우선).
+    const HEADING_TAG_RE = /<p[^>]*data-role="canticle-heading"[^>]*>/
     const headingTagIdx = (html: string): number => {
       const m = html.match(HEADING_TAG_RE)
       return m && m.index !== undefined ? m.index : -1
@@ -383,6 +387,55 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
       expect(antiphonIdx).toBeGreaterThan(-1)
       expect(headingIdx).toBeGreaterThan(-1)
       expect(antiphonIdx).toBeLessThan(headingIdx)
+    })
+  })
+
+  // WI #30 (2026-05-16) — 헤딩 색상 까망 처리 + 색상-독립 anchor 마이그레이션.
+  // GOAL #20 "제목은 빨간 글씨 그대로 해" 가 사용자 directive 반전으로 무효화.
+  describe('WI #30 — canticle heading color (까망 처리)', () => {
+    it('compline heading carries data-role="canticle-heading" + stone-800, NO red', () => {
+      const section = makeSection({ canticle: 'nuncDimittis' })
+      const html = render(createElement(GospelCanticleSection, { section }))
+      // data-role anchor 존재 (색상-독립 stable selector)
+      expect(html).toMatch(/<p[^>]*data-role="canticle-heading"[^>]*>/)
+      // 헤딩 라인의 텍스트가 stone-800 클래스에 들어 있음 (까망)
+      expect(html).toMatch(
+        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-stone-800[^"]*"[^>]*>Сайнмэдээний айлдлын магтаал/,
+      )
+      // red 클래스 헤딩에 없음 (회귀 가드 — WI #20 반전 확정)
+      expect(html).not.toMatch(
+        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-red-[^"]*"[^>]*>/,
+      )
+    })
+
+    it('vespers heading also carries data-role + stone-800 NO red (3 hour 일관)', () => {
+      const section = makeSection({
+        canticle: 'magnificat',
+        antiphon: 'Магнификат шад магтаал.',
+        text: 'Сэтгэл минь Эзэнийг дээдэлнэ.',
+      })
+      const html = render(createElement(GospelCanticleSection, { section }))
+      expect(html).toMatch(
+        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-stone-800[^"]*"[^>]*>Мариагийн магтаал/,
+      )
+      expect(html).not.toMatch(
+        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-red-[^"]*"[^>]*>/,
+      )
+    })
+
+    it('lauds heading also carries data-role + stone-800 NO red', () => {
+      const section = makeSection({
+        canticle: 'benedictus',
+        antiphon: 'Бенедиктус шад магтаал.',
+        text: 'Магтан жавхлан өргөе.',
+      })
+      const html = render(createElement(GospelCanticleSection, { section }))
+      expect(html).toMatch(
+        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-stone-800[^"]*"[^>]*>Захариагийн магтаал/,
+      )
+      expect(html).not.toMatch(
+        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-red-[^"]*"[^>]*>/,
+      )
     })
   })
 

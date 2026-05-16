@@ -139,14 +139,38 @@ export function applySeasonalAntiphonRich(
   // task #222 keeps it for safety against hand-authored entries.
   const baseBlocks = ensureClosingPeriod(rich.blocks)
 
-  // Block-level append — NEW para block at the end carrying only the
-  // rubric span. Renderer's inter-block `<br/>` produces the line break
-  // the user expects without renderer changes.
-  const newBlock = {
-    kind: 'para' as const,
-    spans: [{ kind: 'rubric' as const, text: 'Аллэлуяа!' }],
+  // WI #30 / GOAL #26 (2026-05-16) — 사용자 directive 반전. F-X1 #223 의
+  // block-level append (NEW para containing only the rubric span) 은
+  // renderAntiphonRich 의 inter-block `<br/>` 으로 인해 'Аллэлуяа!' 가
+  // 별 줄로 렌더됐음. 사용자 (2026-05-16) "끝기도에서 ... шад магтаал
+  // 끝에 오는 알렐루야가 줄바꿈 후에 들어오면 안돼. 문장 뒤에 바로 붙을
+  // 수 있도록 해줘" → 마지막 para 의 spans 끝에 inline append 로 변경.
+  //
+  // 구조: 마지막 para 의 spans = [...기존, { kind:'text', text:' ' },
+  //                                { kind:'rubric', text:'Аллэлуяа!' }]
+  // separator text span (' ') 은 본문 마침표와 Аллэлуяа 사이 공백 제공
+  // (Mongolian liturgical typography 관례). rubric span 은 WI #21 이후
+  // renderAntiphonSpan 에서 까망 not-italic 으로 렌더됨.
+  //
+  // 마지막 para 위치: `hasPara` 가드 (위 L130) 가 통과한 상태이므로
+  // 최소 1개 para 존재 보장. 마지막 para 가 아닌 마지막 BLOCK 일 수도
+  // 있는 multi-block 경우 (e.g. rubric-line preface + para + para) 도
+  // 'last para' = 마지막에서 거꾸로 첫 para 라는 의미.
+  const newBlocks = [...baseBlocks]
+  for (let i = newBlocks.length - 1; i >= 0; i--) {
+    const block = newBlocks[i]
+    if (block.kind !== 'para') continue
+    newBlocks[i] = {
+      ...block,
+      spans: [
+        ...block.spans,
+        { kind: 'text' as const, text: ' ' },
+        { kind: 'rubric' as const, text: 'Аллэлуяа!' },
+      ],
+    }
+    break
   }
-  return { ...rich, blocks: [...baseBlocks, newBlock] }
+  return { ...rich, blocks: newBlocks }
 }
 
 /**
