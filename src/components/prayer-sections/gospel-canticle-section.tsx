@@ -34,18 +34,21 @@ function renderAntiphonSpan(span: PrayerSpan, key: number): JSX.Element {
       </span>
     )
   }
+  // WI #12 (2026-05-19): PDF convention 정합 — Mongolian LOTH PDF 본문에는
+  // 키릴 'В./Х.' 접두어가 존재하지 않고, responsory 의 verse/response 쌍은
+  // call 라인 무접두 + response 라인 '- ' (hyphen) 으로 표기된다 (WI #10
+  // 확립). gospel-canticle 안티폰의 versicle/response 스팬은 commons /
+  // propers 현행 데이터에 0건이지만 PrayerSpan union 타입 일부로 살아 있어
+  // 분기는 forward-compat defense 로 보존. 렌더는 responsory 규약과 동일:
+  // versicle (call) = 접두어 없음, response (answer) = 'not-italic' 으로
+  // 부모 italic 을 깬 '- ' 접두어 + 본문.
   if (span.kind === 'versicle') {
-    return (
-      <span key={key}>
-        <span className="font-semibold not-italic">В. </span>
-        {span.text}
-      </span>
-    )
+    return <span key={key}>{span.text}</span>
   }
   if (span.kind === 'response') {
     return (
       <span key={key}>
-        <span className="font-semibold not-italic">Х. </span>
+        <span className="not-italic">- </span>
         {span.text}
       </span>
     )

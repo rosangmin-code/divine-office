@@ -23,10 +23,18 @@ export function ResponsorySection({
   //   결정되는 deterministic 6-line emission 으로 통일한다. `rich` 의 본문
   //   블록은 더 이상 참조하지 않는다.
   //
-  // 단 `rich.blocks` 안의 `rubric-line` (예: 부활 8일 축제 "Амилалтын
-  // улирал:" 안내문) 는 PDF 의 빨간 시즌 cue 와 동일한 의미를 갖는 별도
-  // 정보이므로 본문 6-line 위에 보존해 렌더한다. (plain 필드만으로는
-  // 표현 불가)
+  // 단 `rich.blocks` 안에 `rubric-line` 블록이 나타나면 PDF 의 빨간 시즌
+  // cue (예: 부활 8일 축제 "Амилалтын улирал:" 안내문) 와 동일한 의미의
+  // 별도 정보이므로 본문 6-line 위에 보존해 렌더한다 (plain 필드만으로는
+  // 표현 불가).
+  //
+  // NOTE — WI #12 (2026-05-19) commons psalter responsoryRich 113건 전수
+  // 조사 결과 `rubric-line` 블록은 현재 데이터에 0건. 즉 5 블록
+  // (response/versicle/response/text/response) → WI #10 Fix A 가 첫 cantor
+  // refrain 을 prepend 해 6 라인 emit 으로 정합한 상태가 모든 책정 자료의
+  // 실제 출력 패턴이다. 아래 filter 는 향후 propers / 시즌 오버레이가
+  // `rubric-line` 을 도입할 가능성에 대비한 forward-compat 방어 코드로
+  // 유지한다.
   const richRubricLines: { text: string }[] =
     section.rich?.blocks.filter(
       (b): b is Extract<typeof b, { kind: 'rubric-line' }> =>

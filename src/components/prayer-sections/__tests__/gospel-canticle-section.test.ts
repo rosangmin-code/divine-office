@@ -173,7 +173,13 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
     expect(html).toMatch(/<span[^>]*class="italic"[^>]*>үнэхээр<\/span>/)
   })
 
-  it('rich path emits Mongolian V/R prefixes for versicle / response spans', () => {
+  // WI #12 (2026-05-19): Mongolian LOTH PDF 본문에는 'В./Х.' 키릴 접두어
+  // 가 등장하지 않는다. PDF convention 은 responsory 와 동일 — versicle
+  // (call) 라인은 무접두, response (answer) 라인은 '- ' (hyphen) prefix.
+  // gospel-canticle 안티폰의 versicle/response 스팬은 commons / propers
+  // 현행 데이터 0건의 forward-compat defense 분기이며, 본 테스트는 분기가
+  // 트리거될 때 PDF 규약대로 렌더됨을 가드한다.
+  it('rich path renders versicle (no prefix) + response ("- " prefix) per PDF convention (WI #12)', () => {
     const antiphonRich: PrayerText = {
       blocks: [
         {
@@ -188,11 +194,20 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
     }
     const section = makeSection({ antiphonRich })
     const html = render(createElement(GospelCanticleSection, { section }))
-    // Cyrillic V (В.) / R (Х.) per Mongolian liturgical convention.
-    expect(html).toMatch(/<span[^>]*>В\. <\/span>/)
-    expect(html).toMatch(/<span[^>]*>Х\. <\/span>/)
+    // 본문은 양쪽 모두 그대로 등장.
     expect(html).toContain('Эзэн дэргэд байх болтугай.')
     expect(html).toContain('Сүнс хамт байх болтугай.')
+    // 키릴 'В.' / 'Х.' 접두어는 어디에도 등장하지 않음 (PDF 본문 0건).
+    expect(html).not.toContain('В.')
+    expect(html).not.toContain('Х.')
+    // versicle 텍스트 직전에 '- ' 접두 span 이 붙지 않음 (call 무접두).
+    expect(html).not.toMatch(
+      /<span[^>]*>- <\/span>\s*Эзэн дэргэд байх болтугай\./,
+    )
+    // response 텍스트 직전에 'not-italic' 클래스 '- ' 접두 span 부착.
+    expect(html).toMatch(
+      /<span[^>]*class="not-italic"[^>]*>- <\/span>Сүнс хамт байх болтугай\./,
+    )
   })
 
   it('rich path renders stanza-block lines with <br/> line breaks (#217 F-X1)', () => {
