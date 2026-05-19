@@ -3,6 +3,22 @@ import { DATES, ALL_HOURS } from './fixtures/dates'
 
 // @fr FR-XXX  (placeholder — task #8 머지 시 실제 FR 번호로 일괄 교체)
 //
+// SUPERSEDED BY FR-163 (GOAL #4 / wi-001..wi-007 merges #13-#19) —
+// the calendar-list `/` route was rewritten from the "today-centric
+// infinite scroll" iter 1 (this file's contract) to "month-mode + URL
+// `?month=YYYY-MM`" iter 2. All 9 tests below use the pre-GOAL-#4
+// data-role attributes ("liturgical-calendar-list", "calendar-entry",
+// "today-auto-label") that the current implementation no longer emits
+// (current testids: "calendar-row", "calendar-row-toggle",
+// "calendar-row-body", data-row-kind="date"|"today-anchor").
+//
+// Per wi-008 (#20) the dispatched scope is the new
+// calendar-list-month.spec.ts (which already covers the iter 2
+// contract via current testids). Re-authoring this file's selectors
+// belongs to wi-009 (#21 — GOAL #4 통합 검증). Each test is wrapped
+// with .skip + TODO(wi-009) below to keep `npx playwright test` PASS
+// while preserving the obsolete source for refresh.
+//
 // task #7 plan + task #8 통합 구현 (P1+P2+P4+P5) 의 e2e 사양.
 // 본 파일은 구현이 in_flight 인 상태에서 contract 를 미리 동결하는 spec 이며,
 // task #8 머지 직후 dvo-rev-cl 가 그대로 plug-in 가능하다. CLAUDE.md
@@ -25,7 +41,7 @@ const ASCENSION_EVE = DATES.ascensionEve2026            // 2026-05-13
 const PENTECOST = DATES.pentecostDay2026                // 2026-05-24
 const OT_WEEKDAY = DATES.ordinaryWeekday                // 2026-02-04 (WEEKDAY)
 
-test.describe('Liturgical calendar list — 첫 화면 렌더 (P1)', () => {
+test.describe.skip('Liturgical calendar list — 첫 화면 렌더 (P1)', () => {
   test('list container with anchor-centered entries is visible on /', async ({ page }) => {
     await page.goto(`/?date=${TODAY}`)
 
@@ -106,7 +122,7 @@ test.describe('Liturgical calendar list — 첫 화면 렌더 (P1)', () => {
   })
 })
 
-test.describe('Liturgical calendar list — 인터랙션 (P2 inline expand)', () => {
+test.describe.skip('Liturgical calendar list — 인터랙션 (P2 inline expand)', () => {
   test('row click toggles inline hour cards without route change', async ({ page }) => {
     await page.goto(`/?date=${TODAY}`)
 
@@ -180,7 +196,7 @@ test.describe('Liturgical calendar list — 인터랙션 (P2 inline expand)', ()
   })
 })
 
-test.describe('Liturgical calendar list — 무한 스크롤 (P4)', () => {
+test.describe.skip('Liturgical calendar list — 무한 스크롤 (P4)', () => {
   test('scrolling to the bottom appends more calendar entries', async ({ page }) => {
     await page.goto(`/?date=${TODAY}`)
 
@@ -203,7 +219,7 @@ test.describe('Liturgical calendar list — 무한 스크롤 (P4)', () => {
   })
 })
 
-test.describe('Liturgical calendar list — "or" alternative (P5 pre-empted feast)', () => {
+test.describe.skip('Liturgical calendar list — "or" alternative (P5 pre-empted feast)', () => {
   test('5/13 Ascension eve row has no PDF-authored alternative → no "or" indicator', async ({
     page,
   }) => {
