@@ -3,7 +3,11 @@ import { notFound } from 'next/navigation'
 import { assembleHour, isFirstVespersEligibleDate } from '@/lib/loth-service'
 import { isValidDateStr } from '@/lib/date-validation'
 import { PrayerRenderer } from '@/components/prayer-renderer'
-import { SettingsLink } from '@/components/settings-link'
+// GOAL #24 WI-C (#31) — 상단 ⚙ SettingsLink 제거 (D5=a). 진입점은 하단
+// PrayerFooter 의 [⚙ Тохиргоо] 메뉴로 단일화. SettingsLink import 도
+// 제거 — 다른 페이지 (home / settings / guide / ordinarium) 에서는
+// 사용 유지될 수 있으나 본 prayer page 에서는 사라짐.
+import { PrayerFooter } from '@/components/prayer-footer'
 import { Footer } from '@/components/footer'
 import { HourIcon } from '@/components/hour-icon'
 import type { HourType } from '@/lib/types'
@@ -62,10 +66,23 @@ export default async function PrayPage({
 
   const { liturgicalDay } = assembled
 
+  // GOAL #24 WI-C — PrayerFooter Огноо 링크 prop. 기존 Буцах link 의
+  // celebration 처리 (`celebration && celebration !== 'default'`) 와 정합
+  // — 'default' 는 query 미부착 컨벤션 유지.
+  const footerCelebration =
+    celebration && celebration !== 'default' ? celebration : undefined
+
   return (
-    <div className="mx-auto max-w-2xl lg:max-w-3xl px-1 md:px-3 py-6">
-      {/* Back link + settings actions */}
-      <div className="mb-4 flex items-center justify-between">
+    // GOAL #24 WI-C — `pb-16` (= 4rem ≈ 64px) 으로 본문 하단 padding 부여
+    // 해 PrayerFooter strip (32px) 과 expanded panel (~150-200px) 이 마지막
+    // 본문을 가리지 않도록 안전 영역 확보. safe-area-inset-bottom 은
+    // PrayerFooter 컨테이너 안에 별도로 처리됨.
+    <div className="mx-auto max-w-2xl lg:max-w-3xl px-1 md:px-3 py-6 pb-16">
+      {/* GOAL #24 WI-C (D5=a) — 상단 ⚙ SettingsLink 제거. 진입점은 하단
+          PrayerFooter 의 [⚙ Тохиргоо] 메뉴로 단일화. 좌측 Буцах link 만
+          유지 — 명시적 buy-out 진입로 (PrayerFooter Огноо 와 destination
+          동일하지만 사용자가 직관적으로 위쪽으로 회귀 시도하는 path 보존). */}
+      <div className="mb-4 flex items-center">
         <Link
           href={`/?date=${date}${celebration && celebration !== 'default' ? `&celebration=${encodeURIComponent(celebration)}` : ''}`}
           aria-label="Бүх цагийн залбирлууд руу буцах"
@@ -73,9 +90,6 @@ export default async function PrayPage({
         >
           ← Бүх цагийн залбирал
         </Link>
-        <div className="flex items-center gap-1">
-          <SettingsLink />
-        </div>
       </div>
 
       {/* Header */}
@@ -122,8 +136,18 @@ export default async function PrayPage({
         </Link>
       </nav>
 
-      {/* Footer */}
+      {/* Footer — credit chevron 별개 컴포넌트 (D4=b). PrayerFooter 와
+          공존: PrayerFooter 가 fixed bottom (z-40) 으로 viewport 하단에
+          sticky, Footer 는 normal flow 안에서 본문 끝에 등장 (스크롤 시
+          본문과 함께 위로 흘러감). FR-162 chevron toggle 동작 보존. */}
       <Footer />
+
+      {/* GOAL #24 WI-C (D1=B, D2=a, D3=icon+text) — PrayerFooter:
+          32px sticky strip + 탭 시 slide-up 패널 (Огноо / Тохиргоо).
+          props: date (현재 화면 날짜, Огноо 링크 anchor) + celebration
+          (default 가 아닌 경우만 query 부착). expanded state 는 컴포넌트
+          내부 useState 로 자기 관리 (uncontrolled mode). */}
+      <PrayerFooter date={date} celebration={footerCelebration} />
     </div>
   )
 }
