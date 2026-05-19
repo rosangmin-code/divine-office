@@ -1,8 +1,29 @@
 import { test, expect } from '@playwright/test'
 import { DATES, ALL_HOURS, HOUR_NAMES_MN } from './fixtures/dates'
 
+// GOAL #4 (FR-163) replaced the home `/` route's day-card view with a
+// calendar-list month view (#13-#18 merges). The pre-GOAL-#4 assertions
+// in this file (h1 'Цагийн Залбирал', input[type="date"], 3 hour cards
+// at /, "Өнөөдөр" header button) no longer apply — those surfaces moved
+// to other pages (/pray/[date]/[hour]) or were removed entirely.
+//
+// Per wi-008 (#20 — this WI) the dispatched scope is the new
+// calendar-list-month.spec.ts + settings.spec.ts cleanup. Refactoring
+// or rewriting homepage.spec.ts proper belongs to wi-009 (#21 — GOAL #4
+// 통합 검증). We mark the failing cases `.skip` here with explicit
+// TODO(wi-009) anchors so:
+//   1. `npx playwright test` PASSes against this file (AC6 unblocked)
+//   2. The source of the obsolete assertions is preserved (not deleted)
+//   3. wi-009 owner can re-author or delete them as part of the full
+//      integration sweep
+//
+// Tests that DON'T depend on the home day-card view (e.g. Sunday card
+// listing on /?date=2026-02-08, which targets the home-OR-pray-date
+// surface) remain active where they still pass on current main.
 test.describe('Homepage', () => {
-  test('renders with today\'s date by default', async ({ page }) => {
+  // TODO(wi-009 / #21) — assertions target the pre-GOAL-#4 home day-card
+  // view. Home `/` is now a calendar-list month view (FR-163).
+  test.skip('renders with today\'s date by default', async ({ page }) => {
     // Anchor to a known Mon-Fri weekday so the hour-card count is stable
     // (post-#230 F-X5 the count varies: SAT=1, SUN=5, Mon-Fri=3). Without
     // a fixed date the test flakes whenever the test run lands on
@@ -25,7 +46,10 @@ test.describe('Homepage', () => {
     await expect(hourLinks).toHaveCount(3)
   })
 
-  test('renders correctly for a specific Ordinary Time date', async ({ page }) => {
+  // TODO(wi-009 / #21) — home no longer renders the day-card view at /
+  // (it shows the calendar-list month view). Day-card surface now lives
+  // at /pray/[date]/[hour] only.
+  test.skip('renders correctly for a specific Ordinary Time date', async ({ page }) => {
     await page.goto(`/?date=${DATES.ordinaryWeekday}`)
 
     // Season is merged into the heading (genitive form)
@@ -65,7 +89,10 @@ test.describe('Homepage', () => {
     await expect(page.getByText('Өнөөдөр')).toBeVisible()
   })
 
-  test('shows error for invalid date', async ({ page }) => {
+  // TODO(wi-009 / #21) — invalid ?date= no longer surfaces an error
+  // banner. Per FR-163 silent-degrade policy, invalid ?date= falls
+  // back to today's month (verified in calendar-list-month.spec.ts).
+  test.skip('shows error for invalid date', async ({ page }) => {
     await page.goto('/?date=invalid')
 
     await expect(page.getByText('Өгөгдөл олдсонгүй: invalid')).toBeVisible()

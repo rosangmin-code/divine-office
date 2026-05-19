@@ -4,7 +4,7 @@
 > and FR/NFR IDs in test titles. **Do not edit by hand.**
 > The curated matrix lives in [`docs/traceability-matrix.md`](./traceability-matrix.md).
 
-Scan: 47 test files contributed 23 unique IDs.
+Scan: 55 test files contributed 25 unique IDs.
 
 | ID | Test file | Test title(s) |
 |---|---|---|
@@ -21,14 +21,18 @@ Scan: 47 test files contributed 23 unique IDs.
 | FR-045 | `src/lib/__tests__/celebrations.test.ts` | returns only the default option on 04-17 after non-PDF entries removed (FR-045 follow-up A) |
 | FR-124 | `e2e/prayer-sections.spec.ts` | Psalm 119 sub-sections in psalter-texts have distinct content (FR-124) |
 | FR-132 | `e2e/prayer-sections.spec.ts` | psalm-concluding prayer renders when data is present (FR-132) |
+| FR-145 | `src/app/__tests__/page-month-routing.test.ts` | resolveMonthRouting (FR-145, GOAL #4 wi-002) |
+| FR-145 | `src/components/__tests__/liturgical-calendar-list.test.ts` | LiturgicalCalendarList — WI #17 month-mode (no infinite scroll) |
+| FR-145 | `src/components/__tests__/month-nav.test.ts` | MonthNav helper — shiftMonth (AC #2-5 boundary) |
+| FR-145 | `src/lib/__tests__/calendar-list-month.test.ts` | (tagged, title unknown) |
 | FR-145 | `src/lib/__tests__/calendar-list.test.ts` | calendar-list helpers (FR-145)<br>getCalendarRow (FR-145)<br>getTodayAnchorRow (FR-145)<br>getCalendarWindow (FR-145) |
 | FR-152 | `e2e/prayer-responsory.spec.ts` | API exposes new 3-field responsory shape (fullResponse, versicle, shortResponse)<br>responsory section carries data-role marker for decoupled selectors |
-| FR-153 | `e2e/pdf-fidelity-pilot.spec.ts` | concluding prayer renders rich overlay without duplicating the section heading<br>responsory uses V./R. markers when rich overlay present<br>no silent regression on non-rich sections (core structure intact) |
+| FR-153 | `e2e/pdf-fidelity-pilot.spec.ts` | concluding prayer renders rich overlay without duplicating the section heading<br>responsory uses PDF <br>no silent regression on non-rich sections (core structure intact) |
 | FR-153 | `e2e/prayer-intercessions.spec.ts` | Advent weekday lauds uses rich overlay (single-node body, no data-role fallback)<br>rich response line renders red hyphen prefix (PDF rubric) |
 | FR-153 | `e2e/prayer-rich-overlay-fallback.spec.ts` | (tagged, title unknown)<br>seasonal rich overlay special-key load (task #57)<br>Christmas rich overlay special-key load (task #61) |
 | FR-153 | `e2e/prayer-short-reading.spec.ts` | Advent Sunday lauds renders rich overlay (RichContent wrapper, no legacy verses)<br>Ordinary Time weekday lauds falls back to psalter commons rich<br>Compline shortReading uses commons/compline rich overlay<br>rich shortReading reflows to single paragraph (no per-line splits) |
 | FR-153 | `src/lib/__tests__/loth-service.test.ts` | hymn rich wiring (central catalog)<br>Christmas special-key rich integration (task #61) |
-| FR-153d | `e2e/prayer-responsory.spec.ts` | OT w1 SUN Lauds — psalter commons renders 5-block rich AST<br>OT weekday Lauds — psalter commons rich (weekday periodization)<br>Sunday Compline — ordinarium commons rich |
+| FR-153d | `e2e/prayer-responsory.spec.ts` | OT w1 SUN Lauds — PDF 6-line emission<br>OT weekday Lauds — PDF 6-line emission (weekday periodization)<br>Sunday Compline — PDF 6-line emission (ordinarium commons) |
 | FR-153f | `e2e/prayer-psalm-stanzas-rich.spec.ts` | Psalter stanzasRich rendering (FR-153f)<br>renders psalm stanzas via rich AST (data-role markers present)<br>Daniel 3 refrain lines are tagged with role=refrain<br>refrain lines do NOT carry red colour (2026-05-14 black-text policy) |
 | FR-153h | `e2e/prayer-psalm-prayer-rich.spec.ts` | Psalter psalmPrayerRich rendering (FR-153h)<br>psalm-prayer section renders with Mongolian rubric heading<br>first psalm psalmPrayer renders via rich AST (RichContent paragraph branch)<br>psalm-prayer heading carries red rubric class (§12.1) |
 | FR-155 | `e2e/easter-antiphon.spec.ts` | Easter season psalm / canticle antiphons (FR-155) |
@@ -64,6 +68,10 @@ Scan: 47 test files contributed 23 unique IDs.
 | FR-161 | `src/lib/__tests__/schemas.test.ts` | accepts stanza with lines only (legacy, phrases absent)<br>accepts stanza with lines + phrases (transition / additive Phase 1)<br>accepts stanza with empty lines + phrases array (degenerate Phase 3 future)<br>accepts stanza with empty lines and no phrases (edge / placeholder)<br>accepts a minimal phrase group with lineRange only<br>accepts a phrase group with indent and role<br>rejects role outside the enum<br>rejects indent outside 0/1/2<br>rejects negative or non-integer lineRange entries<br>accepts an array of phrase groups via PhraseGroupArraySchema |
 | FR-161 | `src/lib/hours/__tests__/seasonal-antiphon.test.ts` | applySeasonalAntiphonRich |
 | FR-162 | `e2e/footer-toggle.spec.ts` | Footer click-to-toggle visibility (FR-162) |
+| FR-162 | `src/components/__tests__/footer.test.ts` | still renders the ▾ chevron toggle (FR-162 contract preserved) |
+| FR-163 | `e2e/calendar-list-month.spec.ts` | D1 month view — ?month=2026-05 renders exactly 31 date rows (May 31 days)<br>D1 month view — ?month=2026-06 renders exactly 30 date rows (June 30 days)<br>D1 month view — ?month=2025-02 renders exactly 28 date rows (common-year Feb)<br>D2 today auto-anchor — home <br>D3 MonthNav prev — click pushes /?month=YYYY-(MM-1) and updates label<br>D3 MonthNav next — click pushes /?month=YYYY-(MM+1) and updates label across year boundary<br>D3 MonthNav present in header on every entry — picker button exists with native input<br>D4 footer Өнөөдөр — click from non-today month navigates back to /<br>D5 footer Тохиргоо — click navigates to /settings<br>D6 ?date= deep-link — /?date=2026-12-15 renders 2026-12 month with that row anchored<br>D7 layout responsiveness — MonthNav + Footer fit within viewport without horizontal overflow<br>captures home /?month=2026-05 (${variant} ${colorScheme}) |
+| FR-163 | `e2e/settings.spec.ts` | footer settings link on home navigates to /settings (wi-006 / FR-163) |
+| FR-163 | `src/lib/__tests__/sw.test.ts` | ?month= URL (FR-163) routes through network-only path (no cache.put) |
 | NFR-002 | `e2e/page-redirect.spec.ts` | Mongolian Cyrillic labels: catalog labels are PDF-original (NFR-002) |
 | NFR-002 | `src/components/__tests__/marian-antiphon-section.test.ts` | preserves the original text verbatim across joined lines (NFR-002 contract)<br>NFR-002 —  |
 | NFR-013 | `e2e/mobile.spec.ts` | prayer article inner width >= 320px for readability (NFR-013)<br>antiphon inner width >= 320px on mobile (NFR-013) |

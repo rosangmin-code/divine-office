@@ -110,9 +110,16 @@ test.describe('Settings page', () => {
     await expect(switchBtn).toHaveClass(/liturgical-gold/)
   })
 
-  test('gear icon on home navigates to /settings', async ({ page }) => {
+  // wi-004 (#16) moved Settings off the home header; wi-006 (#18)
+  // reintroduced it as a footer control on the sticky home variant.
+  // Rewritten to exercise the new footer entry point — scoped to
+  // `[data-role="footer"][data-variant="home"]` so the SettingsLink
+  // lookup is unambiguous after wi-004's header removal.
+  test('footer settings link on home navigates to /settings (wi-006 / FR-163)', async ({ page }) => {
     await page.goto('/')
-    await page.getByRole('link', { name: 'Тохиргоо' }).click()
+    const footer = page.locator('[data-role="footer"][data-variant="home"]')
+    await expect(footer).toBeVisible()
+    await footer.locator('[data-role="settings-link"]').click()
     await expect(page).toHaveURL(/\/settings$/)
     await expect(page.getByRole('heading', { name: 'Тохиргоо' })).toBeVisible()
   })
@@ -162,8 +169,14 @@ test.describe('Settings page', () => {
 
   test('home header no longer renders a theme toggle (FR-028)', async ({ page }) => {
     await page.goto('/')
-    // SettingsLink is still present
-    await expect(page.getByRole('link', { name: 'Тохиргоо' })).toBeVisible()
+    // wi-004 (#16) removed SettingsLink from the home header; the
+    // gear icon now lives in the footer (wi-006 / FR-163). We keep
+    // the FR-028 ThemeToggle-absent assertion which is the original
+    // intent of this test, and add a positive guard that SettingsLink
+    // IS reachable via the footer to preserve the discoverability
+    // invariant the original test was protecting.
+    const footer = page.locator('[data-role="footer"][data-variant="home"]')
+    await expect(footer.locator('[data-role="settings-link"]')).toBeVisible()
     // ThemeToggle (aria-label Харанхуй горим / Гэрэлтэй горим) should be removed
     await expect(page.getByRole('button', { name: /Харанхуй горим|Гэрэлтэй горим/ })).toHaveCount(0)
   })
