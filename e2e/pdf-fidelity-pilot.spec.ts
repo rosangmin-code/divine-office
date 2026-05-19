@@ -39,16 +39,22 @@ test.describe('FR-153 PDF fidelity — pilot (Week 1 SUN Lauds)', () => {
   })
 
   // @fr FR-153
-  test('responsory uses V./R. markers when rich overlay present', async ({ page }) => {
+  test('responsory uses PDF "-" hyphen markers (not Х./В.)', async ({ page }) => {
     const section = page.locator('section[aria-label="Хариу залбирал"]')
     await expect(section).toBeVisible()
 
-    // Rich overlay 가 적용되면 RichContent 가 `В.` / `Х.` 접두어를 볼드+빨강
-    // 으로 렌더한다. 기존 legacy 경로는 하이픈 "-" 만 쓰므로 마커 존재
-    // 여부가 곧 rich 경로 작동 증명. Week 1 SUN Lauds 의 responsory 구조는
-    // R-V-R-doxology-R 이므로 В. 1회 + Х. 3회 기대.
-    await expect(section.getByText('В.', { exact: false })).toHaveCount(1)
-    await expect(section.getByText('Х.', { exact: false })).toHaveCount(3)
+    // #5 (WI 10, 2026-05-19) — PDF 본문은 `-` 하이픈만 사용한다. 과거
+    // rich overlay path 가 자체적으로 부여하던 `Х.` (response) / `В.`
+    // (versicle) 키릴 약어는 PDF 와 불일치라 제거되었고, 본문은 plain
+    // 3-필드 경로로 deterministic 6-line emission 한다.
+    //   - line 2/4/6 (response 행) 에 red `- ` prefix
+    //   - line 1/3/5 (cantor 행: refrain / versicle / Glory Be) 에는 prefix 없음
+    // Week 1 SUN Lauds 의 universal 6-line 패턴 → red `- ` prefix 3 회.
+    await expect(section.getByText('В.', { exact: false })).toHaveCount(0)
+    await expect(section.getByText('Х.', { exact: false })).toHaveCount(0)
+    // `- ` prefix 가 정확히 3 회 (line 2/4/6) 등장.
+    const redHyphenPrefixes = section.locator('span.text-red-700').filter({ hasText: /^-\s+$/ })
+    await expect(redHyphenPrefixes).toHaveCount(3)
   })
 
   // @fr FR-153
