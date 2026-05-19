@@ -95,6 +95,14 @@ export function PrayerFooter({
 
   const handleClose = useCallback(() => {
     setExpanded(false)
+    // 키보드/포커스 흐름 보존: 닫힘과 함께 strip 으로 focus 복귀.
+    // WI-E (#33) e2e D4d 발견: backdrop click 후 focus 가 hidden
+    // backdrop 버튼에 머물러 a11y 가 망가짐 (Esc 경로는 별도로 명시
+    // focus 호출이 있어 정상이었음). handleClose 가 모든 dismiss
+    // 경로 (backdrop click + Esc) 의 single source 이므로 여기에
+    // 1-line shift — Esc handler 안의 별도 focus 호출은 제거되어
+    // dismiss 경로 대칭성 확보.
+    stripRef.current?.focus()
   }, [setExpanded])
 
   // Esc key dismiss — expanded 일 때만 listener 부착.
@@ -104,9 +112,6 @@ export function PrayerFooter({
       if (e.key === 'Escape') {
         e.preventDefault()
         handleClose()
-        // 키보드 흐름 보존: 닫힘과 함께 strip 으로 focus 복귀. 사용자가
-        // Tab 으로 다시 menu 에 진입할 수 있는 자연스러운 anchor.
-        stripRef.current?.focus()
       }
     }
     window.addEventListener('keydown', onKeyDown)
