@@ -1,36 +1,45 @@
 /**
- * Unit tests for GOAL #24 WI-A (#29) — PrayerFooter 컴포넌트.
+ * Unit tests for GOAL #24 WI-A (#29) + WI-B (#30) — PrayerFooter 컴포넌트.
  *
  * Test strategy (gospel-canticle-section / month-nav / liturgical-calendar-
- * list 컨벤션 차용):
- *   - vitest 환경에 jsdom / happy-dom 미설치 → 클릭 이벤트 시뮬레이션
- *     불가. 본 컴포넌트는 **controlled** (부모가 expanded state 관리)
- *     이므로 `expanded` prop 값에 따라 마크업이 달라지는 invariant 으로
- *     controlled-component 계약을 가드한다 (DOM 시뮬레이션 없이도 wire-
- *     up 입증 가능).
- *   - strip onClick 직접 시뮬레이션 대신 strip 의 native button 구조
- *     (type="button", data-role, aria-expanded prop-driven) 가 정확함을
- *     verify — `onClick={onToggle}` 자체는 5-char trivial wiring 으로
- *     bug surface 가 아니며, dispatch AC #9-5 (controlled component) 는
- *     prop 변경 시 마크업 변경으로 입증됨.
+ * list 컨벤션 차용 + WI-B Option B — leader directive 정합):
+ *   - vitest 환경에 jsdom / happy-dom 미설치. 프로젝트 testing posture 는
+ *     "e2e/ 가 DOM event 책임, unit/ 는 SSR-only" 분리. WI-B 의 인터랙션
+ *     로직 (toggle / Esc / outside-tap / focus / reduced-motion) 의 라이브
+ *     동작은 WI-E (#33) Playwright e2e 가 mobile + desktop + reduced-
+ *     motion viewport 로 검증한다.
+ *   - 본 unit suite 는 **인터랙션 패턴 가드** — uncontrolled vs controlled
+ *     mode static markup 차이, always-mounted panel 패턴 (panel DOM 항상
+ *     존재 + translate-y class swap), motion-reduce CSS 클래스 부착, ARIA
+ *     정확성, useState/useEffect/useRef 코드 source-grep 회귀 가드로
+ *     인터랙션 코드 path 자체의 존재를 입증.
  *
- * Coverage (dispatch AC #9 + 추가 회귀 가드):
- *   - strip render (32px 고정 픽셀, chevron ⏶ when collapsed)
- *   - expanded=true → 패널 DOM + 메뉴 2개 + chevron ⏷
- *   - menu link href (celebration 부재 / 존재 두 케이스)
- *   - aria-label 몽골어 verbatim ('Цэс харуулах' / 'Цэс нуух')
- *   - controlled-component contract — expanded prop 변화가 데이터-
- *     expanded / aria-expanded / chevron / 패널 DOM 모두 일관 변경
- *   - data-role anchor (strip / content / menu-date / menu-settings)
- *   - safe-area-inset-bottom padding 부착
+ * Coverage (WI-A 16 + WI-B Option B 6):
+ *   - WI-A: strip render (32px + ⏶/⏷) / Mongolian aria-label (Цэс
+ *     харуулах / Цэс нуух) / menu link href (celebration 유무) / data-role
+ *     anchor / safe-area-inset-bottom / focus-visible CSS / outer container
+ *     fixed/bottom/z-40
+ *   - WI-B: always-mounted panel 패턴 (collapsed 시도 panel DOM 존재 +
+ *     translate-y-full / expanded 시 translate-y-0 swap) / motion-reduce
+ *     클래스 / aria-hidden + inert (collapsed) / backdrop element (outside-
+ *     tap 캡처) / useState+useEffect+useRef 코드 존재 (source-grep) /
+ *     uncontrolled vs controlled mode 분기 (source-grep)
+ *
+ * 인터랙션 라이브 동작 (e2e WI-E #33 책임): 실제 strip 클릭 → expand,
+ * Escape 키 → collapse + strip focus 복귀, backdrop 클릭 → collapse,
+ * panel expand 시 first menu item focus, prefers-reduced-motion 활성 시
+ * transition duration 0.
  */
 
 import { describe, it, expect } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { createElement } from 'react'
 import { PrayerFooter } from '../prayer-footer'
 
 // @fr GOAL-24-WI-A
+// @fr GOAL-24-WI-B
 describe('PrayerFooter — collapsed (default)', () => {
   // Helper — strip <button> 태그를 한 번 추출해 내부 attribute 들의 순서
   // 의존성 없이 검사 (React/JSX prop 선언 순서에 따라 출력 순서가 변할 수
@@ -58,8 +67,13 @@ describe('PrayerFooter — collapsed (default)', () => {
     expect(strip).toContain('aria-expanded="false"')
     // data-expanded 양면 surface (CSS hook + e2e selector)
     expect(strip).toContain('data-expanded="false"')
-    // 패널 DOM 부재
-    expect(html).not.toContain('data-role="prayer-footer-content"')
+    // WI-B: panel ALWAYS mounted (slide animation 위해). collapsed 시도
+    // panel DOM 존재 + translate-y-full + aria-hidden=true + inert.
+    expect(html).toContain('data-role="prayer-footer-content"')
+    const panelTag = html.match(/<div[^>]*data-role="prayer-footer-content"[^>]*>/)
+    expect(panelTag).not.toBeNull()
+    expect(panelTag![0]).toContain('translate-y-full')
+    expect(panelTag![0]).toContain('aria-hidden="true"')
   })
 
   it('exposes Mongolian aria-label "Цэс харуулах" when collapsed (NFR-002)', () => {
@@ -284,9 +298,20 @@ describe('PrayerFooter — controlled-component contract (AC #9-5)', () => {
     expect(collapsedHtml).toContain('aria-expanded="false"')
     expect(expandedHtml).toContain('aria-expanded="true"')
 
-    // 패널 DOM 마운트 양방향
-    expect(collapsedHtml).not.toContain('data-role="prayer-footer-content"')
+    // WI-B: panel always mounted (animation 필요). collapsed 도 expanded
+    // 도 panel DOM 존재. visibility 는 translate-y class swap 으로 결정.
+    expect(collapsedHtml).toContain('data-role="prayer-footer-content"')
     expect(expandedHtml).toContain('data-role="prayer-footer-content"')
+    expect(collapsedHtml).toContain('translate-y-full')
+    expect(expandedHtml).toContain('translate-y-0')
+    // aria-hidden 양방향 swap (attribute 순서 비결정 — panel tag 추출 후
+    // attribute 동시 보유 확인).
+    const collapsedPanel = collapsedHtml.match(/<div[^>]*data-role="prayer-footer-content"[^>]*>/)
+    const expandedPanel = expandedHtml.match(/<div[^>]*data-role="prayer-footer-content"[^>]*>/)
+    expect(collapsedPanel).not.toBeNull()
+    expect(expandedPanel).not.toBeNull()
+    expect(collapsedPanel![0]).toContain('aria-hidden="true"')
+    expect(expandedPanel![0]).toContain('aria-hidden="false"')
 
     // aria-label 양방향 swap
     expect(collapsedHtml).toContain('aria-label="Цэс харуулах"')
@@ -311,14 +336,160 @@ describe('PrayerFooter — controlled-component contract (AC #9-5)', () => {
     expect(strip![0]).toContain('type="button"')
   })
 
-  it('default expanded value is false (omit prop → collapsed)', () => {
-    // prop 미지정 시 default = false 임을 가드 (TS 시그니처 + 런타임
-    // default value 둘 다 확인 — collapsed 마크업으로 입증).
+  it('default expanded value is false (omit prop → collapsed, uncontrolled mode)', () => {
+    // prop 미지정 시 uncontrolled mode → 내부 useState 초기값 false →
+    // collapsed 마크업.
     const html = renderToStaticMarkup(
       createElement(PrayerFooter, { date: '2026-05-20' }),
     )
     expect(html).toContain('aria-expanded="false"')
     expect(html).toContain('>⏶<')
-    expect(html).not.toContain('data-role="prayer-footer-content"')
+    // WI-B: panel mounted (always-mounted 패턴) 이지만 translate-y-full
+    // 으로 viewport 아래로 hidden.
+    expect(html).toContain('data-role="prayer-footer-content"')
+    expect(html).toContain('translate-y-full')
+  })
+})
+
+// WI-B (#30) — Option B 인터랙션 패턴 가드 6 cases.
+// dispatch 의 5+ AC 요구 충족 (toggle 직접 시뮬은 e2e WI-E #33 책임).
+describe('PrayerFooter — WI-B interaction patterns (Option B)', () => {
+  // AC #1 — uncontrolled vs controlled mode 분기
+  it('uncontrolled mode (no expanded prop) renders default collapsed markup', () => {
+    const html = renderToStaticMarkup(
+      createElement(PrayerFooter, { date: '2026-05-20' }),
+    )
+    // uncontrolled: 내부 useState 초기값 false
+    expect(html).toContain('aria-expanded="false"')
+    expect(html).toContain('translate-y-full')
+    expect(html).toContain('>⏶<')
+  })
+
+  it('controlled mode (explicit expanded=true) respects parent state', () => {
+    const html = renderToStaticMarkup(
+      createElement(PrayerFooter, { date: '2026-05-20', expanded: true }),
+    )
+    expect(html).toContain('aria-expanded="true"')
+    expect(html).toContain('translate-y-0')
+    expect(html).toContain('>⏷<')
+  })
+
+  // AC #2 — always-mounted panel + translate-y class swap
+  it('always-mounted panel: panel DOM present in both states, class swap controls visibility', () => {
+    const collapsedHtml = renderToStaticMarkup(
+      createElement(PrayerFooter, { date: '2026-05-20', expanded: false }),
+    )
+    const expandedHtml = renderToStaticMarkup(
+      createElement(PrayerFooter, { date: '2026-05-20', expanded: true }),
+    )
+    // 양쪽 다 panel DOM 마운트
+    expect(collapsedHtml).toContain('data-role="prayer-footer-content"')
+    expect(expandedHtml).toContain('data-role="prayer-footer-content"')
+    // panel tag 추출 후 attribute 순서 비결정 매칭
+    const collapsedPanel = collapsedHtml.match(/<div[^>]*data-role="prayer-footer-content"[^>]*>/)
+    const expandedPanel = expandedHtml.match(/<div[^>]*data-role="prayer-footer-content"[^>]*>/)
+    expect(collapsedPanel).not.toBeNull()
+    expect(expandedPanel).not.toBeNull()
+    // collapsed: translate-y-full + aria-hidden=true (no translate-y-0)
+    expect(collapsedPanel![0]).toContain('translate-y-full')
+    expect(collapsedPanel![0]).toContain('aria-hidden="true"')
+    expect(collapsedPanel![0]).not.toMatch(/\btranslate-y-0\b/)
+    // expanded: translate-y-0 + aria-hidden=false (no translate-y-full)
+    expect(expandedPanel![0]).toContain('translate-y-0')
+    expect(expandedPanel![0]).toContain('aria-hidden="false"')
+    expect(expandedPanel![0]).not.toMatch(/\btranslate-y-full\b/)
+  })
+
+  // AC #3 — prefers-reduced-motion CSS 클래스
+  it('panel + backdrop carry motion-reduce: classes (prefers-reduced-motion respect)', () => {
+    const html = renderToStaticMarkup(
+      createElement(PrayerFooter, { date: '2026-05-20', expanded: true }),
+    )
+    // panel transition + motion-reduce override
+    const panelMatch = html.match(/<div[^>]*data-role="prayer-footer-content"[^>]*>/)
+    expect(panelMatch).not.toBeNull()
+    expect(panelMatch![0]).toContain('transition-transform')
+    expect(panelMatch![0]).toContain('motion-reduce:transition-none')
+    expect(panelMatch![0]).toContain('motion-reduce:duration-0')
+    // backdrop도 동일 처리 (opacity-100 → opacity-0 transition)
+    const backdropMatch = html.match(/<button[^>]*data-role="prayer-footer-backdrop"[^>]*>/)
+    expect(backdropMatch).not.toBeNull()
+    expect(backdropMatch![0]).toContain('transition-opacity')
+    expect(backdropMatch![0]).toContain('motion-reduce:transition-none')
+  })
+
+  // AC #4 — backdrop element + outside-tap path
+  it('backdrop element exists for outside-tap dismiss (opacity-driven visibility)', () => {
+    const collapsedHtml = renderToStaticMarkup(
+      createElement(PrayerFooter, { date: '2026-05-20' }),
+    )
+    const expandedHtml = renderToStaticMarkup(
+      createElement(PrayerFooter, { date: '2026-05-20', expanded: true }),
+    )
+    // backdrop은 양쪽 다 마운트, opacity + pointer-events 로 분기
+    expect(collapsedHtml).toMatch(/<button[^>]*data-role="prayer-footer-backdrop"/)
+    expect(expandedHtml).toMatch(/<button[^>]*data-role="prayer-footer-backdrop"/)
+    // collapsed: opacity-0 + pointer-events-none (인터랙티브 아님)
+    const collapsedBackdrop = collapsedHtml.match(/<button[^>]*data-role="prayer-footer-backdrop"[^>]*>/)
+    expect(collapsedBackdrop![0]).toContain('opacity-0')
+    expect(collapsedBackdrop![0]).toContain('pointer-events-none')
+    // expanded: opacity-100 + pointer-events-auto (클릭 캡처)
+    const expandedBackdrop = expandedHtml.match(/<button[^>]*data-role="prayer-footer-backdrop"[^>]*>/)
+    expect(expandedBackdrop![0]).toContain('opacity-100')
+    expect(expandedBackdrop![0]).toContain('pointer-events-auto')
+    // backdrop 은 키보드 Tab 흐름에서 제외 (tabIndex=-1)
+    expect(collapsedBackdrop![0]).toContain('tabindex="-1"')
+    expect(expandedBackdrop![0]).toContain('tabindex="-1"')
+  })
+
+  // AC #5 — interaction 로직 코드 존재 (source-grep 회귀 가드)
+  // 실제 동작은 e2e WI-E #33 책임이나, 코드 path 자체가 사라지지 않도록
+  // 소스 본문에서 useState / useEffect / useRef + 인터랙션 키워드를
+  // grep 으로 가드.
+  it('source code contains interaction logic (useState + useEffect + useRef + Escape handler)', () => {
+    // Note: 이 test 는 컴포넌트 소스를 읽어 인터랙션 path 가 코드에 존재
+    // 하는지 확인. WI-A 의 controlled-only API 시점에 부재 → WI-B 에서
+    // 추가된 코드가 제거되면 회귀 detect.
+    const srcPath = resolve(__dirname, '..', 'prayer-footer.tsx')
+    const raw = readFileSync(srcPath, 'utf-8')
+    // 코멘트 strip — 회귀 가드는 코드 본문에서만 토큰 존재 확인.
+    const code = raw
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .split('\n')
+      .map((line) => line.replace(/\/\/.*$/, ''))
+      .join('\n')
+
+    // controlled/uncontrolled hybrid: useState + isControlled 분기
+    expect(code).toMatch(/\buseState\b/)
+    expect(code).toMatch(/\bisControlled\b/)
+    // Esc handler: useEffect + keydown 리스너 + 'Escape' 키
+    expect(code).toMatch(/\buseEffect\b/)
+    expect(code).toMatch(/['"]keydown['"]/)
+    expect(code).toMatch(/['"]Escape['"]/)
+    // focus 관리: useRef + .focus() 호출
+    expect(code).toMatch(/\buseRef\b/)
+    expect(code).toMatch(/\.focus\(\)/)
+    // window listener cleanup (memory leak 가드)
+    expect(code).toMatch(/\bremoveEventListener\b/)
+  })
+
+  // AC #6 — focus / backdrop / inert source grep (interaction code path 가드)
+  it('source code carries focus management + backdrop + inert markers', () => {
+    const srcPath = resolve(__dirname, '..', 'prayer-footer.tsx')
+    const raw = readFileSync(srcPath, 'utf-8')
+    const code = raw
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .split('\n')
+      .map((line) => line.replace(/\/\/.*$/, ''))
+      .join('\n')
+
+    // strip ref + firstMenu ref — focus 복귀 / auto-focus 둘 다 가능
+    expect(code).toMatch(/\bstripRef\b/)
+    expect(code).toMatch(/\bfirstMenuRef\b/)
+    // backdrop element + handleClose (outside-tap path)
+    expect(code).toMatch(/prayer-footer-backdrop/)
+    expect(code).toMatch(/\bhandleClose\b/)
+    // inert (collapsed 시 panel 키보드 Tab 차단)
+    expect(code).toMatch(/\binert\b/)
   })
 })
