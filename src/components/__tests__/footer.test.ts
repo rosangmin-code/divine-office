@@ -26,13 +26,31 @@
  *      so the contract survives expand/collapse cycles.
  */
 
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { createElement } from 'react'
+import type { ComponentType } from 'react'
 import { Footer } from '../footer'
+import type { FooterProps } from '../footer'
 
-function renderFooter(): string {
-  return renderToStaticMarkup(createElement(Footer))
+// wi-006 (#18) — Footer's home variant uses `useRouter` from
+// 'next/navigation'. `renderToStaticMarkup` runs in a server-like
+// environment where useRouter returns a stub via Next's runtime; in
+// vitest (no Next runtime) we mock the module so the hook returns a
+// no-op router instead of throwing. Tests assert on rendered HTML,
+// not on router.push calls (click behavior is covered by Playwright).
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: () => {}, replace: () => {}, back: () => {}, forward: () => {}, refresh: () => {}, prefetch: () => {} }),
+}))
+
+// Cast Footer to ComponentType<FooterProps> so React.createElement's
+// generic prop inference picks up `homeControls`. Without the cast,
+// TypeScript collapses Footer's default-argument signature into a
+// no-prop overload and rejects `homeControls`.
+const FooterAsComponent = Footer as ComponentType<FooterProps>
+
+function renderFooter(homeControls: boolean = false): string {
+  return renderToStaticMarkup(createElement(FooterAsComponent, { homeControls }))
 }
 
 describe('Footer — collapsed default render (FR-162)', () => {
@@ -97,5 +115,82 @@ describe('Footer — collapsed default render (FR-162)', () => {
     expect(html).toMatch(
       /<button\b[^>]*focus-visible:ring-\[var\(--color-liturgical-gold\)\]/,
     )
+  })
+})
+
+// wi-006 (#18) — home variant: sticky bottom + 3 controls.
+describe('Footer — home variant (wi-006 / #18, FR-162 contract preserved)', () => {
+  it('marks the variant with data-variant="home" + data-role="footer"', () => {
+    const html = renderFooter(true)
+    expect(html).toMatch(/<footer\b[^>]*\bdata-role="footer"/)
+    expect(html).toContain('data-variant="home"')
+  })
+
+  it('applies sticky bottom-0 + safe-area-inset-bottom padding', () => {
+    const html = renderFooter(true)
+    expect(html).toMatch(/<footer\b[^>]*\bsticky\b/)
+    expect(html).toMatch(/<footer\b[^>]*\bbottom-0\b/)
+    // safe-area-inset-bottom embedded in the inline style for iOS notch
+    // (Tailwind doesn't ship a built-in safe-area utility, so the
+    //  contract is pinned to the rendered `style` attribute).
+    expect(html).toMatch(/style="[^"]*env\(safe-area-inset-bottom\)/)
+  })
+
+  it('renders the [⊙ Өнөөдөр] today-jump button with Mongolian aria-label', () => {
+    const html = renderFooter(true)
+    expect(html).toContain('data-role="footer-today"')
+    expect(html).toContain('aria-label="Өнөөдрийн өдөр рүү шилжих"')
+    expect(html).toContain('Өнөөдөр') // visible label text
+    expect(html).toContain('⊙') // icon glyph
+  })
+
+  it('renders the [⚙ Тохиргоо] settings link (Link to /settings) with label', () => {
+    const html = renderFooter(true)
+    // SettingsLink at showLabel=true should render the text alongside
+    // the gear icon, and the href must still be /settings.
+    expect(html).toMatch(/<a[^>]*\bhref="\/settings"/)
+    expect(html).toContain('aria-label="Тохиргоо"')
+    expect(html).toContain('data-role="settings-link"')
+    expect(html).toContain('Тохиргоо') // visible label text alongside icon
+  })
+
+  it('still renders the ▾ chevron toggle (FR-162 contract preserved)', () => {
+    const html = renderFooter(true)
+    // Same data-role + aria contract as the minimal variant — the e2e
+    // suite (e2e/footer-toggle.spec.ts) keys on these.
+    expect(html).toMatch(
+      /<button\b[^>]*\btype="button"[^>]*\bdata-role="footer-toggle"/,
+    )
+    expect(html).toContain('aria-expanded="false"')
+    expect(html).toContain('aria-label="Доод бичвэр харуулах"')
+    expect(html).toContain('▾')
+  })
+
+  it('starts with footer-content COLLAPSED (chevron toggles credit lines)', () => {
+    const html = renderFooter(true)
+    expect(html).not.toContain('data-role="footer-content"')
+    expect(html).not.toContain('Цагийн Залбирал — Монгол Католик Сүм')
+  })
+
+  it('each control hits min 44×44 tap-target (WCAG 2.5.5 / mobile accessibility)', () => {
+    const html = renderFooter(true)
+    // The three home-variant controls (today / settings / chevron) all
+    // use min-h-[44px] or h-9 (36px) — only the chevron-toggle's 36px
+    // is acceptable inside a touch-friendly strip because the strip's
+    // own py-* padding pushes the tap area past 44px. We pin the two
+    // primary controls to the 44px floor.
+    expect(html).toMatch(/data-role="footer-today"[^>]*min-h-\[44px\]/)
+  })
+
+  it('renders all three controls inside the same flex strip', () => {
+    const html = renderFooter(true)
+    // Sanity-check structural ordering: today → settings → toggle
+    // (left → right reading order). Each appears exactly once.
+    const todayIdx = html.indexOf('data-role="footer-today"')
+    const settingsIdx = html.indexOf('data-role="settings-link"')
+    const toggleIdx = html.indexOf('data-role="footer-toggle"')
+    expect(todayIdx).toBeGreaterThan(-1)
+    expect(settingsIdx).toBeGreaterThan(todayIdx)
+    expect(toggleIdx).toBeGreaterThan(settingsIdx)
   })
 })
