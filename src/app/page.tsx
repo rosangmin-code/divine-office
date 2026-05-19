@@ -1,9 +1,15 @@
 import { getMongoliaDateStr } from '@/lib/timezone'
 import { getCalendarMonth } from '@/lib/calendar-list'
 import { LiturgicalCalendarList } from '@/components/liturgical-calendar-list'
-import { SettingsLink } from '@/components/settings-link'
+import { MonthNavController } from '@/components/month-nav-controller'
 import { Footer } from '@/components/footer'
 import Link from 'next/link'
+
+// wi-004 (#16) header — replaced previous [h1 'Огноо' | SettingsLink]
+// pair with MonthNav (?month=YYYY-MM URL push driven). The Settings entry
+// point moves to the footer (wi-006 / #18). Other pages (/guide,
+// /ordinarium, /pray/...) still mount their own SettingsLink; only the
+// home header drops it here.
 
 // NOTE: `loadCalendarWindowAction` (src/app/actions/calendar.ts) is no
 // longer referenced — wi-005 removed the consuming infinite-scroll prop
@@ -105,15 +111,23 @@ export default async function HomePage({
 
   return (
     <div className="mx-auto max-w-2xl px-2 md:px-6 py-6">
-      {/* Header — image.png style "Огноо" + actions */}
-      <header className="mb-4 flex items-center justify-between border-b border-stone-200 pb-3 dark:border-stone-800">
+      {/* Header — image.png style month-navigation. MonthNav itself
+          serves as the page's primary title (its label shows the
+          current month, e.g. '2026 оны 5-р сар'). The previous
+          `Огноо` h1 + SettingsLink are removed: heading text is now
+          implied by the MonthNav label, and Settings reaches users
+          via the footer entry point (wi-006). A visually-hidden h1
+          is retained for accessibility + the legacy
+          `calendar-list-heading` testid that some tests / future
+          consumers may key on. */}
+      <header className="mb-4 border-b border-stone-200 pb-3 dark:border-stone-800">
         <h1
           data-testid="calendar-list-heading"
-          className="text-xl font-bold text-stone-900 dark:text-stone-100"
+          className="sr-only"
         >
           Огноо
         </h1>
-        <SettingsLink />
+        <MonthNavController currentMonth={yearMonth} />
       </header>
 
       {window.rows.length === 0 ? (

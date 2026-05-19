@@ -99,3 +99,33 @@ describe('page.tsx structural guards (FR-145, GOAL #4 wi-002)', () => {
     expect(PAGE_SRC).toMatch(/\bgetCalendarMonth\s*\(/)
   })
 })
+
+// wi-004 (#16) — header integration guards.
+describe('page.tsx wi-004 header integration (FR-145, GOAL #4)', () => {
+  const PAGE_SRC = readFileSync(
+    resolve(__dirname, '../page.tsx'),
+    'utf8',
+  )
+
+  it('imports MonthNavController and mounts it with currentMonth=yearMonth', () => {
+    expect(PAGE_SRC).toMatch(
+      /import\s+\{\s*MonthNavController\s*\}\s+from\s+['"]@\/components\/month-nav-controller['"]/,
+    )
+    // MonthNavController is fed the resolved yearMonth from
+    // resolveMonthRouting — pin the prop wiring shape.
+    expect(PAGE_SRC).toMatch(/<MonthNavController\s+currentMonth=\{yearMonth\}\s*\/>/)
+  })
+
+  it('removes SettingsLink import + JSX usage from the home header', () => {
+    expect(PAGE_SRC).not.toMatch(
+      /import\s+\{\s*SettingsLink\s*\}\s+from\s+['"]@\/components\/settings-link['"]/,
+    )
+    expect(PAGE_SRC).not.toMatch(/<SettingsLink\b/)
+  })
+
+  it('retains a `calendar-list-heading` testid for backward-compat anchoring', () => {
+    // The visible h1 changed shape (now sr-only) but the testid lives so
+    // any test / consumer keyed on it continues to find a stable anchor.
+    expect(PAGE_SRC).toMatch(/data-testid=["']calendar-list-heading["']/)
+  })
+})
