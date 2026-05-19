@@ -4,7 +4,7 @@
 > and FR/NFR IDs in test titles. **Do not edit by hand.**
 > The curated matrix lives in [`docs/traceability-matrix.md`](./traceability-matrix.md).
 
-Scan: 55 test files contributed 25 unique IDs.
+Scan: 57 test files contributed 26 unique IDs.
 
 | ID | Test file | Test title(s) |
 |---|---|---|
@@ -69,9 +69,11 @@ Scan: 55 test files contributed 25 unique IDs.
 | FR-161 | `src/lib/hours/__tests__/seasonal-antiphon.test.ts` | applySeasonalAntiphonRich |
 | FR-162 | `e2e/footer-toggle.spec.ts` | Footer click-to-toggle visibility (FR-162) |
 | FR-162 | `src/components/__tests__/footer.test.ts` | still renders the ▾ chevron toggle (FR-162 contract preserved) |
-| FR-163 | `e2e/calendar-list-month.spec.ts` | D1 month view — ?month=2026-05 renders exactly 31 date rows (May 31 days)<br>D1 month view — ?month=2026-06 renders exactly 30 date rows (June 30 days)<br>D1 month view — ?month=2025-02 renders exactly 28 date rows (common-year Feb)<br>D2 today auto-anchor — home <br>D3 MonthNav prev — click pushes /?month=YYYY-(MM-1) and updates label<br>D3 MonthNav next — click pushes /?month=YYYY-(MM+1) and updates label across year boundary<br>D3 MonthNav present in header on every entry — picker button exists with native input<br>D4 footer Өнөөдөр — click from non-today month navigates back to /<br>D5 footer Тохиргоо — click navigates to /settings<br>D6 ?date= deep-link — /?date=2026-12-15 renders 2026-12 month with that row anchored<br>D7 layout responsiveness — MonthNav + Footer fit within viewport without horizontal overflow<br>captures home /?month=2026-05 (${variant} ${colorScheme}) |
+| FR-163 | `e2e/calendar-list-month.spec.ts` | D1 month view — ?month=2026-05 renders exactly 31 date rows (May 31 days)<br>D1 month view — ?month=2026-06 renders exactly 30 date rows (June 30 days)<br>D1 month view — ?month=2025-02 renders exactly 28 date rows (common-year Feb)<br>D2 today auto-anchor — home <br>D3 MonthNav prev — click pushes /?month=YYYY-(MM-1) and updates label<br>D3 MonthNav next — click pushes /?month=YYYY-(MM+1) and updates label across year boundary<br>D3 MonthNav present in header on every entry — picker button exists with native input<br>D4 footer Өнөөдөр — click from non-today month navigates back to /<br>D5 footer Тохиргоо — click navigates to /settings<br>D6 ?date= deep-link — /?date=2026-12-15 renders 2026-12 month with that row anchored<br>D7 layout responsiveness — MonthNav + Footer fit within viewport without horizontal overflow<br>captures home /?month=2026-08 (${variant} ${colorScheme}) |
 | FR-163 | `e2e/settings.spec.ts` | footer settings link on home navigates to /settings (wi-006 / FR-163) |
 | FR-163 | `src/lib/__tests__/sw.test.ts` | ?month= URL (FR-163) routes through network-only path (no cache.put) |
+| FR-164 | `e2e/prayer-footer.spec.ts` | D1 strip → panel slide-up — closed strip toggles aria-expanded=true on click<br>D2 Огноо menu navigates to /?date=YYYY-MM-DD (preserves celebration query)<br>D3 Тохиргоо menu navigates to /settings<br>D4a panel dismiss — backdrop click closes the panel<br>D4b panel dismiss — strip chevron click closes the panel<br>D4c panel dismiss — Escape key closes the panel<br>D4d focus restoration — backdrop click puts focus on the strip<br>D4e focus restoration — Escape puts focus on the strip<br>D5 body content not occluded — last paragraph clears the 32px strip (pb-16 wrapper)<br>D6 prayer page header does NOT mount a SettingsLink (WI-C scope regression guard)<br>D7 reduced-motion — panel transitions are duration-0 (motion-reduce CSS applied) |
+| FR-164 | `src/components/__tests__/prayer-footer.test.ts` | PrayerFooter — collapsed (default) |
 | NFR-002 | `e2e/page-redirect.spec.ts` | Mongolian Cyrillic labels: catalog labels are PDF-original (NFR-002) |
 | NFR-002 | `src/components/__tests__/marian-antiphon-section.test.ts` | preserves the original text verbatim across joined lines (NFR-002 contract)<br>NFR-002 —  |
 | NFR-013 | `e2e/mobile.spec.ts` | prayer article inner width >= 320px for readability (NFR-013)<br>antiphon inner width >= 320px on mobile (NFR-013) |
