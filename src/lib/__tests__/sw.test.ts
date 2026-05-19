@@ -93,7 +93,7 @@ describe('public/sw.js — service worker contract', () => {
 
       await event.waitUntil.mock.calls[0][0]
 
-      expect(sw.fakeCaches.open).toHaveBeenCalledWith('divine-office-v38')
+      expect(sw.fakeCaches.open).toHaveBeenCalledWith('divine-office-v39')
       expect(sw.fakeCache.addAll).toHaveBeenCalledWith([
         '/offline.html',
         '/icon.svg',
@@ -143,6 +143,7 @@ describe('public/sw.js — service worker contract', () => {
         'divine-office-v36',
         'divine-office-v37',
         'divine-office-v38',
+        'divine-office-v39',
         'unrelated-cache',
       ])
 
@@ -189,8 +190,9 @@ describe('public/sw.js — service worker contract', () => {
       expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v35')
       expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v36')
       expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v37')
+      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v38')
       expect(sw.fakeCaches.delete).toHaveBeenCalledWith('unrelated-cache')
-      expect(sw.fakeCaches.delete).not.toHaveBeenCalledWith('divine-office-v38')
+      expect(sw.fakeCaches.delete).not.toHaveBeenCalledWith('divine-office-v39')
       expect(sw.claim).toHaveBeenCalled()
     })
   })
@@ -247,6 +249,31 @@ describe('public/sw.js — service worker contract', () => {
       const result = await event.respondWith.mock.calls[0][0]
       expect(result).toBe(navResponse)
       expect(sw.fakeFetch).toHaveBeenCalledTimes(1)
+      expect(sw.fakeCache.put).not.toHaveBeenCalled()
+      expect(navResponse.clone).not.toHaveBeenCalled()
+    })
+
+    // WI #19 / FR-163 — ?month=YYYY-MM URL (GOAL #4 의 신규 month-mode
+    // 라우팅) 은 정상적인 navigation request 이므로 기존 network-only
+    // 분기를 그대로 타야 한다. 별도 path 매칭 없이 `request.mode ===
+    // 'navigate'` 만으로 분기되는지 회귀 가드.
+    it('?month= URL (FR-163) routes through network-only path (no cache.put)', async () => {
+      const navResponse = { ok: true, clone: vi.fn() }
+      sw.fakeFetch.mockResolvedValue(navResponse)
+
+      const handler = sw.listeners.get('fetch')!
+      const event = makeEvent({
+        url: 'http://localhost:3200/?month=2026-05',
+        method: 'GET',
+        mode: 'navigate',
+      })
+      handler(event)
+
+      expect(event.respondWith).toHaveBeenCalledTimes(1)
+      const result = await event.respondWith.mock.calls[0][0]
+      expect(result).toBe(navResponse)
+      expect(sw.fakeFetch).toHaveBeenCalledTimes(1)
+      // navigation 은 cache 에 절대 put 되지 않음 — ?month= 도 동일.
       expect(sw.fakeCache.put).not.toHaveBeenCalled()
       expect(navResponse.clone).not.toHaveBeenCalled()
     })

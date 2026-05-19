@@ -1,3 +1,29 @@
+// v39 — GOAL #4 (FR-163): 첫 화면 calendar list 가 'today-centric infinite
+// scroll' 에서 'month-mode (한 달씩 끊어 보기 + MonthNav)' 로 전환.
+// 본 bump 가 묶는 변경:
+//   - 신규 client 컴포넌트 `src/components/month-nav.tsx` (#15 / wi-003)
+//   - `src/components/liturgical-calendar-list.tsx` infinite scroll
+//     메커니즘 (IntersectionObserver + loadOlder/loadNewer + hasScrolled +
+//     exhausted*/loading* state + sentinels) 제거 (#17 / wi-005, net -155
+//     production LOC)
+//   - `src/app/page.tsx` 의 ?month=YYYY-MM 라우팅 도입 + ±60일 윈도우
+//     제거 + getCalendarMonth 어댑터 호출 (#14 / wi-002)
+//   - `src/app/page.tsx` header 의 SettingsLink 제거 + MonthNav wiring
+//     (#16 / wi-004)
+// SW 자체 로직 변경 없음 — navigation 은 `network-only` 유지. 그러나
+// 위 변경이 정적 자산 (script chunks: page / liturgical-calendar-list /
+// month-nav + 신규 client manifest) 의 강제 재정렬을 요구하므로 v38 →
+// v39 conservative bump 채택. v38 잔존 시 구 LiturgicalCalendarList chunk
+// (infinite scroll 잔존) 가 cache-first 로 무한 서빙되어 month-mode 페
+// 이지가 정상 동작 안 함 — 사용자에게 깨진 링크 / 잘못된 anchor 노출
+// 가능. PRECACHE_URLS = ['/offline.html', '/icon.svg'] 는 변동 없음.
+// FR-163 ↔ FR-145 (이전 today-centric infinite scroll 정의) 의 supersede
+// relation: FR-145 는 'iter 1 결정' 으로 보존되고 FR-163 가 'iter 2
+// 결정 (GOAL #4 의 5가지 통합 요구)' 으로 갱신. ?month=YYYY-MM URL 신규
+// cache 처리: navigation request 라 network-only handler 가 자동 처리
+// (`request.mode === 'navigate'` 분기), 별도 path 매칭 추가 불요. sw.test.ts
+// 회귀 가드: ?month= URL 도 network-only path 로 흐르고 cache.put 미호출
+// 되는 regression case 추가됨.
 // v38 — WI #41: gospel-canticle 헤딩 빨강 복원 (#25/#30 매핑 오류 revert).
 // 사용자 directive (2026-05-16): '되돌리기 진행해' → `gospel-canticle-
 // section.tsx` L233-238 헤딩 className 의 색상 클래스 `text-stone-800
@@ -412,7 +438,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v38'
+const CACHE_VERSION = 'divine-office-v39'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
