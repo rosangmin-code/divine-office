@@ -175,3 +175,75 @@ export function getCalendarWindow(
 
   return { anchorDate, todayStr, rows }
 }
+
+// 'YYYY-MM' with month constrained to 01..12. Single-digit / 2-digit-year
+// / 13+ months are rejected by the regex.
+const YEAR_MONTH_RE = /^(\d{4})-(0[1-9]|1[0-2])$/
+
+/**
+ * Return the number of days in the given calendar month. `month` is
+ * 1-indexed (1=Jan..12=Dec). Uses the `Date.UTC(year, month, 0)`
+ * convention (day=0 yields the last day of the previous month, so
+ * passing `month` resolves to the last day of the requested month).
+ *
+ * Leap-year handling falls out naturally from the JS Date semantics:
+ *   daysInMonth(2024, 2) === 29
+ *   daysInMonth(2025, 2) === 28
+ */
+function daysInMonth(year: number, month: number): number {
+  return new Date(Date.UTC(year, month, 0)).getUTCDate()
+}
+
+export interface CalendarMonthOptions {
+  /** Override "today" (Asia/Ulaanbaatar). Test seam. Drives the synthetic
+   *  "Today (Automatic)" anchor row — included only when this date falls
+   *  inside the requested month. */
+  todayStr?: string
+}
+
+/**
+ * Build a calendar-list window covering exactly one calendar month
+ * (1st through the last day). Delegates to `getCalendarWindow` with
+ * `anchorDate = ${yearMonth}-01`, `before = 0`, `after = daysInMonth - 1`.
+ *
+ * The synthetic "Today (Automatic)" anchor row is prepended ONLY when
+ * `todayStr` (default: Asia/Ulaanbaatar today) falls inside the
+ * requested month. Other months render as pure date rows.
+ *
+ * Throws `TypeError` on malformed `yearMonth` — must be `'YYYY-MM'`
+ * with month ∈ 01..12 (e.g. `'2026-05'`). Strings like `'2026-13'`,
+ * `'2026-5'`, `'26-05'`, `'abc'`, or `''` are rejected.
+ *
+ * @example
+ *   getCalendarMonth('2026-05', { todayStr: '2026-05-14' })
+ *   // → rows.length === 32 (1 anchor + 31 date rows)
+ *
+ *   getCalendarMonth('2026-06', { todayStr: '2026-05-14' })
+ *   // → rows.length === 30 (no anchor, June has 30 days)
+ */
+export function getCalendarMonth(
+  yearMonth: string,
+  opts: CalendarMonthOptions = {},
+): CalendarListWindow {
+  const match = YEAR_MONTH_RE.exec(yearMonth)
+  if (!match) {
+    throw new TypeError(
+      `getCalendarMonth: invalid yearMonth "${yearMonth}" — expected "YYYY-MM" with month 01..12`,
+    )
+  }
+  const year = Number(match[1])
+  const month = Number(match[2])
+  const days = daysInMonth(year, month)
+  const anchorDate = `${yearMonth}-01`
+  const todayStr = opts.todayStr ?? getMongoliaDateStr()
+  // Anchor decision: include only when today is in the requested month.
+  // Compare via the 'YYYY-MM-' prefix to avoid date-arithmetic surprises.
+  const includeTodayAnchor = todayStr.startsWith(`${yearMonth}-`)
+
+  return getCalendarWindow(anchorDate, {
+    before: 0,
+    after: days - 1,
+    todayStr,
+    includeTodayAnchor,
+  })
+}
