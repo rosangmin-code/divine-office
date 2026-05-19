@@ -38,8 +38,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { createElement } from 'react'
 import { PrayerFooter } from '../prayer-footer'
 
-// @fr GOAL-24-WI-A
-// @fr GOAL-24-WI-B
+// @fr FR-164
 describe('PrayerFooter — collapsed (default)', () => {
   // Helper — strip <button> 태그를 한 번 추출해 내부 attribute 들의 순서
   // 의존성 없이 검사 (React/JSX prop 선언 순서에 따라 출력 순서가 변할 수
