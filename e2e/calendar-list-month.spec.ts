@@ -224,13 +224,27 @@ for (const variant of Object.keys(VIEWPORTS) as ViewportName[]) {
 }
 
 // ---------------------------------------------------------------------------
-// Visual snapshots — 4 baseline images (mobile/desktop × light/dark).
-// Output paths under e2e/snapshots/ (gitignored if not desired; current
-// repo policy is to let Playwright's snapshot diffing govern updates —
-// these are committed alongside the spec). Using `page.screenshot()`
-// rather than `toHaveScreenshot()` to keep the test suite green even
-// without pre-existing baselines; reviewer can inspect saved PNGs and
-// switch to `toHaveScreenshot` baseline mode later if desired.
+// Visual snapshots — 8 baseline images (mobile/desktop × light/dark
+// × chromium/mobile-chrome).
+//
+// Iter 1 review (dvo-rev-cl FAIL): 2 of 4 PNGs were blank (hydration
+// race before screenshot); the 2 non-blank PNGs only captured mid-
+// calendar rows because /?month=2026-05 is today's month → mount-once
+// scrollIntoView({block:'center'}) pushed MonthNav + Footer out of the
+// captured viewport. ALSO: snapshot path didn't include project name,
+// so both `chromium` and `mobile-chrome` projects raced on the same
+// file → last-write-wins (the resulting 3360×2100 "desktop" PNG was
+// actually rendered by mobile-chrome's Pixel 7 DPR).
+//
+// Iter 2 fixes:
+//   (a) Use /?month=2026-08 (non-today; no auto-scroll occlusion).
+//   (b) testInfo.project.name suffixed into the PNG path (no
+//       file-overwrite race; one PNG per (project, viewport, scheme)).
+//   (c) Wait for the today-row's CONTENT (a real calendar-row, not just
+//       the testid) before screenshot to absorb hydration timing.
+//   (d) fullPage: true — captures the entire page including offscreen
+//       MonthNav (top) and Footer (bottom) so a reviewer sees the
+//       chrome the snapshot claims to verify.
 // ---------------------------------------------------------------------------
 for (const variant of Object.keys(VIEWPORTS) as ViewportName[]) {
   for (const colorScheme of ['light', 'dark'] as const) {
@@ -238,16 +252,27 @@ for (const variant of Object.keys(VIEWPORTS) as ViewportName[]) {
       test.use({ viewport: VIEWPORTS[variant], colorScheme })
 
       // @fr FR-163
-      test(`captures home /?month=2026-05 (${variant} ${colorScheme})`, async ({ page }) => {
-        await page.goto('/?month=2026-05')
-        // Wait for MonthNav label as a hydration proxy — without this
-        // Playwright sometimes screenshots mid-stream before the RSC
-        // payload has rendered.
+      test(`captures home /?month=2026-08 (${variant} ${colorScheme})`, async ({ page }, testInfo) => {
+        // 2026-08 is a non-today month — guarantees no scrollIntoView
+        // auto-scroll, so MonthNav stays at the page top and Footer at
+        // the bottom for the snapshot to capture both.
+        await page.goto('/?month=2026-08')
+        // Wait for MonthNav label text AND a real calendar-row to
+        // appear — both are post-hydration signals. Without the row
+        // wait Playwright occasionally screenshots the unstyled
+        // pre-hydration shell (root cause of iter-1 blank PNGs).
         await page.locator('[data-testid="month-nav-label-text"]').waitFor()
+        await page
+          .locator('[data-testid="calendar-row"][data-row-kind="date"]')
+          .first()
+          .waitFor()
         await page.locator('[data-role="footer"][data-variant="home"]').waitFor()
+        // Project name in path so chromium + mobile-chrome don't
+        // race-overwrite each other.
+        const projectSlug = testInfo.project.name.replace(/[^a-z0-9]/gi, '-').toLowerCase()
         await page.screenshot({
-          path: `e2e/snapshots/calendar-list-month-${variant}-${colorScheme}.png`,
-          fullPage: false,
+          path: `e2e/snapshots/calendar-list-month-${variant}-${colorScheme}-${projectSlug}.png`,
+          fullPage: true,
         })
       })
     })
