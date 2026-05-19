@@ -1,3 +1,25 @@
+// v40 — GOAL #24 (FR-164): 기도문 화면 PrayerFooter — 하단 strip 탭 →
+// 전례력/설정 메뉴 슬라이드. 본 bump 가 묶는 변경:
+//   - 신규 client 컴포넌트 `src/components/prayer-footer.tsx` (#29 WI-A
+//     컴포넌트 구조 + #30 WI-B 인터랙션 로직 — controlled/uncontrolled
+//     hybrid + slide-up animation + Esc/outside-tap dismiss + focus
+//     management + always-mounted panel + motion-reduce)
+//   - `src/app/pray/[date]/[hour]/page.tsx` PrayerFooter 통합 + 상단
+//     SettingsLink 제거 + 본문 pb-16 (#31 WI-C)
+//   - `src/app/pray/[date]/[hour]/loading.tsx` skeleton 갱신 — settings-
+//     icon skeleton 제거 + 신규 PrayerFooter strip skeleton (실제 컴포넌트
+//     와 동일 32px geometry, layout shift 회피) (#31 WI-C)
+// SW 자체 로직 변경 없음 — navigation 은 `network-only` 유지. ?date= /
+// /settings 등 기존 URL 패턴 그대로 — 신규 라우트 / Content-Type / 자산
+// 경로 변경 0. 그러나 위 변경이 정적 자산 (script chunks: prayer-footer
+// 신규 + page.tsx + loading.tsx) 의 강제 재정렬을 요구하므로 v39 → v40
+// conservative bump 채택 (v19 GOAL #4 bump 와 동일 패턴 — 신규 컴포넌트
+// + page 통합 시 script chunk hash 변동). v39 잔존 시 구 prayer page
+// chunk (상단 SettingsLink 잔존 + PrayerFooter 부재) cache-first 무한
+// 서빙 → 사용자 깨진 UX (⚙ 두 곳 + footer strip 부재). PRECACHE_URLS =
+// ['/offline.html', '/icon.svg'] 변동 없음.
+// FR-164 ↔ FR-162 supersede relation 없음 — FR-162 (home Footer credit
+// chevron) 는 PrayerFooter 와 별개 컴포넌트로 prayer page 에 공존 (D4=b).
 // v39 — GOAL #4 (FR-163): 첫 화면 calendar list 가 'today-centric infinite
 // scroll' 에서 'month-mode (한 달씩 끊어 보기 + MonthNav)' 로 전환.
 // 본 bump 가 묶는 변경:
@@ -438,7 +460,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v39'
+const CACHE_VERSION = 'divine-office-v40'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
