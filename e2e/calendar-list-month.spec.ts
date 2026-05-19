@@ -164,7 +164,13 @@ for (const variant of Object.keys(VIEWPORTS) as ViewportName[]) {
 
     // @fr FR-163
     test('D5 footer Тохиргоо — click navigates to /settings', async ({ page }) => {
-      await page.goto('/')
+      // Use /?month=2026-08 (non-today) to skip auto-scroll. Iter-1
+      // showed ~33% mobile-chrome flake on this same shape rooted in
+      // the hydration / auto-scroll interaction (reviewer's iter-1
+      // defect #3 root-cause analysis). Non-today month removes the
+      // scrollIntoView entirely; the chain of pre-click waits below
+      // absorbs any remaining hydration timing.
+      await page.goto('/?month=2026-08')
       const footer = page.locator('[data-role="footer"][data-variant="home"]')
       await expect(footer).toBeVisible()
       // Scope SettingsLink lookup to the home footer — wi-004 removed

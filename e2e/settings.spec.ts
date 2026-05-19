@@ -116,10 +116,20 @@ test.describe('Settings page', () => {
   // `[data-role="footer"][data-variant="home"]` so the SettingsLink
   // lookup is unambiguous after wi-004's header removal.
   test('footer settings link on home navigates to /settings (wi-006 / FR-163)', async ({ page }) => {
-    await page.goto('/')
+    // Use /?month=2026-08 (non-today) to skip the LiturgicalCalendarList
+    // mount-once scrollIntoView({block:'center'}) — reviewer iter-1
+    // flagged a ~25% click race on this shape, root cause identified as
+    // hydration / auto-scroll interaction. Non-today month removes the
+    // auto-scroll entirely; the explicit href + aria-label expects
+    // below absorb any remaining hydration timing.
+    await page.goto('/?month=2026-08')
     const footer = page.locator('[data-role="footer"][data-variant="home"]')
     await expect(footer).toBeVisible()
-    await footer.locator('[data-role="settings-link"]').click()
+    const settingsLink = footer.locator('[data-role="settings-link"]')
+    await expect(settingsLink).toBeVisible()
+    await expect(settingsLink).toHaveAttribute('href', '/settings')
+    await expect(settingsLink).toHaveAttribute('aria-label', 'Тохиргоо')
+    await settingsLink.click()
     await expect(page).toHaveURL(/\/settings$/)
     await expect(page.getByRole('heading', { name: 'Тохиргоо' })).toBeVisible()
   })
