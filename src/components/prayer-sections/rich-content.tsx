@@ -46,12 +46,20 @@ function phraseHangingIndentClass(
   return 'pl-18 -indent-6'
 }
 
-// V. / R. 접두어는 몽골어 관례에 맞춰 하드코딩한다: В. (Вэрсикл) / Х. (Хариу).
-// responsory-section.tsx 는 접두어 대신 "- " 하이픈만 사용하지만, Rich AST 가
-// 기도문 전반을 담당하면서 versicle/response 를 명시 태깅하므로 더 명확한
-// 키릴 접두어를 쓴다. 색·굵기는 기존 rubric/response 스타일과 일치.
-const VERSICLE_PREFIX = 'В.'
-const RESPONSE_PREFIX = 'Х.'
+// PDF 본문 정합 (#5, WI 10) — 인쇄된 성무일도는 versicle 라인에 마커를 두지
+// 않고 response 라인에 `-` 하이픈만 표기한다 (Х./В. 키릴 약어 없음). 과거
+// rich AST 는 V./R. 식별성을 위해 `В.` / `Х.` 마커를 자체 부여했지만, PDF
+// 본문 verbatim 정합이 우선이므로 PDF convention 으로 맞춘다.
+//
+// responsory-section.tsx 가 responsory 블록을 plain 3-필드 path 로 전면
+// 처리하면서 현재 rich AST 의 `versicle` / `response` span 은 production
+// 렌더 경로에서 도달하지 않는다 (responsoryRich 외에 두 span kind 를 쓰는
+// rich 데이터 없음 — `grep -rl '"kind": "versicle"\|"kind": "response"'
+// src/data` = 0 hits outside responsoryRich). 본 상수는 향후 다른 rich
+// context 가 두 span kind 를 도입할 경우를 위한 defense-in-depth fallback
+// 이므로 PDF convention 을 따른다: response 는 `-`, versicle 은 마커 없음.
+const VERSICLE_PREFIX = ''
+const RESPONSE_PREFIX = '-'
 
 function emphasisClass(emphasis?: ('italic' | 'bold')[]): string {
   if (!emphasis || emphasis.length === 0) return ''
@@ -79,6 +87,10 @@ function renderSpan(span: PrayerSpan, key: number): JSX.Element {
     )
   }
   if (span.kind === 'versicle') {
+    // PDF (#5, WI 10): versicle 라인은 별도 마커 없음. VERSICLE_PREFIX 가
+    // 빈 문자열이면 unwrapped text 만 반환 (style span 의 trailing space
+    // 가 leftover 가 되지 않도록).
+    if (!VERSICLE_PREFIX) return <span key={key}>{span.text}</span>
     return (
       <span key={key}>
         <span className={`${RUBRIC_CLASS} font-semibold`}>{VERSICLE_PREFIX} </span>
@@ -86,7 +98,9 @@ function renderSpan(span: PrayerSpan, key: number): JSX.Element {
       </span>
     )
   }
-  // response
+  // response — PDF 는 `- ` 하이픈 prefix (red rubric). responsory-section.tsx
+  // 의 plain path 와 동일한 시각 컨벤션 (`<span className=text-red-700>- </span>`).
+  if (!RESPONSE_PREFIX) return <span key={key}>{span.text}</span>
   return (
     <span key={key}>
       <span className={`${RUBRIC_CLASS} font-semibold`}>{RESPONSE_PREFIX} </span>

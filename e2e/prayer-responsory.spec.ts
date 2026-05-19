@@ -4,13 +4,12 @@ import { DATES } from './fixtures/dates'
 /**
  * FR-152 — 응송(Хариу залбирал) 6행 구조의 남은 스펙.
  *
- * 6-part DOM 구조(헤더 1 + 본문 6 = `<p>` 7개) 는 legacy string-field 경로의
- * 계약이었으나, FR-153d (Stage 6 T5a/T5b/T5c) 에서 responsory 가 rich AST
- * (`[data-role="responsory"] > div.space-y-2 > p × 5`) 로 전환되면서 더는
- * 활성 코드 경로 아님. legacy DOM 계약을 고정하던 테스트 3건은 이 파일에서
- * 제거되었고, 같은 의미는 아래 FR-153d describe 의 rich-wrapper + 5-block
- * 계약으로 대체된다. 여기 FR-152 describe 에 남은 2건은 rich 경로와 독립
- * 적인 API 스키마 + data-role 마커 회귀 안전망만 담는다.
+ * #5 (WI 10, 2026-05-19) — responsory 본문은 plain 3-필드 (fullResponse /
+ * versicle / shortResponse) 의 deterministic 6-line emission 으로 통일.
+ * 과거 rich AST 본문 path (`<div class="space-y-2">` 5-block 래퍼 + Х./В.
+ * 키릴 prefix) 는 PDF 본문 (`-` hyphen-only universal 6-line pattern) 과
+ * 불일치라 제거되었다 — 본 파일의 FR-153d describe 는 그 PDF 정합 계약을
+ * 고정한다.
  *
  * Triduum 간소화 form(Holy Thursday/Friday/Saturday)은 렌더러에 구현되어
  * 있으나 propers 데이터에 성삼일 responsory 자체가 빈 필드 상태이므로
@@ -46,45 +45,56 @@ test.describe('Responsory API + data-role contract (FR-152)', () => {
 })
 
 /**
- * FR-153d — responsory Rich 확산 (Stage 6 T5a/T5b/T5c).
+ * FR-153d — responsory 본문 PDF 6-line emission (post-#5).
  *
- * 3 경로 커버리지 회귀 안전망:
- *   1) OT w1 SUN Lauds — psalter commons 카탈로그 rich (pilot 이관 후 seasonal
+ * PDF universal 6-line 패턴 (Sample: 시편 commons / compline commons):
+ *   1. fullResponse (cantor, NO `-` prefix)
+ *   2. - fullResponse (response)
+ *   3. versicle (cantor, NO `-` prefix)
+ *   4. - shortResponse (response)
+ *   5. Glory Be ("Эцэг, Хүү, Ариун Сүнсийг магтан дуулъя.", NO `-` prefix)
+ *   6. - fullResponse (response)
+ *
+ * DOM 계약: `[data-role="responsory"] > p` 헤더 1 + body `<p>` 6 (총 7 개,
+ * rich.blocks 에 rubric-line 가 있으면 +N — 부활 시즌 instruction 등).
+ * Red rubric prefix 는 line 2/4/6 (response 행) 에만 `<span class="text-red-700">- </span>`
+ * 로 등장.
+ *
+ * 검증 경로 3종:
+ *   1) OT w1 SUN Lauds — psalter commons 카탈로그 (pilot 이관 후 seasonal
  *      에 responsoryRich 없음, commons 가 source of truth)
- *   2) OT 평일 Lauds — psalter commons 카탈로그 rich (weekday 주기 확인)
- *   3) SUN Compline — ordinarium commons 카탈로그 rich
- *
- * DOM 계약: `[data-role="responsory"] > div.space-y-2` 가 `<p>` 5개
- * (V1 response / V2 versicle / R2 response / V3 Glory Be / R3 response) 를
- * 포함. response kind (1·3·5 번째) / versicle kind (2 번째) 는 `В.` / `Х.`
- * 접두어를 `span.text-red-700` 으로 렌더한다.
+ *   2) OT 평일 Lauds — psalter commons 카탈로그 (weekday 주기 확인)
+ *   3) SUN Compline — ordinarium commons 카탈로그
  */
-test.describe('Responsory rich overlay — commons catalogs (FR-153d)', () => {
+test.describe('Responsory body — PDF 6-line emission (FR-153d, post-#5)', () => {
   // @fr FR-153d
-  test('OT w1 SUN Lauds — psalter commons renders 5-block rich AST', async ({
-    page,
-    request,
-  }) => {
+  test('OT w1 SUN Lauds — PDF 6-line emission', async ({ page, request }) => {
     await page.goto(`/pray/${DATES.otWeek1Sunday}/lauds`)
     const responsory = page.locator('[data-role="responsory"]').first()
     await expect(responsory).toBeVisible()
 
-    const richWrapper = responsory.locator('> div.space-y-2')
-    await expect(richWrapper).toHaveCount(1)
+    // 본문 6 `<p>` (헤더 제외) — body paragraphs 만 카운트.
+    //   :scope > p:not(:first-child) — header 가 항상 첫 `<p>`.
+    // psalter commons rich 에는 rubric-line 이 없으므로 정확히 6 행.
+    const bodyParagraphs = responsory.locator(':scope > p:not(:first-child):not([data-role="responsory-rubric-line"])')
+    await expect(bodyParagraphs).toHaveCount(6)
 
-    const blocks = richWrapper.locator('> p')
-    await expect(blocks).toHaveCount(5)
-
-    // 1·3·5 (index 0/2/4) 번째 = response kind → red Х. 접두어
-    for (const idx of [0, 2, 4]) {
-      await expect(blocks.nth(idx).locator('span.text-red-700').first()).toBeVisible()
+    // Red `-` 하이픈 prefix 는 line 2/4/6 (인덱스 1/3/5) 에만 등장.
+    for (const idx of [1, 3, 5]) {
+      const prefix = bodyParagraphs.nth(idx).locator('span.text-red-700').first()
+      await expect(prefix).toBeVisible()
+      await expect(prefix).toHaveText('- ')
     }
-    // 2 (index 1) = versicle kind → red В. 접두어
-    await expect(blocks.nth(1).locator('span.text-red-700').first()).toBeVisible()
-    // 4 (index 3) = Glory Be plain text (접두어 없음 text kind)
-    await expect(blocks.nth(3)).toContainText(GLORY_BE_MN)
 
-    // API source tag 가 psalter commons 카탈로그에서 왔음을 확인
+    // Glory Be 는 5번째 (index 4) 본문 행.
+    await expect(bodyParagraphs.nth(4)).toContainText(GLORY_BE_MN)
+
+    // 과거 rich AST 마커 (Х./В.) 가 더 이상 등장하지 않아야 한다.
+    await expect(responsory.getByText('Х.', { exact: false })).toHaveCount(0)
+    await expect(responsory.getByText('В.', { exact: false })).toHaveCount(0)
+
+    // API source tag 가 psalter commons 카탈로그에서 왔음을 확인 (rich.source
+    // 자체는 API 응답에 여전히 노출 — 렌더가 본문을 plain 으로 처리할 뿐).
     const api = await request.get(`/api/loth/${DATES.otWeek1Sunday}/lauds`)
     expect(api.status()).toBe(200)
     const body = await api.json()
@@ -94,7 +104,7 @@ test.describe('Responsory rich overlay — commons catalogs (FR-153d)', () => {
   })
 
   // @fr FR-153d
-  test('OT weekday Lauds — psalter commons rich (weekday periodization)', async ({
+  test('OT weekday Lauds — PDF 6-line emission (weekday periodization)', async ({
     page,
     request,
   }) => {
@@ -102,9 +112,11 @@ test.describe('Responsory rich overlay — commons catalogs (FR-153d)', () => {
     const responsory = page.locator('[data-role="responsory"]').first()
     await expect(responsory).toBeVisible()
 
-    const richWrapper = responsory.locator('> div.space-y-2')
-    await expect(richWrapper).toHaveCount(1)
-    await expect(richWrapper.locator('> p')).toHaveCount(5)
+    const bodyParagraphs = responsory.locator(':scope > p:not(:first-child):not([data-role="responsory-rubric-line"])')
+    await expect(bodyParagraphs).toHaveCount(6)
+
+    await expect(responsory.getByText('Х.', { exact: false })).toHaveCount(0)
+    await expect(responsory.getByText('В.', { exact: false })).toHaveCount(0)
 
     const api = await request.get(`/api/loth/${DATES.ordinaryWeekday}/lauds`)
     const body = await api.json()
@@ -115,14 +127,16 @@ test.describe('Responsory rich overlay — commons catalogs (FR-153d)', () => {
   })
 
   // @fr FR-153d
-  test('Sunday Compline — ordinarium commons rich', async ({ page, request }) => {
+  test('Sunday Compline — PDF 6-line emission (ordinarium commons)', async ({ page, request }) => {
     await page.goto(`/pray/${DATES.otWeek1Sunday}/compline`)
     const responsory = page.locator('[data-role="responsory"]').first()
     await expect(responsory).toBeVisible()
 
-    const richWrapper = responsory.locator('> div.space-y-2')
-    await expect(richWrapper).toHaveCount(1)
-    await expect(richWrapper.locator('> p')).toHaveCount(5)
+    const bodyParagraphs = responsory.locator(':scope > p:not(:first-child):not([data-role="responsory-rubric-line"])')
+    await expect(bodyParagraphs).toHaveCount(6)
+
+    await expect(responsory.getByText('Х.', { exact: false })).toHaveCount(0)
+    await expect(responsory.getByText('В.', { exact: false })).toHaveCount(0)
 
     const api = await request.get(`/api/loth/${DATES.otWeek1Sunday}/compline`)
     const body = await api.json()
