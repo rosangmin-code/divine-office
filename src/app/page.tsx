@@ -1,52 +1,111 @@
 import { getMongoliaDateStr } from '@/lib/timezone'
-import { getCalendarWindow } from '@/lib/calendar-list'
+import { getCalendarMonth } from '@/lib/calendar-list'
 import { LiturgicalCalendarList } from '@/components/liturgical-calendar-list'
 import { SettingsLink } from '@/components/settings-link'
 import { Footer } from '@/components/footer'
 import Link from 'next/link'
-import { loadCalendarWindowAction } from '@/app/actions/calendar'
 
-// FR-145 (#8) — Liturgical-calendar first screen.
-//
-// Replaces the prior single-day card view with an image.png-style
-// vertical liturgical calendar. The first row is a synthetic "Today
-// (Автомат)" anchor; subsequent rows show each calendar date with the
-// default celebration + optional alternatives. Rows expand inline (no
-// route navigation) to surface the hour cards.
-//
-// Render policy:
-//   - Server renders an initial window (±60 days from anchor by
-//     default) — large enough that infinite scroll is rarely needed for
-//     a typical browsing session.
-//   - Client extends the visible range via `loadCalendarWindowAction`
-//     when the top/bottom sentinel reaches the viewport.
-//   - Back link preservation (FR-145 AC5): prayer pages still link
-//     back via `/?date=YYYY-MM-DD&celebration=...`. The home page reads
-//     those params to anchor the list at the requested date and
-//     pre-select the matching row's celebration.
+// NOTE: `loadCalendarWindowAction` (src/app/actions/calendar.ts) is no
+// longer referenced — wi-005 removed the consuming infinite-scroll prop
+// from `LiturgicalCalendarList`. The action file itself is left in place
+// as an orphan for a separate cleanup follow-up (outside wi-002 scope).
 
-const INITIAL_BEFORE_DAYS = 60
-const INITIAL_AFTER_DAYS = 60
+// FR-145 (#8 / GOAL #4) — Liturgical-calendar first screen.
+//
+// 3-tier searchParams resolution (highest-priority first):
+//   1. ?date=YYYY-MM-DD → render the month containing that date; the
+//      named date row is pre-selected via LiturgicalCalendarList's
+//      `initialDate` prop (back-link preservation, FR-145 AC5).
+//   2. ?month=YYYY-MM → render exactly that month; the synthetic
+//      "Today (Automatic)" anchor row appears only when today falls
+//      inside the requested month (delegated to getCalendarMonth).
+//   3. Neither → render today's month with the today-anchor prepended.
+//
+// Invalid ?date / ?month values silently fall back to today's month
+// (no 4xx, no empty screen). The 3-tier decision is encapsulated in
+// the pure helper `resolveMonthRouting` below so it can be unit-tested
+// without spinning up Next.
+
+const DATE_PARAM_RE = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/
+const MONTH_PARAM_RE = /^(\d{4})-(0[1-9]|1[0-2])$/
+
+export interface MonthRoutingDecision {
+  /** Resolved 'YYYY-MM' to render. Already falls back to today's month
+   *  when the input was malformed — always safe to pass directly into
+   *  `getCalendarMonth`. */
+  yearMonth: string
+  /** ?date param passed through ONLY when it parses as YYYY-MM-DD.
+   *  Drives LiturgicalCalendarList's pre-selected row (FR-145 AC5
+   *  back-link preservation). `undefined` whenever ?date is absent
+   *  or malformed. */
+  initialDate: string | undefined
+}
+
+/**
+ * Pure helper — resolves the 3-tier searchParams priority into the
+ * single month to render plus the (optional) pre-selected row.
+ *
+ *   ?date wins → month derived from date, initialDate = date
+ *   ?month → month as-is, initialDate undefined
+ *   neither → today's month, initialDate undefined
+ *
+ * Malformed inputs silently degrade to today's month. The validation
+ * regexes mirror the strict shape that `getCalendarMonth` would also
+ * reject, so the helper's output never causes getCalendarMonth to
+ * throw — keeping the page handler exception-free.
+ */
+export function resolveMonthRouting(
+  params: { date?: string; month?: string },
+  todayStr: string,
+): MonthRoutingDecision {
+  const todayMonth = todayStr.slice(0, 7)
+
+  // Tier 1 — ?date dictates BOTH the month and the pre-selected row.
+  if (params.date !== undefined) {
+    if (DATE_PARAM_RE.test(params.date)) {
+      return {
+        yearMonth: params.date.slice(0, 7),
+        initialDate: params.date,
+      }
+    }
+    // Invalid ?date silently degrades to today's month; do NOT propagate
+    // the malformed value as initialDate (would anchor to a bogus row).
+    return { yearMonth: todayMonth, initialDate: undefined }
+  }
+
+  // Tier 2 — explicit ?month selector.
+  if (params.month !== undefined) {
+    if (MONTH_PARAM_RE.test(params.month)) {
+      return { yearMonth: params.month, initialDate: undefined }
+    }
+    return { yearMonth: todayMonth, initialDate: undefined }
+  }
+
+  // Tier 3 — neither param: today's month.
+  return { yearMonth: todayMonth, initialDate: undefined }
+}
 
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ date?: string; celebration?: string }>
+  searchParams: Promise<{
+    date?: string
+    month?: string
+    celebration?: string
+  }>
 }) {
   const params = await searchParams
   const todayStr = getMongoliaDateStr()
-  const anchorDate = params.date ?? todayStr
-
-  const window = getCalendarWindow(anchorDate, {
-    before: INITIAL_BEFORE_DAYS,
-    after: INITIAL_AFTER_DAYS,
+  const { yearMonth, initialDate } = resolveMonthRouting(
+    { date: params.date, month: params.month },
     todayStr,
-    includeTodayAnchor: true,
-  })
+  )
+
+  const window = getCalendarMonth(yearMonth, { todayStr })
 
   return (
     <div className="mx-auto max-w-2xl px-2 md:px-6 py-6">
-      {/* Header — image.png style "Dates" + actions */}
+      {/* Header — image.png style "Огноо" + actions */}
       <header className="mb-4 flex items-center justify-between border-b border-stone-200 pb-3 dark:border-stone-800">
         <h1
           data-testid="calendar-list-heading"
@@ -59,15 +118,14 @@ export default async function HomePage({
 
       {window.rows.length === 0 ? (
         <p className="py-12 text-center text-stone-500 dark:text-stone-400">
-          Өгөгдөл олдсонгүй: {anchorDate}
+          Өгөгдөл олдсонгүй: {window.anchorDate}
         </p>
       ) : (
         <LiturgicalCalendarList
           initialRows={window.rows}
           todayStr={todayStr}
-          initialDate={params.date}
+          initialDate={initialDate}
           initialCelebrationId={params.celebration}
-          loadWindow={loadCalendarWindowAction}
         />
       )}
 
