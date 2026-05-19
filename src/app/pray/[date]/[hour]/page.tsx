@@ -63,7 +63,7 @@ export default async function PrayPage({
   const { liturgicalDay } = assembled
 
   return (
-    <div className="mx-auto max-w-2xl lg:max-w-3xl px-2 md:px-6 py-6">
+    <div className="mx-auto max-w-2xl lg:max-w-3xl px-1 md:px-3 py-6">
       {/* Back link + settings actions */}
       <div className="mb-4 flex items-center justify-between">
         <Link
