@@ -11,7 +11,18 @@ const FONT_SIZES: { value: FontSize; label: string; scaleEm: number }[] = [
   { value: 'md', label: 'M', scaleEm: 1 },
   { value: 'lg', label: 'L', scaleEm: 1.125 },
   { value: 'xl', label: 'XL', scaleEm: 1.25 },
+  { value: 'xxl', label: 'XXL', scaleEm: 1.375 },
 ]
+
+const FONT_SIZE_DEFAULT_INDEX = FONT_SIZES.findIndex(o => o.value === 'md')
+
+// Visual styling for stepper Aa−/Aa+ buttons:
+//   - enabled  → INACTIVE_ACCENT (border + hover affordance, identical to
+//                fontFamily/theme inactive radio buttons for surface parity)
+//   - disabled → muted border + low-contrast glyph + cursor-not-allowed,
+//                so reaching the min (XS) / max (XXL) clamp is visible.
+export const STEPPER_BTN_DISABLED =
+  'border-stone-200 text-stone-300 cursor-not-allowed dark:border-stone-800 dark:text-stone-700'
 
 const FONT_FAMILIES: { value: FontFamily; label: string; sampleClass: string }[] = [
   { value: 'sans', label: 'Sans (Noto Sans)', sampleClass: 'font-sans' },
@@ -35,6 +46,31 @@ export const INACTIVE_ACCENT =
 
 export default function SettingsPage() {
   const { settings, updateSettings } = useSettings()
+
+  // Stepper state derivation (WI-B #46):
+  //   - currentIndex is derived from settings.fontSize via FONT_SIZES, which
+  //     is the SSOT (settings.tsx FONT_SIZES + this page's metadata array
+  //     are kept in lock-step; AC10 forbids touching settings.tsx, but the
+  //     two arrays share the same index space by convention).
+  //   - safeIndex falls back to 'md' when the persisted value drifted
+  //     beyond the union (defense-in-depth — migrateSettings already
+  //     clamps drift, but defending here keeps the stepper render
+  //     deterministic even mid-migration / mid-storage-event).
+  const rawIndex = FONT_SIZES.findIndex(o => o.value === settings.fontSize)
+  const safeIndex = rawIndex < 0 ? FONT_SIZE_DEFAULT_INDEX : rawIndex
+  const currentMeta = FONT_SIZES[safeIndex]
+  const atMin = safeIndex <= 0
+  const atMax = safeIndex >= FONT_SIZES.length - 1
+  const currentPercent = Math.round(currentMeta.scaleEm * 100)
+
+  const decreaseFontSize = () => {
+    if (atMin) return
+    updateSettings({ fontSize: FONT_SIZES[safeIndex - 1].value })
+  }
+  const increaseFontSize = () => {
+    if (atMax) return
+    updateSettings({ fontSize: FONT_SIZES[safeIndex + 1].value })
+  }
 
   return (
     <div className="mx-auto max-w-2xl px-2 md:px-6 py-8">
@@ -67,24 +103,49 @@ export default function SettingsPage() {
           <p className="mb-4 text-sm text-stone-500 dark:text-stone-400">
             Залбирлын бичвэрийн хэмжээ
           </p>
-          <div role="radiogroup" aria-labelledby="font-size-heading" className="grid grid-cols-5 gap-2">
-            {FONT_SIZES.map(opt => {
-              const active = settings.fontSize === opt.value
-              return (
-                <button
-                  key={opt.value}
-                  role="radio"
-                  aria-checked={active}
-                  aria-label={`Үсгийн хэмжээ ${opt.label}`}
-                  onClick={() => updateSettings({ fontSize: opt.value })}
-                  className={`min-h-[44px] rounded-lg border-2 px-2 py-2 text-sm font-medium transition-colors ${
-                    active ? ACTIVE_ACCENT : INACTIVE_ACCENT
-                  }`}
-                >
-                  <span style={{ fontSize: `${opt.scaleEm}em` }}>{opt.label}</span>
-                </button>
-              )
-            })}
+          <div
+            role="group"
+            aria-labelledby="font-size-heading"
+            data-role="font-size-stepper"
+            className="flex items-center justify-between gap-3"
+          >
+            <button
+              type="button"
+              aria-label="Үсгийн хэмжээ багасгах"
+              data-role="font-size-decrease"
+              onClick={decreaseFontSize}
+              disabled={atMin}
+              className={`flex h-12 min-h-[44px] w-12 min-w-[44px] items-center justify-center rounded-lg border-2 text-lg font-medium transition-colors ${
+                atMin ? STEPPER_BTN_DISABLED : INACTIVE_ACCENT
+              }`}
+            >
+              Aa−
+            </button>
+            <div
+              data-testid="font-size-current"
+              data-font-size-value={currentMeta.value}
+              aria-live="polite"
+              className={`flex min-h-[44px] flex-1 flex-col items-center justify-center gap-1 rounded-lg border-2 px-4 py-2 ${ACTIVE_ACCENT}`}
+            >
+              <span style={{ fontSize: `${currentMeta.scaleEm}em` }} className="leading-none">
+                Aa
+              </span>
+              <span className="text-xs text-stone-500 dark:text-stone-400">
+                {currentMeta.label} ({currentPercent}%)
+              </span>
+            </div>
+            <button
+              type="button"
+              aria-label="Үсгийн хэмжээ томруулах"
+              data-role="font-size-increase"
+              onClick={increaseFontSize}
+              disabled={atMax}
+              className={`flex h-12 min-h-[44px] w-12 min-w-[44px] items-center justify-center rounded-lg border-2 text-lg font-medium transition-colors ${
+                atMax ? STEPPER_BTN_DISABLED : INACTIVE_ACCENT
+              }`}
+            >
+              Aa+
+            </button>
           </div>
         </section>
 

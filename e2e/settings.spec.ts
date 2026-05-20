@@ -17,16 +17,27 @@ test.describe('Settings page', () => {
     await expect(page.getByRole('heading', { name: 'Дууллыг төгсгөх залбирал' })).toBeVisible()
   })
 
-  test('has 5 font-size radios, 2 font-family radios, 3 theme radios, 2 switches', async ({ page }) => {
+  // WI-B (#46) replaced the fontSize 5-radio grid with a 3-button stepper
+  // (Aa− / current indicator / Aa+), so font-size is no longer a 'radio'
+  // role. Remaining radio surface = fontFamily (2) + theme (3) = 5.
+  test('has 5 radios (font-family + theme), 1 font-size stepper, 2 switches', async ({ page }) => {
     await page.goto(SETTINGS_URL)
-    await expect(page.getByRole('radio')).toHaveCount(10)
+    await expect(page.getByRole('radio')).toHaveCount(5)
     await expect(page.getByRole('switch')).toHaveCount(2)
+    // Stepper presence — functional check via data-role (locale-independent
+    // per CLAUDE.md "테스트 selector 원칙" — 기능 검증은 data-role).
+    await expect(page.locator('[data-role="font-size-stepper"]')).toHaveCount(1)
+    await expect(page.locator('[data-role="font-size-decrease"]')).toHaveCount(1)
+    await expect(page.locator('[data-role="font-size-increase"]')).toHaveCount(1)
   })
 
-  test('selecting font size updates <html> data-font-size and persists', async ({ page }) => {
+  test('stepper Aa+ raises font size and persists (md → lg → xl)', async ({ page }) => {
     await page.goto(SETTINGS_URL)
-
-    await page.getByRole('radio', { name: /Үсгийн хэмжээ XL/ }).click()
+    // Default is md; +1 = lg, +1 = xl.
+    const increase = page.locator('[data-role="font-size-increase"]')
+    await increase.click()
+    await expect(page.locator('html')).toHaveAttribute('data-font-size', 'lg')
+    await increase.click()
     await expect(page.locator('html')).toHaveAttribute('data-font-size', 'xl')
 
     const stored = await page.evaluate(() => localStorage.getItem('loth-settings'))
@@ -34,22 +45,50 @@ test.describe('Settings page', () => {
 
     await page.reload()
     await expect(page.locator('html')).toHaveAttribute('data-font-size', 'xl')
-    await expect(page.getByRole('radio', { name: /Үсгийн хэмжээ XL/ })).toHaveAttribute('aria-checked', 'true')
+    await expect(page.getByTestId('font-size-current')).toHaveAttribute('data-font-size-value', 'xl')
   })
 
-  test('all 5 font sizes round-trip through data attribute', async ({ page }) => {
+  test('all 6 font sizes round-trip via stepper (xs → xxl)', async ({ page }) => {
     await page.goto(SETTINGS_URL)
-    const sizes: Array<{ label: string; value: string }> = [
-      { label: 'XS', value: 'xs' },
-      { label: 'S', value: 'sm' },
-      { label: 'M', value: 'md' },
-      { label: 'L', value: 'lg' },
-      { label: 'XL', value: 'xl' },
-    ]
-    for (const { label, value } of sizes) {
-      await page.getByRole('radio', { name: new RegExp(`Үсгийн хэмжээ ${label}`) }).click()
+    const decrease = page.locator('[data-role="font-size-decrease"]')
+    const increase = page.locator('[data-role="font-size-increase"]')
+
+    // From default md, ramp down 2 clicks to xs.
+    await decrease.click()
+    await expect(page.locator('html')).toHaveAttribute('data-font-size', 'sm')
+    await decrease.click()
+    await expect(page.locator('html')).toHaveAttribute('data-font-size', 'xs')
+
+    // Aa− is now disabled at the min clamp.
+    await expect(decrease).toBeDisabled()
+
+    // Ramp up 5 clicks: xs → sm → md → lg → xl → xxl.
+    const expected = ['sm', 'md', 'lg', 'xl', 'xxl'] as const
+    for (const value of expected) {
+      await increase.click()
       await expect(page.locator('html')).toHaveAttribute('data-font-size', value)
     }
+
+    // Aa+ is now disabled at the max clamp (xxl).
+    await expect(increase).toBeDisabled()
+  })
+
+  test('stepper indicator shows current label + percentage', async ({ page }) => {
+    await page.goto(SETTINGS_URL)
+    const indicator = page.getByTestId('font-size-current')
+    // Default md = 100%.
+    await expect(indicator).toContainText('100%')
+    await expect(indicator).toHaveAttribute('data-font-size-value', 'md')
+
+    // Step up to xxl → label XXL, 138% (round of 137.5).
+    // Default md is index 2; xxl is index 5 → exactly 3 increments.
+    const increase = page.locator('[data-role="font-size-increase"]')
+    for (let i = 0; i < 3; i++) await increase.click()
+    await expect(indicator).toContainText('XXL')
+    await expect(indicator).toContainText('138%')
+    await expect(indicator).toHaveAttribute('data-font-size-value', 'xxl')
+    // At max clamp, Aa+ is now disabled.
+    await expect(increase).toBeDisabled()
   })
 
   test('selecting Serif updates <html> data-font-family', async ({ page }) => {
@@ -136,7 +175,10 @@ test.describe('Settings page', () => {
 
   test('font size change persists to pray page', async ({ page }) => {
     await page.goto(SETTINGS_URL)
-    await page.getByRole('radio', { name: /Үсгийн хэмжээ XL/ }).click()
+    // Stepper Aa+ from default md → lg → xl (2 clicks).
+    const increase = page.locator('[data-role="font-size-increase"]')
+    await increase.click()
+    await increase.click()
     await expect(page.locator('html')).toHaveAttribute('data-font-size', 'xl')
 
     await page.goto('/pray/2026-02-08/lauds')
@@ -153,11 +195,17 @@ test.describe('Settings page', () => {
 
   test('active radio uses brass gold accent, not liturgical green (NFR-016)', async ({ page }) => {
     await page.goto(SETTINGS_URL)
-    // Default fontSize is "md" → M button is active on load
-    const mBtn = page.getByRole('radio', { name: 'Үсгийн хэмжээ M' })
-    await expect(mBtn).toHaveAttribute('aria-checked', 'true')
-    await expect(mBtn).toHaveClass(/liturgical-gold/)
-    await expect(mBtn).not.toHaveClass(/liturgical-green/)
+    // FontSize is now a stepper indicator (WI-B #46) — the "active" surface
+    // is the central indicator, which always carries ACTIVE_ACCENT. Verify
+    // that surface uses the brass-gold accent (NFR-016 invariant).
+    const indicator = page.getByTestId('font-size-current')
+    await expect(indicator).toHaveClass(/liturgical-gold/)
+    await expect(indicator).not.toHaveClass(/liturgical-green/)
+    // Other control groups (font-family / theme) still use radios — keep
+    // the original NFR-016 guard on at least one active radio surface.
+    const sansRadio = page.getByRole('radio', { name: /Sans/ })
+    await expect(sansRadio).toHaveAttribute('aria-checked', 'true')
+    await expect(sansRadio).toHaveClass(/liturgical-gold/)
   })
 
   test('page-refs switch uses gold when enabled', async ({ page }) => {
