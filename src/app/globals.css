@@ -47,6 +47,7 @@ html[data-font-size="sm"] { font-size: 93.75%; }
 html[data-font-size="md"] { font-size: 100%; }
 html[data-font-size="lg"] { font-size: 112.5%; }
 html[data-font-size="xl"] { font-size: 125%; }
+html[data-font-size="xxl"] { font-size: 137.5%; }
 
 /* Horizontal swipe 시 오른쪽에 노출되는 흰 여백 제거. 모바일 Safari/Chrome
    에서 viewport 밖으로 미는 터치 제스처가 body 를 오버스크롤해 배경이

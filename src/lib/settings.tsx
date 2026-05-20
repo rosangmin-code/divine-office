@@ -8,7 +8,7 @@ import {
   useSyncExternalStore,
 } from 'react'
 
-export type FontSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+export type FontSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
 export type FontFamily = 'sans' | 'serif'
 export type ThemeMode = 'light' | 'dark' | 'system'
 
@@ -40,7 +40,7 @@ export const STORAGE_KEY = 'loth-settings'
 const CHANGE_EVENT = 'loth-settings-change'
 const INVITATORY_PSALM_COUNT = 4
 
-const FONT_SIZES: readonly FontSize[] = ['xs', 'sm', 'md', 'lg', 'xl']
+const FONT_SIZES: readonly FontSize[] = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl']
 const FONT_FAMILIES: readonly FontFamily[] = ['sans', 'serif']
 const THEMES: readonly ThemeMode[] = ['light', 'dark', 'system']
 

@@ -50,6 +50,17 @@ describe('migrateSettings', () => {
     expect(migrateSettings(drifted).fontSize).toBe(DEFAULTS.fontSize)
   })
 
+  it('preserves xxl fontSize (new 6th step — 137.5%)', () => {
+    expect(migrateSettings({ fontSize: 'xxl' }).fontSize).toBe('xxl')
+  })
+
+  it('accepts every supported FONT_SIZES value end-to-end', () => {
+    const sizes = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] as const
+    for (const size of sizes) {
+      expect(migrateSettings({ fontSize: size }).fontSize).toBe(size)
+    }
+  })
+
   it('falls back to DEFAULT for drifted fontFamily', () => {
     expect(migrateSettings({ fontFamily: 'comic-sans' }).fontFamily).toBe(
       DEFAULTS.fontFamily,
