@@ -50,12 +50,28 @@ describe('migrateSettings', () => {
     expect(migrateSettings(drifted).fontSize).toBe(DEFAULTS.fontSize)
   })
 
-  it('preserves xxl fontSize (new 6th step — 137.5%)', () => {
+  it('preserves xxl fontSize (6th step — 137.5%)', () => {
     expect(migrateSettings({ fontSize: 'xxl' }).fontSize).toBe('xxl')
   })
 
+  it('preserves the 3 larger steps (xxxl/x4l/x5l — 150/175/200%)', () => {
+    expect(migrateSettings({ fontSize: 'xxxl' }).fontSize).toBe('xxxl')
+    expect(migrateSettings({ fontSize: 'x4l' }).fontSize).toBe('x4l')
+    expect(migrateSettings({ fontSize: 'x5l' }).fontSize).toBe('x5l')
+  })
+
   it('accepts every supported FONT_SIZES value end-to-end', () => {
-    const sizes = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] as const
+    const sizes = [
+      'xs',
+      'sm',
+      'md',
+      'lg',
+      'xl',
+      'xxl',
+      'xxxl',
+      'x4l',
+      'x5l',
+    ] as const
     for (const size of sizes) {
       expect(migrateSettings({ fontSize: size }).fontSize).toBe(size)
     }

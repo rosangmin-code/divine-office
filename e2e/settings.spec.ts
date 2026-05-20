@@ -48,7 +48,7 @@ test.describe('Settings page', () => {
     await expect(page.getByTestId('font-size-current')).toHaveAttribute('data-font-size-value', 'xl')
   })
 
-  test('all 6 font sizes round-trip via stepper (xs → xxl) (FR-165)', async ({ page }) => {
+  test('all 9 font sizes round-trip via stepper (xs → x5l) (FR-165)', async ({ page }) => {
     await page.goto(SETTINGS_URL)
     const decrease = page.locator('[data-role="font-size-decrease"]')
     const increase = page.locator('[data-role="font-size-increase"]')
@@ -62,14 +62,14 @@ test.describe('Settings page', () => {
     // Aa− is now disabled at the min clamp.
     await expect(decrease).toBeDisabled()
 
-    // Ramp up 5 clicks: xs → sm → md → lg → xl → xxl.
-    const expected = ['sm', 'md', 'lg', 'xl', 'xxl'] as const
+    // Ramp up 8 clicks: xs → sm → md → lg → xl → xxl → xxxl → x4l → x5l.
+    const expected = ['sm', 'md', 'lg', 'xl', 'xxl', 'xxxl', 'x4l', 'x5l'] as const
     for (const value of expected) {
       await increase.click()
       await expect(page.locator('html')).toHaveAttribute('data-font-size', value)
     }
 
-    // Aa+ is now disabled at the max clamp (xxl).
+    // Aa+ is now disabled at the max clamp (x5l = 200%).
     await expect(increase).toBeDisabled()
   })
 
@@ -82,12 +82,21 @@ test.describe('Settings page', () => {
 
     // Step up to xxl → label XXL, 138% (round of 137.5).
     // Default md is index 2; xxl is index 5 → exactly 3 increments.
+    // xxl is now mid-range (3 larger steps follow), so Aa+ stays enabled.
     const increase = page.locator('[data-role="font-size-increase"]')
     for (let i = 0; i < 3; i++) await increase.click()
     await expect(indicator).toContainText('XXL')
     await expect(indicator).toContainText('138%')
     await expect(indicator).toHaveAttribute('data-font-size-value', 'xxl')
-    // At max clamp, Aa+ is now disabled.
+    await expect(increase).toBeEnabled()
+
+    // Step up to the new max x5l → label 5XL, 200%.
+    // xxl is index 5; x5l is index 8 → 3 more increments.
+    for (let i = 0; i < 3; i++) await increase.click()
+    await expect(indicator).toContainText('5XL')
+    await expect(indicator).toContainText('200%')
+    await expect(indicator).toHaveAttribute('data-font-size-value', 'x5l')
+    // At max clamp (x5l), Aa+ is now disabled.
     await expect(increase).toBeDisabled()
   })
 
