@@ -20,7 +20,7 @@ test.describe('Settings page', () => {
   // WI-B (#46) replaced the fontSize 5-radio grid with a 3-button stepper
   // (Aa− / current indicator / Aa+), so font-size is no longer a 'radio'
   // role. Remaining radio surface = fontFamily (2) + theme (3) = 5.
-  test('has 5 radios (font-family + theme), 1 font-size stepper, 2 switches', async ({ page }) => {
+  test('has 5 radios (font-family + theme), 1 font-size stepper, 2 switches (FR-165)', async ({ page }) => {
     await page.goto(SETTINGS_URL)
     await expect(page.getByRole('radio')).toHaveCount(5)
     await expect(page.getByRole('switch')).toHaveCount(2)
@@ -31,7 +31,7 @@ test.describe('Settings page', () => {
     await expect(page.locator('[data-role="font-size-increase"]')).toHaveCount(1)
   })
 
-  test('stepper Aa+ raises font size and persists (md → lg → xl)', async ({ page }) => {
+  test('stepper Aa+ raises font size and persists (md → lg → xl) (FR-165)', async ({ page }) => {
     await page.goto(SETTINGS_URL)
     // Default is md; +1 = lg, +1 = xl.
     const increase = page.locator('[data-role="font-size-increase"]')
@@ -48,7 +48,7 @@ test.describe('Settings page', () => {
     await expect(page.getByTestId('font-size-current')).toHaveAttribute('data-font-size-value', 'xl')
   })
 
-  test('all 6 font sizes round-trip via stepper (xs → xxl)', async ({ page }) => {
+  test('all 6 font sizes round-trip via stepper (xs → xxl) (FR-165)', async ({ page }) => {
     await page.goto(SETTINGS_URL)
     const decrease = page.locator('[data-role="font-size-decrease"]')
     const increase = page.locator('[data-role="font-size-increase"]')
@@ -73,7 +73,7 @@ test.describe('Settings page', () => {
     await expect(increase).toBeDisabled()
   })
 
-  test('stepper indicator shows current label + percentage', async ({ page }) => {
+  test('stepper indicator shows current label + percentage (FR-165)', async ({ page }) => {
     await page.goto(SETTINGS_URL)
     const indicator = page.getByTestId('font-size-current')
     // Default md = 100%.
