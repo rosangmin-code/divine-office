@@ -12,6 +12,9 @@ const FONT_SIZES: { value: FontSize; label: string; scaleEm: number }[] = [
   { value: 'lg', label: 'L', scaleEm: 1.125 },
   { value: 'xl', label: 'XL', scaleEm: 1.25 },
   { value: 'xxl', label: 'XXL', scaleEm: 1.375 },
+  { value: 'xxxl', label: 'XXXL', scaleEm: 1.5 },
+  { value: 'x4l', label: '4XL', scaleEm: 1.75 },
+  { value: 'x5l', label: '5XL', scaleEm: 2 },
 ]
 
 const FONT_SIZE_DEFAULT_INDEX = FONT_SIZES.findIndex(o => o.value === 'md')
@@ -20,7 +23,7 @@ const FONT_SIZE_DEFAULT_INDEX = FONT_SIZES.findIndex(o => o.value === 'md')
 //   - enabled  → INACTIVE_ACCENT (border + hover affordance, identical to
 //                fontFamily/theme inactive radio buttons for surface parity)
 //   - disabled → muted border + low-contrast glyph + cursor-not-allowed,
-//                so reaching the min (XS) / max (XXL) clamp is visible.
+//                so reaching the min (XS) / max (5XL) clamp is visible.
 export const STEPPER_BTN_DISABLED =
   'border-stone-200 text-stone-300 cursor-not-allowed dark:border-stone-800 dark:text-stone-700'
 
