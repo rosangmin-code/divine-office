@@ -15,8 +15,9 @@ import { romanNumeral } from '@/lib/mappings'
 //   - Optional third line: "эсвэл <alternative nameMn>" (or X)
 //
 // Decisions:
-//   - Red accent (uppercase + red text) applies when
-//     `shouldRowUseRedAccent` → rank ∈ {SOLEMNITY, FEAST}.
+//   - Gold accent (semibold + gold text, NO uppercase) applies when
+//     `shouldRowUseRedAccent` → rank ∈ {SOLEMNITY, FEAST}. (DESIGN.md:
+//     악센트는 골드로 통일, 빨강·대문자 강조 폐지.)
 //   - The "Today (Automatic)" anchor row uses a synthetic layout with
 //     only the body text "(Автомат)" — no weekday/date header.
 //   - When expanded, the row inlines the celebration picker (if >1
@@ -46,7 +47,9 @@ export const LiturgicalCalendarRow = forwardRef<HTMLLIElement, LiturgicalCalenda
   ref,
 ) {
   const isAnchor = row.kind === 'today-anchor'
-  const useRed = shouldRowUseRedAccent(row)
+  // 고순위 절기(SOLEMNITY·FEAST) 강조 여부. 시각 표현은 골드(두께+색) —
+  // 헬퍼명은 레거시(`...RedAccent`)지만 DESIGN.md 정책상 빨강이 아닌 골드로 렌더한다.
+  const useAccent = shouldRowUseRedAccent(row)
 
   const headerLabel = isAnchor
     ? null
@@ -67,8 +70,10 @@ export const LiturgicalCalendarRow = forwardRef<HTMLLIElement, LiturgicalCalenda
       data-today={row.isToday ? 'true' : undefined}
       className={
         'group rounded-xl transition-colors ' +
+        // today = primary-container(골드 연한 배경, DESIGN.md calendar-day-today).
+        // 이전 stone gradient → gold-container 단색.
         (row.isToday
-          ? 'bg-gradient-to-b from-stone-200 to-stone-100 dark:from-stone-800 dark:to-stone-900 '
+          ? 'bg-liturgical-gold-container dark:bg-stone-800 '
           : 'hover:bg-stone-100/60 dark:hover:bg-stone-800/40 ')
       }
     >
@@ -92,8 +97,10 @@ export const LiturgicalCalendarRow = forwardRef<HTMLLIElement, LiturgicalCalenda
           data-testid="calendar-row-default"
           className={
             'mt-0.5 pl-4 leading-snug ' +
-            (useRed
-              ? 'text-base font-semibold uppercase text-liturgical-red dark:text-liturgical-red-dark'
+            // 축일/대축일(SOLEMNITY·FEAST) 강조 = 골드(두께+색), 대문자 금지.
+            // DESIGN.md: 빨강은 더 이상 일반 강조에 쓰지 않고 악센트는 골드로 통일.
+            (useAccent
+              ? 'text-base font-semibold text-liturgical-gold dark:text-liturgical-gold-dark'
               : 'text-sm text-stone-700 dark:text-stone-300')
           }
         >

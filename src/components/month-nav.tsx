@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
+import { Icon } from './icon'
 
 // GOAL #4 (wi-003 / WI #15) — Month navigation control.
 //
@@ -11,8 +12,9 @@ import { useRef } from 'react'
 // unit test 가 URL 의존성 없이 컴포넌트 자체 동작만 검증한다.
 //
 // 모바일 UX: month 라벨 버튼 탭 → `showPicker()` 로 native month picker
-// 호출. 데스크탑: 동일 라벨 버튼 + 별도 prev/next 버튼 + 라벨 옆 ▼
-// chevron 으로 'picker available' affordance.
+// 호출. 데스크탑: 동일 라벨 버튼 + 별도 prev/next 버튼 + 라벨 옆 lucide
+// 달력(calendar) 아이콘으로 'picker available' affordance. (이전 ◀▶▼
+// 유니코드 글리프 → lucide <Icon> 단일 패밀리, DESIGN.md Iconography.)
 //
 // 라벨 포맷: 'YYYY оны M-р сар' (몽골어 관용 표현, 예: '2026 оны 6-р сар').
 
@@ -108,7 +110,7 @@ export function MonthNav({
         onClick={handlePrev}
         className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg px-3 py-2 text-stone-700 transition-colors hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-400 dark:text-stone-200 dark:hover:bg-stone-800"
       >
-        <span aria-hidden className="text-lg leading-none">◀</span>
+        <Icon name="prev" aria-hidden />
         <span className="ml-1 hidden text-sm md:inline">{prevLabel}</span>
       </button>
 
@@ -121,7 +123,7 @@ export function MonthNav({
         className="inline-flex min-h-[44px] flex-1 items-center justify-center rounded-lg px-3 py-2 text-base font-semibold text-stone-800 transition-colors hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-400 dark:text-stone-100 dark:hover:bg-stone-800"
       >
         <span data-testid="month-nav-label-text">{formatMonthLabel(currentMonth)}</span>
-        <span aria-hidden className="ml-2 text-xs text-stone-500 dark:text-stone-400">▼</span>
+        <Icon name="calendar" size={16} aria-hidden className="ml-2 text-stone-500 dark:text-stone-400" />
       </button>
 
       <button
@@ -132,7 +134,7 @@ export function MonthNav({
         className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg px-3 py-2 text-stone-700 transition-colors hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-400 dark:text-stone-200 dark:hover:bg-stone-800"
       >
         <span className="mr-1 hidden text-sm md:inline">{nextLabel}</span>
-        <span aria-hidden className="text-lg leading-none">▶</span>
+        <Icon name="next" aria-hidden />
       </button>
 
       {/*

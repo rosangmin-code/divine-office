@@ -156,17 +156,22 @@ describe('MonthNav component — structural render (AC #1, #7-9)', () => {
     }
   })
 
-  // AC #9 — desktop (md:) picker affordance — '▼' chevron 라벨 옆 표시
-  // + md:inline 으로 데스크탑에서만 prev/next 라벨 텍스트 노출
-  it('renders desktop ▼ chevron next to month label + md:inline label text on prev/next', () => {
+  // AC #9 — picker affordance: lucide 달력(calendar) 아이콘이 month 라벨 옆에
+  // 표시 (이전 '▼' 유니코드 글리프 → <Icon name="calendar">, DESIGN.md).
+  // + md:inline 으로 데스크탑에서만 prev/next 라벨 텍스트 노출.
+  it('renders a lucide calendar icon next to month label (no ▼ glyph) + md:inline prev/next labels', () => {
     const html = renderToStaticMarkup(
       createElement(MonthNav, {
         currentMonth: '2026-05',
         onMonthChange: () => {},
       }),
     )
-    // 라벨 영역 안에 ▼ chevron span (aria-hidden)
-    expect(html).toMatch(/<span[^>]*aria-hidden[^>]*>▼<\/span>/)
+    // 라벨 버튼 안에 lucide 아이콘(<svg>) — 유니코드 ▼ 글리프는 더 이상 없음.
+    expect(html).toMatch(/data-testid="month-nav-label"[\s\S]*?<svg/)
+    expect(html).not.toContain('▼')
+    // prev/next 버튼의 유니코드 글리프(◀▶)도 제거됨.
+    expect(html).not.toContain('◀')
+    expect(html).not.toContain('▶')
     // prev 버튼 안에 'Өмнөх сар' 텍스트 span (md:inline)
     expect(html).toMatch(/<span[^>]*class="[^"]*md:inline[^"]*"[^>]*>Өмнөх сар<\/span>/)
     // next 버튼 안에 'Дараах сар' 텍스트 span (md:inline)
