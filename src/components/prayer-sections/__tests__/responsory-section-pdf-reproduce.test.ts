@@ -71,11 +71,11 @@ describe('ResponsorySection — (a)-reproduce evidence with production data (#5,
     expect(html).not.toContain('Х.')
     expect(html).not.toContain('В.')
 
-    // Red `- ` prefix appears exactly 3 times (lines 2, 4, 6).
-    const redPrefixCount = (
-      html.match(/<span class="text-red-700 dark:text-red-400">- <\/span>/g) ?? []
+    // WI-62 재스킨: 응답구 `- ` 마커는 골드 악센트. exactly 3 times (lines 2, 4, 6).
+    const goldPrefixCount = (
+      html.match(/<span class="text-liturgical-gold dark:text-liturgical-gold-dark">- <\/span>/g) ?? []
     ).length
-    expect(redPrefixCount).toBe(3)
+    expect(goldPrefixCount).toBe(3)
   })
 
   it('prints rendered DOM to stdout for visual inspection (manual capture)', () => {

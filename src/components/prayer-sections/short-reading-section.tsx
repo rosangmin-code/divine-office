@@ -9,7 +9,7 @@ export function ShortReadingSection({
 }) {
   return (
     <section aria-label="Уншлага" className="mb-4">
-      <p className="text-sm font-semibold text-red-700 dark:text-red-400">
+      <p className="text-xs font-bold uppercase tracking-[0.15em] text-stone-500 dark:text-stone-400">
         Уншлага <PageRef page={section.page} />
       </p>
       <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">

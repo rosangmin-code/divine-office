@@ -31,13 +31,13 @@ test.describe('Psalter psalmPrayerRich rendering (FR-153h)', () => {
   })
 
   // @fr FR-153h
-  test('psalm-prayer heading carries red rubric class (§12.1)', async ({ page }) => {
-    // rubric label 의 색 규약 일관성 — 빨강 heading 유지 (FR-153f 와 동일).
+  test('psalm-prayer heading carries faint label class (WI-62: 빨강→stone-500)', async ({ page }) => {
+    // WI-62 재스킨: 섹션 헤딩은 faint label(대문자·letterspaced·stone-500) 통일.
     const heading = page
       .locator('[data-role="psalm-prayer"]')
       .first()
       .locator('p')
       .first()
-    await expect(heading).toHaveClass(/text-red-700/)
+    await expect(heading).toHaveClass(/text-stone-500/)
   })
 })

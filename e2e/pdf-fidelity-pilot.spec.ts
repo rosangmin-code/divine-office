@@ -52,9 +52,9 @@ test.describe('FR-153 PDF fidelity — pilot (Week 1 SUN Lauds)', () => {
     // Week 1 SUN Lauds 의 universal 6-line 패턴 → red `- ` prefix 3 회.
     await expect(section.getByText('В.', { exact: false })).toHaveCount(0)
     await expect(section.getByText('Х.', { exact: false })).toHaveCount(0)
-    // `- ` prefix 가 정확히 3 회 (line 2/4/6) 등장.
-    const redHyphenPrefixes = section.locator('span.text-red-700').filter({ hasText: /^-\s+$/ })
-    await expect(redHyphenPrefixes).toHaveCount(3)
+    // WI-62 재스킨: 응답구 `- ` prefix 는 골드 악센트. 정확히 3 회 (line 2/4/6).
+    const goldHyphenPrefixes = section.locator('span.text-liturgical-gold').filter({ hasText: /^-\s+$/ })
+    await expect(goldHyphenPrefixes).toHaveCount(3)
   })
 
   // @fr FR-153

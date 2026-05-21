@@ -308,12 +308,12 @@ test.describe('Prayer section detail rendering', () => {
   })
 
   test.describe('Rubric rendering (FR-126~128)', () => {
-    test('dismissal rubric instructions are rendered in red', async ({ page }) => {
+    test('dismissal rubric instructions are rendered as muted notes (WI-62: 빨강→stone-500)', async ({ page }) => {
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
       const dismissal = page.locator('[aria-label="Төгсгөл"]').last()
       const rubric = dismissal.getByText('Санваартан эсвэл тахилч удирдаж байгаа бол:')
       await expect(rubric).toBeVisible()
-      await expect(rubric).toHaveClass(/text-red-700/)
+      await expect(rubric).toHaveClass(/text-stone-500/)
     })
 
     test('Gloria Patri omission rubric applies only to the Benedicite (Daniel 3:57-88, 56)', async ({ request }) => {

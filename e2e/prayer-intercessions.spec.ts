@@ -105,13 +105,15 @@ test.describe('Intercessions (Гуйлтын залбирал) role structure', 
     })
 
     // @fr FR-153
-    test('rich response line renders red hyphen prefix (PDF rubric)', async ({ page }) => {
+    test('rich response line renders muted rubric hyphen prefix (WI-62: 빨강→stone-500)', async ({ page }) => {
       await page.goto(`/pray/${DATES.adventWeekday}/lauds`)
       const section = page.locator('section[aria-label="Гуйлтын залбирал"]')
 
-      // stanza line 1 의 rubric span 으로 "- " 가 들어간다 → RichContent 는
-      // rubric span 을 RUBRIC_CLASS (text-red-700) 로 감싼다.
-      const rubricDash = section.locator('span.text-red-700', { hasText: /^-\s*$/ })
+      // 이 "- " 는 rich AST 에서 `kind:'rubric'` span 으로 author 되어 있어
+      // RUBRIC_CLASS(text-stone-500, muted)로 렌더된다. WI-62 재스킨: 빨강 제거
+      // (DESIGN.md "빨강은 절기 의미색으로만"). 명시적 response/versicle span
+      // (plain/structured 경로)의 마커는 골드 악센트.
+      const rubricDash = section.locator('span.text-stone-500', { hasText: /^-\s*$/ })
       await expect(rubricDash.first()).toBeVisible()
     })
   })

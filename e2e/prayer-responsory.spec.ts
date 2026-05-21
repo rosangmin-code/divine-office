@@ -57,8 +57,8 @@ test.describe('Responsory API + data-role contract (FR-152)', () => {
  *
  * DOM 계약: `[data-role="responsory"] > p` 헤더 1 + body `<p>` 6 (총 7 개,
  * rich.blocks 에 rubric-line 가 있으면 +N — 부활 시즌 instruction 등).
- * Red rubric prefix 는 line 2/4/6 (response 행) 에만 `<span class="text-red-700">- </span>`
- * 로 등장.
+ * 응답구 prefix 는 line 2/4/6 (response 행) 에만 `<span class="text-liturgical-gold">- </span>`
+ * 로 등장 (WI-62 재스킨: 골드 악센트).
  *
  * 검증 경로 3종:
  *   1) OT w1 SUN Lauds — psalter commons 카탈로그 (pilot 이관 후 seasonal
@@ -79,9 +79,9 @@ test.describe('Responsory body — PDF 6-line emission (FR-153d, post-#5)', () =
     const bodyParagraphs = responsory.locator(':scope > p:not(:first-child):not([data-role="responsory-rubric-line"])')
     await expect(bodyParagraphs).toHaveCount(6)
 
-    // Red `-` 하이픈 prefix 는 line 2/4/6 (인덱스 1/3/5) 에만 등장.
+    // WI-62 재스킨: 응답구 `-` 하이픈 prefix 는 골드 악센트. line 2/4/6 (인덱스 1/3/5).
     for (const idx of [1, 3, 5]) {
-      const prefix = bodyParagraphs.nth(idx).locator('span.text-red-700').first()
+      const prefix = bodyParagraphs.nth(idx).locator('span.text-liturgical-gold').first()
       await expect(prefix).toBeVisible()
       await expect(prefix).toHaveText('- ')
     }

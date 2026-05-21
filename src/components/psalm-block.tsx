@@ -80,10 +80,10 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
 
       {/* Psalm title & reference */}
       <div className="mb-2">
-        <span className="text-xs font-medium uppercase tracking-wider text-red-700 dark:text-red-400">
+        <span className="text-xs font-medium uppercase tracking-wider text-stone-500 dark:text-stone-400">
           {psalm.psalmType === 'canticle' ? 'Магтаал' : 'Дуулал'}
         </span>
-        <h4 className="text-sm font-semibold text-red-700 dark:text-red-400">
+        <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-stone-500 dark:text-stone-400">
           {psalm.reference} <PageRef page={psalm.page} />
         </h4>
         {psalm.title && (
@@ -103,7 +103,7 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
             <p
               data-role="psalm-header-rich"
               data-kind={psalm.headerRich.kind}
-              className="mt-1 text-xs italic text-red-700 dark:text-red-400"
+              className="mt-1 text-xs italic text-stone-500 dark:text-stone-400"
             >
               {prefaceBody}
               {prefaceBody ? ' (' : '('}
@@ -281,7 +281,7 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
           Эцэг, Хүү, Ариун Сүнсэнд жавхланг Эхэн цагт байсан мэт аливаа цагт болготугай. Амэн.
         </p>
       ) : psalm.gloriaPatri === false && (
-        <p className="mt-2 text-xs italic text-red-700/80 dark:text-red-400/80">
+        <p className="mt-2 text-xs italic text-stone-500 dark:text-stone-400">
           Эцэг, Хүү, Ариун Сүнсэнд жавхланг... уншихгүй
         </p>
       )}
@@ -289,7 +289,7 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
       {/* Psalm-concluding prayer (Дууллыг төгсгөх залбирал) */}
       {psalm.psalmPrayer && !settings.psalmPrayerCollapsed && (
         <div data-role="psalm-prayer" className="mt-3">
-          <p className="text-sm font-semibold text-red-700 dark:text-red-400">
+          <p className="text-xs font-bold uppercase tracking-[0.15em] text-stone-500 dark:text-stone-400">
             Дууллыг төгсгөх залбирал <PageRef page={psalm.psalmPrayerPage} />
           </p>
           {psalm.psalmPrayerRich && psalm.psalmPrayerRich.blocks.length > 0 ? (

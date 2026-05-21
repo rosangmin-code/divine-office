@@ -33,7 +33,7 @@ export function DirectiveBlock({
             data-role="conditional-rubric-directive"
             data-rubric-id={d.rubricId}
             data-mode={d.mode}
-            className="mt-2 text-sm italic text-red-700 dark:text-red-400"
+            className="mt-2 text-sm italic text-stone-500 dark:text-stone-400"
           >
             {display}
           </p>

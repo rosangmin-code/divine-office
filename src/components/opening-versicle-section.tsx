@@ -21,7 +21,7 @@ export function OpeningVersicleSection({ section }: OpeningVersicleSectionProps)
 
   return (
     <section aria-label="Удиртгал" className="mb-4">
-      <p className="text-sm font-semibold text-red-700 dark:text-red-400">Удиртгал</p>
+      <p className="text-xs font-bold uppercase tracking-[0.15em] text-stone-500 dark:text-stone-400">Удиртгал</p>
       <DirectiveBlock directives={prepends} />
       {hideBody ? (
         <DirectiveBlock directives={hasSubstitute ? substitutes : skips} />
@@ -31,7 +31,7 @@ export function OpeningVersicleSection({ section }: OpeningVersicleSectionProps)
             {section.versicle}
           </p>
           <p className="font-serif text-stone-800 dark:text-stone-200">
-            <span className="text-red-700 dark:text-red-400">- </span>{section.response}
+            <span className="text-liturgical-gold dark:text-liturgical-gold-dark">- </span>{section.response}
           </p>
           <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">
             {section.gloryBe}{section.alleluia ? ` ${section.alleluia}` : ''}
