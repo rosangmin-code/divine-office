@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>목업 — Claude 시스템 + 골드</title>
+<style>
+  :root{
+    /* Claude warm-canvas + 골드 악센트 */
+    --canvas:#faf9f5; --surface:#f5f0e8; --card:#fffdf9; --hairline:#e6dfd8;
+    --ink:#141413; --body:#3d3d3a; --muted:#6c6a64; --faint:#8e8b82;
+    --gold:#9a7b2e; --gold-active:#866a26; --gold-soft:#f1e7cf;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#ddd4c4;font-family:"Inter","Noto Sans",system-ui,sans-serif;color:var(--body);
+    display:flex;flex-direction:column;align-items:center;gap:16px;padding:24px 12px 60px;line-height:1.55}
+  .serif{font-family:"Noto Serif",Georgia,serif}
+  .switch{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:440px}
+  .switch a{font-size:13px;text-decoration:none;color:#3e3122;background:#fffdf8;border:1px solid #c9b78e;padding:7px 12px;border-radius:999px}
+  .switch a.on{background:var(--gold);color:#fff;border-color:var(--gold)}
+  .switch a.ghost{opacity:.55}
+  .caption{max-width:420px;text-align:center;font-size:13px;color:#4a3a24}
+  svg.ic{width:1.25em;height:1.25em;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.18em}
+  .phone{width:390px;max-width:100%;background:var(--canvas);border-radius:34px;
+    box-shadow:0 18px 50px rgba(50,35,12,.28);overflow:hidden;border:9px solid #1c1a16}
+  .scr{height:780px;overflow:auto}
+  .scr::-webkit-scrollbar{width:0}
+  .top{position:sticky;top:0;z-index:5;background:rgba(250,249,245,.92);backdrop-filter:blur(10px);
+    display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--hairline)}
+  .iconbtn{width:40px;height:40px;border-radius:50%;border:1px solid var(--hairline);background:var(--card);
+    display:flex;align-items:center;justify-content:center;color:var(--muted);text-decoration:none;flex:none;font-size:18px}
+  .top .t{font-size:14px;font-weight:600;color:var(--ink)}
+  .top .t small{display:block;font-size:11px;color:var(--faint);font-weight:400}
+  .body{padding:22px 18px 26px}
+  /* hero — editorial, NO icon box */
+  .kicker{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  h1.title{font-size:29px;line-height:1.18;color:var(--ink);font-weight:500;letter-spacing:-.01em;margin:10px 0 12px}
+  .meta{font-size:13px;color:var(--muted);padding-bottom:20px;border-bottom:1px solid var(--hairline)}
+  .meta b{color:var(--body);font-weight:600}
+  /* section label */
+  .label{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);font-weight:700;margin:28px 2px 10px}
+  .collap{display:flex;align-items:center;justify-content:space-between;background:var(--card);
+    border:1px solid var(--hairline);border-radius:14px;padding:16px;color:var(--ink);font-weight:600;font-size:15px}
+  .collap .r{color:var(--faint)}
+  p.pray{font-size:17px;line-height:1.64;margin:12px 2px;color:#2a2520}
+  p.resp{color:var(--gold);font-weight:600}
+  .verse{font-size:17px;line-height:1.6;margin:5px 2px;color:#2a2520}
+  .verse .n{color:var(--faint);font-weight:700;margin-right:8px;font-variant-numeric:tabular-nums}
+  /* reference — editorial rows w/ small leading icon */
+  .ref{display:flex;align-items:center;gap:12px;padding:15px 4px;border-bottom:1px solid var(--hairline);text-decoration:none;color:var(--ink);font-size:15px;font-weight:500}
+  .ref .lead{color:var(--gold);font-size:19px;flex:none}
+  .ref .chev{margin-left:auto;color:var(--faint);font-size:18px}
+  /* home */
+  .month{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .month b{font-size:20px;color:var(--ink);font-weight:500}
+  .month .nav{display:flex;gap:6px}
+  .day{display:flex;gap:14px;align-items:center;padding:14px 4px;border-bottom:1px solid var(--hairline);text-decoration:none}
+  .day .date{min-width:42px;text-align:center}
+  .day .date .n{font-size:21px;font-weight:600;color:var(--ink);line-height:1}
+  .day .date .w{font-size:11px;color:var(--faint)}
+  .day .info .t{font-size:15px;font-weight:600;color:var(--ink)}
+  .day .info .s{font-size:12.5px;color:var(--muted)}
+  .day.today .date .n,.day.today .info .t{color:var(--gold)}
+  .day.today{background:var(--gold-soft);border-radius:14px;padding:14px 12px;border:none}
+  .day.feast .info .t{color:var(--gold)}
+  .tag{margin-left:auto;font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--gold)}
+  .foot{position:sticky;bottom:0;background:rgba(250,249,245,.95);backdrop-filter:blur(10px);
+    border-top:1px solid var(--hairline);margin:24px -18px -26px;padding:11px 18px 15px;display:flex;justify-content:space-around}
+  .foot button{background:none;border:none;font:inherit;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;cursor:pointer}
+  .foot .ic{font-size:21px}
+  .credit{text-align:center;font-size:11px;color:var(--faint);margin:14px 0 2px;line-height:1.5}
+</style>
+</head>
+<body>
+  <!-- inline icon sprite (no CDN — always renders) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+    <g id="i-back"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></g>
+    <g id="i-right"><path d="m9 18 6-6-6-6"/></g>
+    <g id="i-left"><path d="m15 18-6-6 6-6"/></g>
+    <g id="i-book"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></g>
+    <g id="i-scroll"><path d="M15 12h-5"/><path d="M15 8h-5"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/></g>
+    <g id="i-sunrise"><path d="M12 2v8"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m8 6 4-4 4 4"/><path d="M16 18a4 4 0 0 0-8 0"/></g>
+    <g id="i-settings"><circle cx="12" cy="12" r="3"/><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/></g>
+  </defs></svg>
+
+  <div class="switch">
+    <a class="on" href="final-claude-gold.html">Claude 시스템 + 골드</a>
+    <a class="ghost" href="index.html">← 폐기 A/B/C/D</a>
+  </div>
+  <p class="caption"><b>Claude 디자인 시스템 + 황동골드.</b> 따뜻한 크림 캔버스 + 세리프 제목 + 골드 악센트. 아이콘은 인라인 SVG 단일 패밀리(빈 박스 없음), 장식 박스 제거.</p>
+
+  <div class="phone"><div class="scr">
+    <div class="top">
+      <a class="iconbtn" href="#"><svg class="ic" viewBox="0 0 24 24"><use href="#i-back"/></svg></a>
+      <div class="t">Өглөөний залбирал<small>2026.05.20 Лхагва</small></div>
+    </div>
+    <div class="body">
+      <div class="kicker">Өглөө · Lauds</div>
+      <h1 class="title serif">Өглөөний магтаалын залбирал</h1>
+      <div class="meta"><b>7-р долоо хоног</b> · Дуулалтын III · Дээгүүр өнгөрөх цаг улирал</div>
+
+      <div class="label">Урих дуудлага</div>
+      <div class="collap"><span>Дуудлагын дуулал</span><svg class="ic r" viewBox="0 0 24 24"><use href="#i-right"/></svg></div>
+
+      <div class="label">Удиртгал</div>
+      <p class="pray serif">Тэнгэрбурхан минь, Та намайг аврахаар сөёрхоно уу.</p>
+      <p class="pray serif resp">— Эзэн минь, надад туслахаар яаравчилна уу.</p>
+      <p class="pray serif">Эцэг, Хүү, Ариун Сүнсэнд алдар хүндэтгэл байг. Эхэн цагт байсан мэт эдүгээ ч, үргэлж ч байх болтугай. Амэн. Аллэлуяа!</p>
+
+      <div class="label">Магтуу</div>
+      <p class="verse serif"><span class="n">1</span>Танд хайртай миний Есүсээ, Танд хайртай үнэхээр ихээр,</p>
+      <p class="verse serif"><span class="n">2</span>Миний хайртай Хүү Би чамайг сайн мэднэ.</p>
+
+      <div class="label">Холбоос</div>
+      <a class="ref" href="#"><svg class="ic lead" viewBox="0 0 24 24"><use href="#i-book"/></svg> Залбиралт цагийн заавар <svg class="ic chev" viewBox="0 0 24 24"><use href="#i-right"/></svg></a>
+      <a class="ref" href="#"><svg class="ic lead" viewBox="0 0 24 24"><use href="#i-scroll"/></svg> Ёслолын дэг жаяг <svg class="ic chev" viewBox="0 0 24 24"><use href="#i-right"/></svg></a>
+
+      <div class="label">Литургийн хуанли</div>
+      <div class="month"><b class="serif">2026 оны 5-р сар</b><span class="nav"><a class="iconbtn" href="#"><svg class="ic" viewBox="0 0 24 24"><use href="#i-left"/></svg></a><a class="iconbtn" href="#"><svg class="ic" viewBox="0 0 24 24"><use href="#i-right"/></svg></a></span></div>
+      <div class="day today"><div class="date"><div class="n">20</div><div class="w">Лха</div></div><div class="info"><div class="t">Өнөөдөр</div><div class="s">7-р долоо хоног</div></div></div>
+      <a class="day feast" href="#"><div class="date"><div class="n">21</div><div class="w">Пүр</div></div><div class="info"><div class="t">Эзэн тэнгэрт одсон нь</div><div class="s">Их баяр</div></div><span class="tag">Баяр</span></a>
+      <a class="day" href="#"><div class="date"><div class="n">22</div><div class="w">Баа</div></div><div class="info"><div class="t">Энгийн өдөр</div><div class="s">7-р долоо хоног</div></div></a>
+
+      <div class="foot">
+        <button><svg class="ic" viewBox="0 0 24 24"><use href="#i-sunrise"/></svg>Өнөөдөр</button>
+        <button><svg class="ic" viewBox="0 0 24 24"><use href="#i-book"/></svg>Заавар</button>
+        <button><svg class="ic" viewBox="0 0 24 24"><use href="#i-settings"/></svg>Тохиргоо</button>
+      </div>
+    </div>
+  </div></div>
+  <div class="credit">Цагийн Залбирал — Монгол Католик Сүм · Зарим орчуулга хийгдэж байна</div>
+</body>
+</html>
