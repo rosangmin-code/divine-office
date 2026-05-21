@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>목업 D — Lucide + Minimal</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  :root{
+    --bg:#f5efe2; --card:#fffdf9; --border:#e7ddc8; --fg:#221a0e; --muted:#7c6a4e;
+    --faint:#a08a5b; --primary:#9a7b2e; --primary-soft:#f1e9d6; --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#d9ccb2;font-family:"Inter","Noto Sans",system-ui,sans-serif;color:var(--fg);
+    display:flex;flex-direction:column;align-items:center;gap:18px;padding:24px 12px 60px;line-height:1.55}
+  .switch{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:440px}
+  .switch a{font-size:13px;text-decoration:none;color:#3e3122;background:#fffdf8;border:1px solid #c9b78e;padding:7px 12px;border-radius:999px}
+  .switch a.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+  .switch a.ghost{opacity:.6}
+  i[data-lucide]{width:1em;height:1em;stroke-width:2;vertical-align:-.125em}
+  .phone{width:390px;max-width:100%;background:var(--bg);border-radius:34px;
+    box-shadow:0 18px 50px rgba(50,35,12,.3);overflow:hidden;border:9px solid #221a10}
+  .scr{height:770px;overflow:auto}
+  .scr::-webkit-scrollbar{width:0}
+  .top{position:sticky;top:0;z-index:5;background:rgba(245,239,226,.94);backdrop-filter:blur(8px);
+    display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--border)}
+  .iconbtn{width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--card);
+    display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:18px;text-decoration:none;flex:none}
+  .top .t{font-size:14px;font-weight:600}
+  .top .t small{display:block;font-size:11px;color:var(--faint);font-weight:400}
+  .body{padding:18px 16px 26px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
+  .hero{display:flex;gap:14px;align-items:flex-start}
+  .hero .glyph{width:42px;height:42px;border-radius:11px;background:var(--primary-soft);color:var(--primary);
+    display:flex;align-items:center;justify-content:center;font-size:22px;flex:none}
+  .hero .kind{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--primary);font-weight:700}
+  .hero h1{font-size:21px;line-height:1.25;color:#191108;margin:3px 0 8px;font-weight:700}
+  .hero .meta{font-size:12.5px;color:var(--muted)}
+  .label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:700;margin:26px 4px 8px}
+  .collap{display:flex;align-items:center;justify-content:space-between;background:var(--card);
+    border:1px solid var(--border);border-radius:var(--radius);padding:15px 16px;color:var(--fg);font-weight:600;font-size:15px}
+  .collap .r{color:var(--faint);font-size:18px}
+  p.pray{font-size:16px;line-height:1.6;margin:11px 4px;color:#2a2114}
+  p.resp{color:var(--primary);font-weight:600}
+  .verse{font-size:16px;margin:4px 4px}
+  .verse .n{color:var(--faint);font-weight:700;margin-right:7px}
+  .ref{display:flex;align-items:center;gap:13px;background:var(--card);border:1px solid var(--border);
+    border-radius:var(--radius);padding:14px 16px;text-decoration:none;color:var(--fg);font-size:15px;font-weight:500;margin-bottom:8px}
+  .ref .g{width:34px;height:34px;border-radius:9px;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:18px;flex:none}
+  .ref .chev{margin-left:auto;color:var(--faint);font-size:18px}
+  .month{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .month b{font-size:18px;color:#191108}
+  .month .nav{display:flex;gap:6px}
+  .day{display:flex;gap:13px;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;margin-bottom:8px}
+  .day .date{min-width:40px;text-align:center}
+  .day .date .n{font-size:19px;font-weight:700;color:#191108;line-height:1}
+  .day .date .w{font-size:11px;color:var(--faint)}
+  .day .info .t{font-size:14.5px;font-weight:600}
+  .day .info .s{font-size:12px;color:var(--muted)}
+  .day.today{border-color:var(--primary);background:var(--primary-soft)}
+  .day.today .date .n{color:var(--primary)}
+  .day.feast .info .t,.day.feast .date .n{color:var(--primary)}
+  .tag{margin-left:auto;font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:var(--primary)}
+  .foot{position:sticky;bottom:0;background:rgba(245,239,226,.96);backdrop-filter:blur(8px);
+    border-top:1px solid var(--border);margin:24px -16px -26px;padding:11px 16px 14px;display:flex;justify-content:space-around}
+  .foot button{background:none;border:none;font:inherit;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;cursor:pointer}
+  .foot .ic{font-size:21px}
+  .credit{text-align:center;font-size:11px;color:var(--faint);margin:13px 0 2px;line-height:1.5}
+  .caption{max-width:400px;text-align:center;font-size:13px;color:#4a3a24}
+</style>
+</head>
+<body>
+  <div class="switch">
+    <a class="on" href="d-lucide-minimal.html">DESIGN.md 프리뷰 (Lucide)</a>
+    <a class="ghost" href="index.html">← 이전 A/B/C (폐기)</a>
+  </div>
+  <p class="caption"><b>DESIGN.md 적용 프리뷰.</b> DESIGN.md(SSOT)의 양피지/골드 토큰 + <b>Lucide 단일 아이콘 패밀리</b>(이모지/유니코드 0). 일관 radius/border/spacing. 이 방향을 앱 전체에 적용합니다.</p>
+
+  <div class="phone"><div class="scr">
+    <div class="top">
+      <a class="iconbtn" href="#"><i data-lucide="arrow-left"></i></a>
+      <div class="t">Өглөөний залбирал<small>2026.05.20 Лхагва</small></div>
+    </div>
+    <div class="body">
+      <div class="card hero">
+        <span class="glyph"><i data-lucide="church"></i></span>
+        <div>
+          <div class="kind">Өглөө · Lauds</div>
+          <h1>Өглөөний магтаалын залбирал</h1>
+          <div class="meta">7-р долоо хоног · Дуулалтын III</div>
+        </div>
+      </div>
+
+      <div class="label">Урих дуудлага</div>
+      <div class="collap"><span>Дуудлагын дуулал</span><i data-lucide="chevron-right" class="r"></i></div>
+
+      <div class="label">Удиртгал</div>
+      <p class="pray">Тэнгэрбурхан минь, Та намайг аврахаар сөёрхоно уу.</p>
+      <p class="pray resp">— Эзэн минь, надад туслахаар яаравчилна уу.</p>
+      <p class="pray">Эцэг, Хүү, Ариун Сүнсэнд алдар хүндэтгэл байг. Эхэн цагт байсан мэт эдүгээ ч байх болтугай. Амэн. Аллэлуяа!</p>
+
+      <div class="label">Магтуу</div>
+      <p class="verse"><span class="n">1</span>Танд хайртай миний Есүсээ, Танд хайртай үнэхээр ихээр,</p>
+      <p class="verse"><span class="n">2</span>Миний хайртай Хүү Би чамайг сайн мэднэ.</p>
+
+      <div class="label">Холбоос</div>
+      <a class="ref" href="#"><span class="g"><i data-lucide="book-open"></i></span> Залбиралт цагийн заавар <i data-lucide="chevron-right" class="chev"></i></a>
+      <a class="ref" href="#"><span class="g"><i data-lucide="scroll-text"></i></span> Ёслолын дэг жаяг <i data-lucide="chevron-right" class="chev"></i></a>
+
+      <div class="label">Литургийн хуанли</div>
+      <div class="month"><b>2026 оны 5-р сар</b><span class="nav"><a class="iconbtn" href="#"><i data-lucide="chevron-left"></i></a><a class="iconbtn" href="#"><i data-lucide="chevron-right"></i></a></span></div>
+      <div class="day today"><div class="date"><div class="n">20</div><div class="w">Лха</div></div><div class="info"><div class="t">Өнөөдөр</div><div class="s">7-р долоо хоног</div></div></div>
+      <div class="day feast"><div class="date"><div class="n">21</div><div class="w">Пүр</div></div><div class="info"><div class="t">Эзэн тэнгэрт одсон нь</div><div class="s">Их баяр</div></div><span class="tag">Баяр</span></div>
+      <div class="day"><div class="date"><div class="n">22</div><div class="w">Баа</div></div><div class="info"><div class="t">Энгийн өдөр</div><div class="s">7-р долоо хоног</div></div></div>
+
+      <div class="foot">
+        <button><i data-lucide="sunrise" class="ic"></i>Өнөөдөр</button>
+        <button><i data-lucide="book-open" class="ic"></i>Заавар</button>
+        <button><i data-lucide="settings" class="ic"></i>Тохиргоо</button>
+      </div>
+    </div>
+  </div></div>
+  <div class="credit">Цагийн Залбирал — Монгол Католик Сүм · Зарим орчуулга хийгдэж байна</div>
+  <script>lucide.createIcons()</script>
+</body>
+</html>
