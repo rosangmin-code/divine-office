@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>목업 B — Editorial Serif</title>
+<style>
+  :root{
+    --bg:#fdfbf6; --ink:#1c1812; --head:#120f0a; --muted:#6b5f4d; --faint:#9a8c76;
+    --line:#e7ddc9; --gold:#9a7b2e; --rule:#cdbb8e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#e7dcc8;font-family:"Noto Sans",system-ui,sans-serif;color:var(--ink);
+    display:flex;flex-direction:column;align-items:center;gap:20px;padding:24px 12px 60px;line-height:1.6}
+  .switch{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:420px}
+  .switch a{font-size:13px;text-decoration:none;color:#3e3122;background:#fffdf8;border:1px solid #c9b78e;padding:7px 12px;border-radius:999px}
+  .switch a.on{background:var(--gold);color:#fff;border-color:var(--gold)}
+  .phone{width:390px;max-width:100%;background:var(--bg);border-radius:36px;
+    box-shadow:0 18px 50px rgba(50,35,12,.3);overflow:hidden;border:10px solid #211a10}
+  .scr{height:760px;overflow:auto}
+  .scr::-webkit-scrollbar{width:0}
+  .top{position:sticky;top:0;z-index:5;background:rgba(253,251,246,.94);backdrop-filter:blur(6px);
+    padding:13px 22px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+  .body{padding:26px 24px 28px}
+  /* editorial hero — no card, lives on paper */
+  .kicker{font-family:"Noto Serif",Georgia,serif;font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold)}
+  h1.title{font-family:"Noto Serif",Georgia,serif;font-weight:600;font-size:32px;line-height:1.18;color:var(--head);margin:10px 0 14px;letter-spacing:.01em}
+  .meta{font-size:13.5px;color:var(--muted);padding-bottom:18px;border-bottom:2px solid var(--rule)}
+  .meta .day{color:var(--ink);font-weight:600}
+  /* section: serif small-caps + thin rule */
+  .sec{margin:30px 0 6px;display:flex;align-items:baseline;gap:12px}
+  .sec h2{font-family:"Noto Serif",Georgia,serif;font-size:15px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;white-space:nowrap}
+  .sec .r{flex:1;height:1px;background:var(--line)}
+  .sec .more{font-size:12px;color:var(--faint)}
+  p.pray{font-family:"Noto Serif",Georgia,serif;font-size:18px;line-height:1.62;margin:12px 0;color:#241d12}
+  p.resp{color:var(--gold);font-style:italic}
+  .dropcap::first-letter{font-family:"Noto Serif",Georgia,serif;float:left;font-size:52px;line-height:.82;padding:6px 10px 0 0;color:var(--gold)}
+  .verse{font-family:"Noto Serif",Georgia,serif;font-size:17px;margin:6px 0;color:#241d12}
+  .verse .n{color:var(--faint);font-variant-numeric:tabular-nums;margin-right:8px}
+  .ref{font-family:"Noto Serif",Georgia,serif;font-size:15px;color:var(--muted);text-decoration:none;border-bottom:1px solid var(--rule);padding-bottom:2px}
+  /* home preview — editorial list */
+  .month{font-family:"Noto Serif",Georgia,serif;font-size:22px;color:var(--head);display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .month .nav{color:var(--faint);font-size:20px}
+  .row{padding:14px 0;border-bottom:1px solid var(--line);display:flex;gap:14px;align-items:baseline}
+  .row .num{font-family:"Noto Serif",Georgia,serif;font-size:20px;color:var(--head);min-width:30px}
+  .row .t{font-size:15px;color:var(--ink)}
+  .row .sub{font-size:12.5px;color:var(--muted);margin-top:1px}
+  .row.feast .t{color:var(--gold);font-family:"Noto Serif",Georgia,serif;font-weight:600}
+  .row.today .num{color:var(--gold)}
+  .row.today::after{content:"Өнөөдөр";font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-left:auto}
+  .foot{margin-top:30px;padding-top:16px;border-top:2px solid var(--rule);display:flex;justify-content:center;gap:30px}
+  .foot a{font-family:"Noto Serif",Georgia,serif;font-size:15px;color:var(--muted);text-decoration:none}
+  .credit{text-align:center;font-size:11px;color:var(--faint);margin-top:14px;font-style:italic;line-height:1.5}
+  .caption{max-width:390px;text-align:center;font-size:13px;color:#4a3a24}
+</style>
+</head>
+<body>
+  <div class="switch">
+    <a href="a-refined-parchment.html">A · Refined Parchment</a>
+    <a class="on" href="b-editorial-serif.html">B · Editorial Serif</a>
+    <a href="c-calm-minimal.html">C · Calm Minimal</a>
+  </div>
+  <p class="caption"><b>B — Editorial Serif.</b> 근백색 종이 + 강한 세리프 제목 + 얇은 골드 룰. 카드를 없애고 본문이 종이 위에 흐르는 책/경전 같은 느낌. 가독성·격조 우선.</p>
+
+  <div class="phone"><div class="scr">
+    <div class="top">← Бүх цагийн залбирал</div>
+    <div class="body">
+      <div class="kicker">Өглөө · Lauds</div>
+      <h1 class="title">Өглөөний магтаалын залбирал</h1>
+      <div class="meta"><span class="day">2026.05.20 Лхагва</span> · Дээгүүр өнгөрөх цаг улирлын 7-р долоо хоног · Дуулалтын III</div>
+
+      <div class="sec"><h2>Урих дуудлага</h2><span class="r"></span><span class="more">харах ›</span></div>
+
+      <div class="sec"><h2>Удиртгал</h2><span class="r"></span></div>
+      <p class="pray dropcap">Тэнгэрбурхан минь, Та намайг аврахаар сөёрхоно уу.</p>
+      <p class="pray resp">— Эзэн минь, надад туслахаар яаравчилна уу.</p>
+      <p class="pray">Эцэг, Хүү, Ариун Сүнсэнд алдар хүндэтгэл байг. Эхэн цагт байсан мэт эдүгээ ч, үргэлж ч байх болтугай. Амэн. Аллэлуяа!</p>
+
+      <div class="sec"><h2>Магтуу</h2><span class="r"></span></div>
+      <p class="verse"><span class="n">1</span>Танд хайртай миний Есүсээ, Танд хайртай үнэхээр ихээр,</p>
+      <p class="verse"><span class="n">2</span>Миний хайртай Хүү Би чамайг сайн мэднэ.</p>
+
+      <div class="sec"><h2>Холбоос</h2><span class="r"></span></div>
+      <a class="ref" href="#">Залбиралт цагийн заавар</a>
+
+      <div class="sec"><h2>Литургийн хуанли</h2><span class="r"></span></div>
+      <div class="month"><span>2026 · 5-р сар</span><span class="nav">‹ ›</span></div>
+      <div class="row today"><span class="num">20</span><div><div class="t">Лхагва · 7-р долоо хоног</div></div></div>
+      <div class="row feast"><span class="num">21</span><div><div class="t">Эзэн биеэрээ тэнгэрт одсон нь</div><div class="sub">Их баяр</div></div></div>
+      <div class="row"><span class="num">22</span><div><div class="t">Баасан гараг</div><div class="sub">7-р долоо хоног</div></div></div>
+
+      <div class="foot"><a href="#">Өнөөдөр</a><a href="#">Тохиргоо</a></div>
+      <div class="credit">Цагийн Залбирал — Монгол Католик Сүм<br>Зарим орчуулга хийгдэж байна</div>
+    </div>
+  </div></div>
+</body>
+</html>

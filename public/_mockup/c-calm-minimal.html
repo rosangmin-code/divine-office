@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>목업 C — Calm Minimal</title>
+<style>
+  :root{
+    --bg:#fbfaf7; --card:#ffffff; --ink:#17150f; --head:#000; --muted:#5f5848; --faint:#938b78;
+    --line:#ece7db; --accent:#9a7b2e; --accent-soft:#f3eddd; --green:#2d6a4f;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#dad3c4;font-family:"Noto Sans",system-ui,sans-serif;color:var(--ink);
+    display:flex;flex-direction:column;align-items:center;gap:20px;padding:24px 12px 60px;line-height:1.55}
+  .switch{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:420px}
+  .switch a{font-size:13px;text-decoration:none;color:#3e3122;background:#fffdf8;border:1px solid #c9b78e;padding:7px 12px;border-radius:999px}
+  .switch a.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .phone{width:390px;max-width:100%;background:var(--bg);border-radius:36px;
+    box-shadow:0 18px 50px rgba(50,35,12,.3);overflow:hidden;border:10px solid #18140c}
+  .scr{height:760px;overflow:auto}
+  .scr::-webkit-scrollbar{width:0}
+  .top{position:sticky;top:0;z-index:5;background:rgba(251,250,247,.96);backdrop-filter:blur(8px);
+    display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}
+  .top .back{width:36px;height:36px;border-radius:50%;background:#fff;border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;color:var(--muted);text-decoration:none;font-size:16px}
+  .top .ttl{font-size:14px;font-weight:600;color:var(--ink)}
+  .top .ttl small{display:block;font-size:11px;color:var(--faint);font-weight:400}
+  .body{padding:20px 18px 28px}
+  /* hero — quiet, big title, accent rule under */
+  .hero h1{font-size:27px;line-height:1.22;color:var(--head);letter-spacing:-.01em;font-weight:700}
+  .hero .meta{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-size:12px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 11px;color:var(--muted)}
+  .chip.acc{background:var(--accent-soft);border-color:#e6d8b4;color:var(--accent);font-weight:600}
+  /* section: quiet label + generous space, big tap target on collapsibles */
+  .sec{display:flex;align-items:center;justify-content:space-between;margin:30px 0 8px}
+  .sec h2{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:700}
+  .collap{display:flex;align-items:center;justify-content:space-between;background:var(--card);
+    border:1px solid var(--line);border-radius:14px;padding:16px 16px;margin:8px 0}
+  .collap .lbl{font-size:15px;font-weight:600;color:var(--ink)}
+  .collap .ar{color:var(--faint);font-size:18px}
+  p.pray{font-size:16.5px;line-height:1.62;margin:12px 0;color:#221d12}
+  p.resp{color:var(--accent);font-weight:600}
+  .verse{font-size:16.5px;margin:5px 0;color:#221d12}
+  .verse .n{display:inline-block;min-width:22px;color:var(--faint);font-weight:700}
+  .ref{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:15px 16px;text-decoration:none;color:var(--ink);font-size:15px;font-weight:500}
+  .ref .ic{width:34px;height:34px;border-radius:10px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center}
+  .ref .ch{margin-left:auto;color:var(--faint)}
+  /* home preview — calm cards */
+  .month{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .month b{font-size:20px;color:var(--head)}
+  .month .nav span{display:inline-flex;width:34px;height:34px;border-radius:50%;background:#fff;border:1px solid var(--line);align-items:center;justify-content:center;color:var(--muted);margin-left:6px}
+  .day{display:flex;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);
+    border-radius:16px;padding:14px 16px;margin-bottom:9px}
+  .day .date{text-align:center;min-width:42px}
+  .day .date .n{font-size:20px;font-weight:700;color:var(--head);line-height:1}
+  .day .date .w{font-size:11px;color:var(--faint)}
+  .day .info .t{font-size:15px;font-weight:600;color:var(--ink)}
+  .day .info .s{font-size:12.5px;color:var(--muted)}
+  .day.today{border-color:var(--accent);background:var(--accent-soft)}
+  .day.today .date .n{color:var(--accent)}
+  .day.feast .info .t{color:var(--accent)}
+  .day.feast .date .n{color:var(--accent)}
+  .tag{margin-left:auto;font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--accent)}
+  .foot{position:sticky;bottom:0;background:rgba(251,250,247,.97);backdrop-filter:blur(8px);
+    border-top:1px solid var(--line);margin:26px -18px -28px;padding:12px 18px 16px;display:flex;justify-content:space-around}
+  .foot button{background:none;border:none;font:inherit;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;cursor:pointer}
+  .foot .ico{font-size:20px}
+  .credit{text-align:center;font-size:11px;color:var(--faint);margin:14px 0 4px;line-height:1.5}
+  .caption{max-width:390px;text-align:center;font-size:13px;color:#4a3a24}
+</style>
+</head>
+<body>
+  <div class="switch">
+    <a href="a-refined-parchment.html">A · Refined Parchment</a>
+    <a href="b-editorial-serif.html">B · Editorial Serif</a>
+    <a class="on" href="c-calm-minimal.html">C · Calm Minimal</a>
+  </div>
+  <p class="caption"><b>C — Calm Minimal.</b> 밝은 화이트 + 진한 잉크 고대비, 악센트 골드 절제, 큰 터치타깃·넉넉한 여백. 가장 모던하고 노인 가독성 최적 (글자 크기 확장과 시너지).</p>
+
+  <div class="phone"><div class="scr">
+    <div class="top">
+      <a class="back" href="#">←</a>
+      <div class="ttl">Өглөөний залбирал<small>2026.05.20 Лхагва</small></div>
+    </div>
+    <div class="body">
+      <div class="hero">
+        <h1>Өглөөний магтаалын залбирал</h1>
+        <div class="meta">
+          <span class="chip acc">Өглөө · Lauds</span>
+          <span class="chip">7-р долоо хоног</span>
+          <span class="chip">Дуулалтын III</span>
+        </div>
+      </div>
+
+      <div class="collap"><span class="lbl">Урих дуудлага</span><span class="ar">›</span></div>
+
+      <div class="sec"><h2>Удиртгал</h2></div>
+      <p class="pray">Тэнгэрбурхан минь, Та намайг аврахаар сөёрхоно уу.</p>
+      <p class="pray resp">— Эзэн минь, надад туслахаар яаравчилна уу.</p>
+      <p class="pray">Эцэг, Хүү, Ариун Сүнсэнд алдар хүндэтгэл байг. Эхэн цагт байсан мэт эдүгээ ч, үргэлж ч байх болтугай. Амэн. Аллэлуяа!</p>
+
+      <div class="sec"><h2>Магтуу</h2></div>
+      <p class="verse"><span class="n">1</span>Танд хайртай миний Есүсээ, Танд хайртай үнэхээр ихээр,</p>
+      <p class="verse"><span class="n">2</span>Миний хайртай Хүү Би чамайг сайн мэднэ.</p>
+
+      <div class="sec"><h2>Холбоос</h2></div>
+      <a class="ref" href="#"><span class="ic">📖</span> Залбиралт цагийн заавар <span class="ch">›</span></a>
+
+      <div class="sec"><h2>Литургийн хуанли</h2></div>
+      <div class="month"><b>2026 оны 5-р сар</b><span class="nav"><span>‹</span><span>›</span></span></div>
+      <div class="day today"><div class="date"><div class="n">20</div><div class="w">Лха</div></div><div class="info"><div class="t">Өнөөдөр</div><div class="s">7-р долоо хоног</div></div></div>
+      <div class="day feast"><div class="date"><div class="n">21</div><div class="w">Пүр</div></div><div class="info"><div class="t">Эзэн тэнгэрт одсон нь</div><div class="s">Их баяр</div></div><span class="tag">Баяр</span></div>
+      <div class="day"><div class="date"><div class="n">22</div><div class="w">Баа</div></div><div class="info"><div class="t">Энгийн өдөр</div><div class="s">7-р долоо хоног</div></div></div>
+
+      <div class="foot">
+        <button><span class="ico">⊙</span>Өнөөдөр</button>
+        <button><span class="ico">📖</span>Заавар</button>
+        <button><span class="ico">⚙</span>Тохиргоо</button>
+      </div>
+    </div>
+  </div></div>
+  <div class="credit">Цагийн Залбирал — Монгол Католик Сүм · Зарим орчуулга хийгдэж байна</div>
+</body>
+</html>

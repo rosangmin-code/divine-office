@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>목업 A — Refined Parchment</title>
+<style>
+  :root{
+    --bg:#f6efe1; --paper:#fffdf8; --ink:#241a0e; --head:#191108;
+    --muted:#7a6648; --faint:#a08a5b; --line:#e3d6ba;
+    --gold:#9c7e34; --gold-soft:#f0e6cf;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#d8cbb0;font-family:"Noto Sans",system-ui,sans-serif;color:var(--ink);
+    display:flex;flex-direction:column;align-items:center;gap:20px;padding:24px 12px 60px;line-height:1.5}
+  .switch{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:420px}
+  .switch a{font-size:13px;text-decoration:none;color:#3e3122;background:#fffdf8;border:1px solid #c9b78e;
+    padding:7px 12px;border-radius:999px}
+  .switch a.on{background:var(--gold);color:#fff;border-color:var(--gold)}
+  .phone{width:390px;max-width:100%;background:var(--bg);border-radius:36px;
+    box-shadow:0 18px 50px rgba(50,35,12,.32);overflow:hidden;border:10px solid #2b2014}
+  .scr{height:760px;overflow:auto}
+  .scr::-webkit-scrollbar{width:0}
+  /* top bar */
+  .top{position:sticky;top:0;z-index:5;background:rgba(246,239,225,.92);backdrop-filter:blur(6px);
+    display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line)}
+  .top .back{color:var(--muted);font-size:14px;text-decoration:none}
+  .body{padding:18px 18px 28px}
+  /* hero card */
+  .hero{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:20px 18px;
+    box-shadow:0 2px 0 rgba(156,126,52,.06)}
+  .hero .kind{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  .hero h1{font-family:"Noto Serif",Georgia,serif;font-size:26px;line-height:1.2;color:var(--head);margin:8px 0 12px}
+  .hero .meta{font-size:13px;color:var(--muted)}
+  .hero .meta b{color:var(--ink);font-weight:600}
+  /* section header */
+  .sec{display:flex;align-items:center;gap:10px;margin:26px 2px 12px}
+  .sec .tick{width:6px;height:6px;border-radius:50%;background:var(--gold)}
+  .sec h2{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  .sec .line{flex:1;height:1px;background:var(--line)}
+  .sec .chev{color:var(--faint);font-size:16px}
+  p.pray{font-size:16px;margin:10px 2px;color:#2c2114}
+  p.resp{color:var(--gold);font-weight:600}
+  .verse{font-size:16px;margin:4px 2px;color:#2c2114}
+  .verse .n{color:var(--faint);font-weight:700;margin-right:6px}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--line);
+    border-radius:12px;padding:10px 14px;font-size:14px;color:var(--muted);text-decoration:none}
+  /* home preview rows */
+  .day{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:13px 14px;
+    background:var(--paper);border:1px solid var(--line);border-radius:14px;margin-bottom:8px}
+  .day .d{font-size:15px;font-weight:600;color:var(--head)}
+  .day .s{font-size:12px;color:var(--muted);margin-top:2px}
+  .day.feast{background:linear-gradient(180deg,#fbf3dd,#fffdf8);border-color:#e6cd92}
+  .day.feast .badge{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:800}
+  .day.today{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+  .month{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .month b{font-size:18px;color:var(--head)}
+  .month .nav{color:var(--muted);font-size:18px}
+  /* footer */
+  .foot{margin-top:24px;border-top:1px solid var(--line);padding-top:14px;display:flex;
+    align-items:center;justify-content:center;gap:22px}
+  .foot button{background:none;border:none;font:inherit;color:var(--muted);font-size:14px;display:flex;
+    flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+  .foot .ico{font-size:18px}
+  .credit{text-align:center;font-size:11px;color:var(--faint);margin-top:10px;line-height:1.4}
+  .caption{max-width:390px;text-align:center;font-size:13px;color:#4a3a24}
+</style>
+</head>
+<body>
+  <div class="switch">
+    <a class="on" href="a-refined-parchment.html">A · Refined Parchment</a>
+    <a href="b-editorial-serif.html">B · Editorial Serif</a>
+    <a href="c-calm-minimal.html">C · Calm Minimal</a>
+  </div>
+  <p class="caption"><b>A — Refined Parchment.</b> 지금의 양피지 감성을 유지하되 대비를 올리고, 빨강 섹션헤더를 골드 한 가지로 통일, 카드 정리 + 여백 확대. 가장 안전한 진화안.</p>
+
+  <div class="phone"><div class="scr">
+    <div class="top"><a class="back" href="#">← Бүх цагийн залбирал</a></div>
+    <div class="body">
+      <div class="hero">
+        <div class="kind">Өглөө · Lauds</div>
+        <h1>Өглөөний магтаалын залбирал</h1>
+        <div class="meta">☩ <b>2026.05.20 Лхагва</b><br>Дээгүүр өнгөрөх цаг улирлын 7-р долоо хоног · Дуулалтын III</div>
+      </div>
+
+      <div class="sec"><span class="tick"></span><h2>Урих дуудлага</h2><span class="line"></span><span class="chev">›</span></div>
+
+      <div class="sec"><span class="tick"></span><h2>Удиртгал</h2><span class="line"></span></div>
+      <p class="pray">Тэнгэрбурхан минь, Та намайг аврахаар сөёрхоно уу.</p>
+      <p class="pray resp">— Эзэн минь, надад туслахаар яаравчилна уу.</p>
+      <p class="pray">Эцэг, Хүү, Ариун Сүнсэнд алдар хүндэтгэл байг. Эхэн цагт байсан мэт эдүгээ ч, үргэлж ч, үеийн үед байх болтугай. Амэн. Аллэлуяа!</p>
+
+      <div class="sec"><span class="tick"></span><h2>Магтуу</h2><span class="line"></span></div>
+      <p class="verse"><span class="n">1.</span>Танд хайртай миний Есүсээ, Танд хайртай үнэхээр ихээр,</p>
+      <p class="verse"><span class="n">2.</span>Миний хайртай Хүү Би чамайг сайн мэднэ, Танд хайртай нь Би намайг авраа.</p>
+
+      <div class="sec"><span class="tick"></span><h2>Холбогдох хуудас</h2><span class="line"></span></div>
+      <a class="pill" href="#">📖 Залбиралт цагийн заавар</a>
+
+      <!-- home preview -->
+      <div class="sec"><span class="tick"></span><h2>Нүүр — Литургийн хуанли</h2><span class="line"></span></div>
+      <div class="month"><b>2026 оны 5-р сар</b><span class="nav">‹ ›</span></div>
+      <div class="day today"><div><div class="d">5-р сарын 20 · Лхагва</div><div class="s">Өнөөдөр · 7-р долоо хоног</div></div></div>
+      <div class="day feast"><div><div class="badge">Их баяр</div><div class="d">5-р сарын 21</div><div class="s">Эзэн биеэрээ тэнгэрт одсон нь</div></div></div>
+      <div class="day"><div><div class="d">5-р сарын 22</div><div class="s">7-р долоо хоногийн баасан</div></div></div>
+
+      <div class="foot">
+        <button><span class="ico">⊙</span>Өнөөдөр</button>
+        <button><span class="ico">⚙</span>Тохиргоо</button>
+      </div>
+      <div class="credit">Цагийн Залбирал — Монгол Католик Сүм<br>Зарим орчуулга хийгдэж байна</div>
+    </div>
+  </div></div>
+</body>
+</html>
