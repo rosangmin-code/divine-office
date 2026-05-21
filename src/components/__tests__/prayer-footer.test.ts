@@ -492,3 +492,76 @@ describe('PrayerFooter — WI-B interaction patterns (Option B)', () => {
     expect(code).toMatch(/\binert\b/)
   })
 })
+
+// #54-sub-6 (WI-67) — prayer-footer 재스킨: 📅/⚙ 이모지 → lucide Icon +
+// 메뉴 카드 팔레트 stone/sky → 크림/골드 토큰. footer.test.ts 의 lucide-
+// Icon 단언 패턴(<svg> 존재 + 이모지 부재) 차용. stone-* 클래스는
+// globals.css(#58) 가 크림 램프로 remap 한 디자인 토큰이라 유지되고
+// (승인 sibling footer.tsx #63 동일), 실제 off-palette 제거 대상은
+// sky(파랑) 였다. 단위 suite 는 SSR-string 가드 — 시각 정합은 Playwright
+// 캡처(AC #4)가 담당.
+// @fr FR-164
+describe('PrayerFooter — cream/gold reskin (#54-sub-6)', () => {
+  function expandedHtml(): string {
+    return renderToStaticMarkup(
+      createElement(PrayerFooter, { date: '2026-05-20', expanded: true }),
+    )
+  }
+
+  // AC #1 — 📅/⚙ 이모지 0 → lucide Icon(calendar/settings)
+  it('menu cards render lucide <svg> icons, not 📅/⚙ emoji', () => {
+    const html = expandedHtml()
+    // 이모지 0건
+    expect(html).not.toContain('📅')
+    expect(html).not.toContain('⚙')
+    // 각 메뉴 카드 안에 lucide <svg> (Icon) 렌더 — footer.test.ts 패턴
+    expect(html).toMatch(/data-role="prayer-footer-menu-date"[\s\S]*?<svg/)
+    expect(html).toMatch(/data-role="prayer-footer-menu-settings"[\s\S]*?<svg/)
+  })
+
+  // AC #2 — 크림/골드 토큰만, sky(파랑) 잔존 0
+  it('menu cards carry no off-palette sky/blue classes (cream/gold only)', () => {
+    const html = expandedHtml()
+    expect(html).not.toContain('sky-')
+    expect(html).not.toContain('blue-')
+    // hover/focus 가 골드 토큰(var) 사용 — footer.tsx 와 동일 arbitrary-value 형식
+    expect(html).toContain('--color-liturgical-gold')
+  })
+
+  // AC #3 — data-role + 몽골어 aria-label(Огноо/Тохиргоо) 보존
+  it('preserves data-role + Mongolian aria-label on the menu links (NFR-002)', () => {
+    const html = expandedHtml()
+    const dateAnchor = html.match(
+      /<a[^>]*data-role="prayer-footer-menu-date"[^>]*>/,
+    )
+    const settingsAnchor = html.match(
+      /<a[^>]*data-role="prayer-footer-menu-settings"[^>]*>/,
+    )
+    expect(dateAnchor).not.toBeNull()
+    expect(settingsAnchor).not.toBeNull()
+    expect(dateAnchor![0]).toContain('aria-label="Огноо"')
+    expect(settingsAnchor![0]).toContain('aria-label="Тохиргоо"')
+    // 라벨 텍스트 유지
+    expect(html).toContain('Огноо')
+    expect(html).toContain('Тохиргоо')
+    // 영어 fallback 0
+    expect(html).not.toContain('aria-label="Date"')
+    expect(html).not.toContain('aria-label="Settings"')
+  })
+
+  // AC #3 — strip 토글 UX 보존 (chevron ⏷⏶ + aria 는 이번 scope 밖, 회귀 가드)
+  it('keeps the strip toggle chevron + aria contract intact (out of reskin scope)', () => {
+    const collapsed = renderToStaticMarkup(
+      createElement(PrayerFooter, { date: '2026-05-20' }),
+    )
+    const expanded = expandedHtml()
+    // 토글 글리프 swap 유지
+    expect(collapsed).toContain('>⏶<')
+    expect(expanded).toContain('>⏷<')
+    // strip aria-expanded 양방향 유지
+    expect(collapsed).toContain('aria-expanded="false"')
+    expect(expanded).toContain('aria-expanded="true"')
+    // gold focus ring 유지
+    expect(collapsed).toContain('focus-visible:ring-[var(--color-liturgical-gold)]')
+  })
+})

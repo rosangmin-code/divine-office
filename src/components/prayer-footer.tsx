@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
+import { Icon } from './icon'
 
 // GOAL #24 WI-B (#30) — PrayerFooter interaction logic 내재화.
 //
@@ -194,10 +195,10 @@ export function PrayerFooter({
               href={dateHref}
               data-role="prayer-footer-menu-date"
               aria-label="Огноо"
-              className="flex flex-1 flex-col items-center rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-center text-stone-800 transition-colors hover:border-sky-300 hover:bg-sky-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-400 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200 dark:hover:border-sky-700 dark:hover:bg-sky-900/30"
+              className="flex flex-1 flex-col items-center rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-center text-stone-800 transition-colors hover:border-[var(--color-liturgical-gold)] hover:bg-[var(--color-liturgical-gold-container)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-liturgical-gold)] dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200 dark:hover:border-[var(--color-liturgical-gold-dark)] dark:hover:bg-stone-700"
             >
-              <span aria-hidden="true" className="text-2xl leading-none">
-                📅
+              <span aria-hidden="true" className="leading-none">
+                <Icon name="calendar" size={24} />
               </span>
               <span className="mt-1 text-sm font-medium">Огноо</span>
             </Link>
@@ -205,10 +206,10 @@ export function PrayerFooter({
               href="/settings"
               data-role="prayer-footer-menu-settings"
               aria-label="Тохиргоо"
-              className="flex flex-1 flex-col items-center rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-center text-stone-800 transition-colors hover:border-sky-300 hover:bg-sky-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-400 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200 dark:hover:border-sky-700 dark:hover:bg-sky-900/30"
+              className="flex flex-1 flex-col items-center rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-center text-stone-800 transition-colors hover:border-[var(--color-liturgical-gold)] hover:bg-[var(--color-liturgical-gold-container)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-liturgical-gold)] dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200 dark:hover:border-[var(--color-liturgical-gold-dark)] dark:hover:bg-stone-700"
             >
-              <span aria-hidden="true" className="text-2xl leading-none">
-                ⚙
+              <span aria-hidden="true" className="leading-none">
+                <Icon name="settings" size={24} />
               </span>
               <span className="mt-1 text-sm font-medium">Тохиргоо</span>
             </Link>
