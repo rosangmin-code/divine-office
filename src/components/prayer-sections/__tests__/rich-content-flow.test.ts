@@ -148,7 +148,7 @@ describe('RichContent — flow="natural" (FR-161 R-15)', () => {
   // the natural flow `<p>`. The red colour is preserved (RUBRIC_CLASS
   // applied as a span className), and the text appears inline rather
   // than as a heading paragraph.
-  it('inlines rubric-line blocks as coloured rubric spans', () => {
+  it('inlines rubric-line blocks as muted rubric spans (WI-62: 빨강→stone-500)', () => {
     const content: PrayerText = {
       blocks: [
         {
@@ -161,7 +161,7 @@ describe('RichContent — flow="natural" (FR-161 R-15)', () => {
       createElement(RichContent, { content, flow: 'natural' }),
     )
     expect(html).toContain('Залбирах нь')
-    expect(html).toMatch(/text-red-700/)
+    expect(html).toMatch(/text-stone-500/)
     // Inlined under the natural-flow `<p>`.
     expect(html).toContain('data-render-mode="flow"')
   })

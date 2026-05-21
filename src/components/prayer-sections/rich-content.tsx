@@ -8,7 +8,10 @@ import type { PrayerBlock, PrayerSpan, PrayerText } from '@/lib/types'
 // 본 컴포넌트는 페이지 참조(`content.page`)를 직접 렌더하지 않는다 —
 // PageRef 배치는 상위 섹션 헤더가 담당한다(기존 섹션 컴포넌트 규약).
 
-const RUBRIC_CLASS = 'text-red-700 dark:text-red-400'
+// WI-62 재스킨 (#54): DESIGN.md "빨강은 절기 의미색으로만" — 루브릭(지시문)은
+// 빨강 대신 muted(stone-500)로, 응답/창화 마커(`-`)는 골드 악센트로 분리한다.
+const RUBRIC_CLASS = 'text-stone-500 dark:text-stone-400'
+const RESPONSE_MARKER_CLASS = 'text-liturgical-gold dark:text-liturgical-gold-dark'
 const BODY_CLASS =
   'font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200'
 
@@ -93,17 +96,17 @@ function renderSpan(span: PrayerSpan, key: number): JSX.Element {
     if (!VERSICLE_PREFIX) return <span key={key}>{span.text}</span>
     return (
       <span key={key}>
-        <span className={`${RUBRIC_CLASS} font-semibold`}>{VERSICLE_PREFIX} </span>
+        <span className={`${RESPONSE_MARKER_CLASS} font-semibold`}>{VERSICLE_PREFIX} </span>
         {span.text}
       </span>
     )
   }
-  // response — PDF 는 `- ` 하이픈 prefix (red rubric). responsory-section.tsx
-  // 의 plain path 와 동일한 시각 컨벤션 (`<span className=text-red-700>- </span>`).
+  // response — PDF 는 `- ` 하이픈 prefix. WI-62 재스킨: 응답구 마커는 골드
+  // 악센트 (responsory-section.tsx plain path 와 동일한 골드 컨벤션).
   if (!RESPONSE_PREFIX) return <span key={key}>{span.text}</span>
   return (
     <span key={key}>
-      <span className={`${RUBRIC_CLASS} font-semibold`}>{RESPONSE_PREFIX} </span>
+      <span className={`${RESPONSE_MARKER_CLASS} font-semibold`}>{RESPONSE_PREFIX} </span>
       {span.text}
     </span>
   )

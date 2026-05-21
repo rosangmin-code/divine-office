@@ -1,7 +1,7 @@
 export function OurFatherSection() {
   return (
     <section aria-label="Эзэний даатгал залбирал" className="mb-4">
-      <p className="text-sm font-semibold text-red-700 dark:text-red-400">
+      <p className="text-xs font-bold uppercase tracking-[0.15em] text-stone-500 dark:text-stone-400">
         Эзэний даатгал залбирал
       </p>
       <p className="mt-2 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">

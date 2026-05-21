@@ -56,7 +56,9 @@ test.describe('Lauds (Morning Prayer) page', () => {
   })
 
   test('back link navigates to homepage with date', async ({ page }) => {
-    const backLink = page.getByText('← Бүх цагийн залбирал')
+    // WI-62 재스킨: 좌측 ← 리터럴 화살표 → <Icon name="back"> (aria-hidden).
+    // 텍스트 selector 대신 안정적인 aria-label(role=link) 로 검증.
+    const backLink = page.getByRole('link', { name: 'Бүх цагийн залбирлууд руу буцах' })
     await expect(backLink).toBeVisible()
     await expect(backLink).toHaveAttribute('href', `/?date=${DATES.ordinaryWeekday}`)
   })

@@ -9,9 +9,9 @@ import { PrayerRenderer } from '@/components/prayer-renderer'
 // 사용 유지될 수 있으나 본 prayer page 에서는 사라짐.
 import { PrayerFooter } from '@/components/prayer-footer'
 import { Footer } from '@/components/footer'
-import { HourIcon } from '@/components/hour-icon'
+import { Icon } from '@/components/icon'
 import type { HourType } from '@/lib/types'
-import { BORDER_COLOR_CLASSES, TEXT_COLOR_CLASSES } from '@/lib/liturgical-colors'
+import { BORDER_COLOR_CLASSES } from '@/lib/liturgical-colors'
 import { formatDateMn, romanNumeral } from '@/lib/mappings'
 
 const VALID_HOURS: HourType[] = ['lauds', 'vespers', 'compline', 'firstVespers', 'firstCompline']
@@ -86,38 +86,35 @@ export default async function PrayPage({
         <Link
           href={`/?date=${date}${celebration && celebration !== 'default' ? `&celebration=${encodeURIComponent(celebration)}` : ''}`}
           aria-label="Бүх цагийн залбирлууд руу буцах"
-          className="inline-flex items-center gap-1 text-sm text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200"
+          className="inline-flex items-center gap-1.5 text-sm text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200"
         >
-          ← Бүх цагийн залбирал
+          <Icon name="back" size={16} aria-hidden="true" />
+          Бүх цагийн залбирал
         </Link>
       </div>
 
-      {/* Header */}
-      <header className={`mb-6 rounded-xl border-l-4 ${BORDER_COLOR_CLASSES[liturgicalDay.color]} bg-white p-6 shadow-sm dark:bg-neutral-900 dark:shadow-none dark:ring-1 dark:ring-stone-800`}>
-        <div className="flex items-center gap-3">
-          <HourIcon hour={hourType} className="h-5 w-5 text-stone-400 dark:text-stone-500" />
-          <div>
-            <h1 className={`text-xl font-bold ${TEXT_COLOR_CLASSES[liturgicalDay.color]}`}>
-              {assembled.hourNameMn}
-            </h1>
-            {(() => {
-              const { formatted, weekday } = formatDateMn(date)
-              return (
-                <>
-                  <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                    {formatted} {weekday}
-                  </p>
-                  <p className="text-sm text-stone-500 dark:text-stone-400">
-                    {liturgicalDay.nameMn}
-                  </p>
-                  <p className="text-sm text-stone-500 dark:text-stone-400">
-                    Дуулалтын {romanNumeral(liturgicalDay.psalterWeek)}
-                  </p>
-                </>
-              )
-            })()}
-          </div>
-        </div>
+      {/* Hero — WI-62 재스킨 (#54): 승인 모습(public/_mockup/final-claude-gold.html)
+          기준 editorial 헤더. 골드 kicker(절기/축일명, 대문자 letterspaced) +
+          세리프 ink 제목(시간전례명) + 메타 캡션(날짜·시편주간) + 하단 헤어라인.
+          제목 앞 장식 아이콘 박스 없음(DESIGN.md — 장식 아이콘/빈 글리프 박스
+          금지, 사용자 이전 지적). 절기 의미색은 좌측 얇은 accent rule 로만
+          보존(DESIGN.md: 절기색은 hero·구분선에 제한적 — 악센트는 골드 통일,
+          빨강 등은 절기 의미색으로만). 제목은 ink(절기색 제거). */}
+      <header className={`mb-6 border-l-2 ${BORDER_COLOR_CLASSES[liturgicalDay.color]} pl-4`}>
+        <p className="text-[0.6875rem] font-bold uppercase tracking-[0.2em] text-liturgical-gold dark:text-liturgical-gold-dark">
+          {liturgicalDay.nameMn}
+        </p>
+        <h1 className="mt-2 font-serif text-3xl font-medium leading-tight tracking-tight text-stone-900 dark:text-stone-100">
+          {assembled.hourNameMn}
+        </h1>
+        {(() => {
+          const { formatted, weekday } = formatDateMn(date)
+          return (
+            <p className="mt-2 border-b border-stone-200 pb-5 text-sm text-stone-500 dark:border-stone-700 dark:text-stone-400">
+              {formatted} {weekday} · Дуулалтын {romanNumeral(liturgicalDay.psalterWeek)}
+            </p>
+          )
+        })()}
       </header>
 
       {/* Prayer content */}

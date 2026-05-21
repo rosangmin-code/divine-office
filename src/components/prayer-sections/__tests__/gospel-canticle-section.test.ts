@@ -405,29 +405,29 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
     })
   })
 
-  // WI #41 (2026-05-16) — 사용자 directive '되돌리기 진행해' → WI #30 의 까망
-  // 처리 revert. WI #25/#30 은 '막토 (magtuu)' 사용자 보고를 gospel-canticle
-  // 로 잘못 매핑한 결과였고, 진짜 의도는 hymn (Магтуу) 영역 (WI #39 해결).
-  // gospel-canticle 헤딩은 빨강 복원 (다른 prayer-section 헤딩 + PDF rubric
-  // 컨벤션 정합). `data-role="canticle-heading"` 색상-독립 anchor 는 WI #30
-  // 에서 도입된 상태 그대로 보존 (ordering test #29 anchor + 본 색상 verify).
-  describe('WI #41 — canticle heading color (빨강 복원, #30 revert)', () => {
-    it('compline heading carries data-role="canticle-heading" + red-700, NO stone-800', () => {
+  // WI-62 재스킨 (#54) — gospel-canticle 헤딩을 다른 prayer-section 헤딩과
+  // 동일한 faint label 스타일(대문자·letterspaced·text-stone-500)로 통일.
+  // DESIGN.md: "빨강은 일반 섹션 헤더에 쓰지 않는다 — 절기 의미색으로만",
+  // 악센트는 골드. (이전 WI #41 의 빨강 복원은 구 빨강-헤더 컨벤션 기준이었고
+  // 디자인 SSOT 도입으로 폐기.) `data-role="canticle-heading"` 색상-독립
+  // anchor 는 그대로 보존 (ordering test #29 anchor + 본 색상 verify).
+  describe('WI-62 — canticle heading color (faint label, 빨강 제거)', () => {
+    it('compline heading carries data-role="canticle-heading" + faint label (stone-500), NO red', () => {
       const section = makeSection({ canticle: 'nuncDimittis' })
       const html = render(createElement(GospelCanticleSection, { section }))
       // data-role anchor 존재 (색상-독립 stable selector — WI #30 도입분 보존)
       expect(html).toMatch(/<p[^>]*data-role="canticle-heading"[^>]*>/)
-      // 헤딩 라인의 텍스트가 text-red-700 클래스에 들어 있음 (빨강 복원)
+      // 헤딩 라인의 텍스트가 faint label(text-stone-500) 클래스에 들어 있음
       expect(html).toMatch(
-        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-red-700[^"]*"[^>]*>Сайнмэдээний айлдлын магтаал/,
+        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-stone-500[^"]*"[^>]*>Сайнмэдээний айлдлын магтаал/,
       )
-      // stone-800 클래스 헤딩에 없음 (회귀 가드 — WI #30 까망 처리 revert 확정)
+      // 빨강 클래스 헤딩에 없음 (회귀 가드 — WI-62 빨강 제거 확정)
       expect(html).not.toMatch(
-        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-stone-800[^"]*"[^>]*>/,
+        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-red-[^"]*"[^>]*>/,
       )
     })
 
-    it('vespers heading also carries data-role + red-700 NO stone-800 (3 hour 일관)', () => {
+    it('vespers heading also carries data-role + faint label NO red (3 hour 일관)', () => {
       const section = makeSection({
         canticle: 'magnificat',
         antiphon: 'Магнификат шад магтаал.',
@@ -435,14 +435,14 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
       })
       const html = render(createElement(GospelCanticleSection, { section }))
       expect(html).toMatch(
-        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-red-700[^"]*"[^>]*>Мариагийн магтаал/,
+        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-stone-500[^"]*"[^>]*>Мариагийн магтаал/,
       )
       expect(html).not.toMatch(
-        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-stone-800[^"]*"[^>]*>/,
+        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-red-[^"]*"[^>]*>/,
       )
     })
 
-    it('lauds heading also carries data-role + red-700 NO stone-800', () => {
+    it('lauds heading also carries data-role + faint label NO red', () => {
       const section = makeSection({
         canticle: 'benedictus',
         antiphon: 'Бенедиктус шад магтаал.',
@@ -450,10 +450,10 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
       })
       const html = render(createElement(GospelCanticleSection, { section }))
       expect(html).toMatch(
-        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-red-700[^"]*"[^>]*>Захариагийн магтаал/,
+        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-stone-500[^"]*"[^>]*>Захариагийн магтаал/,
       )
       expect(html).not.toMatch(
-        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-stone-800[^"]*"[^>]*>/,
+        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-red-[^"]*"[^>]*>/,
       )
     })
   })

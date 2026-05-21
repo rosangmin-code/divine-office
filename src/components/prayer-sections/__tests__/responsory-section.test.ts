@@ -78,13 +78,14 @@ describe('ResponsorySection — PDF 6-line emission (#5, WI 10)', () => {
     expect(countOf(html, FULL)).toBe(3)
   })
 
-  it('adds red "- " prefix on response lines (lines 2, 4, 6) only — no Х./В. markers', () => {
+  it('adds gold "- " prefix on response lines (lines 2, 4, 6) only — no Х./В. markers', () => {
     const html = renderSection(makeSection())
-    // The PDF response prefix uses a styled `<span>- </span>` exactly 3 times
+    // WI-62 재스킨: 응답구 마커는 골드 악센트. PDF response prefix 는
+    // styled `<span>- </span>` 가 정확히 3회 (cantor refrain / versicle / Glory Be 뒤).
     // (after cantor refrain / after versicle / after Glory Be).
     const hyphenPrefixCount = countOf(
       html,
-      '<span class="text-red-700 dark:text-red-400">- </span>',
+      '<span class="text-liturgical-gold dark:text-liturgical-gold-dark">- </span>',
     )
     expect(hyphenPrefixCount).toBe(3)
 
@@ -127,7 +128,7 @@ describe('ResponsorySection — PDF 6-line emission (#5, WI 10)', () => {
     // Two `-` prefixes (after cantor refrain + after Glory Be).
     const hyphenPrefixCount = countOf(
       html,
-      '<span class="text-red-700 dark:text-red-400">- </span>',
+      '<span class="text-liturgical-gold dark:text-liturgical-gold-dark">- </span>',
     )
     expect(hyphenPrefixCount).toBe(2)
   })

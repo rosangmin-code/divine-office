@@ -243,11 +243,12 @@ describe('IntercessionsSection — structured petitions[].response italic (#425)
     // F-X12 Phase A.1 must not regress the lead refrain styling.
     expect(out).toContain('data-role="intercessions-refrain"')
     expect(out).toMatch(/font-serif italic/)
-    // Hyphen prefix span must NOT inherit italic (it's a red rubric
+    // Hyphen prefix span must NOT inherit italic (it's a gold response
     // marker, not part of the response text). `not-italic` reverses
-    // the parent `italic` so the dash stays upright per PDF.
+    // the parent `italic` so the dash stays upright per PDF. WI-62 재스킨:
+    // 응답구 마커는 골드 악센트.
     expect(out).toContain(
-      '<span class="not-italic text-red-700 dark:text-red-400">- </span>',
+      '<span class="not-italic text-liturgical-gold dark:text-liturgical-gold-dark">- </span>',
     )
   })
 

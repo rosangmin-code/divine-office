@@ -26,12 +26,12 @@ test.describe('Psalter header preface rendering (FR-160-C)', () => {
   })
 
   // @fr FR-160
-  test('Psalm 150:1-6 header carries rubric red colour', async ({ page }) => {
+  test('Psalm 150:1-6 header carries muted preface colour (WI-62: 빨강→stone-500)', async ({ page }) => {
     await page.goto(`/pray/${DATES.easterW4Sunday}/lauds`)
     const header = page
       .locator('section[aria-label="Psalm 150:1-6"]')
       .locator('[data-role="psalm-header-rich"]')
-    await expect(header).toHaveClass(/text-red-700/)
+    await expect(header).toHaveClass(/text-stone-500/)
   })
 
   // @fr FR-160
