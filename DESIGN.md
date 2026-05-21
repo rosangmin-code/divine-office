@@ -12,16 +12,16 @@ colors:
   primary-container: "#f1e7cf"
   on-primary: "#fffaf0"
   on-primary-container: "#4a3a10"
-  # --- 중립 표면 (양피지 → 크림) ---
-  surface: "#faf6ec"
-  surface-container: "#f4ecd8"
-  surface-container-high: "#ede2c9"
-  border: "#e3d6ba"
+  # --- 중립 표면 (Claude warm-canvas 채택: 따뜻한 크림) ---
+  surface: "#fffdf9"
+  surface-container: "#faf9f5"
+  surface-container-high: "#f5f0e8"
+  border: "#e6dfd8"
   # --- 본문/잉크 ---
-  on-surface: "#2b1f14"
-  on-surface-strong: "#1f1610"
-  on-surface-variant: "#7a6548"
-  on-surface-faint: "#a08a5b"
+  on-surface: "#2a2520"
+  on-surface-strong: "#141413"
+  on-surface-variant: "#6c6a64"
+  on-surface-faint: "#8e8b82"
   # --- 전례 절기색 (의미 전용, 시즌 구동) ---
   season-green: "#2d6a4f"
   season-violet: "#7b2d8b"
@@ -158,9 +158,9 @@ components:
 팔레트는 따뜻한 중립(양피지) 위에 **단 하나의 악센트(황동골드)**로 절제한다.
 
 - **Primary (#9a7b2e) — 황동골드**: 유일한 상호작용/강조색. 제목 악센트, 응답구, 포커스, today/축일 표시, primary 버튼. 한 화면에 과용 금지.
-- **Surface (#faf6ec) — 크림**: 카드/콘텐츠 표면. **Surface-container (#f4ecd8) — 양피지**: 페이지 바탕. 카드가 바탕보다 살짝 밝아 떠 보인다.
-- **On-surface (#2b1f14) — 에스프레소 잉크**: 본문. **On-surface-strong (#1f1610)**: 제목. **On-surface-variant (#7a6548)**: 보조 텍스트. **On-surface-faint (#a08a5b)**: 메타·아이콘·라벨.
-- **Border (#e3d6ba)**: 카드 1px 헤어라인 (그림자 대신 경계).
+- **Surface (#fffdf9) — 카드**: 콘텐츠 표면. **Surface-container (#faf9f5) — 크림 캔버스**: 페이지 바탕(Claude warm-canvas 채택). **Surface-container-high (#f5f0e8)**: 보조 표면. 카드가 바탕보다 살짝 밝아 떠 보인다.
+- **On-surface (#2a2520) — 잉크**: 본문. **On-surface-strong (#141413)**: 제목. **On-surface-variant (#6c6a64)**: 보조 텍스트. **On-surface-faint (#8e8b82)**: 메타·아이콘·라벨.
+- **Border (#e6dfd8)**: 카드 1px 헤어라인 (그림자 대신 경계).
 - **전례 절기색 (의미 전용)**: green/violet/red/rose/white. 절기에 따라 hero·구분선에만 제한적으로. **빨강(season-red)은 더 이상 일반 섹션 헤더에 쓰지 않는다** (악센트는 골드로 통일).
 
 **다크 모드**: 바탕 #1a1510, 카드 #231c14, 잉크 #d6cfc7, 골드 #c9a961. 따뜻한 톤 유지.
