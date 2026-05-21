@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useSettings, type FontSize, type FontFamily, type ThemeMode } from '@/lib/settings'
 import { Footer } from '@/components/footer'
 import { InstallAppSection } from '@/components/install-app-section'
+import { Icon } from '@/components/icon'
 
 const FONT_SIZES: { value: FontSize; label: string; scaleEm: number }[] = [
   { value: 'xs', label: 'XS', scaleEm: 0.875 },
@@ -84,10 +85,7 @@ export default function SettingsPage() {
             aria-label="Нүүр хуудас"
             className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-stone-500 transition-colors hover:bg-stone-200 hover:text-stone-700 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-stone-200"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M19 12H5" />
-              <path d="M12 19l-7-7 7-7" />
-            </svg>
+            <Icon name="back" aria-hidden />
           </Link>
           <span aria-hidden="true" className="min-w-[44px]" />
         </div>
@@ -118,11 +116,11 @@ export default function SettingsPage() {
               data-role="font-size-decrease"
               onClick={decreaseFontSize}
               disabled={atMin}
-              className={`flex h-12 min-h-[44px] w-12 min-w-[44px] items-center justify-center rounded-lg border-2 text-lg font-medium transition-colors ${
+              className={`flex h-12 min-h-[44px] w-12 min-w-[44px] items-center justify-center rounded-lg border-2 transition-colors ${
                 atMin ? STEPPER_BTN_DISABLED : INACTIVE_ACCENT
               }`}
             >
-              Aa−
+              <Icon name="minus" size={22} aria-hidden />
             </button>
             <div
               data-testid="font-size-current"
@@ -143,11 +141,11 @@ export default function SettingsPage() {
               data-role="font-size-increase"
               onClick={increaseFontSize}
               disabled={atMax}
-              className={`flex h-12 min-h-[44px] w-12 min-w-[44px] items-center justify-center rounded-lg border-2 text-lg font-medium transition-colors ${
+              className={`flex h-12 min-h-[44px] w-12 min-w-[44px] items-center justify-center rounded-lg border-2 transition-colors ${
                 atMax ? STEPPER_BTN_DISABLED : INACTIVE_ACCENT
               }`}
             >
-              Aa+
+              <Icon name="plus" size={22} aria-hidden />
             </button>
           </div>
         </section>
