@@ -3,6 +3,7 @@ import { getCalendarMonth } from '@/lib/calendar-list'
 import { LiturgicalCalendarList } from '@/components/liturgical-calendar-list'
 import { MonthNavController } from '@/components/month-nav-controller'
 import { Footer } from '@/components/footer'
+import { Icon } from '@/components/icon'
 import Link from 'next/link'
 
 // wi-004 (#16) header — replaced previous [h1 'Огноо' | SettingsLink]
@@ -147,27 +148,30 @@ export default async function HomePage({
         />
       )}
 
-      {/* Reference links */}
-      <div className="mt-6 flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-4">
+      {/* Reference links — surface 행: 좌측 아이콘 + 텍스트 + 우측 chevron(next).
+          이모지(📖/📜) → lucide <Icon> (DESIGN.md Iconography, 단일 패밀리). */}
+      <div className="mx-auto mt-6 flex max-w-md flex-col gap-2">
         <Link
           href="/guide"
-          className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm text-stone-600 hover:bg-stone-200 dark:text-stone-400 dark:hover:bg-stone-700 transition-colors"
+          className="flex items-center gap-2.5 rounded-lg px-4 py-3 text-sm text-stone-600 transition-colors hover:bg-stone-200 dark:text-stone-400 dark:hover:bg-stone-700"
         >
-          <span className="text-base">📖</span>
-          Залбиралт цагийн заавар
+          <Icon name="guide" size={18} className="shrink-0 text-stone-400 dark:text-stone-500" aria-hidden />
+          <span>Залбиралт цагийн заавар</span>
+          <Icon name="next" size={18} className="ml-auto shrink-0 text-stone-400 dark:text-stone-500" aria-hidden />
         </Link>
         <Link
           href="/ordinarium"
-          className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm text-stone-600 hover:bg-stone-200 dark:text-stone-400 dark:hover:bg-stone-700 transition-colors"
+          className="flex items-center gap-2.5 rounded-lg px-4 py-3 text-sm text-stone-600 transition-colors hover:bg-stone-200 dark:text-stone-400 dark:hover:bg-stone-700"
         >
-          <span className="text-base">📜</span>
-          Залбиралт цагийн ёслолын дэг жаяг
+          <Icon name="order" size={18} className="shrink-0 text-stone-400 dark:text-stone-500" aria-hidden />
+          <span>Залбиралт цагийн ёслолын дэг жаяг</span>
+          <Icon name="next" size={18} className="ml-auto shrink-0 text-stone-400 dark:text-stone-500" aria-hidden />
         </Link>
       </div>
 
-      {/* wi-006 (#18) home Footer — sticky variant with
-          [⊙ Өнөөдөр] [⚙ Тохиргоо] ▾ chevron. Other pages still mount
-          the default minimal Footer. */}
+      {/* home Footer — sticky variant: [Өнөөдөр] [Тохиргоо] (lucide
+          아이콘+라벨) + 교회 출처표시 2줄 상시 노출. 토글 chevron 제거
+          (#51/#53, FR-162). Other pages mount the minimal credit-only Footer. */}
       <Footer homeControls />
     </div>
   )

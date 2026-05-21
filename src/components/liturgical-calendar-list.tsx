@@ -91,7 +91,8 @@ export function LiturgicalCalendarList({
 
   return (
     <div data-testid="liturgical-calendar-list">
-      <ul className="space-y-1">
+      {/* space-y-2 — 행 간 여백을 늘려 빽빽함 완화(DESIGN.md: 홈 달력 호흡). */}
+      <ul className="space-y-2">
         {initialRows.map((row) => {
           // FR-145 iter 2 MAJOR #2 — anchor (kind=today-anchor, date=todayStr)
           // 와 real today (kind=date, date=todayStr) 가 동일 date 를 가지므로

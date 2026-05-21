@@ -198,6 +198,6 @@ describe('LiturgicalCalendarList — WI #17 month-mode (no infinite scroll)', ()
     )
     // 컨테이너는 마운트되고 ul 도 마운트 (자식 0개).
     expect(html).toContain('data-testid="liturgical-calendar-list"')
-    expect(html).toMatch(/<ul[^>]*class="space-y-1"[^>]*><\/ul>/)
+    expect(html).toMatch(/<ul[^>]*class="space-y-2"[^>]*><\/ul>/)
   })
 })
