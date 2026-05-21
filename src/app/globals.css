@@ -18,27 +18,30 @@
   --color-liturgical-red-dark: #ef4444;
   --color-liturgical-rose-dark: #f9a8d4;
 
-  /* Brass gold accent (악센트: 제목·구분·포커스) */
-  --color-liturgical-gold: #a8893c;
+  /* Brass gold accent (악센트: 제목·구분·포커스·today/축일) */
+  --color-liturgical-gold: #9a7b2e;
   --color-liturgical-gold-dark: #c9a961;
+  --color-liturgical-gold-container: #f1e7cf; /* primary-container (악센트 연한 배경) */
 
-  /* Parchment · Sepia · Espresso palette
-     (stone/neutral/white 오버라이드 — 전체 앱 테마) */
-  --color-white: #faf6ec;     /* 카드/페이지 surface */
-  --color-stone-50: #f4ecd8;  /* 양피지 base BG */
-  --color-stone-100: #ede2c9; /* hover BG */
-  --color-stone-200: #dfd0ad; /* divider / subtle surface */
-  --color-stone-300: #c8b58e;
-  --color-stone-400: #a08a5b; /* muted text / icon */
-  --color-stone-500: #7a6548; /* secondary text */
-  --color-stone-600: #5c4a33;
-  --color-stone-700: #3e3122;
-  --color-stone-800: #2b1f14; /* primary text */
-  --color-stone-900: #1f1610; /* heading */
-  --color-stone-950: #140e08;
+  /* Claude warm-canvas Cream palette (크림 캔버스 + 골드 단일 악센트)
+     stone/neutral/white 오버라이드 — 전체 앱 테마. light→dark 램프:
+     50–300 밝은 표면 + 어두운 표면 위 역상(밝은) 텍스트, 400–600 중간 회색(보조/faint),
+     700–950 어두운 잉크/표면. (SSOT: DESIGN.md / public/_mockup/final-claude-gold.html) */
+  --color-white: #fffdf9;     /* 카드 surface */
+  --color-stone-50: #faf9f5;  /* 페이지 캔버스 BG */
+  --color-stone-100: #f5f0e8; /* 보조 표면 / hover BG */
+  --color-stone-200: #e6dfd8; /* border · divider · 역상 텍스트(어두운 표면 위) */
+  --color-stone-300: #ddd4c4; /* 강한 divider / 옅은 역상 텍스트 */
+  --color-stone-400: #8e8b82; /* faint 텍스트 / 아이콘 */
+  --color-stone-500: #6c6a64; /* 보조 텍스트 */
+  --color-stone-600: #57554f; /* 강한 보조 텍스트 */
+  --color-stone-700: #3d3d3a; /* 어두운 표면 / 강조 텍스트 */
+  --color-stone-800: #2a2520; /* 본문 텍스트 */
+  --color-stone-900: #141413; /* heading */
+  --color-stone-950: #0d0c0b; /* 최암(near-black) */
 
-  --color-neutral-900: #231c14; /* dark surface (카드) */
-  --color-neutral-950: #1a1510; /* dark base BG */
+  --color-neutral-900: #231c14; /* dark surface (카드) — dark mode 보존 */
+  --color-neutral-950: #1a1510; /* dark base BG — dark mode 보존 */
 }
 
 html { font-size: 100%; }
@@ -65,7 +68,7 @@ html[data-font-family="serif"] body {
 }
 
 :focus-visible {
-  outline: 2px solid #a8893c;
+  outline: 2px solid var(--color-liturgical-gold);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -103,7 +106,7 @@ html[data-font-family="serif"] body {
   content: '';
   flex: 1;
   height: 1px;
-  background: #d9c9a8;
+  background: var(--color-stone-200);
 }
 .dark .section-divider::before,
 .dark .section-divider::after {
