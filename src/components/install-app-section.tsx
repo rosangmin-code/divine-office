@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { ACTIVE_ACCENT, SECTION_CARD } from '@/app/settings/page'
+import { Icon } from '@/components/icon'
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>
@@ -162,8 +163,14 @@ function renderBody(
 
   if (status === 'standalone' || status === 'installed') {
     return (
-      <p className="text-sm text-stone-600 dark:text-stone-300">
-        ✓ Апп аль хэдийн суулгасан байна.
+      <p className="flex items-center gap-1.5 text-sm text-stone-600 dark:text-stone-300">
+        <Icon
+          name="check"
+          size={16}
+          className="shrink-0 text-liturgical-gold dark:text-liturgical-gold-dark"
+          aria-hidden
+        />
+        Апп аль хэдийн суулгасан байна.
       </p>
     )
   }
@@ -220,7 +227,7 @@ function renderBody(
   if (status === 'iosDismissed') {
     return (
       <p className="text-sm text-stone-500 dark:text-stone-400">
-        Safari-гийн Share → &quot;Нүүр дэлгэцэнд нэмэх&quot;.
+        Safari-гийн Share: &quot;Нүүр дэлгэцэнд нэмэх&quot;.
       </p>
     )
   }

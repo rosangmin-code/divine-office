@@ -31,6 +31,7 @@ import {
   ALargeSmall,
   Minus,
   Plus,
+  Check,
   type LucideIcon,
   type LucideProps,
 } from 'lucide-react'
@@ -52,6 +53,7 @@ const ICONS = {
   fontSize: ALargeSmall, // 글자 크기 ±
   minus: Minus, // 글자 크기 −
   plus: Plus, // 글자 크기 +
+  check: Check, // 완료/설치됨 상태 표시 (✓ 유니코드 대체)
 } satisfies Record<string, LucideIcon>
 
 /** Icon 컴포넌트가 받는 표준 의미 키. */
@@ -86,6 +88,7 @@ export {
   ALargeSmall,
   Minus,
   Plus,
+  Check,
   type LucideIcon,
   type LucideProps,
 }
