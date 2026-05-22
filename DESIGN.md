@@ -216,7 +216,7 @@ components:
 
 - **Header bar**: sticky, surface-container + blur, 좌측 `arrow-left` 아이콘버튼(full, 38px) + 제목(title)/날짜(caption).
 - **Hero card**: 기도 제목 블록. surface, rounded-lg. 절기 `church` 글리프(primary-container 배경) + kind 라벨(label, primary) + 제목(headline-lg) + 메타(caption).
-- **Section label**: 섹션 구분은 빨강 헤더가 아니라 **label(대문자·faint) + 여백**으로. 접이식 섹션만 우측 `chevron-right`.
+- **Section title (제목)**: 섹션 제목(예: Магтуу, Дуулал, Уншлага, Гуйлтын залбирал 등)은 **전례 빨강**(`--color-liturgical-red` = #c1121f / 다크 #ef4444)으로 **통일** — 미사경본·전례서의 루브릭 빨강 전통. 화면 전반에서 동일 색·동일 위계로. 접이식 섹션만 우측 `chevron-right`. (WCAG AA 대비 확인 필수.)
 - **Prayer / Response / Verse**: body-reading. 응답구는 primary, 절번호는 faint·tabular.
 - **Reference item**: surface 카드, 좌측 아이콘 글리프(primary-container) + 텍스트 + 우측 `chevron-right`.
 - **Calendar day**: surface 카드 행. today=primary-container 배경, 축일=제목 primary(**대문자 골드 강조 금지** — 두께+색으로). 좌측 날짜 블록 + 우측 정보.
@@ -230,7 +230,7 @@ components:
 - **Do** WCAG AA 대비(본문 4.5:1) 유지 — 어르신 가독성 직결.
 - **Don't** 한 화면에 폰트 두께 3종 이상.
 - **Do** 제목·기도 본문은 Noto Serif, UI 텍스트는 Noto Sans.
-- **Don't** 빨강을 일반 섹션 헤더에 쓰기 — 절기 의미색으로만.
+- **Do** 섹션 제목(heading)은 전례 빨강(`--color-liturgical-red`)으로 통일 — 미사경본 루브릭 전통(절기 의미색 용도와는 별개의 제목 통일색).
 - **Don't** 둥근/각진 모서리 혼용.
 - **Do** 모든 크기 `rem` 기반 — 9단계 글자 크기(최대 200%)에서 레이아웃 안 깨지게.
 - **Do** 몽골어 키릴 맞춤법 준수("Гуйлтын" 아닌 ❌"Гүйлтын"), 외부 라벨 영어 혼입 금지(NFR-002).
