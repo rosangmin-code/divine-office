@@ -89,8 +89,21 @@ export const RANK_NAMES_MN: Record<CelebrationRank, string> = {
 // section headings, CROSS-CHECKED against readings/feasts.json (미사경본,
 // 2026-05-22, WI #6). These 6 celebrations have no fixed MM-DD sanctoral
 // entry (date varies with Easter/Pentecost), so they previously fell
-// through to the weekday fallback below. Keys mirror resolveSpecialKey()
-// in propers-loader.ts so the lookup stays single-source.
+// through to the weekday fallback below.
+//
+// SUBSET RELATIONSHIP (not a mirror): this map's keys are a CURATED SUBSET
+// of the keys resolveSpecialKey() (propers-loader.ts) can return. That
+// resolver also returns easterSunday, holyFamily, baptism, epiphany,
+// dec25, jan1, octave — which are deliberately ABSENT here. A missing key
+// resolves to `undefined`, and buildLiturgicalNameMn() ignores an
+// undefined movableSolemnityName, so those non-movable special days fall
+// through to their fixed-date sanctoral name (dec25/jan1/...) or the
+// weekday/Sunday fallback. Only the 6 *movable* solemnities that lack any
+// sanctoral entry are mapped here. CAUTION: if resolveSpecialKey() renames
+// one of these 6 keys, the rename would silently stop matching this map
+// (the day would fall through to a generic name). The
+// `resolveSpecialKey → MN map` drift-guard test in mappings.test.ts pins
+// the 6 target keys against the live resolver to catch that drift.
 //
 // readings/feasts.json day_title fields are missal PDF parse artifacts and
 // CANNOT serve as authoritative full names — verbatim adoption would
