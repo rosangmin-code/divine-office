@@ -1,3 +1,14 @@
+// v42 — 디자인 dogfooding 수정 cohort (GOAL #2/#3): (1) 섹션 제목(Магтуу 등)
+// faint stone-500 → 전례 빨강 `--color-liturgical-red`(#c1121f/다크 #ef4444)
+// 통일 (14개 컴포넌트, DESIGN.md §Section title SSOT). (2) psalmPrayer 설정
+// 토글 극성 정정 — '숨기기'(ON=숨김) 역방향 → '보이기'(ON=보임) 양수,
+// showPageRefs 와 일관 (settings/page.tsx) + psalm-block 게이트 하드닝.
+// bump 사유: 컴포넌트 chunk 내용 변경 → stale-cache 클라이언트가 cache-first
+// 구 chunk 로 구 색/구 극성을 계속 받는 회귀 방지(프로젝트 v37~v41 conservative
+// 컨벤션 + 적대/peer 리뷰 합의). SW 자체 로직 변경 없음 — navigation
+// `network-only` 유지, caches.put(html) 미도입. 자산 경로/PRECACHE 대상
+// (offline.html·icon.svg) 무변경. v41 → v42.
+//
 // v41 — GOAL #54 (#54-sub-2): PWA chrome/아이콘/오프라인 페이지 재스킨. 본
 // bump 가 묶는 변경:
 //   - `public/icon.svg` 앱 아이콘 아트워크 recolor (사용자 승인본 그대로):
@@ -484,7 +495,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v41'
+const CACHE_VERSION = 'divine-office-v42'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
