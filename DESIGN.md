@@ -206,9 +206,11 @@ components:
 | 달력/날짜 | `calendar-days` |
 | 기도 안내(заавар) | `book-open` |
 | 예식 순서(дэг жаяг) | `scroll-text` |
-| 펼침/이동 | `chevron-right` / `chevron-left` |
+| 펼침/이동(가로) | `chevron-right` / `chevron-left` |
+| 세로 토글(펼치기/접기) | `chevron-up` / `chevron-down` |
 | 절기/성당 | `church` |
 | 글자 크기 ± | `a-large-small` (또는 `minus`/`plus`) |
+| 완료/설치됨 상태 | `check` (✓ 유니코드 대체) |
 
 ## Components
 
