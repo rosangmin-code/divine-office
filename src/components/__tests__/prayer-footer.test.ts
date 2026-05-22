@@ -48,7 +48,7 @@ describe('PrayerFooter — collapsed (default)', () => {
     return m ? m[0] : ''
   }
 
-  it('renders strip with 32px height + chevron ⏶ + aria-expanded=false', () => {
+  it('renders strip with 32px height + lucide chevron-up Icon + aria-expanded=false', () => {
     const html = renderToStaticMarkup(
       createElement(PrayerFooter, { date: '2026-05-20' }),
     )
@@ -60,8 +60,10 @@ describe('PrayerFooter — collapsed (default)', () => {
     expect(strip).toContain('type="button"')
     // 32px 고정 픽셀 (font scaling FR-166 영향 배제)
     expect(strip).toContain('h-[32px]')
-    // chevron up (collapsed)
-    expect(html).toMatch(/<span[^>]*aria-hidden="true"[^>]*>⏶<\/span>/)
+    // chevron up (collapsed) — lucide ChevronUp Icon (#54-sub-7: 유니코드 ⏶/⏷ → lucide)
+    expect(html).toContain('lucide-chevron-up')
+    expect(html).not.toContain('⏶')
+    expect(html).not.toContain('⏷')
     // aria-expanded reflects collapsed state
     expect(strip).toContain('aria-expanded="false"')
     // data-expanded 양면 surface (CSS hook + e2e selector)
@@ -131,7 +133,7 @@ describe('PrayerFooter — expanded=true', () => {
     return m ? m[0] : ''
   }
 
-  it('renders panel + menu 2 items + chevron ⏷ + aria-expanded=true', () => {
+  it('renders panel + menu 2 items + lucide chevron-down Icon + aria-expanded=true', () => {
     const html = renderToStaticMarkup(
       createElement(PrayerFooter, {
         date: '2026-05-20',
@@ -143,8 +145,10 @@ describe('PrayerFooter — expanded=true', () => {
     // 메뉴 항목 2개 (data-role anchor)
     expect(html).toContain('data-role="prayer-footer-menu-date"')
     expect(html).toContain('data-role="prayer-footer-menu-settings"')
-    // chevron down (expanded)
-    expect(html).toMatch(/<span[^>]*aria-hidden="true"[^>]*>⏷<\/span>/)
+    // chevron down (expanded) — lucide ChevronDown Icon
+    expect(html).toContain('lucide-chevron-down')
+    expect(html).not.toContain('⏷')
+    expect(html).not.toContain('⏶')
     // aria-expanded / data-expanded 양면 true (strip 안에서)
     const strip = extractStripButton(html)
     expect(strip).toContain('aria-expanded="true"')
@@ -288,10 +292,10 @@ describe('PrayerFooter — controlled-component contract (AC #9-5)', () => {
     )
 
     // chevron 양방향 swap
-    expect(collapsedHtml).toContain('>⏶<')
-    expect(collapsedHtml).not.toContain('>⏷<')
-    expect(expandedHtml).toContain('>⏷<')
-    expect(expandedHtml).not.toContain('>⏶<')
+    expect(collapsedHtml).toContain('lucide-chevron-up')
+    expect(collapsedHtml).not.toContain('lucide-chevron-down')
+    expect(expandedHtml).toContain('lucide-chevron-down')
+    expect(expandedHtml).not.toContain('lucide-chevron-up')
 
     // aria-expanded 양방향 swap
     expect(collapsedHtml).toContain('aria-expanded="false"')
@@ -342,7 +346,7 @@ describe('PrayerFooter — controlled-component contract (AC #9-5)', () => {
       createElement(PrayerFooter, { date: '2026-05-20' }),
     )
     expect(html).toContain('aria-expanded="false"')
-    expect(html).toContain('>⏶<')
+    expect(html).toContain('lucide-chevron-up')
     // WI-B: panel mounted (always-mounted 패턴) 이지만 translate-y-full
     // 으로 viewport 아래로 hidden.
     expect(html).toContain('data-role="prayer-footer-content"')
@@ -361,7 +365,7 @@ describe('PrayerFooter — WI-B interaction patterns (Option B)', () => {
     // uncontrolled: 내부 useState 초기값 false
     expect(html).toContain('aria-expanded="false"')
     expect(html).toContain('translate-y-full')
-    expect(html).toContain('>⏶<')
+    expect(html).toContain('lucide-chevron-up')
   })
 
   it('controlled mode (explicit expanded=true) respects parent state', () => {
@@ -370,7 +374,7 @@ describe('PrayerFooter — WI-B interaction patterns (Option B)', () => {
     )
     expect(html).toContain('aria-expanded="true"')
     expect(html).toContain('translate-y-0')
-    expect(html).toContain('>⏷<')
+    expect(html).toContain('lucide-chevron-down')
   })
 
   // AC #2 — always-mounted panel + translate-y class swap
@@ -549,15 +553,18 @@ describe('PrayerFooter — cream/gold reskin (#54-sub-6)', () => {
     expect(html).not.toContain('aria-label="Settings"')
   })
 
-  // AC #3 — strip 토글 UX 보존 (chevron ⏷⏶ + aria 는 이번 scope 밖, 회귀 가드)
-  it('keeps the strip toggle chevron + aria contract intact (out of reskin scope)', () => {
+  // strip 토글 UX 보존 — chevron 은 #54-sub-7(WI-68)에서 유니코드 ⏷⏶ → lucide
+  // chevron-up/down Icon 으로 이관. 토글 글리프 swap + aria + gold ring 회귀 가드.
+  it('keeps the strip toggle chevron (lucide) + aria contract intact', () => {
     const collapsed = renderToStaticMarkup(
       createElement(PrayerFooter, { date: '2026-05-20' }),
     )
     const expanded = expandedHtml()
-    // 토글 글리프 swap 유지
-    expect(collapsed).toContain('>⏶<')
-    expect(expanded).toContain('>⏷<')
+    // 토글 chevron Icon swap 유지 (collapsed=up, expanded=down) + 유니코드 0
+    expect(collapsed).toContain('lucide-chevron-up')
+    expect(collapsed).not.toContain('⏶')
+    expect(expanded).toContain('lucide-chevron-down')
+    expect(expanded).not.toContain('⏷')
     // strip aria-expanded 양방향 유지
     expect(collapsed).toContain('aria-expanded="false"')
     expect(expanded).toContain('aria-expanded="true"')

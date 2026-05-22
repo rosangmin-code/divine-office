@@ -72,7 +72,8 @@ test.describe('Ordinarium page (дэг жаяг)', () => {
   test('back link returns to homepage', async ({ page }) => {
     await page.goto('/ordinarium')
 
-    await page.getByText('← Нүүр хуудас').click()
+    // WI-68 재스킨: 좌측 ← 리터럴 → <Icon name="back"> (aria-hidden). 백링크 이름 'Нүүр хуудас'.
+    await page.getByRole('link', { name: 'Нүүр хуудас' }).click()
     await expect(page).toHaveURL('/')
   })
 })

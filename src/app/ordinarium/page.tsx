@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import ordinariumData from '@/data/loth/ordinarium.json'
 import { SettingsLink } from '@/components/settings-link'
 import { Footer } from '@/components/footer'
+import { Icon } from '@/components/icon'
 
 export const metadata: Metadata = {
   title: 'Залбиралт цагийн ёслолын дэг жаяг | Цагийн Залбирал',
@@ -206,9 +207,10 @@ export default function OrdinariumPage() {
         <div className="flex items-center justify-between mb-4">
           <Link
             href="/"
-            className="text-sm text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200"
+            className="inline-flex items-center gap-1.5 text-sm text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200"
           >
-            ← Нүүр хуудас
+            <Icon name="back" size={16} aria-hidden="true" />
+            Нүүр хуудас
           </Link>
           <div className="flex items-center gap-1">
             <SettingsLink />
@@ -228,9 +230,7 @@ export default function OrdinariumPage() {
         {sections.map((section, i) => (
           <div key={section.id}>
             {i > 0 && (
-              <div className="section-divider" role="separator">
-                <span className="text-xs text-stone-300 dark:text-stone-600">✝</span>
-              </div>
+              <div className="section-divider" role="separator" />
             )}
             <SectionContent section={section} />
           </div>

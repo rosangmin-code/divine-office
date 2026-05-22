@@ -27,6 +27,8 @@ import {
   ScrollText,
   ChevronRight,
   ChevronLeft,
+  ChevronUp,
+  ChevronDown,
   Church,
   ALargeSmall,
   Minus,
@@ -49,6 +51,8 @@ const ICONS = {
   order: ScrollText, // 예식 순서 (дэг жаяг)
   next: ChevronRight, // 펼침 / 이동(다음)
   prev: ChevronLeft, // 이동(이전)
+  chevronUp: ChevronUp, // 세로 토글 — 펼치기(위로 당겨 열기)
+  chevronDown: ChevronDown, // 세로 토글 — 접기(아래로 밀어 닫기)
   church: Church, // 절기 / 성당
   fontSize: ALargeSmall, // 글자 크기 ±
   minus: Minus, // 글자 크기 −
@@ -84,6 +88,8 @@ export {
   ScrollText,
   ChevronRight,
   ChevronLeft,
+  ChevronUp,
+  ChevronDown,
   Church,
   ALargeSmall,
   Minus,

@@ -228,8 +228,8 @@ export function PrayerFooter({
           data-expanded={expanded ? 'true' : 'false'}
           className="flex h-[32px] w-full items-center justify-center border-t border-stone-400 bg-gradient-to-b from-stone-200 to-stone-300 text-stone-600 transition-colors hover:from-stone-300 hover:to-stone-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-liturgical-gold)] dark:border-stone-600 dark:from-stone-700 dark:to-stone-800 dark:text-stone-300 dark:hover:from-stone-600 dark:hover:to-stone-700"
         >
-          <span aria-hidden="true" className="text-base leading-none">
-            {expanded ? '⏷' : '⏶'}
+          <span aria-hidden="true" className="leading-none">
+            <Icon name={expanded ? 'chevronDown' : 'chevronUp'} size={16} />
           </span>
         </button>
       </div>

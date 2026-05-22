@@ -126,7 +126,9 @@ test.describe('Guide page (GILH)', () => {
   test('guide page has back link to homepage', async ({ page }) => {
     await page.goto('/guide')
 
-    const backLink = page.getByText('← Нүүр хуудас')
+    // WI-68 재스킨: 좌측 ← 리터럴 화살표 → <Icon name="back"> (aria-hidden).
+    // 백링크 접근가능 이름은 'Нүүр хуудас' (아이콘은 aria-hidden 이라 이름 오염 없음).
+    const backLink = page.getByRole('link', { name: 'Нүүр хуудас' })
     await expect(backLink).toBeVisible()
 
     await backLink.click()
