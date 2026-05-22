@@ -36,7 +36,7 @@ export function IntercessionsSection({
   if (hasSkip && section.items.length === 0) {
     return (
       <section aria-label="Гуйлтын залбирал" className="mb-4">
-        <p className="text-xs font-bold uppercase tracking-[0.15em] text-stone-500 dark:text-stone-400">
+        <p className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark">
           Гуйлтын залбирал
         </p>
         <DirectiveBlock directives={skips} />
@@ -47,7 +47,7 @@ export function IntercessionsSection({
   if (section.rich && section.rich.blocks.length > 0) {
     return (
       <section aria-label="Гуйлтын залбирал" className="mb-4">
-        <p className="text-xs font-bold uppercase tracking-[0.15em] text-stone-500 dark:text-stone-400">
+        <p className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark">
           Гуйлтын залбирал <PageRef page={section.page} />
         </p>
         <DirectiveBlock directives={prepends} />
@@ -61,7 +61,7 @@ export function IntercessionsSection({
   if (section.items.length === 0) {
     return (
       <section aria-label="Гуйлтын залбирал" className="mb-4">
-        <p className="text-xs font-bold uppercase tracking-[0.15em] text-stone-500 dark:text-stone-400">
+        <p className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark">
           Гуйлтын залбирал
         </p>
         <p
@@ -79,7 +79,7 @@ export function IntercessionsSection({
 
   return (
     <section aria-label="Гуйлтын залбирал" className="mb-4">
-      <p className="text-xs font-bold uppercase tracking-[0.15em] text-stone-500 dark:text-stone-400">
+      <p className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark">
         Гуйлтын залбирал <PageRef page={section.page} />
       </p>
 

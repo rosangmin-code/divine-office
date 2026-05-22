@@ -11,7 +11,7 @@ export function DismissalSection({
   const hideBody = hasSkip || hasSubstitute
   return (
     <section aria-label="Төгсгөл" className="mb-4">
-      <p className="text-xs font-bold uppercase tracking-[0.15em] text-stone-500 dark:text-stone-400 mb-2">
+      <p className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark mb-2">
         Төгсгөл
       </p>
 
