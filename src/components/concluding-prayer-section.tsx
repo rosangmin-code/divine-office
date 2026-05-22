@@ -18,7 +18,7 @@ export function ConcludingPrayerSection({ section }: ConcludingPrayerSectionProp
 
   return (
     <section aria-label="Төгсгөлийн даатгал залбирал" className="mb-4">
-      <p className="text-xs font-bold uppercase tracking-[0.15em] text-stone-500 dark:text-stone-400">
+      <p className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark">
         Төгсгөлийн даатгал залбирал <PageRef page={section.page} />
       </p>
       {activeRich && activeRich.blocks.length > 0 ? (

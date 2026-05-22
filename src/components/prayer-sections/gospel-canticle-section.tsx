@@ -225,17 +225,18 @@ export function GospelCanticleSection({
         Magnificat body and found only the seasonal antiphon (task #11).
       */}
       {/*
-        WI-62 재스킨 (#54) — gospel-canticle 헤딩을 다른 prayer-section
-        헤딩과 동일한 faint label 스타일(대문자·letterspaced·stone-500)로
-        통일. DESIGN.md: "빨강은 일반 섹션 헤더에 쓰지 않는다 — 절기
-        의미색으로만", 악센트는 골드. (이전 WI #41 의 빨강 복원은 구
-        빨강-헤더 컨벤션 기준이었고, 디자인 SSOT 도입으로 폐기됨.)
+        WI #5 (#2-sub-1) — gospel-canticle 헤딩을 다른 prayer-section
+        헤딩과 동일한 전례 빨강(`text-liturgical-red` = #c1121f / 다크
+        #ef4444)으로 통일. DESIGN.md(SSOT) §Components "Section title":
+        섹션 제목은 미사경본·전례서 루브릭 빨강으로 화면 전반 통일
+        (절기 의미색 season-red 용도와는 별개의 제목 통일색). 이전
+        WI-62 의 stone-500 faint 처리는 사용자 결정(빨강 통일)으로 폐기됨.
         `data-role="canticle-heading"` 색상-독립 anchor 는 그대로 보존
         (e2e selector 안정성 + ordering test #29 anchor).
       */}
       <p
         data-role="canticle-heading"
-        className="text-xs font-bold uppercase tracking-[0.15em] text-stone-500 dark:text-stone-400"
+        className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark"
       >
         {name} <PageRef page={section.bodyPage} />
       </p>

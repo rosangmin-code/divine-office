@@ -80,10 +80,10 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
 
       {/* Psalm title & reference */}
       <div className="mb-2">
-        <span className="text-xs font-medium uppercase tracking-wider text-stone-500 dark:text-stone-400">
+        <span className="text-xs font-medium uppercase tracking-wider text-liturgical-red dark:text-liturgical-red-dark">
           {psalm.psalmType === 'canticle' ? 'Магтаал' : 'Дуулал'}
         </span>
-        <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-stone-500 dark:text-stone-400">
+        <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark">
           {psalm.reference} <PageRef page={psalm.page} />
         </h4>
         {psalm.title && (
@@ -289,7 +289,7 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
       {/* Psalm-concluding prayer (Дууллыг төгсгөх залбирал) */}
       {psalm.psalmPrayer && !settings.psalmPrayerCollapsed && (
         <div data-role="psalm-prayer" className="mt-3">
-          <p className="text-xs font-bold uppercase tracking-[0.15em] text-stone-500 dark:text-stone-400">
+          <p className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark">
             Дууллыг төгсгөх залбирал <PageRef page={psalm.psalmPrayerPage} />
           </p>
           {psalm.psalmPrayerRich && psalm.psalmPrayerRich.blocks.length > 0 ? (

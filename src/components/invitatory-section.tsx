@@ -32,7 +32,7 @@ export function InvitatorySection({ section }: InvitatoryProps) {
   return (
     <section aria-label="Урих дуудлага" className="mb-4">
       <div className="flex items-center gap-2">
-        <p className="text-xs font-bold uppercase tracking-[0.15em] text-stone-500 dark:text-stone-400">
+        <p className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark">
           Урих дуудлага {!collapsed && <PageRef page={activePage} />}
         </p>
         <button
@@ -86,7 +86,7 @@ export function InvitatorySection({ section }: InvitatoryProps) {
           <AntiphonBox text={section.antiphon} page={activePage} />
 
           <div className="mt-3 flex items-baseline gap-2 flex-wrap">
-            <p className="text-xs font-bold uppercase tracking-[0.15em] text-stone-500 dark:text-stone-400">
+            <p className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark">
               {activePsalm.ref.replace('Psalm', 'Дуулал')}
             </p>
             {candidates && candidates.length > 1 && (

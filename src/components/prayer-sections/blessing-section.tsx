@@ -8,7 +8,7 @@ export function BlessingSection({
 }) {
   return (
     <section aria-label="Адислал" className="mb-4">
-      <p className="text-xs font-bold uppercase tracking-[0.15em] text-stone-500 dark:text-stone-400">
+      <p className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark">
         Адислал <PageRef page={section.page} />
       </p>
       <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">

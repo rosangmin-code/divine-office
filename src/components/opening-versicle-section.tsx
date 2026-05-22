@@ -21,7 +21,7 @@ export function OpeningVersicleSection({ section }: OpeningVersicleSectionProps)
 
   return (
     <section aria-label="Удиртгал" className="mb-4">
-      <p className="text-xs font-bold uppercase tracking-[0.15em] text-stone-500 dark:text-stone-400">Удиртгал</p>
+      <p className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark">Удиртгал</p>
       <DirectiveBlock directives={prepends} />
       {hideBody ? (
         <DirectiveBlock directives={hasSubstitute ? substitutes : skips} />

@@ -31,13 +31,15 @@ test.describe('Psalter psalmPrayerRich rendering (FR-153h)', () => {
   })
 
   // @fr FR-153h
-  test('psalm-prayer heading carries faint label class (WI-62: 빨강→stone-500)', async ({ page }) => {
-    // WI-62 재스킨: 섹션 헤딩은 faint label(대문자·letterspaced·stone-500) 통일.
+  test('psalm-prayer heading carries 전례 빨강 (WI #5: stone-500→liturgical-red)', async ({ page }) => {
+    // WI #5 (#2-sub-1): 섹션 제목은 전례 빨강(text-liturgical-red = #c1121f /
+    // 다크 #ef4444)으로 화면 전반 통일 (DESIGN.md SSOT §Components "Section
+    // title"). 이전 WI-62 의 stone-500 faint 처리는 사용자 결정으로 폐기.
     const heading = page
       .locator('[data-role="psalm-prayer"]')
       .first()
       .locator('p')
       .first()
-    await expect(heading).toHaveClass(/text-stone-500/)
+    await expect(heading).toHaveClass(/text-liturgical-red/)
   })
 })

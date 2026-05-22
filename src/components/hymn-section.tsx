@@ -30,7 +30,7 @@ export function HymnSection({ section }: HymnSectionProps) {
   if (!displayText && !useRich) {
     return (
       <section aria-label="Магтуу" className="mb-4">
-        <p className="text-xs font-bold uppercase tracking-[0.15em] text-stone-500 dark:text-stone-400">Магтуу</p>
+        <p className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark">Магтуу</p>
         <p className="mt-1 text-sm italic text-stone-500 dark:text-stone-400" role="note">
           [Орчуулга хийгдэж байна]
         </p>
@@ -40,7 +40,7 @@ export function HymnSection({ section }: HymnSectionProps) {
 
   return (
     <section aria-label="Магтуу" className="mb-4">
-      <p className="text-xs font-bold uppercase tracking-[0.15em] text-stone-500 dark:text-stone-400">
+      <p className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark">
         Магтуу <PageRef page={displayPage} />
       </p>
       {useRich ? (

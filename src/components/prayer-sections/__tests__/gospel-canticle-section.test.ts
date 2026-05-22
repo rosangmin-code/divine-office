@@ -405,29 +405,30 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
     })
   })
 
-  // WI-62 재스킨 (#54) — gospel-canticle 헤딩을 다른 prayer-section 헤딩과
-  // 동일한 faint label 스타일(대문자·letterspaced·text-stone-500)로 통일.
-  // DESIGN.md: "빨강은 일반 섹션 헤더에 쓰지 않는다 — 절기 의미색으로만",
-  // 악센트는 골드. (이전 WI #41 의 빨강 복원은 구 빨강-헤더 컨벤션 기준이었고
-  // 디자인 SSOT 도입으로 폐기.) `data-role="canticle-heading"` 색상-독립
-  // anchor 는 그대로 보존 (ordering test #29 anchor + 본 색상 verify).
-  describe('WI-62 — canticle heading color (faint label, 빨강 제거)', () => {
-    it('compline heading carries data-role="canticle-heading" + faint label (stone-500), NO red', () => {
+  // WI #5 (#2-sub-1) — gospel-canticle 헤딩을 다른 prayer-section 헤딩과
+  // 동일한 전례 빨강(`text-liturgical-red` = #c1121f / 다크 #ef4444)으로
+  // 통일. DESIGN.md(SSOT) §Components "Section title": 섹션 제목은 미사경본·
+  // 전례서 루브릭 빨강으로 화면 전반 통일(절기 의미색 season-red 와는 별개의
+  // 제목 통일색). 이전 WI-62 의 stone-500 faint 처리는 사용자 결정(빨강
+  // 통일)으로 폐기 — 본 describe 는 그 REVERSE. `data-role="canticle-heading"`
+  // 색상-독립 anchor 는 그대로 보존 (ordering test #29 anchor + 본 색상 verify).
+  describe('WI #5 — canticle heading color (전례 빨강 통일)', () => {
+    it('compline heading carries data-role="canticle-heading" + 전례 빨강 (liturgical-red)', () => {
       const section = makeSection({ canticle: 'nuncDimittis' })
       const html = render(createElement(GospelCanticleSection, { section }))
       // data-role anchor 존재 (색상-독립 stable selector — WI #30 도입분 보존)
       expect(html).toMatch(/<p[^>]*data-role="canticle-heading"[^>]*>/)
-      // 헤딩 라인의 텍스트가 faint label(text-stone-500) 클래스에 들어 있음
+      // 헤딩 라인의 텍스트가 전례 빨강(text-liturgical-red) 클래스에 들어 있음
       expect(html).toMatch(
-        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-stone-500[^"]*"[^>]*>Сайнмэдээний айлдлын магтаал/,
+        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-liturgical-red[^"]*"[^>]*>Сайнмэдээний айлдлын магтаал/,
       )
-      // 빨강 클래스 헤딩에 없음 (회귀 가드 — WI-62 빨강 제거 확정)
+      // 이전 faint(stone-500) 색은 헤딩에서 제거됨 (REVERSE 회귀 가드)
       expect(html).not.toMatch(
-        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-red-[^"]*"[^>]*>/,
+        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-stone-500[^"]*"[^>]*>/,
       )
     })
 
-    it('vespers heading also carries data-role + faint label NO red (3 hour 일관)', () => {
+    it('vespers heading also carries data-role + 전례 빨강 (3 hour 일관)', () => {
       const section = makeSection({
         canticle: 'magnificat',
         antiphon: 'Магнификат шад магтаал.',
@@ -435,14 +436,14 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
       })
       const html = render(createElement(GospelCanticleSection, { section }))
       expect(html).toMatch(
-        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-stone-500[^"]*"[^>]*>Мариагийн магтаал/,
+        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-liturgical-red[^"]*"[^>]*>Мариагийн магтаал/,
       )
       expect(html).not.toMatch(
-        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-red-[^"]*"[^>]*>/,
+        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-stone-500[^"]*"[^>]*>/,
       )
     })
 
-    it('lauds heading also carries data-role + faint label NO red', () => {
+    it('lauds heading also carries data-role + 전례 빨강', () => {
       const section = makeSection({
         canticle: 'benedictus',
         antiphon: 'Бенедиктус шад магтаал.',
@@ -450,10 +451,10 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
       })
       const html = render(createElement(GospelCanticleSection, { section }))
       expect(html).toMatch(
-        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-stone-500[^"]*"[^>]*>Захариагийн магтаал/,
+        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-liturgical-red[^"]*"[^>]*>Захариагийн магтаал/,
       )
       expect(html).not.toMatch(
-        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-red-[^"]*"[^>]*>/,
+        /<p[^>]*data-role="canticle-heading"[^>]*class="[^"]*text-stone-500[^"]*"[^>]*>/,
       )
     })
   })
