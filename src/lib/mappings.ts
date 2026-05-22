@@ -85,9 +85,41 @@ export const RANK_NAMES_MN: Record<CelebrationRank, string> = {
   WEEKDAY: 'Ажлын өдөр',
 }
 
+// Movable solemnity Mongolian names. Source: public/psalter.pdf verbatim
+// section headings, CROSS-CHECKED against readings/feasts.json (미사경본,
+// 2026-05-22, WI #6). These 6 celebrations have no fixed MM-DD sanctoral
+// entry (date varies with Easter/Pentecost), so they previously fell
+// through to the weekday fallback below. Keys mirror resolveSpecialKey()
+// in propers-loader.ts so the lookup stays single-source.
+//
+// readings/feasts.json day_title fields are missal PDF parse artifacts and
+// CANNOT serve as authoritative full names — verbatim adoption would
+// regress these:
+//   - ascension / pentecost: day_title is a generic Mass-time label
+//     ('Талархал-магтаалын … Мөргөл дээр'), carries NO feast-specific name.
+//   - sacredHeart: day_title 'Есүсийн туйлын ариун нандин' is truncated
+//     mid-phrase (drops the head noun 'Зүрх').
+//   - trinitySunday / corpusChristi / christTheKing: day_title carries the
+//     core term but case-mangled / partial ('Туйлын ариун нандин Гурвал',
+//     'БИЕ бА цус', 'ертөнцийн хаан'), no 'Их баяр' suffix.
+// The core terms ARE consistent with the names below (no contradiction);
+// readings simply has no clean full-name field. Per user decision (WI #6,
+// option A) the psalter-sourced names below are the canonical form.
+export const MOVABLE_SOLEMNITY_NAMES_MN: Record<string, string> = {
+  ascension: 'Эзэний Тэнгэрт Заларсан нь — Их баяр',
+  pentecost: 'Пэнтикост — Ариун Сүнсний буулт — Их баяр',
+  trinitySunday: 'Туйлын Ариун Нандин Гурвалын Ням гараг — Их баяр',
+  corpusChristi: 'Христийн Туйлын Ариун Нандин Бие ба Цус — Их баяр',
+  sacredHeart: 'Есүсийн Туйлын Ариун Нандин Зүрх — Их баяр',
+  christTheKing: 'Есүс Христ Бидний Эзэн Ертөнцийн Хаан — Их баяр',
+}
+
 /**
  * Build a Mongolian name for a liturgical day.
- * Priority: sanctoral name (대축일·축일·기념일) > "{season-GEN} {N}-р {Ням|долоо хоног}".
+ * Priority: sanctoral name (fixed-date 대축일·축일·기념일)
+ *        > movable solemnity name (Ascension/Pentecost/Trinity/Corpus
+ *          Christi/Sacred Heart/Christ the King)
+ *        > "{season-GEN} {N}-р {Ням|долоо хоног}".
  * The specific weekday is intentionally omitted here — the calendar date line
  * (rendered separately in the UI) already carries the weekday.
  */
@@ -96,10 +128,12 @@ export function buildLiturgicalNameMn(args: {
   weekOfSeason: number
   dayOfWeek: DayOfWeek
   sanctoralName?: string
+  movableSolemnityName?: string
 }): string {
-  const { season, weekOfSeason, dayOfWeek, sanctoralName } = args
+  const { season, weekOfSeason, dayOfWeek, sanctoralName, movableSolemnityName } = args
 
   if (sanctoralName) return sanctoralName
+  if (movableSolemnityName) return movableSolemnityName
 
   const seasonGen = SEASON_NAMES_MN_GEN[season]
   if (dayOfWeek === 'SUN') {

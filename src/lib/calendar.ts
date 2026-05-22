@@ -7,11 +7,12 @@ import {
   RANK_MAP,
   SEASON_NAMES_MN,
   COLOR_NAMES_MN,
+  MOVABLE_SOLEMNITY_NAMES_MN,
   parseSundayCycle,
   getWeekdayCycle,
   buildLiturgicalNameMn,
 } from './mappings'
-import { getSanctoralPropers } from './propers-loader'
+import { getSanctoralPropers, resolveSpecialKey } from './propers-loader'
 
 const DOW_CODES: DayOfWeek[] = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 
@@ -55,7 +56,22 @@ function mapEntry(entry: RomcalEntry, weekOfSeason: number, year: number): Litur
       ? getSanctoralPropers(mmdd)?.name
       : undefined
 
-  const nameMn = buildLiturgicalNameMn({ season, weekOfSeason, dayOfWeek, sanctoralName })
+  // Movable solemnities (Ascension/Pentecost/Trinity/Corpus Christi/Sacred
+  // Heart/Christ the King) lack a fixed MM-DD sanctoral entry, so they
+  // need a separate special-key lookup to avoid the weekday fallback name.
+  const movableKey =
+    rank === 'SOLEMNITY' ? resolveSpecialKey(season, entry.name, dateStr) : null
+  const movableSolemnityName = movableKey
+    ? MOVABLE_SOLEMNITY_NAMES_MN[movableKey]
+    : undefined
+
+  const nameMn = buildLiturgicalNameMn({
+    season,
+    weekOfSeason,
+    dayOfWeek,
+    sanctoralName,
+    movableSolemnityName,
+  })
 
   return {
     date: dateStr,
@@ -132,12 +148,20 @@ export function getCalendarForYear(year: number): LiturgicalDayInfo[] {
       day.rank === 'SOLEMNITY' || day.rank === 'FEAST' || day.rank === 'MEMORIAL'
         ? getSanctoralPropers(mmdd)?.name
         : undefined
+    const movableKey =
+      day.rank === 'SOLEMNITY'
+        ? resolveSpecialKey(day.season, day.name, day.date)
+        : null
+    const movableSolemnityName = movableKey
+      ? MOVABLE_SOLEMNITY_NAMES_MN[movableKey]
+      : undefined
     const effectiveWeek = day.otWeek ?? day.weekOfSeason
     day.nameMn = buildLiturgicalNameMn({
       season: day.season,
       weekOfSeason: effectiveWeek,
       dayOfWeek: dow,
       sanctoralName,
+      movableSolemnityName,
     })
   }
 
