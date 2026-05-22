@@ -139,23 +139,29 @@ test.describe('Settings page', () => {
   test('psalm-prayer switch persists to localStorage and survives reload (FR-032)', async ({ page }) => {
     await page.goto(SETTINGS_URL)
     const switchBtn = page.getByRole('switch', { name: /Дууллыг төгсгөх залбирал/ })
-    await expect(switchBtn).toHaveAttribute('aria-checked', 'false')
-
-    await switchBtn.click()
+    // #3-sub-2: 양수 토글(ON=보임). 기본 collapsed=false → 스위치 기본 ON.
     await expect(switchBtn).toHaveAttribute('aria-checked', 'true')
 
+    await switchBtn.click() // ON→OFF(숨김)
+    await expect(switchBtn).toHaveAttribute('aria-checked', 'false')
+
+    // 저장 키는 collapsed(숨김) 유지 — OFF=collapsed:true.
     const stored = await page.evaluate(() => localStorage.getItem('loth-settings'))
     expect(stored).toContain('"psalmPrayerCollapsed":true')
 
     await page.reload()
-    await expect(page.getByRole('switch', { name: /Дууллыг төгсгөх залбирал/ })).toHaveAttribute('aria-checked', 'true')
+    await expect(page.getByRole('switch', { name: /Дууллыг төгсгөх залбирал/ })).toHaveAttribute('aria-checked', 'false')
   })
 
-  test('psalm-prayer switch uses gold when enabled (FR-032)', async ({ page }) => {
+  test('psalm-prayer switch uses gold when ON (visible) (FR-032)', async ({ page }) => {
     await page.goto(SETTINGS_URL)
     const switchBtn = page.getByRole('switch', { name: /Дууллыг төгсгөх залбирал/ })
-    await switchBtn.click()
+    // #3-sub-2: 양수 토글 — 기본 ON(보임)이므로 기본 상태가 gold.
+    await expect(switchBtn).toHaveAttribute('aria-checked', 'true')
     await expect(switchBtn).toHaveClass(/liturgical-gold/)
+    // OFF(숨김)로 끄면 gold 해제.
+    await switchBtn.click()
+    await expect(switchBtn).not.toHaveClass(/liturgical-gold/)
   })
 
   // wi-004 (#16) moved Settings off the home header; wi-006 (#18)

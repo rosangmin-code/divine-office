@@ -53,24 +53,24 @@ test.describe('Prayer section detail rendering', () => {
       expect((bodyText ?? '').trim().length).toBeGreaterThan(30)
     })
 
-    test('psalm-concluding prayer hidden when psalmPrayerCollapsed toggle is on (FR-032)', async ({ page, context }) => {
+    test('psalm-concluding prayer hidden when visibility toggle switched OFF (FR-032)', async ({ page, context }) => {
       await context.clearCookies()
 
-      // Baseline: default toggle off → prayers visible.
+      // #3-sub-2: 양수 토글(ON=보임). 기본 collapsed=false → 보임 + 스위치 기본 ON.
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
       await expect(page.locator('[data-role="psalm-prayer"]').first()).toBeVisible()
 
-      // Enable collapse via /settings.
+      // 스위치 OFF(보이기 끄기) via /settings → 숨김.
       await page.goto('/settings')
-      await page.getByRole('switch', { name: /Дууллыг төгсгөх залбирал/ }).click()
+      await page.getByRole('switch', { name: /Дууллыг төгсгөх залбирал/ }).click() // ON→OFF
 
       // Prayers must disappear from the pray page.
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
       await expect(page.locator('[data-role="psalm-prayer"]')).toHaveCount(0)
 
-      // Toggle back off → prayers return.
+      // 스위치 다시 ON(보이기) → 노출 복귀.
       await page.goto('/settings')
-      await page.getByRole('switch', { name: /Дууллыг төгсгөх залбирал/ }).click()
+      await page.getByRole('switch', { name: /Дууллыг төгсгөх залбирал/ }).click() // OFF→ON
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
       await expect(page.locator('[data-role="psalm-prayer"]').first()).toBeVisible()
     })

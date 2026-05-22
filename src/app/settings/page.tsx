@@ -51,6 +51,16 @@ export const INACTIVE_ACCENT =
 export default function SettingsPage() {
   const { settings, updateSettings } = useSettings()
 
+  // #3 (#3-sub-2): psalm-prayer 토글은 '보이기(show)' 양수 의미로 표시한다.
+  // 사용자 실버그 — 이전 UI 는 스위치를 collapsed(숨김)에 직접 바인딩해
+  // ON=숨김(역방향)이었다. 저장 키 psalmPrayerCollapsed(숨김)는 그대로 유지
+  // (localStorage 마이그레이션 회피)하고 UI 표현만 반전한다:
+  //   psalmPrayerVisible = !psalmPrayerCollapsed → ON=보임 / OFF=숨김.
+  // showPageRefs 섹션과 동일한 양수 토글 패턴. 렌더 게이트
+  // (psalm-block.tsx 의 !settings.psalmPrayerCollapsed)는 불변 — 기본값
+  // collapsed=false(기본 노출) 유지 → 토글은 기본 ON(보임)으로 표시된다.
+  const psalmPrayerVisible = !settings.psalmPrayerCollapsed
+
   // Stepper state derivation (WI-B #46):
   //   - currentIndex is derived from settings.fontSize via FONT_SIZES, which
   //     is the SSOT (settings.tsx FONT_SIZES + this page's metadata array
@@ -248,7 +258,7 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        {/* Psalm-concluding prayer collapse toggle */}
+        {/* Psalm-concluding prayer visibility toggle (#3-sub-2: 양수 '보이기' 의미) */}
         <section aria-labelledby="psalm-prayer-heading" className={SECTION_CARD}>
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -256,23 +266,23 @@ export default function SettingsPage() {
                 Дууллыг төгсгөх залбирал
               </h2>
               <p className="text-sm text-stone-500 dark:text-stone-400">
-                Дуулал бүрийн дараах залбирлыг нуух
+                Дуулал бүрийн дараах залбирлыг харуулах
               </p>
             </div>
             <button
               role="switch"
-              aria-checked={settings.psalmPrayerCollapsed}
+              aria-checked={psalmPrayerVisible}
               aria-labelledby="psalm-prayer-heading"
-              onClick={() => updateSettings({ psalmPrayerCollapsed: !settings.psalmPrayerCollapsed })}
+              onClick={() => updateSettings({ psalmPrayerCollapsed: psalmPrayerVisible })}
               className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors ${
-                settings.psalmPrayerCollapsed
+                psalmPrayerVisible
                   ? 'bg-liturgical-gold dark:bg-liturgical-gold-dark'
                   : 'bg-stone-300 dark:bg-stone-600'
               }`}
             >
               <span
                 className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${
-                  settings.psalmPrayerCollapsed ? 'translate-x-6' : 'translate-x-1'
+                  psalmPrayerVisible ? 'translate-x-6' : 'translate-x-1'
                 }`}
               />
             </button>
