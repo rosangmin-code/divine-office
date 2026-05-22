@@ -287,7 +287,19 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
       )}
 
       {/* Psalm-concluding prayer (Дууллыг төгсгөх залбирал) */}
-      {psalm.psalmPrayer && !settings.psalmPrayerCollapsed && (
+      {/* #3 / FR-032: 마침 기도 표시 게이트는 plain(`psalmPrayer`) 또는
+          rich(`psalmPrayerRich`) 중 하나라도 내용이 있으면 켜지고, 설정의
+          `psalmPrayerCollapsed` 토글이 양 경로를 동일하게 숨김/노출한다.
+          이전 게이트는 plain `psalm.psalmPrayer` 존재에만 묶여 있어,
+          rich-only 항목(psalmPrayerRich 만 있고 plain 텍스트 없음)이 추가되면
+          collapsed=false 라도 영영 안 뜨고 토글도 무시되는 latent 결함이
+          있었다 (가설 b). 아래 블록 내부의 rich/plain 분기는 그대로 두고
+          래퍼 게이트만 양 경로를 포괄하도록 교정 — 현재 카탈로그(rich 보유
+          80개 ref 전부 plain 도 보유)에는 동작 무변경(NOP)이고, 향후
+          rich-only 데이터에 대한 회귀 방어다. */}
+      {(psalm.psalmPrayer ||
+        (psalm.psalmPrayerRich && psalm.psalmPrayerRich.blocks.length > 0)) &&
+        !settings.psalmPrayerCollapsed && (
         <div data-role="psalm-prayer" className="mt-3">
           <p className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark">
             Дууллыг төгсгөх залбирал <PageRef page={psalm.psalmPrayerPage} />
