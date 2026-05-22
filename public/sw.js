@@ -1,3 +1,27 @@
+// v41 — GOAL #54 (#54-sub-2): PWA chrome/아이콘/오프라인 페이지 재스킨. 본
+// bump 가 묶는 변경:
+//   - `public/icon.svg` 앱 아이콘 아트워크 recolor (사용자 승인본 그대로):
+//     espresso 바탕(#2b1f14)/brass(#a8893c·#c9a961 일부)/violet 리본(#7b2d8b)
+//     → 따뜻한 다크 바탕 #211711 + 책(#3a2c1e/#54422d) + 골드 통일
+//     (#9a7b2e·#c9a961). 형태(책/십자/렉턴/코너 다이아) 유지, 색상만 교체.
+//     ※ 아이콘 아트워크 배경(#211711 다크) ≠ manifest theme_color(#faf9f5 크림).
+//   - `public/apple-icon.png` 새 icon.svg(다크 #211711) 기준 180×180 재렌더.
+//   - `public/offline.html` 오프라인 폴백 페이지 recolor — theme-color+body
+//     bg #f4ecd8(양피지) → #faf9f5(크림), 본문 → ink #141413, 버튼/포커스
+//     brass·espresso → 골드 #9a7b2e, 장식 ✝ 글리프 + .icon 박스 제거(#68
+//     선례, DESIGN.md 장식글리프 금지). dark-mode bg #1a1510 유지.
+//   - `src/app/manifest.ts` theme_color·background_color #f4ecd8(양피지) →
+//     #faf9f5(크림 캔버스), `src/app/layout.tsx` viewport.themeColor light
+//     동기화 (dark #1a1510 유지).
+// CACHE_VERSION bump 사유 (strict criteria): `/icon.svg` 와 `/offline.html`
+// 둘 다 PRECACHE_URLS(`['/offline.html', '/icon.svg']`) 의 프리캐시 대상 —
+// 두 자산 "내용" 이 변했으므로 정확한 bump 트리거(프리캐시 대상 내용 변경)에
+// 해당. v40 잔존 시 install 단계의 cache.addAll 이 구 espresso/brass 아이콘 +
+// 양피지 오프라인 페이지를 cache-first 로 무한 서빙 → 재스킨이 기존 사용자
+// 에게 안 보임. SW 자체 로직 변경 없음 — navigation 은 `network-only` 유지,
+// caches.put(html) 미도입. manifest theme_color 는 자산경로 무변경(라우트/
+// Content-Type 불변)이라 단독으로는 bump 불요지만, icon.svg/offline.html
+// 내용 변경이 bump 를 강제하므로 함께 v40 → v41.
 // v40 — GOAL #24 (FR-164): 기도문 화면 PrayerFooter — 하단 strip 탭 →
 // 전례력/설정 메뉴 슬라이드. 본 bump 가 묶는 변경:
 //   - 신규 client 컴포넌트 `src/components/prayer-footer.tsx` (#29 WI-A
@@ -460,7 +484,7 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v40'
+const CACHE_VERSION = 'divine-office-v41'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
