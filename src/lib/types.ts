@@ -651,7 +651,7 @@ export interface ConditionalRubricTarget {
    * Sunday-collision) — those rely on the default `psalmEntries` and only
    * needed the UI un-hide fix.
    */
-  psalterRef?: { week: 1 | 2 | 3 | 4; day: DayOfWeek; hour: HourType }
+  psalterRef?: { week: 1 | 2 | 3 | 4; day: DayOfWeek; hour: 'lauds' | 'vespers' }
 }
 
 export interface ConditionalRubricEvidencePdf {
