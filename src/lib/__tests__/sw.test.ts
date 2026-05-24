@@ -21,6 +21,9 @@ interface SwHarness {
   fakeFetch: ReturnType<typeof vi.fn>
   skipWaiting: ReturnType<typeof vi.fn>
   claim: ReturnType<typeof vi.fn>
+  // 현재 활성 캐시 버전 (public/sw.js 의 CACHE_VERSION 에서 파싱).
+  // 하드코딩 대신 소스에서 읽어 bump 마다 테스트가 깨지는 회귀를 차단한다.
+  cacheVersion: string
 }
 
 function loadSw(): SwHarness {
@@ -28,6 +31,17 @@ function loadSw(): SwHarness {
     path.join(process.cwd(), 'public/sw.js'),
     'utf8',
   )
+
+  // CACHE_VERSION 을 소스에서 직접 파싱한다. const 선언이라 vm context
+  // 전역에 노출되지 않으므로 정규식으로 읽는다. 기대값 하드코딩을 없애
+  // bump(v40→v41→v42 …) 마다 install/activate 테스트가 깨지는 패턴을 막는다.
+  const cacheVersionMatch = source.match(/const CACHE_VERSION = '([^']+)'/)
+  if (!cacheVersionMatch) {
+    throw new Error(
+      'sw.test.ts: public/sw.js 에서 CACHE_VERSION 을 파싱하지 못했습니다',
+    )
+  }
+  const cacheVersion = cacheVersionMatch[1]
 
   const listeners = new Map<string, Listener>()
   const fakeCache = {
@@ -62,7 +76,15 @@ function loadSw(): SwHarness {
   })
   vm.runInContext(source, context)
 
-  return { listeners, fakeCaches, fakeCache, fakeFetch, skipWaiting, claim }
+  return {
+    listeners,
+    fakeCaches,
+    fakeCache,
+    fakeFetch,
+    skipWaiting,
+    claim,
+    cacheVersion,
+  }
 }
 
 interface FakeRequest {
@@ -93,7 +115,7 @@ describe('public/sw.js — service worker contract', () => {
 
       await event.waitUntil.mock.calls[0][0]
 
-      expect(sw.fakeCaches.open).toHaveBeenCalledWith('divine-office-v40')
+      expect(sw.fakeCaches.open).toHaveBeenCalledWith(sw.cacheVersion)
       expect(sw.fakeCache.addAll).toHaveBeenCalledWith([
         '/offline.html',
         '/icon.svg',
@@ -104,49 +126,18 @@ describe('public/sw.js — service worker contract', () => {
 
   describe('activate', () => {
     it('deletes stale cache versions and claims clients', async () => {
-      sw.fakeCaches.keys.mockResolvedValue([
-        'divine-office-v1',
-        'divine-office-v2',
-        'divine-office-v3',
-        'divine-office-v4',
-        'divine-office-v5',
-        'divine-office-v6',
-        'divine-office-v7',
-        'divine-office-v8',
-        'divine-office-v9',
-        'divine-office-v10',
-        'divine-office-v11',
-        'divine-office-v12',
-        'divine-office-v13',
-        'divine-office-v14',
-        'divine-office-v15',
-        'divine-office-v16',
-        'divine-office-v17',
-        'divine-office-v18',
-        'divine-office-v19',
-        'divine-office-v20',
-        'divine-office-v21',
-        'divine-office-v22',
-        'divine-office-v23',
-        'divine-office-v24',
-        'divine-office-v25',
-        'divine-office-v26',
-        'divine-office-v27',
-        'divine-office-v28',
-        'divine-office-v29',
-        'divine-office-v30',
-        'divine-office-v31',
-        'divine-office-v32',
-        'divine-office-v33',
-        'divine-office-v34',
-        'divine-office-v35',
-        'divine-office-v36',
-        'divine-office-v37',
-        'divine-office-v38',
-        'divine-office-v39',
-        'divine-office-v40',
-        'unrelated-cache',
-      ])
+      // 현재 버전 번호를 파싱해 v1..(현재-1) 의 stale 캐시 목록을 동적
+      // 생성한다. bump 가 일어나도 직전 버전이 자동으로 stale 삭제 대상이
+      // 되므로 테스트를 다시 손볼 필요가 없다 (#17 회귀 차단).
+      const currentNum = Number(sw.cacheVersion.match(/v(\d+)$/)![1])
+      const staleVersionKeys = Array.from(
+        { length: currentNum - 1 },
+        (_, i) => `divine-office-v${i + 1}`,
+      )
+      const staleKeys = [...staleVersionKeys, 'unrelated-cache']
+      // keys() 목록에는 stale 키 + 현재 버전 키를 함께 넣어, 현재 버전은
+      // 보존되고 나머지는 전부 삭제되는지 검증한다.
+      sw.fakeCaches.keys.mockResolvedValue([...staleKeys, sw.cacheVersion])
 
       const handler = sw.listeners.get('activate')!
       const event = { waitUntil: vi.fn((p) => p) }
@@ -154,47 +145,11 @@ describe('public/sw.js — service worker contract', () => {
 
       await event.waitUntil.mock.calls[0][0]
 
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v1')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v2')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v3')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v4')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v5')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v6')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v7')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v8')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v9')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v10')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v11')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v12')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v13')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v14')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v15')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v16')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v17')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v18')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v19')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v20')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v21')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v22')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v23')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v24')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v25')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v26')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v27')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v28')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v29')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v30')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v31')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v32')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v33')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v34')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v35')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v36')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v37')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v38')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('divine-office-v39')
-      expect(sw.fakeCaches.delete).toHaveBeenCalledWith('unrelated-cache')
-      expect(sw.fakeCaches.delete).not.toHaveBeenCalledWith('divine-office-v40')
+      for (const key of staleKeys) {
+        expect(sw.fakeCaches.delete).toHaveBeenCalledWith(key)
+      }
+      // 현재 활성 버전은 삭제되어선 안 된다.
+      expect(sw.fakeCaches.delete).not.toHaveBeenCalledWith(sw.cacheVersion)
       expect(sw.claim).toHaveBeenCalled()
     })
   })
