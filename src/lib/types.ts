@@ -618,6 +618,28 @@ export interface ConditionalRubricTarget {
   textRich?: PrayerText
   /** Closed-enum lookup into the ordinarium catalog */
   ordinariumKey?: PageRedirectOrdinariumKey
+  /**
+   * GOAL #13 (FR-160-B-6): structured psalter source for a
+   * `substitute` + `appliesTo.section: 'psalmody'` rubric. When present,
+   * the assembler (loth-service.ts step 6.5) fetches the borrowed psalms
+   * via `getPsalterPsalmody(week, day, hour)` and inlines them in place of
+   * the WRONG default psalter week — so movable solemnities whose Lauds /
+   * 2nd-Vespers psalmody is "drawn from psalter Week 1 Sunday" (Pentecost,
+   * Easter Sunday, Christmas Day; PDF "х. 58") render the actual psalm
+   * body + antiphons instead of a pointer-only directive note.
+   *
+   * Antiphons resolve through the normal `resolvePsalm` season path so the
+   * borrowing day's Easter Alleluia augmentation (GILH §113) applies and
+   * any solemnity-proper `antiphonOverrides` win — the borrowed psalter
+   * default antiphons (page 58) are used only when no proper override
+   * exists.
+   *
+   * Absent for substitute rubrics whose psalms are already correct from
+   * the base psalter (late-Advent "current running week"; All Souls'
+   * Sunday-collision) — those rely on the default `psalmEntries` and only
+   * needed the UI un-hide fix.
+   */
+  psalterRef?: { week: 1 | 2 | 3 | 4; day: DayOfWeek; hour: HourType }
 }
 
 export interface ConditionalRubricEvidencePdf {

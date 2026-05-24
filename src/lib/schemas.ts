@@ -210,11 +210,23 @@ const ConditionalRubricWhenSchema = z
     { message: 'when must specify at least one match field' },
   )
 
+// GOAL #13 (FR-160-B-6): structured psalter source for psalmody-substitute
+// rubrics. `week` ∈ 1..4 (4-week psalter cycle), `day` ∈ weekday enum,
+// `hour` ∈ the psalter-resolvable major hours (lauds / vespers — compline
+// uses its own fixed cycle, firstVespers/firstCompline are eve-shifted
+// derivations not authored as a psalterRef target).
+const PsalterRefSchema = z.object({
+  week: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
+  day: z.enum(['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']),
+  hour: z.enum(['lauds', 'vespers']),
+})
+
 const ConditionalRubricTargetSchema = z.object({
   ref: z.string().min(1).optional(),
   text: z.string().min(1).optional(),
   textRich: z.unknown().optional(),
   ordinariumKey: PageRedirectOrdinariumKeyEnum.optional(),
+  psalterRef: PsalterRefSchema.optional(),
 })
 
 const ConditionalRubricLocatorSchema = z.object({

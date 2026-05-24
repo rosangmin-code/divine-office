@@ -106,8 +106,8 @@ describe('PsalmodySection — directive surface', () => {
     },
   ]
 
-  // @fr FR-160-B-5a
-  it('substitute hides body and shows directive in its place (11-02 case)', () => {
+  // @fr FR-160-B-6 (GOAL #13 — reversed from the pre-fix hide-body behavior)
+  it('substitute INLINES the borrowed psalmody body + keeps the directive as an affordance', () => {
     const section: Extract<HourSection, { type: 'psalmody' }> = {
       type: 'psalmody',
       psalms: psalmsBase,
@@ -120,10 +120,29 @@ describe('PsalmodySection — directive surface', () => {
       ],
     }
     const out = html(createElement(PsalmodySection, { section }))
+    // GOAL #13: the actual psalm body now renders (the upstream assembler
+    // resolved the borrowed psalms) — NOT a pointer-only directive note.
+    expect(out).toContain('v1')
+    // The directive note is preserved as a small affordance below the body.
     expect(out).toContain('Take prayers from Sunday Week 1.')
     expect(out).toContain('data-mode="substitute"')
-    // Body (psalm content) hidden — original verse text not rendered
-    expect(out).not.toContain('v1')
+    // Affordance follows the body (body is primary).
+    expect(out.indexOf('v1')).toBeLessThan(out.indexOf('Take prayers from Sunday Week 1.'))
+  })
+
+  // @fr FR-160-B-6 (defensive — substitute with no psalms falls back to
+  // the directive-only surface so the section is never empty)
+  it('substitute with empty psalms shows the directive alone (defensive)', () => {
+    const section: Extract<HourSection, { type: 'psalmody' }> = {
+      type: 'psalmody',
+      psalms: [],
+      directives: [
+        { rubricId: 'sub-empty', mode: 'substitute', text: 'See Week 1 p.58.' },
+      ],
+    }
+    const out = html(createElement(PsalmodySection, { section }))
+    expect(out).toContain('See Week 1 p.58.')
+    expect(out).toContain('data-mode="substitute"')
   })
 
   // @fr FR-160-B-5a

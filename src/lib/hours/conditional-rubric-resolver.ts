@@ -34,6 +34,7 @@ import type {
   ConditionalRubricLocator,
   ConditionalRubricSection,
   ConditionalRubricWhen,
+  ConditionalRubricTarget,
   DayOfWeek,
   HourPropers,
   HourType,
@@ -277,6 +278,42 @@ function applyPrependAppend(
       return null
   }
   return next
+}
+
+/**
+ * GOAL #13 (FR-160-B-6): pre-resolution scan for a psalmody-`substitute`
+ * rubric carrying a structured `target.psalterRef`. The assembler calls
+ * this BEFORE psalm-text resolution (loth-service step 6.5) so the borrowed
+ * psalter psalms flow through the normal `resolvePsalm` pipeline (season
+ * antiphon augmentation + proper antiphonOverrides) — unlike
+ * `applyConditionalRubrics` (Layer 4.5), which runs AFTER psalm resolution
+ * and therefore can only record the directive note, not swap the psalms.
+ *
+ * Iterates the conditionalRubrics of every propers source passed in
+ * (season propers first, then sanctoral/hour propers), returning the first
+ * matching substitute-on-psalmody rubric's `psalterRef`. Returns null when
+ * no such rubric matches the context (the common case — the assembler then
+ * keeps the default base psalmody). Match semantics are identical to
+ * `applyConditionalRubrics` (`matchesWhen` + action/section gate) so a
+ * rubric that resolves here is exactly the one that surfaces its directive
+ * note downstream.
+ */
+export function resolvePsalmodySubstituteRef(
+  propersSources: ReadonlyArray<HourPropers | null | undefined>,
+  ctx: ConditionalRubricContext,
+): NonNullable<ConditionalRubricTarget['psalterRef']> | null {
+  for (const propers of propersSources) {
+    const rubrics = propers?.conditionalRubrics
+    if (!rubrics || rubrics.length === 0) continue
+    for (const rubric of rubrics) {
+      if (rubric.action !== 'substitute') continue
+      if (rubric.appliesTo.section !== 'psalmody') continue
+      if (!matchesWhen(rubric.when, ctx)) continue
+      const ref = rubric.target?.psalterRef
+      if (ref) return ref
+    }
+  }
+  return null
 }
 
 /**
