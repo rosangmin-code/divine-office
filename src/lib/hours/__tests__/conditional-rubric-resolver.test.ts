@@ -688,4 +688,29 @@ describe('resolvePsalmodySubstituteRef (GOAL #13 / FR-160-B-6)', () => {
     expect(resolvePsalmodySubstituteRef([undefined, {}], easterCtx)).toBeNull()
     expect(resolvePsalmodySubstituteRef([], easterCtx)).toBeNull()
   })
+
+  // @fr FR-160-B-6 — applyConditionalRubrics marks the recorded psalmody
+  // override `bodyInlined: true` ONLY when the substitute carried a
+  // psalterRef (Type-A). Without it (A'/All-Souls), the flag is absent so
+  // the UI keeps the legacy note-only surface (no regression).
+  it('applyConditionalRubrics sets bodyInlined on a psalterRef substitute override', () => {
+    const propers: HourPropers = { conditionalRubrics: [psalmodySubstitute()] }
+    const out = applyConditionalRubrics(propers, easterCtx)
+    const override = out.propers.sectionOverrides?.psalmody?.[0]
+    expect(override?.mode).toBe('substitute')
+    expect(override?.bodyInlined).toBe(true)
+  })
+
+  // @fr FR-160-B-6
+  it('applyConditionalRubrics omits bodyInlined for a substitute WITHOUT psalterRef', () => {
+    const propers: HourPropers = {
+      conditionalRubrics: [
+        psalmodySubstitute({ target: { text: 'current running week' } }),
+      ],
+    }
+    const out = applyConditionalRubrics(propers, easterCtx)
+    const override = out.propers.sectionOverrides?.psalmody?.[0]
+    expect(override?.mode).toBe('substitute')
+    expect(override?.bodyInlined).toBeUndefined()
+  })
 })

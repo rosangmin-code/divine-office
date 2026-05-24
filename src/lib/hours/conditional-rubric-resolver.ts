@@ -128,6 +128,20 @@ function rubricToOverride(
   if (rubric.target?.ref != null) out.ref = rubric.target.ref
   if (rubric.target?.ordinariumKey != null) out.ordinariumKey = rubric.target.ordinariumKey
   if (typeof rubric.appliesTo.index === 'number') out.index = rubric.appliesTo.index
+  // GOAL #13 (FR-160-B-6): a psalmody substitute carrying a structured
+  // `psalterRef` has its borrowed psalms inlined into the section body by
+  // the assembler (loth-service step 6.5). Flag the directive so the UI
+  // renders the body + surfaces this note as an affordance, instead of
+  // hiding the body. Substitutes WITHOUT a psalterRef (late-Advent
+  // dynamic / All Souls Sunday-collision) keep the legacy note-only
+  // surface — no behavior regression.
+  if (
+    rubric.action === 'substitute' &&
+    rubric.appliesTo.section === 'psalmody' &&
+    rubric.target?.psalterRef != null
+  ) {
+    out.bodyInlined = true
+  }
   return out
 }
 

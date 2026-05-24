@@ -399,6 +399,18 @@ export interface SectionOverride {
    * section.
    */
   index?: number
+  /**
+   * GOAL #13 (FR-160-B-6): true when a `substitute` rubric's target was
+   * resolved INTO the section body (the assembler inlined the borrowed
+   * psalter psalms via `target.psalterRef`). The UI then renders the
+   * section body (psalms) AND surfaces this directive as a small
+   * affordance — rather than HIDING the body and showing the directive
+   * alone. Absent / false for substitutes whose body is NOT inlined
+   * (e.g. late-Advent "current running week", All Souls' Sunday-
+   * collision) — those keep the legacy note-only surface so this WI does
+   * not regress their behavior.
+   */
+  bodyInlined?: boolean
 }
 
 export type SectionOverrideMap = Partial<
