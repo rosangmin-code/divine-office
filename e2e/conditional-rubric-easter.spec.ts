@@ -33,8 +33,14 @@ interface DirectiveProbe {
   index?: number
 }
 
+interface PsalmProbe {
+  reference?: string
+  antiphon?: string
+}
+
 interface PsalmodySection {
   type: 'psalmody'
+  psalms?: PsalmProbe[]
   directives?: DirectiveProbe[]
 }
 
@@ -43,8 +49,12 @@ function findPsalmody(sections: { type: string }[]): PsalmodySection | undefined
 }
 
 test.describe('FR-160-B PR-9b — Easter conditional rubrics', () => {
-  // @fr FR-160-B-5b
-  test('Easter Sunday lauds psalmody surfaces substitute directive', async ({ request }) => {
+  // GOAL #13 (FR-160-B-6) — reversed from the pre-fix "directive only"
+  // assertion. The substitute now INLINES the borrowed psalter Week 1
+  // Sunday psalmody (psalm body + antiphons), with the page-ref note kept
+  // as an affordance. Asserts the user actually SEES the psalm text.
+  // @fr FR-160-B-6
+  test('Easter Sunday lauds inlines the borrowed Week-1 psalmody (body + antiphons)', async ({ request }) => {
     const res = await request.get(`/api/loth/${DATES.easterSunday}/lauds`)
     expect(res.ok()).toBe(true)
     const body = await res.json()
@@ -52,29 +62,61 @@ test.describe('FR-160-B PR-9b — Easter conditional rubrics', () => {
 
     const psalmody = findPsalmody(body.sections)
     expect(psalmody, 'psalmody section must be present').toBeTruthy()
-    expect(psalmody?.directives, 'Easter Sunday lauds directives present').toBeDefined()
-    expect(psalmody!.directives!.length).toBeGreaterThanOrEqual(1)
-    const sub = psalmody!.directives!.find(
+    // Actual borrowed Week-1 Sunday Lauds psalms render (NOT a pointer note).
+    const refs = (psalmody!.psalms ?? []).map((p) => p.reference)
+    expect(refs, 'Week-1 Sunday Lauds psalms inlined').toEqual([
+      'Psalm 63:2-9',
+      'Daniel 3:57-88, 56',
+      'Psalm 149:1-9',
+    ])
+    // D3: antiphons are the SOLEMNITY-PROPER ones (NOT the Week-1 psalter
+    // defaults). The missal borrows only the psalm BODY from Week 1; the
+    // antiphons are Easter Sunday's own (wired via the cell's `antiphons`
+    // override map, keyed by the borrowed psalms' antiphon_key).
+    const antiphons = (psalmody!.psalms ?? []).map((p) => p.antiphon ?? '')
+    expect(antiphons.every((a) => a.length > 0), 'every psalm carries an antiphon').toBe(true)
+    expect(antiphons.some((a) => /Аллэлуяа/.test(a)), 'Easter Alleluia on antiphons').toBe(true)
+    // Proper Easter Sunday Ant 1 (NOT the Week-1 default "Аяа Тэнгэрбурхан минь...").
+    expect(antiphons[0]).toContain('Үхлээс амилсан Христийн')
+    expect(antiphons[0]).not.toContain('Аяа Тэнгэрбурхан минь')
+    // The directive note is preserved as an affordance (page-ref).
+    const sub = (psalmody!.directives ?? []).find(
       (d) => d.rubricId === 'easter-eastersunday-sun-lauds-psalmody-substitute',
     )
-    expect(sub, 'easter Sunday substitute rubric must surface').toBeDefined()
+    expect(sub, 'easter Sunday substitute affordance still surfaces').toBeDefined()
     expect(sub!.mode).toBe('substitute')
-    expect(sub!.text).toContain('1 дүгээр долоо хоногийн Ням гарагаас татаж авна')
   })
 
-  // @fr FR-160-B-5b
-  test('Pentecost Sunday lauds psalmody surfaces substitute directive', async ({ request }) => {
+  // @fr FR-160-B-6 — the user-reported bug: Pentecost Lauds showed only a
+  // "see Week 1 Sunday p.58" note and (worse) was internally resolving the
+  // WRONG psalter week (4). Now it inlines the correct Week-1 psalmody.
+  test('Pentecost Sunday lauds inlines the borrowed Week-1 psalmody (body + antiphons)', async ({ request }) => {
     const res = await request.get(`/api/loth/${DATES.pentecostDay2026}/lauds`)
     expect(res.ok()).toBe(true)
     const body = await res.json()
     expect(body.liturgicalDay?.season).toBe('EASTER')
 
     const psalmody = findPsalmody(body.sections)
-    expect(psalmody?.directives, 'Pentecost lauds directives present').toBeDefined()
-    const sub = psalmody!.directives!.find(
+    expect(psalmody, 'psalmody section must be present').toBeTruthy()
+    const refs = (psalmody!.psalms ?? []).map((p) => p.reference)
+    expect(refs, 'Pentecost Lauds inlines Week-1 Sunday psalms (not psalterWeek 4)').toEqual([
+      'Psalm 63:2-9',
+      'Daniel 3:57-88, 56',
+      'Psalm 149:1-9',
+    ])
+    // D3: antiphons are Pentecost's PROPER ones, NOT the Week-1 psalter
+    // defaults (the missal borrows only the psalm body from Week 1).
+    const antiphons = (psalmody!.psalms ?? []).map((p) => p.antiphon ?? '')
+    expect(antiphons.every((a) => a.length > 0), 'every psalm carries an antiphon').toBe(true)
+    expect(antiphons.some((a) => /Аллэлуяа/.test(a)), 'Easter Alleluia on antiphons').toBe(true)
+    // Proper Pentecost Ant 1 (NOT the Week-1 default "Аяа Тэнгэрбурхан минь...").
+    expect(antiphons[0]).toContain('Таны Сүнс бидний дотор')
+    expect(antiphons[0]).not.toContain('Аяа Тэнгэрбурхан минь')
+    // Affordance note still surfaces.
+    const sub = (psalmody!.directives ?? []).find(
       (d) => d.rubricId === 'easter-pentecost-sun-lauds-psalmody-substitute',
     )
-    expect(sub, 'pentecost lauds substitute rubric must surface').toBeDefined()
+    expect(sub, 'pentecost lauds substitute affordance still surfaces').toBeDefined()
     expect(sub!.mode).toBe('substitute')
     expect(sub!.text).toContain('1 дүгээр долоо хоногийн Ням гарагаас')
   })

@@ -28,7 +28,10 @@ import {
   promoteToFirstVespersIdentity,
 } from './hours'
 import { applySeasonalAntiphon, applySeasonalAntiphonRich, pickSeasonalVariant } from './hours/seasonal-antiphon'
-import { applyConditionalRubrics } from './hours/conditional-rubric-resolver'
+import {
+  applyConditionalRubrics,
+  resolvePsalmodySubstituteRef,
+} from './hours/conditional-rubric-resolver'
 import { applyPageRedirects, loadOrdinariumKeyCatalog } from './hours/page-redirect-resolver'
 import { warmBibleCache } from './bible-loader'
 import type { HourContext } from './hours'
@@ -469,6 +472,44 @@ export async function assembleHour(
     ] as HourPsalmody | undefined
     if (properPsalmody) {
       psalmEntries = properPsalmody.psalms
+    }
+  }
+
+  // 6.5 GOAL #13 (FR-160-B-6): psalmody-substitute logic-resolve. Movable
+  // solemnities whose Lauds / 2nd-Vespers psalmody is "drawn from psalter
+  // Week 1 Sunday" (Pentecost, Easter Sunday, Christmas Day; PDF "х. 58")
+  // carry a `substitute` rubric with a structured `target.psalterRef`.
+  // Resolve it HERE — before step 7 psalm-text resolution — so the borrowed
+  // psalms flow through `resolvePsalm` with the borrowing day's season
+  // (EASTER → Alleluia augmentation, GILH §113) and any solemnity-proper
+  // `antiphonOverrides`. Without this the assembler renders the WRONG
+  // psalter week (e.g. Pentecost falls on psalterWeek 4, not 1) and Layer
+  // 4.5 + psalmody-section.tsx then hide it behind the directive-only note
+  // — the exact "시편이 안 나온다" bug GOAL #13 fixes. Skipped when sanctoral
+  // `replacesPsalter` already supplied proper psalmody (more specific wins).
+  if (!(sanctoral?.replacesPsalter && sanctoral.properPsalmody)) {
+    const substituteRef = resolvePsalmodySubstituteRef([seasonPropers, hourPropers], {
+      season: day.season,
+      dayOfWeek: effectiveDayOfWeek,
+      dateStr,
+      hour,
+      isFirstHourOfDay: hour === 'lauds',
+    })
+    if (substituteRef) {
+      try {
+        const borrowed = getPsalterPsalmody(
+          substituteRef.week,
+          substituteRef.day,
+          substituteRef.hour,
+        )
+        if (borrowed?.psalms && borrowed.psalms.length > 0) {
+          psalmEntries = borrowed.psalms
+        }
+      } catch {
+        // Borrowed-psalter fetch failed (e.g. unexpected ref) — fall back to
+        // the base psalmody already loaded above rather than blanking the
+        // section. The directive note still surfaces via Layer 4.5.
+      }
     }
   }
 

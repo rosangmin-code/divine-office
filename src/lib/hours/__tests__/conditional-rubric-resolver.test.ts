@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import {
   applyConditionalRubrics,
   matchesWhen,
+  resolvePsalmodySubstituteRef,
   type ConditionalRubricContext,
 } from '../conditional-rubric-resolver'
 import type { ConditionalRubric, HourPropers } from '../../types'
@@ -599,5 +600,117 @@ describe('applyConditionalRubrics — PR-8 B4 5 신규 sections × 4 actions', (
     expect(original.sectionOverrides).toBeUndefined()
     expect(out.propers.sectionOverrides?.psalmody?.length).toBe(1)
     expect(out.propers).not.toBe(original)
+  })
+})
+
+describe('resolvePsalmodySubstituteRef (GOAL #13 / FR-160-B-6)', () => {
+  const easterCtx: ConditionalRubricContext = {
+    season: 'EASTER',
+    dayOfWeek: 'SUN',
+    dateStr: '2026-05-24',
+    hour: 'lauds',
+    isFirstHourOfDay: true,
+  }
+
+  function psalmodySubstitute(
+    overrides: Partial<ConditionalRubric> = {},
+  ): ConditionalRubric {
+    return {
+      rubricId: 'pentecost-sub',
+      when: { season: ['EASTER'], predicate: 'isFirstHourOfDay' },
+      action: 'substitute',
+      target: {
+        text: 'Week 1 Sunday p.58.',
+        psalterRef: { week: 1, day: 'SUN', hour: 'lauds' },
+      },
+      appliesTo: { section: 'psalmody' },
+      evidencePdf: { page: 58, text: '...' },
+      ...overrides,
+    }
+  }
+
+  // @fr FR-160-B-6
+  it('returns the psalterRef of a matching psalmody substitute', () => {
+    const propers: HourPropers = { conditionalRubrics: [psalmodySubstitute()] }
+    expect(resolvePsalmodySubstituteRef([propers], easterCtx)).toEqual({
+      week: 1,
+      day: 'SUN',
+      hour: 'lauds',
+    })
+  })
+
+  // @fr FR-160-B-6
+  it('returns null when the when-clause does not match the context', () => {
+    const propers: HourPropers = { conditionalRubrics: [psalmodySubstitute()] }
+    // isFirstHourOfDay predicate fails for vespers context
+    const vespersCtx = { ...easterCtx, hour: 'vespers' as const, isFirstHourOfDay: false }
+    expect(resolvePsalmodySubstituteRef([propers], vespersCtx)).toBeNull()
+  })
+
+  // @fr FR-160-B-6
+  it('returns null for a substitute that carries no psalterRef (text-only)', () => {
+    const propers: HourPropers = {
+      conditionalRubrics: [
+        psalmodySubstitute({ target: { text: 'current running week' } }),
+      ],
+    }
+    expect(resolvePsalmodySubstituteRef([propers], easterCtx)).toBeNull()
+  })
+
+  // @fr FR-160-B-6
+  it('ignores non-substitute actions and non-psalmody sections', () => {
+    const skipPsalmody: HourPropers = {
+      conditionalRubrics: [
+        psalmodySubstitute({ action: 'skip', target: undefined }),
+      ],
+    }
+    expect(resolvePsalmodySubstituteRef([skipPsalmody], easterCtx)).toBeNull()
+
+    const substituteHymn: HourPropers = {
+      conditionalRubrics: [psalmodySubstitute({ appliesTo: { section: 'hymn' } })],
+    }
+    expect(resolvePsalmodySubstituteRef([substituteHymn], easterCtx)).toBeNull()
+  })
+
+  // @fr FR-160-B-6
+  it('scans multiple propers sources in order (season then sanctoral)', () => {
+    const seasonNoMatch: HourPropers = { conditionalRubrics: [] }
+    const sanctoralMatch: HourPropers = {
+      conditionalRubrics: [psalmodySubstitute()],
+    }
+    expect(
+      resolvePsalmodySubstituteRef([seasonNoMatch, sanctoralMatch, undefined], easterCtx),
+    ).toEqual({ week: 1, day: 'SUN', hour: 'lauds' })
+  })
+
+  // @fr FR-160-B-6
+  it('returns null for empty / undefined sources', () => {
+    expect(resolvePsalmodySubstituteRef([undefined, {}], easterCtx)).toBeNull()
+    expect(resolvePsalmodySubstituteRef([], easterCtx)).toBeNull()
+  })
+
+  // @fr FR-160-B-6 — applyConditionalRubrics marks the recorded psalmody
+  // override `bodyInlined: true` ONLY when the substitute carried a
+  // psalterRef (Type-A). Without it (A'/All-Souls), the flag is absent so
+  // the UI keeps the legacy note-only surface (no regression).
+  it('applyConditionalRubrics sets bodyInlined on a psalterRef substitute override', () => {
+    const propers: HourPropers = { conditionalRubrics: [psalmodySubstitute()] }
+    const out = applyConditionalRubrics(propers, easterCtx)
+    const override = out.propers.sectionOverrides?.psalmody?.[0]
+    expect(override?.mode).toBe('substitute')
+    expect(override?.bodyInlined).toBe(true)
+  })
+
+  // @fr FR-160-B-6
+  it('applyConditionalRubrics omits bodyInlined for a substitute WITHOUT psalterRef', () => {
+    const propers: HourPropers = {
+      conditionalRubrics: [
+        psalmodySubstitute({ target: { text: 'current running week' } }),
+      ],
+    }
+    const out = applyConditionalRubrics(propers, easterCtx)
+    const override = out.propers.sectionOverrides?.psalmody?.[0]
+    expect(override?.mode).toBe('substitute')
+    expect(override?.bodyInlined).toBeUndefined()
   })
 })
