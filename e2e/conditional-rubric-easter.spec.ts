@@ -69,10 +69,16 @@ test.describe('FR-160-B PR-9b — Easter conditional rubrics', () => {
       'Daniel 3:57-88, 56',
       'Psalm 149:1-9',
     ])
-    // D3: antiphons present and Easter-appropriate (Alleluia ending).
+    // D3: antiphons are the SOLEMNITY-PROPER ones (NOT the Week-1 psalter
+    // defaults). The missal borrows only the psalm BODY from Week 1; the
+    // antiphons are Easter Sunday's own (wired via the cell's `antiphons`
+    // override map, keyed by the borrowed psalms' antiphon_key).
     const antiphons = (psalmody!.psalms ?? []).map((p) => p.antiphon ?? '')
     expect(antiphons.every((a) => a.length > 0), 'every psalm carries an antiphon').toBe(true)
     expect(antiphons.some((a) => /Аллэлуяа/.test(a)), 'Easter Alleluia on antiphons').toBe(true)
+    // Proper Easter Sunday Ant 1 (NOT the Week-1 default "Аяа Тэнгэрбурхан минь...").
+    expect(antiphons[0]).toContain('Үхлээс амилсан Христийн')
+    expect(antiphons[0]).not.toContain('Аяа Тэнгэрбурхан минь')
     // The directive note is preserved as an affordance (page-ref).
     const sub = (psalmody!.directives ?? []).find(
       (d) => d.rubricId === 'easter-eastersunday-sun-lauds-psalmody-substitute',
@@ -98,9 +104,14 @@ test.describe('FR-160-B PR-9b — Easter conditional rubrics', () => {
       'Daniel 3:57-88, 56',
       'Psalm 149:1-9',
     ])
+    // D3: antiphons are Pentecost's PROPER ones, NOT the Week-1 psalter
+    // defaults (the missal borrows only the psalm body from Week 1).
     const antiphons = (psalmody!.psalms ?? []).map((p) => p.antiphon ?? '')
     expect(antiphons.every((a) => a.length > 0), 'every psalm carries an antiphon').toBe(true)
     expect(antiphons.some((a) => /Аллэлуяа/.test(a)), 'Easter Alleluia on antiphons').toBe(true)
+    // Proper Pentecost Ant 1 (NOT the Week-1 default "Аяа Тэнгэрбурхан минь...").
+    expect(antiphons[0]).toContain('Таны Сүнс бидний дотор')
+    expect(antiphons[0]).not.toContain('Аяа Тэнгэрбурхан минь')
     // Affordance note still surfaces.
     const sub = (psalmody!.directives ?? []).find(
       (d) => d.rubricId === 'easter-pentecost-sun-lauds-psalmody-substitute',
