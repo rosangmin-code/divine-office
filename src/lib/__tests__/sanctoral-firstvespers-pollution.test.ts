@@ -45,6 +45,11 @@ const CASES: Array<[string, SanctoralEntry, string, 'concludingPrayer' | 'altern
   ['solemnities', (solemnities as Record<string, SanctoralEntry>)['08-15'], '08-15', 'concludingPrayer', 'Та Өөрийн Хүүгийн эх байх дархан эрхийг цэвэр ариун'],
   ['solemnities', (solemnities as Record<string, SanctoralEntry>)['11-01'], '11-01', 'concludingPrayer', 'бид бүх цаг үе болон газар газрын гэгээн'],
   ['solemnities', (solemnities as Record<string, SanctoralEntry>)['12-08'], '12-08', 'concludingPrayer', 'Язгуурын гэм нүгэлгүй бүрэлдсэн Цэвэр охин Мариагаар'],
+  // 01-01 Mother of God: the runaway lived in alternativeConcludingPrayer.
+  // Its buried EP-II Magnificat antiphon (the only copy — no vespers2 sibling)
+  // was salvaged verbatim to wi-goal20-audit.md §10 before truncation, per the
+  // leader directive; EP-II render restoration is a tracked follow-up WI.
+  ['solemnities', (solemnities as Record<string, SanctoralEntry>)['01-01'], '01-01', 'alternativeConcludingPrayer', 'бүх үе дэх гэрлийн эх үүсвэр болсон Эцэг минь'],
 ]
 
 describe('sanctoral First Vespers parsing-pollution cleanup (FR-156 / GOAL #24)', () => {
@@ -88,10 +93,6 @@ describe('sanctoral First Vespers parsing-pollution cleanup (FR-156 / GOAL #24)'
       if (!fv) continue
       for (const f of ['concludingPrayer', 'alternativeConcludingPrayer'] as const) {
         const v = fv[f]
-        // 01-01 (Mother of God) is handled separately (no vespers2 sibling);
-        // it is the only remaining field permitted to carry EP-II content
-        // until the EP-II-completeness follow-up decides its disposition.
-        if (key === '01-01') continue
         if (typeof v === 'string' && v.includes(EP_II_MARKER)) {
           polluted.push(`${key}.firstVespers.${f}`)
         }

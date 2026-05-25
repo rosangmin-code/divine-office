@@ -32,6 +32,10 @@ const CASES: Array<[string, string, string]> = [
   ['2026-08-06', '주님거룩한변모 Transfiguration', 'Та амин ганц Хүүгийнхээ жавхлант'],
   ['2026-09-14', '십자가현양 Exaltation of the Cross', 'Амин ганц Хүүгээ загалмайн'],
   ['2026-11-09', '라테란대성전봉헌 Lateran Basilica', 'эрх сүрийнхээ мөнхийн өргөөг бэлтгэхээр амьд суурь чулууг'],
+  // 01-01 Mother of God: runaway was in alternativeConcludingPrayer (which the
+  // firstVespers render surfaces as the concludingPrayer section's primary
+  // `text`), so it WAS user-visible. EP-II antiphon salvaged to audit §10 first.
+  ['2026-01-01', '천주의성모 Mother of God (was 6,826-char altPrayer runaway)', 'бүх үе дэх гэрлийн эх үүсвэр болсон Эцэг минь'],
 ]
 
 test.describe('Sanctoral First Vespers parsing-pollution removal (FR-156 / GOAL #24)', () => {
@@ -44,11 +48,13 @@ test.describe('Sanctoral First Vespers parsing-pollution removal (FR-156 / GOAL 
       expect(cp, 'concludingPrayer section present').toBeTruthy()
       const text: string = cp.text ?? ''
 
-      // Pollution must be gone.
-      expect(text).not.toContain(EP_II_MARKER)
-      expect(text).not.toContain(PAGE_HEADER_SPLICE)
-      expect(text).not.toContain(BENEDICTUS_BLEED)
-      expect(text).not.toContain(INVITATORY_BLEED)
+      // Pollution must be gone — scan the ENTIRE section (text + alternateText +
+      // rich variants), not just `text`, so a marker hiding in any field fails.
+      const section = JSON.stringify(cp)
+      expect(section).not.toContain(EP_II_MARKER)
+      expect(section).not.toContain(PAGE_HEADER_SPLICE)
+      expect(section).not.toContain(BENEDICTUS_BLEED)
+      expect(section).not.toContain(INVITATORY_BLEED)
 
       // Correct collect survives and is bounded (worst pre-fix blob was 92,803).
       expect(text).toContain(headFragment)
