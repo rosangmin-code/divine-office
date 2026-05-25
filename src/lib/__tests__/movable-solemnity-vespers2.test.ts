@@ -2,16 +2,17 @@ import { describe, it, expect } from 'vitest'
 import { assembleHour } from '../loth-service'
 import type { AssembledHour, HourSection } from '../types'
 
-// GOAL #20 (#20-sub-2) — movable-Solemnity psalmody + gospel-canticle
-// antiphon injection + Pentecost EP-II (vespers2) routing (option B).
+// GOAL #20 (#20-sub-2) — data-less movable-Solemnity psalmody + gospel-
+// canticle antiphon injection + Pentecost EP-II (vespers2) routing (option
+// B) + runaway-parse contamination truncation (6 cells).
 //
-// These are L2 integration assertions against the REAL assembler
-// (assembleHour) + REAL propers/psalter JSON — no mocks. They prove the
-// user-perceptible outcome: the four data-less Solemnities now render the
-// borrowed Week-1 Sunday psalmody (psalm BODY, not a pointer note) under
-// their proper Magnificat/Benedictus antiphon, and Pentecost Sunday
-// /vespers renders the correct Second Vespers (EP-II) instead of the
-// First-Vespers duplicate + running psalter week.
+// L2 integration assertions against the REAL assembler (assembleHour) +
+// REAL propers/psalter JSON — no mocks. They prove the user-perceptible
+// outcome: the five data-less Solemnities (Trinity, Corpus Christi, Sacred
+// Heart, Christ the King, Ascension) now render the borrowed Week-1 Sunday
+// psalmody (psalm BODY, not a pointer note) under their proper Magnificat/
+// Benedictus antiphon, and the Solemnity's own day /vespers renders the
+// correct Second Vespers.
 
 function section<T extends HourSection['type']>(
   hour: AssembledHour,
@@ -34,59 +35,117 @@ function hasBody(hour: AssembledHour, idx: number): boolean {
   return (p.stanzas?.length ?? 0) > 0 || p.verses.length > 0
 }
 
-describe('Trinity Sunday (2026-05-31) — data-less Solemnity psalmody borrow', () => {
-  it('Lauds: proper Benedictus antiphon + Week-1 Sunday lauds psalm BODY', async () => {
-    const h = await assembleHour('2026-05-31', 'lauds')
+const WEEK1_SUN_LAUDS = ['Psalm 63:2-9', 'Daniel 3:57-88, 56', 'Psalm 149:1-9']
+const WEEK1_SUN_VESPERS = ['Psalm 110:1-5, 7', 'Psalm 114:1-8', 'Revelation 19:1-7']
+
+interface Sol {
+  name: string
+  date: string // the Solemnity's own day (2026)
+  nameFrag: string // lowercase fragment of liturgicalDay.name
+  benedictus: string // Lauds gospel-canticle antiphon fragment
+  magnificat2: string // Second Vespers gospel-canticle antiphon fragment
+}
+
+// Dates verified against this project's romcal calendar (2026):
+//   Trinity 05-31 SUN · Ascension 05-14 THU · Corpus Christi 06-07 SUN ·
+//   Sacred Heart 06-12 FRI · Christ the King 11-22 SUN.
+// Sacred Heart (Fri) + Ascension (Thu) are weekday Solemnities — they
+// exercise the season-only vespers2 `when` (no dayOfWeek:SUN gate) +
+// SUN-slot block fallback.
+const SOLEMNITIES: Sol[] = [
+  {
+    name: 'Trinity Sunday',
+    date: '2026-05-31',
+    nameFrag: 'trinity',
+    benedictus: 'хуваагдашгүй Ариун Гурвал',
+    magnificat2: 'бүх зүрх сэтгэл, дуу хоолойгоороо Таныг магтан',
+  },
+  {
+    name: 'Corpus Christi',
+    date: '2026-06-07',
+    nameFrag: 'corpus',
+    benedictus: 'Би бол тэнгэрээс бууж ирсэн амьд талх',
+    magnificat2: 'Христ бидний амин зуулга болсон энэхүү их баяр',
+  },
+  {
+    name: 'Sacred Heart',
+    date: '2026-06-12',
+    nameFrag: 'sacred heart',
+    benedictus: 'Нигүүлсэнгүй өршөөлөөр бидний Тэнгэрбурхан',
+    magnificat2: 'Эзэн өршөөлийн амлалтаа дурсан санасан',
+  },
+  {
+    name: 'Christ the King',
+    date: '2026-11-22',
+    nameFrag: 'king',
+    benedictus: 'Тэнгэрбурхан ба Эцэгийнхээ төлөөх тахилч нар болгосон',
+    magnificat2: 'Тэнгэр газар дээрх бүх эрх мэдлийг Надад өгсөн',
+  },
+  {
+    name: 'Ascension',
+    date: '2026-05-14',
+    nameFrag: 'ascension',
+    benedictus: 'Би Эцэгтээ буюу та нарын Эцэгт',
+    magnificat2: 'Ялагч Хаан, төгс хүчит Эзэн минь, өнөөдөр Та сүр жавхлангаар',
+  },
+]
+
+describe.each(SOLEMNITIES)(
+  'data-less movable Solemnity — $name ($date)',
+  ({ date, nameFrag, benedictus, magnificat2 }) => {
+    it('Lauds: proper Benedictus antiphon + Week-1 Sunday lauds psalm BODY', async () => {
+      const h = await assembleHour(date, 'lauds')
+      expect(h).not.toBeNull()
+      expect(h!.liturgicalDay.name.toLowerCase()).toContain(nameFrag)
+      expect(h!.liturgicalDay.rank).toBe('SOLEMNITY')
+
+      const gc = section(h!, 'gospelCanticle')
+      expect(gc.canticle).toBe('benedictus')
+      expect(gc.antiphon).toContain(benedictus)
+
+      expect(psalmRefs(h!)).toEqual(WEEK1_SUN_LAUDS)
+      expect(hasBody(h!, 0)).toBe(true)
+    })
+
+    it('Second Vespers (/vespers): proper Magnificat antiphon + Week-1 Sunday vespers psalm BODY', async () => {
+      const h = await assembleHour(date, 'vespers')
+      expect(h).not.toBeNull()
+      expect(h!.liturgicalDay.name.toLowerCase()).toContain(nameFrag)
+
+      const gc = section(h!, 'gospelCanticle')
+      expect(gc.canticle).toBe('magnificat')
+      expect(gc.antiphon).toContain(magnificat2)
+
+      expect(psalmRefs(h!)).toEqual(WEEK1_SUN_VESPERS)
+      expect(hasBody(h!, 0)).toBe(true)
+    })
+  },
+)
+
+describe('runaway-parse contamination truncated (firstVespers prayers)', () => {
+  // The five Solemnities + Pentecost: their firstVespers concluding /
+  // alternative-concluding prayer previously swallowed the whole Second
+  // Vespers office + next-Solemnity header. None may carry the marker
+  // string of a swallowed Second-Vespers office anymore.
+  const FV_DATES = [
+    '2026-05-31', // Trinity
+    '2026-06-07', // Corpus
+    '2026-06-12', // Sacred Heart
+    '2026-11-22', // Christ the King
+    '2026-05-14', // Ascension
+    '2026-05-24', // Pentecost
+  ]
+  it.each(FV_DATES)('firstVespers %s prayers are clean', async (date) => {
+    const h = await assembleHour(date, 'firstVespers')
     expect(h).not.toBeNull()
-    // Resolves to the Trinity Solemnity (not a plain OT Sunday).
-    expect(h!.liturgicalDay.name.toLowerCase()).toContain('trinity')
-    expect(h!.liturgicalDay.rank).toBe('SOLEMNITY')
-
-    // Proper Benedictus antiphon (four-week psalter p.747).
-    const gc = section(h!, 'gospelCanticle')
-    expect(gc.canticle).toBe('benedictus')
-    expect(gc.antiphon).toContain('хуваагдашгүй Ариун Гурвал')
-
-    // Borrowed Week-1 SUN lauds psalmody, rendered as actual psalm bodies.
-    expect(psalmRefs(h!)).toEqual([
-      'Psalm 63:2-9',
-      'Daniel 3:57-88, 56',
-      'Psalm 149:1-9',
-    ])
-    // First psalm carries real body text (inlined, not a directive stub).
-    expect(hasBody(h!, 0)).toBe(true)
-  })
-
-  it('Second Vespers (/vespers): proper Magnificat antiphon + Week-1 Sunday vespers psalm BODY', async () => {
-    const h = await assembleHour('2026-05-31', 'vespers')
-    expect(h).not.toBeNull()
-    expect(h!.liturgicalDay.name.toLowerCase()).toContain('trinity')
-
-    const gc = section(h!, 'gospelCanticle')
-    expect(gc.canticle).toBe('magnificat')
-    expect(gc.antiphon).toContain('бүх зүрх сэтгэл, дуу хоолойгоороо Таныг магтан')
-
-    expect(psalmRefs(h!)).toEqual([
-      'Psalm 110:1-5, 7',
-      'Psalm 114:1-8',
-      'Revelation 19:1-7',
-    ])
-    expect(hasBody(h!, 0)).toBe(true)
-  })
-
-  it('First Vespers altPrayer no longer carries runaway-parse contamination', async () => {
-    const h = await assembleHour('2026-05-31', 'firstVespers')
-    expect(h).not.toBeNull()
-    expect(h!.liturgicalDay.name.toLowerCase()).toContain('trinity')
     const cp = section(h!, 'concludingPrayer')
-    // On the firstVespers route the alternate slot carries the
-    // Сонголтот залбирал (alternativeConcludingPrayer).
-    const alt = cp.alternateText ?? ''
-    // Clean ending is preserved …
-    expect(alt).toContain('Ариун Сүнсээр уламжлан гуйж байна')
-    // … and the swallowed Second-Vespers office / next-Solemnity header is gone.
-    expect(alt).not.toContain('2 дугаар Оройн даатгал залбирал')
-    expect(alt).not.toContain('ХРИСТИЙН ТУЙЛЫН АРИУН НАНДИН')
+    const blob = `${cp.text ?? ''}\n${cp.alternateText ?? ''}`
+    expect(blob).not.toContain('2 дугаар Оройн даатгал залбирал')
+    expect(blob).not.toContain('Эзэний баяр')
+    // No swallowed next-Solemnity ALL-CAPS headers.
+    expect(blob).not.toContain('ТУЙЛЫН АРИУН НАНДИН')
+    expect(blob).not.toContain('ПЭНТИКОСТ АРИУН СҮНСНИЙ БУУЛТ')
+    expect(blob).not.toContain('ГЭГЭЭНТНҮҮДИЙН ОНЦЛОГ ШИНЖ')
   })
 })
 
@@ -109,10 +168,6 @@ describe('Pentecost Sunday (2026-05-24) — EP-II vespers2 routing (option B)', 
     // Week-1 SUN vespers psalmody (Ps110/Ps114/Rev19) — NOT the running
     // psalter week (week-4 = Ps110/Ps112/Rev19). The Ps114 vs Ps112
     // distinction is the single-psalm tell from WI-21 §2.4.
-    expect(psalmRefs(h!)).toEqual([
-      'Psalm 110:1-5, 7',
-      'Psalm 114:1-8',
-      'Revelation 19:1-7',
-    ])
+    expect(psalmRefs(h!)).toEqual(WEEK1_SUN_VESPERS)
   })
 })
