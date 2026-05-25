@@ -473,6 +473,23 @@ export interface DayPropers {
   vespers?: HourPropers
   compline?: HourPropers
   /**
+   * Second Vespers of a movable Solemnity (GOAL #20 / FR-156 option B).
+   * Sibling to `SanctoralEntry.vespers2` but lives on the season-propers
+   * DayPropers so movable Solemnities (Ascension, Pentecost, Trinity
+   * Sunday, Corpus Christi, Sacred Heart, Christ the King — which have no
+   * fixed MM-DD sanctoral entry) can carry their own-day Second Vespers.
+   *
+   * On the Solemnity's own day, `/pray/<date>/vespers` must render this
+   * (Second Vespers), NOT the regular/duplicate `vespers` cell. The
+   * resolver's `hour === 'vespers' && rank === 'SOLEMNITY'` swap
+   * (loth-service.ts) consults `getSeasonVespers2` for movables — mirroring
+   * the `sanctoral.vespers2` swap that already covers fixed-date
+   * Solemnities. Without this field the resolver served the (wrong)
+   * First-Vespers-duplicate `vespers` cell + the running psalter week (the
+   * Pentecost EP-II bug GOAL #20 fixes).
+   */
+  vespers2?: HourPropers
+  /**
    * First Vespers of Sunday (Saturday 저녁에 채택). Sunday 의
    * DayPropers 에 주입하며, resolver 가 `SAT + vespers` 조회 시 다음
    * Sunday 의 `firstVespers` 를 먼저 확인하고 존재 시 우선 사용한다

@@ -14,7 +14,7 @@ import type {
 import { HOUR_NAMES_MN as hourNamesMn } from './types'
 import { getLiturgicalDay, getToday } from './calendar'
 import { getPsalterPsalmody, getComplinePsalmody, getFullComplineData, getPsalterCommons } from './psalter-loader'
-import { getSeasonHourPropers, getSeasonFirstVespers, getSanctoralPropers, getHymnForHour, getHymnCandidatesForHour, resolveSpecialKey } from './propers-loader'
+import { getSeasonHourPropers, getSeasonFirstVespers, getSeasonVespers2, getSanctoralPropers, getHymnForHour, getHymnCandidatesForHour, resolveSpecialKey } from './propers-loader'
 import { resolveCelebration } from './celebrations'
 import { resolveRichOverlay } from './prayers/resolver'
 import { loadHymnRichOverlay } from './prayers/rich-overlay'
@@ -164,6 +164,35 @@ export async function assembleHour(
     dateStr,
     day.name,
   )
+
+  // GOAL #20 (option B): movable-Solemnity Second Vespers swap. On a
+  // movable Solemnity's OWN day, `/pray/<date>/vespers` must render the
+  // Second Vespers (vespers2), not the regular/duplicate `vespers` cell.
+  // Fixed-date Solemnities get this via the `sanctoral.vespers2` swap (step
+  // 5 below); movable ones (Ascension, Pentecost, Trinity Sunday, Corpus
+  // Christi, Sacred Heart, Christ the King) have no MM-DD sanctoral entry,
+  // so their Second Vespers lives in `weeks['<specialKey>'].SUN.vespers2`
+  // and is fetched here via `getSeasonVespers2`. Before this, the initial
+  // fetch above returned `weeks[specialKey].SUN.vespers` — which for
+  // Pentecost/Ascension is a First-Vespers DUPLICATE (wrong gospel-canticle
+  // antiphon + reading) and for the OT solemnities is absent entirely
+  // (psalter falls to the running week). Gated to the celebration's own day
+  // (rank=SOLEMNITY + resolvable special key); the Saturday→Sunday
+  // First-Vespers branch (below) is unaffected because it fires for the eve,
+  // where `day.rank` is the weekday's rank.
+  if (
+    hour === 'vespers' &&
+    day.rank === 'SOLEMNITY' &&
+    resolveSpecialKey(day.season, day.name) != null
+  ) {
+    const seasonVespers2 = getSeasonVespers2(
+      day.season,
+      day.weekOfSeason,
+      dateStr,
+      day.name,
+    )
+    if (seasonVespers2) seasonPropers = seasonVespers2
+  }
 
   // Track whether the Saturday→Sunday first-vespers branch applies so the
   // downstream psalm resolver sees Sunday's identity (for pickSeasonalVariant

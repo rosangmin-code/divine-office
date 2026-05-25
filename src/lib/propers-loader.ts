@@ -290,6 +290,36 @@ export function getSeasonFirstVespers(
   return null
 }
 
+/**
+ * Look up the Second Vespers (vespers2) proper for a movable Solemnity.
+ *
+ * GOAL #20 / FR-156 option B. On a movable Solemnity's own day,
+ * `/pray/<date>/vespers` must render the Second Vespers — for movables
+ * (Ascension, Pentecost, Trinity Sunday, Corpus Christi, Sacred Heart,
+ * Christ the King) this lives in `weeks['<specialKey>'].SUN.vespers2`,
+ * the season-propers sibling of `SanctoralEntry.vespers2` (fixed-date).
+ *
+ * Returns `null` when the celebration has no movable special key, or no
+ * `vespers2` block is authored — callers then keep the regular `vespers`
+ * propers from `getSeasonHourPropers` so existing behaviour is preserved.
+ *
+ * Only the movable-Solemnity special-key path is honoured (no per-week
+ * 1..N fallback): a `vespers2` cell is only meaningful for a Solemnity's
+ * own day, never for a plain weekday/Sunday of the running psalter.
+ */
+export function getSeasonVespers2(
+  season: LiturgicalSeason,
+  weekOfSeason: number,
+  dateStr?: string,
+  celebrationName?: string,
+): HourPropers | null {
+  const weeks = loadSeasonPropers(season)
+  const specialKey = resolveSpecialKey(season, celebrationName, dateStr)
+  if (!specialKey) return null
+  const specialDayPropers = weeks[specialKey]?.['SUN'] as DayPropers | undefined
+  return specialDayPropers?.vespers2 ?? null
+}
+
 // Cache for sanctoral propers
 const sanctoralCache = new Map<string, Record<string, SanctoralEntry>>()
 

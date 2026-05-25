@@ -68,6 +68,16 @@ export const DATES = {
   ascensionDay2026: '2026-05-14',       // Ascension Thursday (movable solemnity day-of)
   pentecostDay2026: '2026-05-24',       // Pentecost Sunday (movable solemnity day-of)
 
+  // GOAL #20 (#20-sub-2) — data-less movable Solemnity OWN-DAY dates.
+  // Render the Solemnity's Lauds + Second Vespers (vespers2 via option B
+  // routing) with borrowed Week-1 Sunday psalmody + proper antiphons.
+  // Sacred Heart 06-12 is a FRIDAY (weekday Solemnity) — exercises the
+  // season-only vespers2 `when` + SUN-slot block fallback.
+  trinitySundayDay2026: '2026-05-31',   // Trinity Sunday (SUN)
+  corpusChristiDay2026: '2026-06-07',   // Corpus Christi (SUN, transferred)
+  sacredHeartDay2026: '2026-06-12',     // Sacred Heart of Jesus (FRI)
+  christTheKingDay2026: '2026-11-22',   // Christ the King (SUN)
+
   // Task #61 — Christmas special-key load. Christmas Day 2026-12-25
   // falls on a Friday; the only authored rich slot is wdec25-SUN-*,
   // so the resolver's day-specific → SUN-slot fallback must pick up
