@@ -266,8 +266,8 @@ test.describe('FR-160-B PR-9b — non-runtime-surfacing rubrics (data-layer cove
   })
 
   // @fr FR-160-B-5b
-  test('inventory invariant: 12 ConditionalRubric entries total, all 12 covered by PR-9b suite', () => {
-    // Closure check: aggregate the 12 rubric IDs we cover across the
+  test('inventory invariant: 22 ConditionalRubric entries total, all covered by PR-9b suite', () => {
+    // Closure check: aggregate the rubric IDs we cover across the
     // PR-9b e2e suite (active dispatch tests + data-layer authored
     // tests). Guards against silent rubric additions in future PRs
     // that bypass our coverage manifest.
@@ -284,8 +284,20 @@ test.describe('FR-160-B PR-9b — non-runtime-surfacing rubrics (data-layer cove
       'sanctoral-feast-02-02-presentation-firstvespers-sunday',
       'sanctoral-feast-08-06-transfiguration-firstvespers-sunday',
       'sanctoral-feast-09-14-holy-cross-firstvespers-sunday',
+      // GOAL #20 (#20-sub-2) — data-less movable-Solemnity Lauds + 2nd
+      // Vespers psalmody substitutes (Week-1 Sunday borrow). 10 entries.
+      'ot-trinity-sun-lauds-psalmody-substitute',
+      'ot-trinity-sun-vespers2-psalmody-substitute',
+      'ot-corpus-sun-lauds-psalmody-substitute',
+      'ot-corpus-sun-vespers2-psalmody-substitute',
+      'ot-sacredheart-sun-lauds-psalmody-substitute',
+      'ot-sacredheart-sun-vespers2-psalmody-substitute',
+      'ot-christtheking-sun-lauds-psalmody-substitute',
+      'ot-christtheking-sun-vespers2-psalmody-substitute',
+      'easter-ascension-sun-lauds-psalmody-substitute',
+      'easter-ascension-sun-vespers2-psalmody-substitute',
     ])
-    expect(expected.size).toBe(12)
+    expect(expected.size).toBe(22)
 
     // Discover every rubricId in the data files and assert no surprise
     // additions / removals.
@@ -317,7 +329,7 @@ test.describe('FR-160-B PR-9b — non-runtime-surfacing rubrics (data-layer cove
     }
     for (const f of files) scan(readJson(f))
 
-    expect(found.size, '12 ConditionalRubric entries total in data').toBe(12)
+    expect(found.size, '22 ConditionalRubric entries total in data').toBe(22)
     for (const id of expected) {
       expect(found.has(id), `expected rubric ${id} present in data`).toBe(true)
     }
