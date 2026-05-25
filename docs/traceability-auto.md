@@ -4,7 +4,7 @@
 > and FR/NFR IDs in test titles. **Do not edit by hand.**
 > The curated matrix lives in [`docs/traceability-matrix.md`](./traceability-matrix.md).
 
-Scan: 59 test files contributed 27 unique IDs.
+Scan: 61 test files contributed 27 unique IDs.
 
 | ID | Test file | Test title(s) |
 |---|---|---|
@@ -44,8 +44,10 @@ Scan: 59 test files contributed 27 unique IDs.
 | FR-156 | `e2e/feast-first-vespers.spec.ts` | (tagged, title unknown) |
 | FR-156 | `e2e/first-vespers.spec.ts` | (tagged, title unknown)<br>First Vespers of Lent Sunday — versed-ref body resolution (FR-156 Phase 5 WI-B2)<br>First Vespers of Advent Sunday — versed-ref body resolution (FR-156 Phase 5 WI-B3)<br>FR-156 Phase 5 WI-B1 — easter SAT vespers psalm bodies non-empty<br>First Vespers of Ordinary Sunday — versed-ref body resolution (FR-156 Phase 5 WI-B5)<br>First Vespers of Christmas — versed-ref body resolution (FR-156 Phase 5 WI-B4) |
 | FR-156 | `e2e/movable-first-vespers.spec.ts` | (tagged, title unknown) |
+| FR-156 | `e2e/sanctoral-first-vespers-pollution.spec.ts` | (tagged, title unknown) |
 | FR-156 | `e2e/solemnity-first-vespers.spec.ts` | (tagged, title unknown) |
 | FR-156 | `src/lib/__tests__/first-vespers.test.ts` | FR-156 Phase 2 — getSeasonFirstVespers returns injected data<br>advent firstVespers psalms[*].ref are all versed-form post WI-B3 rewrite (task #91)<br>(tagged, title unknown)<br>FR-156 Phase 3a — Solemnity First Vespers<br>FR-156 task #30 — FEAST rank First Vespers<br>FR-156 Phase 3b — Solemnity firstVespers data injection<br>FR-156 Phase 4a — movable solemnity First Vespers<br>FR-156 Phase 4a — OT special-key lookup flow<br>FR-156 Phase 4b — movable solemnity firstVespers data (real loader)<br>FR-156 Symptom A — Saturday vespers firstVespers shortReading wins over psalter commons rich<br>FR-156 Phase 5 WI-B1 — easter firstVespers psalm bodies non-empty after bare→versed rewrite |
+| FR-156 | `src/lib/__tests__/sanctoral-firstvespers-pollution.test.ts` | (tagged, title unknown) |
 | FR-156 | `src/lib/hours/__tests__/first-vespers-identity.test.ts` | promoteToFirstVespersIdentity (FR-156 task #32 helper) |
 | FR-160 | `e2e/conditional-rubric-advent.spec.ts` | Advent dec24 lauds psalmody surfaces substitute directive (dateRange match)<br>Advent dec23 lauds has NO directive (dateRange miss — before from)<br>Advent W1 weekday (2025-12-04) lauds has NO directives (wide miss)<br>Advent dec24 vespers has NO psalmody directive (cell-scope: lauds-only rubric) |
 | FR-160 | `e2e/conditional-rubric-christmas.spec.ts` | Christmas Day lauds inlines the borrowed Week-1 psalmody with PROPER Christmas antiphons |
