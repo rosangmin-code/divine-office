@@ -714,3 +714,101 @@ describe('resolvePsalmodySubstituteRef (GOAL #13 / FR-160-B-6)', () => {
     expect(override?.bodyInlined).toBeUndefined()
   })
 })
+
+// GOAL #27 (#27-sub-2 / FR-160-B-7): All Souls' (11-02) Sunday-collision
+// dynamic psalter borrow. The substitute carries `psalterRef.week:'current'`
+// (resolved to the day's own psalterWeek by loth-service step 6.5). The
+// borrow + bodyInlined are gated to the day's OWN hour — suppressed on an
+// eve / First-Vespers promotion (`isEveOfFollowingDay`) so a Saturday-eve
+// 11-02 keeps its legacy note-only surface.
+describe("All Souls dynamic 'current' psalterRef (GOAL #27 / FR-160-B-7)", () => {
+  // The actual-Sunday context: civil day IS Sunday, NOT an eve promotion.
+  const allSoulsSundayCtx: ConditionalRubricContext = {
+    season: 'ORDINARY_TIME',
+    dayOfWeek: 'SUN',
+    dateStr: '2025-11-02',
+    hour: 'lauds',
+    isFirstHourOfDay: true,
+    isEveOfFollowingDay: false,
+  }
+
+  // The Saturday-eve context: matches `when.dayOfWeek:['SUN']` ONLY via the
+  // First-Vespers promotion (civil day is SAT) → isEveOfFollowingDay true.
+  const allSoulsEveCtx: ConditionalRubricContext = {
+    ...allSoulsSundayCtx,
+    hour: 'vespers',
+    isFirstHourOfDay: false,
+    dateStr: '2024-11-02',
+    isEveOfFollowingDay: true,
+  }
+
+  function allSoulsSubstitute(
+    hour: 'lauds' | 'vespers' = 'lauds',
+    overrides: Partial<ConditionalRubric> = {},
+  ): ConditionalRubric {
+    return {
+      rubricId: `all-souls-${hour}`,
+      when: { dayOfWeek: ['SUN'] },
+      action: 'substitute',
+      target: {
+        text: 'Take the prayers from the matching Sunday of the Four Weeks.',
+        psalterRef: { week: 'current', day: 'SUN', hour },
+      },
+      appliesTo: { section: 'psalmody' },
+      evidencePdf: { page: 839, text: '...' },
+      ...overrides,
+    }
+  }
+
+  // @fr FR-160-B-7
+  it("resolves the 'current' psalterRef on the day's own hour (actual Sunday)", () => {
+    const propers: HourPropers = { conditionalRubrics: [allSoulsSubstitute('lauds')] }
+    expect(resolvePsalmodySubstituteRef([propers], allSoulsSundayCtx)).toEqual({
+      week: 'current',
+      day: 'SUN',
+      hour: 'lauds',
+    })
+  })
+
+  // @fr FR-160-B-7
+  it("suppresses the 'current' borrow on an eve / First-Vespers promotion", () => {
+    const propers: HourPropers = { conditionalRubrics: [allSoulsSubstitute('vespers')] }
+    expect(resolvePsalmodySubstituteRef([propers], allSoulsEveCtx)).toBeNull()
+  })
+
+  // @fr FR-160-B-7 — a FIXED psalterRef is NOT eve-gated (it still resolves
+  // on an eve, preserving the Easter/Pentecost First-Vespers behavior).
+  it("does NOT suppress a fixed-week psalterRef on an eve", () => {
+    const fixed: HourPropers = {
+      conditionalRubrics: [
+        allSoulsSubstitute('vespers', {
+          target: { text: 'Week 1.', psalterRef: { week: 1, day: 'SUN', hour: 'vespers' } },
+        }),
+      ],
+    }
+    expect(resolvePsalmodySubstituteRef([fixed], allSoulsEveCtx)).toEqual({
+      week: 1,
+      day: 'SUN',
+      hour: 'vespers',
+    })
+  })
+
+  // @fr FR-160-B-7
+  it("marks bodyInlined for a 'current' substitute on the day's own hour", () => {
+    const propers: HourPropers = { conditionalRubrics: [allSoulsSubstitute('lauds')] }
+    const out = applyConditionalRubrics(propers, allSoulsSundayCtx)
+    const override = out.propers.sectionOverrides?.psalmody?.[0]
+    expect(override?.mode).toBe('substitute')
+    expect(override?.bodyInlined).toBe(true)
+  })
+
+  // @fr FR-160-B-7 — the bodyInlined gate MUST stay consistent with the
+  // step-6.5 injection gate: omitted on the eve so the UI keeps note-only.
+  it("omits bodyInlined for a 'current' substitute on an eve", () => {
+    const propers: HourPropers = { conditionalRubrics: [allSoulsSubstitute('vespers')] }
+    const out = applyConditionalRubrics(propers, allSoulsEveCtx)
+    const override = out.propers.sectionOverrides?.psalmody?.[0]
+    expect(override?.mode).toBe('substitute')
+    expect(override?.bodyInlined).toBeUndefined()
+  })
+})

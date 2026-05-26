@@ -516,6 +516,15 @@ export async function assembleHour(
   // 4.5 + psalmody-section.tsx then hide it behind the directive-only note
   // — the exact "시편이 안 나온다" bug GOAL #13 fixes. Skipped when sanctoral
   // `replacesPsalter` already supplied proper psalmody (more specific wins).
+  //
+  // GOAL #27 (#27-sub-2): the eve / First-Vespers-promotion signal gates
+  // the DYNAMIC `psalterRef.week: 'current'` borrow (All Souls' 11-02 on
+  // Sunday). On a Saturday-eve render the All Souls rubric matches only via
+  // the SUN promotion, so the dynamic inline is suppressed there (both the
+  // injection below and Layer 4.5's bodyInlined) — preserving the legacy
+  // note-only surface. Mirrors `firstVespersBranchActive` computed below.
+  const isEveOfFollowingDay =
+    effectiveDayOfWeek !== dayOfWeek || isFirstVespers || isFirstCompline
   if (!(sanctoral?.replacesPsalter && sanctoral.properPsalmody)) {
     const substituteRef = resolvePsalmodySubstituteRef([seasonPropers, hourPropers], {
       season: day.season,
@@ -523,11 +532,16 @@ export async function assembleHour(
       dateStr,
       hour,
       isFirstHourOfDay: hour === 'lauds',
+      isEveOfFollowingDay,
     })
     if (substituteRef) {
       try {
+        // GOAL #27: narrow the `'current'` sentinel to the rendering day's
+        // own 4-week-cycle week (the "matching Sunday" per PDF p.839).
+        const borrowedWeek =
+          substituteRef.week === 'current' ? day.psalterWeek : substituteRef.week
         const borrowed = getPsalterPsalmody(
-          substituteRef.week,
+          borrowedWeek,
           substituteRef.day,
           substituteRef.hour,
         )
@@ -646,8 +660,9 @@ export async function assembleHour(
   // a "branch active" signal even when no eve-promotion happened (so
   // psalter commons rich shadowing is suppressed identically to the legacy
   // Saturday→Sunday branch).
-  const firstVespersBranchActive =
-    effectiveDayOfWeek !== dayOfWeek || isFirstVespers || isFirstCompline
+  // Identical predicate to `isEveOfFollowingDay` (computed before step 6.5);
+  // reuse it so the eve/promotion signal has a single source of truth.
+  const firstVespersBranchActive = isEveOfFollowingDay
   const richOverlay = resolveRichOverlay({
     season: day.season,
     weekKey: String(day.weekOfSeason),
@@ -680,6 +695,10 @@ export async function assembleHour(
       dateStr,
       hour,
       isFirstHourOfDay: isFirstHourOfDayCtx,
+      // GOAL #27 (#27-sub-2): same eve/promotion gate as step 6.5 so the
+      // dynamic `'current'` bodyInlined flag stays consistent with the
+      // injection (suppressed on Saturday-eve 11-02 → note-only preserved).
+      isEveOfFollowingDay,
     })
     mergedPropers = condResult.propers
     if (mergedPropers.pageRedirects && mergedPropers.pageRedirects.length > 0) {

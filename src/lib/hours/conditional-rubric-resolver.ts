@@ -52,6 +52,19 @@ export interface ConditionalRubricContext {
   isFirstHourOfDay: boolean
   isVigil?: boolean
   isObligatoryMemorial?: boolean
+  /**
+   * GOAL #27 (#27-sub-2): true when this hour is the EVE / First-Vespers
+   * promotion of the FOLLOWING liturgical day (e.g. Saturday-evening
+   * Vespers rendered as First Vespers of Sunday — the assembler promotes
+   * `effectiveDayOfWeek` to SUN). The civil date is NOT yet the day whose
+   * rubric is being evaluated. A DYNAMIC `psalterRef.week: 'current'`
+   * borrow is SUPPRESSED in this branch so an All Souls' (11-02) rubric
+   * keyed `when.dayOfWeek: ['SUN']` does NOT inline psalms onto a
+   * Saturday-eve render (which only matches via the SUN promotion) —
+   * preserving the legacy note-only surface there. Fixed `psalterRef`
+   * (Week-1 Easter/Pentecost/Christmas) is unaffected. Defaults to false.
+   */
+  isEveOfFollowingDay?: boolean
 }
 
 export interface ApplyConditionalRubricsResult {
@@ -119,6 +132,7 @@ function appendSectionOverride(
 function rubricToOverride(
   rubric: ConditionalRubric,
   text: string | null,
+  eveOfFollowingDay = false,
 ): SectionOverride {
   const out: SectionOverride = {
     rubricId: rubric.rubricId,
@@ -133,12 +147,19 @@ function rubricToOverride(
   // the assembler (loth-service step 6.5). Flag the directive so the UI
   // renders the body + surfaces this note as an affordance, instead of
   // hiding the body. Substitutes WITHOUT a psalterRef (late-Advent
-  // dynamic / All Souls Sunday-collision) keep the legacy note-only
-  // surface — no behavior regression.
+  // dynamic / Dec 24) keep the legacy note-only surface — no regression.
+  //
+  // GOAL #27 (#27-sub-2): a DYNAMIC `psalterRef.week: 'current'` borrow is
+  // inlined only on the day's OWN hour. On an eve / First-Vespers
+  // promotion (`eveOfFollowingDay`) it is suppressed back to note-only so
+  // a Saturday-eve 11-02 (matched only via the SUN promotion) keeps its
+  // legacy surface — must stay consistent with the step-6.5 injection gate
+  // (`resolvePsalmodySubstituteRef` returns null for the same case).
   if (
     rubric.action === 'substitute' &&
     rubric.appliesTo.section === 'psalmody' &&
-    rubric.target?.psalterRef != null
+    rubric.target?.psalterRef != null &&
+    !(rubric.target.psalterRef.week === 'current' && eveOfFollowingDay)
   ) {
     out.bodyInlined = true
   }
@@ -189,6 +210,7 @@ function applySkip(propers: HourPropers, locator: ConditionalRubricLocator, rubr
 function applySubstitute(
   propers: HourPropers,
   rubric: ConditionalRubric,
+  eveOfFollowingDay = false,
 ): HourPropers {
   const text = resolveTargetText(rubric)
   if (text == null) {
@@ -201,7 +223,7 @@ function applySubstitute(
     ) {
       const sec = rubric.appliesTo.section
       if (PR8_SECTIONS.has(sec) || sec === 'intercessions') {
-        return appendSectionOverride(propers, sec, rubricToOverride(rubric, null))
+        return appendSectionOverride(propers, sec, rubricToOverride(rubric, null, eveOfFollowingDay))
       }
     }
     return propers
@@ -237,7 +259,7 @@ function applySubstitute(
     case 'invitatory':
     case 'dismissal':
     case 'openingVersicle':
-      next = appendSectionOverride(next, rubric.appliesTo.section, rubricToOverride(rubric, text))
+      next = appendSectionOverride(next, rubric.appliesTo.section, rubricToOverride(rubric, text, eveOfFollowingDay))
       break
     // responsory / gospelCanticle — substitute deferred (no current data).
   }
@@ -324,7 +346,23 @@ export function resolvePsalmodySubstituteRef(
       if (rubric.appliesTo.section !== 'psalmody') continue
       if (!matchesWhen(rubric.when, ctx)) continue
       const ref = rubric.target?.psalterRef
-      if (ref) return ref
+      if (!ref) continue
+      // GOAL #27 (#27-sub-2): a DYNAMIC `'current'`-week borrow is meant
+      // for the day's OWN hour. On an eve / First-Vespers promotion the
+      // rubric only matched via the SUN promotion (`ctx.dayOfWeek` is the
+      // promoted day, not the civil one), so suppress the inline injection
+      // and let the base psalmody + note-only surface stand — kept
+      // consistent with `rubricToOverride`'s bodyInlined gate. Fixed
+      // `psalterRef` (Week-1 Easter/Pentecost/Christmas) is unaffected.
+      //
+      // `continue` (not `return null`): a suppressed `'current'` ref does
+      // NOT short-circuit the scan — a LATER fixed-week substitute in the
+      // same sources can still resolve on the eve. Moot for the only
+      // current `'current'` rubric (All Souls 11-02 — one substitute per
+      // hour, no co-located fixed-week sibling), but keeps the scan
+      // composable if future data co-locates a dynamic + fixed substitute.
+      if (ref.week === 'current' && ctx.isEveOfFollowingDay === true) continue
+      return ref
     }
   }
   return null
@@ -346,6 +384,7 @@ export function applyConditionalRubrics(
 
   let next = propers
   const applied: ConditionalRubric[] = []
+  const eveOfFollowingDay = ctx.isEveOfFollowingDay === true
   for (const rubric of rubrics) {
     if (!matchesWhen(rubric.when, ctx)) continue
     switch (rubric.action) {
@@ -353,7 +392,7 @@ export function applyConditionalRubrics(
         next = applySkip(next, rubric.appliesTo, rubric)
         break
       case 'substitute':
-        next = applySubstitute(next, rubric)
+        next = applySubstitute(next, rubric, eveOfFollowingDay)
         break
       case 'prepend': {
         const out = applyPrependAppend(next, rubric, 'prepend')

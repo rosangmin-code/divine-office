@@ -163,6 +163,45 @@ describe('FR-160-B ConditionalRubric schema', () => {
     })
     expect(ok.success).toBe(true)
   })
+
+  // @fr FR-160-B-6 — fixed-week psalterRef target (Easter/Pentecost/Christmas).
+  it('accepts a psalmody substitute with a fixed-week psalterRef', () => {
+    const ok = ConditionalRubricSchema.safeParse({
+      rubricId: 'easter-sun-lauds-psalmody-substitute',
+      when: { season: ['EASTER'], dayOfWeek: ['SUN'] },
+      action: 'substitute',
+      target: { text: 'Week 1 p.58', psalterRef: { week: 1, day: 'SUN', hour: 'lauds' } },
+      appliesTo: { section: 'psalmody' },
+      evidencePdf: { page: 58, text: 'х. 58' },
+    })
+    expect(ok.success).toBe(true)
+  })
+
+  // @fr FR-160-B-7 — GOAL #27: dynamic `'current'` sentinel (All Souls 11-02).
+  it("accepts a psalmody substitute with psalterRef.week = 'current'", () => {
+    const ok = ConditionalRubricSchema.safeParse({
+      rubricId: 'sanctoral-memorial-11-02-all-souls-lauds-sunday-substitute',
+      when: { dayOfWeek: ['SUN'] },
+      action: 'substitute',
+      target: { text: 'matching Sunday', psalterRef: { week: 'current', day: 'SUN', hour: 'lauds' } },
+      appliesTo: { section: 'psalmody' },
+      evidencePdf: { page: 839, text: 'Дөрвөн долоо хоног' },
+    })
+    expect(ok.success).toBe(true)
+  })
+
+  // @fr FR-160-B-7 — guards the closed value-domain: only 1..4 or 'current'.
+  it('rejects a psalterRef.week outside 1..4 / current', () => {
+    const bad = ConditionalRubricSchema.safeParse({
+      rubricId: 'bad-week',
+      when: { dayOfWeek: ['SUN'] },
+      action: 'substitute',
+      target: { text: 'x', psalterRef: { week: 5, day: 'SUN', hour: 'lauds' } },
+      appliesTo: { section: 'psalmody' },
+      evidencePdf: { page: 1, text: 'x' },
+    })
+    expect(bad.success).toBe(false)
+  })
 })
 
 describe('FR-160-B PageRedirect schema', () => {
