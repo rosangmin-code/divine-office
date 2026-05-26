@@ -8,7 +8,7 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Даруй гэмшин мөргөж"
+                "text": "1. Ариун Сүнс буун ирж"
               }
             ],
             "indent": 0
@@ -17,40 +17,7 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Сөгдөн тахимдаж итгэв. Аллэлуяа!"
-              }
-            ],
-            "indent": 0
-          }
-        ],
-        "phrases": [
-          {
-            "lineRange": [
-              0,
-              0
-            ],
-            "indent": 0
-          },
-          {
-            "lineRange": [
-              1,
-              1
-            ],
-            "indent": 0
-          }
-        ]
-      },
-      {
-        "kind": "divider"
-      },
-      {
-        "kind": "stanza",
-        "lines": [
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "17. Таван шархыг сая үзээд"
+                "text": "Ард түмний санаа сэтгэлийг"
               }
             ],
             "indent": 0
@@ -59,7 +26,7 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Томас тэрээр гэмшин үйлдэж"
+                "text": "Ашдаар гэрэлтүүлж"
               }
             ],
             "indent": 0
@@ -68,7 +35,16 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Даруй шүтэн итгэжээ. Аллэлуяа!"
+                "text": "Ариутган соёрхтугай!"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Аллэлуяа, Аллэлуяа, Аллэлуяа, Аллэлуяа!"
               }
             ],
             "indent": 0
@@ -95,6 +71,20 @@
               2
             ],
             "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              4,
+              4
+            ],
+            "indent": 0
           }
         ]
       },
@@ -108,7 +98,7 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "18. Шархыг эс үзсэн боловч"
+                "text": "Дахилт: Ариун Сүнс бидний сэтгэлийг"
               }
             ],
             "indent": 0
@@ -117,7 +107,69 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Сайхан бат итгэгчид"
+                "text": "Ариутган соёрхтугай!"
+              }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0,
+            "role": "refrain"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "2. Ухааныг нээн гийгүүлж"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Орчлонгийн хуурмагийг"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Орхиулан хөнгөлж"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Улам сайнд шамдуултугай!"
               }
             ],
             "indent": 0
@@ -137,30 +189,18 @@
               1
             ],
             "indent": 0
-          }
-        ]
-      },
-      {
-        "kind": "divider"
-      },
-      {
-        "kind": "stanza",
-        "lines": [
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Санаа сэтгэл үнэн хувьтай. Аллэлуяа!"
-              }
-            ],
-            "indent": 0
-          }
-        ],
-        "phrases": [
+          },
           {
             "lineRange": [
-              0,
-              0
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
             ],
             "indent": 0
           }
@@ -176,7 +216,7 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "19. Есүс ийнхүү өгүүлснийг"
+                "text": "3. Санаа сэтгэл дурыг минь"
               }
             ],
             "indent": 0
@@ -185,7 +225,7 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Ертөнцийн хүмүүн мэдэж"
+                "text": "Сахин, тэтгэн жолоодож"
               }
             ],
             "indent": 0
@@ -194,7 +234,16 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Ер саналдаа бодогтун! Аллэлуяа!"
+                "text": "Сайхан зөвт сургаалаар"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Сайнаар биднийг удирдтугай!"
               }
             ],
             "indent": 0
@@ -221,6 +270,13 @@
               2
             ],
             "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
           }
         ]
       },
@@ -234,7 +290,7 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "20. Есүс дахин амьдрав"
+                "text": "4. Ивээлийн Ариун Сүнс ээ!"
               }
             ],
             "indent": 0
@@ -243,7 +299,7 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Ертөнцийн хүмүүн эдүгээ"
+                "text": "Итгэл ба бат эгээрэл"
               }
             ],
             "indent": 0
@@ -252,7 +308,16 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Ихэд цэнгэн хишгийг хүртэгтүн! Аллэлуяа!"
+                "text": "Энэрэлт бат сүсгийг"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Итгэгч бидэнд хайрлатугай!"
               }
             ],
             "indent": 0
@@ -277,13 +342,168 @@
             "lineRange": [
               2,
               2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "5. Зориг батыг хайрлагч аа!"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Зовлонт бэрх эгэл үйлсийг"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Зоримгой цэргийн адилаар"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Зохистойгоор үйлдүүлтүгэй!"
+              }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "6. Энэхүү уйтгарт насан дотор"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Элдэв зовлонт зүйлсийг хөнгөтгөн"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Эгнэгт энхийг шагнаад"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Эцсийн сайныг бидэнд олготугай!"
+              }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
             ],
             "indent": 0
           }
         ]
       }
     ],
-    "page": 909,
+    "page": 895,
     "source": {
       "kind": "common",
       "id": "hymn-16"

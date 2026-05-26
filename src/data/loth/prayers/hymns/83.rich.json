@@ -150,6 +150,78 @@
               }
             ],
             "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Та ерөөгөөч миний ард түмнийг"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Та сэргээгээч миний уудам талыг"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Бүх Монгол зөвхөн Таныг мэхийн хүндэлэе"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Та нэгтгээч миний Монголыг"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Та чөлөөлөөч миний ард түмнийг"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Та эдгээгээч миний уудам талыг"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Бүх Монгол зөвхөн Таныг мэхийн хүндэлэе"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Мэхийн хүндэлэе өвдөг сөгдөн мөргөе"
+              }
+            ],
+            "indent": 0
           }
         ],
         "phrases": [
@@ -157,6 +229,70 @@
             "lineRange": [
               0,
               0
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              4,
+              4
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              5,
+              5
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              6,
+              6
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              7,
+              7
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              8,
+              8
             ],
             "indent": 0,
             "role": "refrain"

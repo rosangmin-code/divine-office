@@ -66,6 +66,15 @@
               }
             ],
             "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Зүрхэнд минь мутраа хүргээч Та"
+              }
+            ],
+            "indent": 0
           }
         ],
         "phrases": [
@@ -115,6 +124,13 @@
             "lineRange": [
               6,
               6
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              7,
+              7
             ],
             "indent": 0
           }
