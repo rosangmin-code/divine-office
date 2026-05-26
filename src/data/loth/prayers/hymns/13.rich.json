@@ -8,7 +8,7 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Бүхний төлөө загалмайн өмнө"
+                "text": "1. Зохиогч тэнгэр Эцэг минь"
               }
             ],
             "indent": 0
@@ -17,67 +17,7 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Бидний гэмийг та үүрсэн (2x)"
-              }
-            ],
-            "indent": 0
-          }
-        ],
-        "phrases": [
-          {
-            "lineRange": [
-              0,
-              0
-            ],
-            "indent": 0
-          },
-          {
-            "lineRange": [
-              1,
-              1
-            ],
-            "indent": 0
-          }
-        ]
-      },
-      {
-        "kind": "divider"
-      },
-      {
-        "kind": "stanza",
-        "lines": [
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Дахилт: Өө өө өө өө"
-              }
-            ],
-            "indent": 0
-          }
-        ],
-        "phrases": [
-          {
-            "lineRange": [
-              0,
-              0
-            ],
-            "indent": 0,
-            "role": "refrain"
-          }
-        ]
-      },
-      {
-        "kind": "divider"
-      },
-      {
-        "kind": "stanza",
-        "lines": [
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "7. Хүний гэмийг хүчрэлгүй"
+                "text": "Цогт самбар түшүүр минь"
               }
             ],
             "indent": 0
@@ -86,7 +26,7 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Өвдөг сөхрөн унасан ч"
+                "text": "Зовлонт мунхаг биднийг"
               }
             ],
             "indent": 0
@@ -95,7 +35,7 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Дахин босож алхсан (2x)"
+                "text": "Золин аварч ариун болгоно уу!"
               }
             ],
             "indent": 0
@@ -122,33 +62,13 @@
               2
             ],
             "indent": 0
-          }
-        ]
-      },
-      {
-        "kind": "divider"
-      },
-      {
-        "kind": "stanza",
-        "lines": [
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Дахилт: Өө өө өө өө"
-              }
-            ],
-            "indent": 0
-          }
-        ],
-        "phrases": [
+          },
           {
             "lineRange": [
-              0,
-              0
+              3,
+              3
             ],
-            "indent": 0,
-            "role": "refrain"
+            "indent": 0
           }
         ]
       },
@@ -162,7 +82,7 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "14. Хүн бүр хайраар цангахгүй"
+                "text": "2. Есүс Эзэн хөвгүүн тэнгэр"
               }
             ],
             "indent": 0
@@ -171,7 +91,7 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Учир нь Та бидний төлөө"
+                "text": "Ертөнцийн аврагч"
               }
             ],
             "indent": 0
@@ -180,7 +100,16 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Үргэлж хамт байгааг мэднэ (2x)"
+                "text": "Ертөнцөд төрсөн надад"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Их хишгийн амийг олгоно уу!"
               }
             ],
             "indent": 0
@@ -207,33 +136,13 @@
               2
             ],
             "indent": 0
-          }
-        ]
-      },
-      {
-        "kind": "divider"
-      },
-      {
-        "kind": "stanza",
-        "lines": [
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Дахилт: Өө өө өө өө"
-              }
-            ],
-            "indent": 0
-          }
-        ],
-        "phrases": [
+          },
           {
             "lineRange": [
-              0,
-              0
+              3,
+              3
             ],
-            "indent": 0,
-            "role": "refrain"
+            "indent": 0
           }
         ]
       },
@@ -247,7 +156,7 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "8. Өөрийн зовлонгоо умартан"
+                "text": "3. Ариун Сүнс хишгийн тэнгэр"
               }
             ],
             "indent": 0
@@ -256,7 +165,7 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Таны төлөө гашуудах"
+                "text": "Ариутгалын үндэс ээ!"
               }
             ],
             "indent": 0
@@ -265,7 +174,16 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Бүх хүнийг тайтгаруулсан (2x)"
+                "text": "Алив мунхаг гэм нүгэлт биднийг"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Аль түргэнээр илаарь болгоно уу!"
               }
             ],
             "indent": 0
@@ -292,6 +210,13 @@
               2
             ],
             "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
           }
         ]
       },
@@ -305,7 +230,34 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Дахилт: Өө өө өө өө"
+                "text": "4. Нэгэн Тэнгэр гурван биетэй"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Эцэг хийгээд Хөвгүүн,"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ариун Сүнс гурвалыг хамтаар"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Тахин хүндэлж магтах болтугай."
               }
             ],
             "indent": 0
@@ -317,13 +269,329 @@
               0,
               0
             ],
-            "indent": 0,
-            "role": "refrain"
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "5. Бага Есүс, сайхан Эзэн минь"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Багачуудыг ихэд хайрлагч"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Балай мунхаг надад"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Багш Есүс, та тусална уу!"
+              }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "6. Эзэн, тэнгэрийн алдраар ирсэн"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Энэрлээр хүн болсон"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Энх амрын хуулийг сахиулагчийг"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Энэ ба хойтод магтах болтугай."
+              }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "7. Багш Есүс, сайхан ах минь"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Бага хургаа тэврэгч"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Балай мунхаг нүгэлт биднийг"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Балар харанхуйгаас олж аварна уу!"
+              }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "8. Мунхаг бид хэдий бузар байна."
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Мулгуу тэнэг хир хилэнцэт болно."
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Мөнх Эзэн, та монгол түмнийг"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Мутраараа адислах болтугай."
+              }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              3,
+              3
+            ],
+            "indent": 0
           }
         ]
       }
     ],
-    "page": 919,
+    "page": 892,
     "source": {
       "kind": "common",
       "id": "hymn-13"

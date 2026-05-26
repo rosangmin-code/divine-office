@@ -131,6 +131,96 @@
               }
             ],
             "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Наргиан цэнгэлийг орхин ирлээ"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Намайг аваач Есүс ээ"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Бүхий л зүйлээ Есүст өргөн"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Аврагч минь Та хариулаач"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ариун Сүнсээ дүүргэн өгөөч"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Агуу чадлаа харуулаач"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Бүхий л зүйлээ Есүст өргөн"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Өөрийн биеэ ч өргөе"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Хүч чадлаа өгч хайраа дүүргээч"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ивээлээ Та буулгаач дээ"
+              }
+            ],
+            "indent": 0
           }
         ],
         "phrases": [
@@ -181,80 +271,86 @@
             ],
             "indent": 0,
             "role": "refrain"
-          }
-        ]
-      },
-      {
-        "kind": "divider"
-      },
-      {
-        "kind": "stanza",
-        "lines": [
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Бүхий л зүйлээ Есүст өргөн"
-              }
-            ],
-            "indent": 0
-          },
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Өөрийн биеэ ч өргөе"
-              }
-            ],
-            "indent": 0
-          },
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Хүч чадлаа өгч хайраа дүүргээч"
-              }
-            ],
-            "indent": 0
-          },
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Ивээлээ Та буулгаач дээ"
-              }
-            ],
-            "indent": 0
-          }
-        ],
-        "phrases": [
-          {
-            "lineRange": [
-              0,
-              0
-            ],
-            "indent": 0
           },
           {
             "lineRange": [
-              1,
-              1
+              6,
+              6
             ],
-            "indent": 0
+            "indent": 0,
+            "role": "refrain"
           },
           {
             "lineRange": [
-              2,
-              2
+              7,
+              7
             ],
-            "indent": 0
+            "indent": 0,
+            "role": "refrain"
           },
           {
             "lineRange": [
-              3,
-              3
+              8,
+              8
             ],
-            "indent": 0
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              9,
+              9
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              10,
+              10
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              11,
+              11
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              12,
+              12
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              13,
+              13
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              14,
+              14
+            ],
+            "indent": 0,
+            "role": "refrain"
+          },
+          {
+            "lineRange": [
+              15,
+              15
+            ],
+            "indent": 0,
+            "role": "refrain"
           }
         ]
       }

@@ -178,91 +178,6 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "9. Амьдралын замд төөрвөл"
-              }
-            ],
-            "indent": 0
-          },
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Замаа олж цааш алхах"
-              }
-            ],
-            "indent": 0
-          },
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Хүч чадлыг надад өгөөч (2x)"
-              }
-            ],
-            "indent": 0
-          }
-        ],
-        "phrases": [
-          {
-            "lineRange": [
-              0,
-              0
-            ],
-            "indent": 0
-          },
-          {
-            "lineRange": [
-              1,
-              1
-            ],
-            "indent": 0
-          },
-          {
-            "lineRange": [
-              2,
-              2
-            ],
-            "indent": 0
-          }
-        ]
-      },
-      {
-        "kind": "divider"
-      },
-      {
-        "kind": "stanza",
-        "lines": [
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Дахилт: Өө өө өө өө"
-              }
-            ],
-            "indent": 0
-          }
-        ],
-        "phrases": [
-          {
-            "lineRange": [
-              0,
-              0
-            ],
-            "indent": 0,
-            "role": "refrain"
-          }
-        ]
-      },
-      {
-        "kind": "divider"
-      },
-      {
-        "kind": "stanza",
-        "lines": [
-          {
-            "spans": [
-              {
-                "kind": "text",
                 "text": "3. Нүглийн хүндийг Та үүрсэн"
               }
             ],
@@ -282,91 +197,6 @@
               {
                 "kind": "text",
                 "text": "Таны хөлийг сөхрүүлсэн (2x)"
-              }
-            ],
-            "indent": 0
-          }
-        ],
-        "phrases": [
-          {
-            "lineRange": [
-              0,
-              0
-            ],
-            "indent": 0
-          },
-          {
-            "lineRange": [
-              1,
-              1
-            ],
-            "indent": 0
-          },
-          {
-            "lineRange": [
-              2,
-              2
-            ],
-            "indent": 0
-          }
-        ]
-      },
-      {
-        "kind": "divider"
-      },
-      {
-        "kind": "stanza",
-        "lines": [
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Дахилт: Өө өө өө өө"
-              }
-            ],
-            "indent": 0
-          }
-        ],
-        "phrases": [
-          {
-            "lineRange": [
-              0,
-              0
-            ],
-            "indent": 0,
-            "role": "refrain"
-          }
-        ]
-      },
-      {
-        "kind": "divider"
-      },
-      {
-        "kind": "stanza",
-        "lines": [
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "10. Эзэн таны агуу хайр"
-              }
-            ],
-            "indent": 0
-          },
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Бүх дэлхийг аврах"
-              }
-            ],
-            "indent": 0
-          },
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Үнэхээр шидэт ариун ус (2x)"
               }
             ],
             "indent": 0
@@ -518,7 +348,7 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "11. Загалмай дээр цовдлогдсон ч"
+                "text": "5. Бүхнийг хайрласан Есүс та"
               }
             ],
             "indent": 0
@@ -527,7 +357,7 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Энэ ертөнцийн Тэнгэрбурхан хэвээр байж"
+                "text": "Шаналсан хөршдөө туслах"
               }
             ],
             "indent": 0
@@ -536,7 +366,7 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Бидний сэтгэлд мөнхөрнө (2x)"
+                "text": "Бүх хүчийг надад өгөөч (2x)"
               }
             ],
             "indent": 0
@@ -603,7 +433,7 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "5. Бүхнийг хайрласан Есүс та"
+                "text": "6. Итгэлийн минь Эзэн та"
               }
             ],
             "indent": 0
@@ -612,7 +442,7 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Шаналсан хөршдөө туслах"
+                "text": "Өөрийн гэрлээ над дээр тусгаач"
               }
             ],
             "indent": 0
@@ -621,7 +451,432 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Бүх хүчийг надад өгөөч (2x)"
+                "text": "Бусдыг би дагуулъя (2x)"
+              }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Дахилт: Өө өө өө өө"
+              }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0,
+            "role": "refrain"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "7. Хүний гэмийг хүчрэлгүй"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Өвдөг сөхрөн унасан ч"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Дахин босож алхсан (2x)"
+              }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Дахилт: Өө өө өө өө"
+              }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0,
+            "role": "refrain"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "8. Өөрийн зовлонгоо умартан"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Таны төлөө гашуудах"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Бүх хүнийг тайтгаруулсан (2x)"
+              }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Дахилт: Өө өө өө өө"
+              }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0,
+            "role": "refrain"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "9. Амьдралын замд төөрвөл"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Замаа олж цааш алхах"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Хүч чадлыг надад өгөөч (2x)"
+              }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Дахилт: Өө өө өө өө"
+              }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0,
+            "role": "refrain"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "10. Эзэн таны агуу хайр"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Бүх дэлхийг аврах"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Үнэхээр шидэт ариун ус (2x)"
+              }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Дахилт: Өө өө өө өө"
+              }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0,
+            "role": "refrain"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "11. Загалмай дээр цовдлогдсон ч"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Энэ ертөнцийн Тэнгэрбурхан хэвээр байж"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Бидний сэтгэлд мөнхөрнө (2x)"
               }
             ],
             "indent": 0
@@ -773,7 +1028,7 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "6. Итгэлийн минь Эзэн та"
+                "text": "13. Агуу хайраараа өмгөөлөн"
               }
             ],
             "indent": 0
@@ -782,7 +1037,7 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Өөрийн гэрлээ над дээр тусгаач"
+                "text": "Бүхний төлөө загалмайн өмнө"
               }
             ],
             "indent": 0
@@ -791,7 +1046,92 @@
             "spans": [
               {
                 "kind": "text",
-                "text": "Бусдыг би дагуулъя (2x)"
+                "text": "Бидний гэмийг та үүрсэн (2x)"
+              }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
+              1
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              2,
+              2
+            ],
+            "indent": 0
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Дахилт: Өө өө өө өө"
+              }
+            ],
+            "indent": 0
+          }
+        ],
+        "phrases": [
+          {
+            "lineRange": [
+              0,
+              0
+            ],
+            "indent": 0,
+            "role": "refrain"
+          }
+        ]
+      },
+      {
+        "kind": "divider"
+      },
+      {
+        "kind": "stanza",
+        "lines": [
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "14. Хүн бүр хайраар цангахгүй"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Учир нь Та бидний төлөө"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Үргэлж хамт байгааг мэднэ (2x)"
               }
             ],
             "indent": 0
