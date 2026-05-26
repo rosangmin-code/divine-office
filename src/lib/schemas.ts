@@ -215,8 +215,14 @@ const ConditionalRubricWhenSchema = z
 // `hour` ∈ the psalter-resolvable major hours (lauds / vespers — compline
 // uses its own fixed cycle, firstVespers/firstCompline are eve-shifted
 // derivations not authored as a psalterRef target).
+//
+// GOAL #27 (#27-sub-2): `week` also accepts the `'current'` sentinel — a
+// DYNAMIC borrow resolved to the rendering day's own `psalterWeek` at
+// assembly time (All Souls' 11-02 Sunday-collision: "the matching Sunday
+// of the running 4-week cycle", PDF p.839). loth-service step 6.5 narrows
+// `'current'` → `day.psalterWeek` before `getPsalterPsalmody`.
 const PsalterRefSchema = z.object({
-  week: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
+  week: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal('current')]),
   day: z.enum(['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']),
   hour: z.enum(['lauds', 'vespers']),
 })

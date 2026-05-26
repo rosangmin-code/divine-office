@@ -405,10 +405,14 @@ export interface SectionOverride {
    * psalter psalms via `target.psalterRef`). The UI then renders the
    * section body (psalms) AND surfaces this directive as a small
    * affordance — rather than HIDING the body and showing the directive
-   * alone. Absent / false for substitutes whose body is NOT inlined
-   * (e.g. late-Advent "current running week", All Souls' Sunday-
-   * collision) — those keep the legacy note-only surface so this WI does
-   * not regress their behavior.
+   * alone. Set for a fixed `psalterRef` (Easter/Pentecost/Christmas
+   * Week-1) AND, since GOAL #27 (#27-sub-2), for a DYNAMIC
+   * `psalterRef.week: 'current'` borrow on the day's OWN hour (All Souls'
+   * 11-02 when it falls on Sunday). Absent / false for substitutes whose
+   * body stays note-only by design (late-Advent "current running week",
+   * Dec 24) AND for a `'current'` borrow evaluated on an eve /
+   * First-Vespers promotion (e.g. Saturday-eve 11-02) — those keep the
+   * legacy note-only surface so this WI does not regress their behavior.
    */
   bodyInlined?: boolean
 }
@@ -663,12 +667,24 @@ export interface ConditionalRubricTarget {
    * default antiphons (page 58) are used only when no proper override
    * exists.
    *
-   * Absent for substitute rubrics whose psalms are already correct from
-   * the base psalter (late-Advent "current running week"; All Souls'
-   * Sunday-collision) — those rely on the default `psalmEntries` and only
-   * needed the UI un-hide fix.
+   * GOAL #27 (#27-sub-2): `week` also accepts the `'current'` sentinel —
+   * a DYNAMIC borrow that resolves to the rendering day's own
+   * `psalterWeek` (the 4-week-cycle week the date naturally falls on) at
+   * assembly time. This is the All Souls' (11-02) Sunday-collision case:
+   * the PDF rubric (p.839) says draw "from the matching/appropriate
+   * Sunday (тохиож буй зөв Ням гараг) in the 'Four Weeks' section" — i.e.
+   * the running cycle's Sunday, NOT a fixed Week-1. The assembler
+   * (loth-service.ts step 6.5) narrows `'current'` → `day.psalterWeek`
+   * before `getPsalterPsalmody`. A `'current'` ref is gated to the day's
+   * OWN hour (NOT its eve / First-Vespers promotion — see
+   * `ConditionalRubricContext.isEveOfFollowingDay`) so a Saturday-eve
+   * 11-02 keeps its legacy note-only surface (zero regression).
+   *
+   * Absent for substitute rubrics whose psalms stay note-only by design
+   * (late-Advent "current running week", Dec 24) — those rely on the
+   * default `psalmEntries` and keep the directive-only surface.
    */
-  psalterRef?: { week: 1 | 2 | 3 | 4; day: DayOfWeek; hour: 'lauds' | 'vespers' }
+  psalterRef?: { week: 1 | 2 | 3 | 4 | 'current'; day: DayOfWeek; hour: 'lauds' | 'vespers' }
 }
 
 export interface ConditionalRubricEvidencePdf {

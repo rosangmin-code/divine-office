@@ -18,7 +18,8 @@
           },
           "action": "substitute",
           "target": {
-            "text": "Хэрэв “11 дүгээр сарын 2” гэсэн Дурсахуй Ням гарагт таарвал Хамаг итгэлт талийгаач бологсдын төлөөх мөргөлийг үйлдэх ч гэсэн Талийгаач бологсдын төлөөх хурлыг үл уншина. Хурлын даатгал залбирлуудыг энэ номын “Дөрвөн долоо хоног” гэсэн хэсэг дээр тохиож буй зөв Ням гарагаас татаж авна."
+            "text": "Хэрэв “11 дүгээр сарын 2” гэсэн Дурсахуй Ням гарагт таарвал Хамаг итгэлт талийгаач бологсдын төлөөх мөргөлийг үйлдэх ч гэсэн Талийгаач бологсдын төлөөх хурлыг үл уншина. Хурлын даатгал залбирлуудыг энэ номын “Дөрвөн долоо хоног” гэсэн хэсэг дээр тохиож буй зөв Ням гарагаас татаж авна.",
+            "psalterRef": { "week": "current", "day": "SUN", "hour": "lauds" }
           },
           "appliesTo": {
             "section": "psalmody"
@@ -28,7 +29,7 @@
             "line": 28459,
             "text": "бологсдын төлөөх хурлыг үл уншина."
           },
-          "liturgicalBasis": "11-02 All Souls' Day Lauds: when falling on Sunday, the Office for the Dead is NOT read; the day's prayers are taken from the 4-week psalter at the appropriate Sunday. Attached to lauds cell for runtime evaluation."
+          "liturgicalBasis": "11-02 All Souls' Day Lauds: when falling on Sunday, the Office for the Dead is NOT read; the day's prayers are taken from the 4-week psalter at the appropriate Sunday (PDF p.839: 'тохиож буй зөв Ням гарагаас'). GOAL #27 (#27-sub-2): psalterRef.week='current' inlines the running cycle's Sunday Lauds psalms (the day's own psalterWeek) on the actual Sunday, so the body renders instead of a pointer-only note."
         }
       ]
     },
@@ -48,7 +49,8 @@
           },
           "action": "substitute",
           "target": {
-            "text": "Хэрэв “11 дүгээр сарын 2” гэсэн Дурсахуй Ням гарагт таарвал Хамаг итгэлт талийгаач бологсдын төлөөх мөргөлийг үйлдэх ч гэсэн Талийгаач бологсдын төлөөх хурлыг үл уншина. Хурлын даатгал залбирлуудыг энэ номын “Дөрвөн долоо хоног” гэсэн хэсэг дээр тохиож буй зөв Ням гарагаас татаж авна."
+            "text": "Хэрэв “11 дүгээр сарын 2” гэсэн Дурсахуй Ням гарагт таарвал Хамаг итгэлт талийгаач бологсдын төлөөх мөргөлийг үйлдэх ч гэсэн Талийгаач бологсдын төлөөх хурлыг үл уншина. Хурлын даатгал залбирлуудыг энэ номын “Дөрвөн долоо хоног” гэсэн хэсэг дээр тохиож буй зөв Ням гарагаас татаж авна.",
+            "psalterRef": { "week": "current", "day": "SUN", "hour": "vespers" }
           },
           "appliesTo": {
             "section": "psalmody"
@@ -58,7 +60,7 @@
             "line": 28459,
             "text": "бологсдын төлөөх хурлыг үл уншина."
           },
-          "liturgicalBasis": "11-02 All Souls' Day Vespers: same Sunday-skip rubric as lauds (PDF rubric applies to whole day)."
+          "liturgicalBasis": "11-02 All Souls' Day Vespers: same Sunday-skip rubric as lauds (PDF rubric applies to whole day). GOAL #27 (#27-sub-2): psalterRef.week='current' inlines the running cycle's Sunday Vespers psalms on the actual Sunday; suppressed on a Saturday-eve First-Vespers render (note-only preserved)."
         }
       ]
     }
