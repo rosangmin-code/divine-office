@@ -53,9 +53,12 @@ function collect(data) {
     // concludingPrayer (object with primary, page)
     add(`days.${day}.concludingPrayer`, dayData.concludingPrayer?.primary, dayData.concludingPrayer?.page)
   }
-  // common responsory
+  // common responsory — fingerprint on fullResponse (distinctive sense-line);
+  // the legacy `${versicle} ${response}` body referenced a non-existent
+  // `response` field (schema is fullResponse/versicle/shortResponse), so it
+  // collapsed to versicle-only and never matched.
   const r = data.responsory
-  if (r) add('responsory', `${r.versicle || ''} ${r.response || ''}`.trim(), r.page)
+  if (r) add('responsory', r.fullResponse, r.page)
   // nuncDimittis
   const n = data.nuncDimittis
   if (n) add('nuncDimittis', n.antiphon, n.page)
@@ -94,7 +97,11 @@ function main() {
       review.entries.push({ file: relFile, locator, declared, reason: 'empty-body' })
       continue
     }
-    const match = lookupPage(body, srcTokens, firstTokenIndex, { safeAmbiguousMin: 15 })
+    // preferNearPage=declared: validation mode. Compline common elements
+    // (responsory, blessing, Marian antiphons) are reprinted on every night's
+    // page, so the fingerprint hits many pages; the declared hint resolves to
+    // the intended occurrence while real drift still surfaces.
+    const match = lookupPage(body, srcTokens, firstTokenIndex, { safeAmbiguousMin: 15, preferNearPage: declared })
     if (match === null) {
       statusCounts['manual-review']++
       review.entries.push({ file: relFile, locator, declared, reason: 'no-fingerprint-match' })

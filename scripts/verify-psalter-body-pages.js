@@ -52,7 +52,13 @@ const FIELD_DEFS = [
     getBody: h => {
       const r = h.responsory
       if (!r) return null
-      return `${r.versicle || ''} ${r.response || ''}`.trim()
+      // Fingerprint on fullResponse: it is the distinctive sense-line printed
+      // verbatim in the PDF. The legacy `${versicle} ${response}` body
+      // referenced a `response` field that never existed in week-*.json (the
+      // schema is fullResponse/versicle/shortResponse), so the body collapsed
+      // to versicle-only — too short & ambiguous to fingerprint, producing
+      // systematic no-fingerprint-match false positives for every responsory.
+      return typeof r.fullResponse === 'string' ? r.fullResponse : null
     },
     getDeclared: h => h.responsory?.page,
     pageField: 'page',
@@ -121,7 +127,14 @@ function main() {
             })
             continue
           }
-          const match = lookupPage(body, srcTokens, firstTokenIndex, { safeAmbiguousMin: 15 })
+          // preferNearPage=declared puts lookupPage in its documented
+          // validation mode: short bodies (responsory fullResponse, intercessions
+          // opener) recur across the 4-week cycle, so an unhinted lookup returns
+          // null on the ambiguous multi-page hit. The declared hint disambiguates
+          // to the nearby occurrence so a correct page validates as `agree`, while
+          // a genuinely drifted page (no occurrence within nearWindow) still falls
+          // through to out-of-window / no-match for manual review.
+          const match = lookupPage(body, srcTokens, firstTokenIndex, { safeAmbiguousMin: 15, preferNearPage: declared })
           if (match === null) {
             freq['no-match']++
             statusCounts['manual-review']++
