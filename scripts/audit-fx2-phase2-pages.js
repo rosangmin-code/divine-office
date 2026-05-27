@@ -27,16 +27,25 @@ const PSALTER_TEXTS_PATH = path.join(
   'psalter-texts.json',
 )
 
+// `expect` = the psalmPrayerPage value that should match the actual PDF page.
+// NOTE (WI 44, #39-audit P2 follow-up): the Ps51 (w2/w3/w4 FRI lauds) and
+// Ps118 (w4 SUN lauds) entries were originally frozen at the pre-correction
+// audit estimates (264/376/489/406). Those estimates were +1/+2 low; the
+// psalm-prayer body in parsed_data/full_pdf.txt actually sits on 265/377/490/408
+// (verified by form-feed page boundaries + direct text inspection), and
+// week-N.json psalmPrayerPage was already landed at those correct values. The
+// constants below are synced to the verified-correct PDF pages so this audit
+// reflects reality (no data drift; the stale estimates were the only mismatch).
 const targets = [
   { ref: 'Psalm 110:1-5, 7', week: 2, day: 'SUN', hour: 'vespers', expect: 186 },
   { ref: 'Psalm 110:1-5, 7', week: 3, day: 'SUN', hour: 'vespers', expect: 305 },
   { ref: 'Psalm 110:1-5, 7', week: 4, day: 'SUN', hour: 'vespers', expect: 416 },
   { ref: 'Psalm 119:145-152', week: 3, day: 'SAT', hour: 'lauds', expect: 392 },
-  { ref: 'Psalm 51:3-19', week: 2, day: 'FRI', hour: 'lauds', expect: 264 },
-  { ref: 'Psalm 51:3-19', week: 3, day: 'FRI', hour: 'lauds', expect: 376 },
-  { ref: 'Psalm 51:3-19', week: 4, day: 'FRI', hour: 'lauds', expect: 489 },
+  { ref: 'Psalm 51:3-19', week: 2, day: 'FRI', hour: 'lauds', expect: 265 },
+  { ref: 'Psalm 51:3-19', week: 3, day: 'FRI', hour: 'lauds', expect: 377 },
+  { ref: 'Psalm 51:3-19', week: 4, day: 'FRI', hour: 'lauds', expect: 490 },
   { ref: 'Psalm 100:1-5', week: 3, day: 'FRI', hour: 'lauds', expect: 380 },
-  { ref: 'Psalm 118:1-16', week: 4, day: 'SUN', hour: 'lauds', expect: 406 },
+  { ref: 'Psalm 118:1-16', week: 4, day: 'SUN', hour: 'lauds', expect: 408 },
   { ref: 'Psalm 150:1-6', week: 4, day: 'SUN', hour: 'lauds', expect: 412 },
   { ref: 'Psalm 67:2-8', week: 3, day: 'TUE', hour: 'lauds', expect: 334 },
   { ref: 'Psalm 8:2-10', week: 4, day: 'SAT', hour: 'lauds', expect: 509 },

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-05-02T14:13:34.427Z",
+  "generated": "2026-05-27T09:41:23.627Z",
   "entries": [
     {
       "file": "src/data/loth/psalter/week-1.json",
@@ -129,7 +129,7 @@
       "file": "src/data/loth/psalter/week-4.json",
       "locator": "days.THU.vespers.psalms[1]",
       "ref": "Psalm 144:11-15",
-      "declared": 483,
+      "declared": 481,
       "reason": "part-II-skipped"
     },
     {

@@ -3638,12 +3638,12 @@
         "firstVespers": {
           "gospelCanticleAntiphon": "Эзэн Тэнгэрбурхан Түүнд өвөг Давидынх нь хаан ширээг өгөх болно. Тэр Иаковын гэрийг үүрд хаанчлах бөгөөд хаанчлалд нь төгсгөл гэж үгүй. Аллэлуяа!",
           "concludingPrayer": "Аяа, төгс хүчит, нигүүлсэхүйн Тэнгэрбурхан минь, Та энэ ертөнцийн Хаан, Өөрийн Хүү Есүс Христээр хорон муу нэгний эрх мэдлийг устгаж, юм бүхнийг шинэ болгосон билээ. Тэнгэр, газар дээрх юм бүхэн Таны сүр жавхланг тунхаглаж, Таныг алдаршуулахаа хэзээ ч бүү болих болтугай. Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан Есүс Христ бидний Эзэн, Таны Хүүгээр уламжлан тийн болтугай.",
-          "concludingPrayerPage": 816,
-          "gospelCanticleAntiphonPage": 816
+          "concludingPrayerPage": 817,
+          "gospelCanticleAntiphonPage": 817
         },
         "lauds": {
           "gospelCanticleAntiphon": "Тэр биднийг хаанчлал төдийгүй, Тэнгэрбурхан ба Эцэгийнхээ төлөөх тахилч нар болгосон. Тэр үхэгсдээс анх төрсөн бөгөөд газрын хаадын захирагч мөн. Аллэлуяа!",
-          "gospelCanticleAntiphonPage": 816,
+          "gospelCanticleAntiphonPage": 817,
           "conditionalRubrics": [
             {
               "rubricId": "ot-christtheking-sun-lauds-psalmody-substitute",
@@ -3665,7 +3665,7 @@
         },
         "vespers2": {
           "gospelCanticleAntiphon": "“Тэнгэр газар дээрх бүх эрх мэдлийг Надад өгсөн” хэмээн Эзэн айлдаж байна.",
-          "gospelCanticleAntiphonPage": 817,
+          "gospelCanticleAntiphonPage": 818,
           "conditionalRubrics": [
             {
               "rubricId": "ot-christtheking-sun-vespers2-psalmody-substitute",
