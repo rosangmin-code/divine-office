@@ -13,6 +13,16 @@ const EDGE_DEADZONE = 16 // px from left edge ignored — iOS back-gesture safet
 const VERTICAL_REJECT = 1.2 // |dx| must exceed VERTICAL_REJECT * |dy|
 const SWIPE_DEBOUNCE_MS = 100 // ignore additional swipes within this window
 
+// Mobile canvas safety caps. iOS Safari historically limits a single canvas
+// dimension to ~4096px and total backing area to ~16.7M px; exceeding either
+// yields a blank/failed canvas, which presents as a *black page* in dark mode
+// (the invisible canvas reveals the dark container backdrop). Clamp the
+// device-pixel render scale so the backing store stays within these limits —
+// the CSS display size is unchanged, only the backing resolution drops on
+// extreme dpr / very tall pages (e.g. the 2-up cover spread at dpr ≥ 3.5).
+const MAX_CANVAS_DIM = 4096
+const MAX_CANVAS_AREA = 16_777_216 // 4096 * 4096
+
 type PdfDoc = {
   getPage: (n: number) => Promise<{
     getViewport: (opts: { scale: number }) => { width: number; height: number }
@@ -142,7 +152,19 @@ export function PdfViewer({ initialBookPage }: { initialBookPage: number }) {
         // Desktop is naturally capped via the frame's max-w-[480px] CSS bound,
         // so this never produces a horizontally scrolling canvas.
         const cssScale = frameWidth / halfNativeW
-        const renderScale = cssScale * dpr
+
+        // Clamp the device-pixel render scale to mobile-safe canvas limits so
+        // the backing store never exceeds MAX_CANVAS_DIM / MAX_CANVAS_AREA
+        // (see consts). Predicted backing dimensions at the requested scale
+        // (canvas.width is the half-spread, canvas.height the full height):
+        let renderScale = cssScale * dpr
+        const predW = Math.floor((unscaled.width * renderScale) / 2)
+        const predH = Math.floor(unscaled.height * renderScale)
+        const dimClamp = MAX_CANVAS_DIM / Math.max(predW, predH)
+        const areaClamp = Math.sqrt(MAX_CANVAS_AREA / (predW * predH))
+        const clamp = Math.min(1, dimClamp, areaClamp)
+        if (clamp < 1) renderScale *= clamp
+
         const viewport = pdfPage.getViewport({ scale: renderScale })
         const halfDeviceW = Math.floor(viewport.width / 2)
 
@@ -309,7 +331,12 @@ export function PdfViewer({ initialBookPage }: { initialBookPage: number }) {
       <div
         ref={frameRef}
         data-role="pdf-canvas-frame"
-        className="relative mx-auto flex min-h-[100dvh] w-full max-w-[480px] items-center justify-center"
+        // Theme-independent paper surface: the page reading column stays light
+        // ("paper") in EVERY state — loading / error / mid-navigation — so the
+        // canvas being `invisible` (status !== 'ready') never reveals the dark
+        // container backdrop as a black page in dark mode. Only the outer
+        // container chrome (side margins on desktop) keeps the dark theme.
+        className="relative mx-auto flex min-h-[100dvh] w-full max-w-[480px] items-center justify-center bg-white"
       >
         {status === 'loading' ? (
           <p
