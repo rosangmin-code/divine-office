@@ -40,6 +40,14 @@ PDF 뷰어 (`/pdf/[page]`) 는 `pdfjs-dist` 를 client dynamic import 로 로드
 
 ---
 
+## 시각적 검증 — 사용자에게 묻지 말고 Playwright 로 직접 확인
+
+UI / 레이아웃 / 인터랙션이 바뀌는 작업에서 **"브라우저에서 한번 확인해 주세요" 라고 사용자에게 떠넘기지 않는다.** dev 서버 (`npm run dev`) 를 직접 띄우고 `playwright-cli` skill 또는 Playwright headed/screenshot 으로 페이지를 열어 화면·콘솔·네트워크·스크린샷까지 본인이 확인하는 것이 작업의 일부다. 사용자에게는 검증 결과(스크린샷 / 콘솔 / 통과 여부)만 보고한다.
+
+예외 — 위 "테스트가 못 잡는 것들" 시나리오 (이전 SW 가 등록된 사용자 브라우저 상태, A2HS PWA 업그레이드, 실기기 모바일 네트워크) 는 Playwright 가 재현하지 못하므로 여전히 사용자 실기기 확인이 필요. 이 경우만 명시적으로 요청한다.
+
+---
+
 ## 몽골어 UI — 교정 흔함
 
 - "Гуйлтын" 이 옳다 (❌ `Гүйлтын`). 기도문 본문·`aria-label`·테스트 selector 전부 동일.
@@ -85,7 +93,7 @@ test('Saturday vespers uses next Sunday propers', ...)
 코드 변경을 커밋하기 전 다음을 소리 내어 확인한다:
 
 - [ ] 링크/URL/자산 경로/Content-Type 중 하나라도 바뀌었는가? → `sw.js` navigation 정책 & `CACHE_VERSION` 검토
-- [ ] 모바일에서 실제로 돌려봐야 하는 시나리오인가? → Playwright 만으로 끝내지 말 것
+- [ ] 시각적 변경인가? → 사용자에게 미루지 말고 `playwright-cli` / Playwright 로 직접 확인 (단, SW 캐시·A2HS·실기기 모바일 시나리오는 Playwright 로 못 잡으므로 사용자 실기기 확인 요청)
 - [ ] 몽골어 라벨에 오타 없는가? → PDF 원문 맞춤법 기준
 - [ ] PRD / traceability-matrix 의 해당 FR 행이 현재 구현과 일치하는가?
 - [ ] 새 섹션 타입 / HourSection variant 를 추가했으면 `HourSection` 개수 (`docs/PRD.md` §5.1) 가 맞는가?
