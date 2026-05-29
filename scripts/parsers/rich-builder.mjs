@@ -594,6 +594,26 @@ function normaliseDashes(s) {
 }
 
 /**
+ * 텍스트가 문장 종결부호(. ! ? 및 CJK 변이 。！？)로 끝나는지 — 후행 닫는
+ * 따옴표는 무시. refrain wrapping 누적의 경계 판정에 쓴다(word-wrap
+ * continuation 은 종결부호로 끝나지 않는다).
+ *
+ * char class `[.!?。！？]` 는 src/lib/hours/intercessions.ts:37 의 endsSentence
+ * 와 byte-identical 이다. 특히 ellipsis '…'(U+2026) 은 의도적으로 제외한다 —
+ * 줄임표는 연속/말끝흐림 표시이므로 종결로 보면 wrap 된 꼬리를 누적하지 못해
+ * orphan para 로 새어나간다(parity 깨짐). ASCII 마침표 3개 '...' 는 양쪽 정규식
+ * 모두 끝의 '.' 로 매칭되므로 동작 동일.
+ *
+ * @param {string} text
+ * @returns {boolean}
+ */
+function endsSentence(text) {
+  if (!text) return false
+  const trimmed = text.trimEnd().replace(/["'”»]+$/u, '')
+  return /[.!?。！？]$/.test(trimmed)
+}
+
+/**
  * intercessions 원문(`string[]`) 을 refrain/petition 구조의 PrayerBlock[] 로
  * 변환한다.
  *
@@ -626,6 +646,33 @@ export function buildIntercessionsBlocks({ items }) {
     refrain = first.slice(colonIdx + 1).trim()
   }
 
+  // refrain 이 items[1+] 로 wrapping 된 경우 누적한다.
+  // 원문 PDF 줄바꿈으로 refrain 한 응답이 여러 배열 원소로 쪼개지면, items[0]
+  // 의 `:` 뒤 조각은 refrain 의 머리(절단 상태)일 뿐이고 꼬리가 items[1+] 로
+  // 흘러간다. refrain 이 비어있지 않고 문장 종결부호로 끝나지 않으면(= 잘린
+  // 상태) 첫 petition 경계(SEPARATOR em-dash `—`) 또는 문장 종결 전까지 후속
+  // items 를 refrain 으로 누적한다. 단일 원소 refrain(이미 종결부호로 끝남)은
+  // 누적이 일어나지 않아 기존 동작과 byte-identical(무회귀) —
+  // intercessions.ts 의 endsSentence break 패턴과 동일.
+  let petitionStart = 1
+  if (refrain && !endsSentence(refrain)) {
+    while (petitionStart < items.length) {
+      const cand = items[petitionStart].trim()
+      if (!cand) {
+        petitionStart += 1
+        continue
+      }
+      // 첫 petition(responsive) 경계. SEPARATOR 는 em-dash '—'(U+2014) 만 본다 —
+      // 소스 JSON 의 petition↔response 구분자 규약(normaliseDashes 주석 참고)과
+      // 동일하며, 아래 petition 루프의 raw.indexOf('—') 분기와도 일치한다. simple
+      // 모드(— 없는 petition)는 endsSentence 경계가 누적을 멈추므로 무회귀.
+      if (cand.includes('—')) break
+      refrain = `${refrain} ${cand}`.trim()
+      petitionStart += 1
+      if (endsSentence(cand)) break
+    }
+  }
+
   blocks.push({
     kind: 'para',
     spans: [{ kind: 'text', text: intro }],
@@ -638,8 +685,8 @@ export function buildIntercessionsBlocks({ items }) {
     })
   }
 
-  // [1..] petitions.
-  for (let i = 1; i < items.length; i++) {
+  // [petitionStart..] petitions (refrain wrapping 으로 소비된 items 는 제외).
+  for (let i = petitionStart; i < items.length; i++) {
     const raw = items[i].trim()
     if (!raw) continue
     blocks.push({ kind: 'divider' })
