@@ -119,6 +119,45 @@ test.describe('Settings page', () => {
     await expect(page.locator('html')).not.toHaveClass(/(^|\s)dark(\s|$)/)
   })
 
+  // WI-73 (GOAL #69): storage-blocked theme toggle must still apply.
+  // Simulates iOS private mode / in-app WebView where localStorage.setItem
+  // throws — previously the toggle was a silent no-op (theme not applied,
+  // radio aria-checked not updated). In-memory fallback + always-dispatch
+  // fix makes the toggle take effect for the session despite the block.
+  test('theme toggle applies even when localStorage write is blocked (WI-73)', async ({
+    page,
+  }) => {
+    // Block persistence BEFORE the app loads: shadow setItem with a thrower
+    // (getItem still works, so reads are unaffected — only writes fail).
+    await page.addInitScript(() => {
+      Object.defineProperty(window.localStorage, 'setItem', {
+        configurable: true,
+        value: () => {
+          throw new DOMException('storage blocked', 'QuotaExceededError')
+        },
+      })
+    })
+    await page.goto(SETTINGS_URL)
+
+    // Dark applies despite the blocked write (in-memory SoT + dispatch).
+    const darkRadio = page.getByRole('radio', { name: 'Харанхуй' })
+    await darkRadio.click()
+    await expect(page.locator('html')).toHaveClass(/(^|\s)dark(\s|$)/)
+    await expect(darkRadio).toHaveAttribute('aria-checked', 'true')
+
+    // Back to light also applies + radio state updates.
+    const lightRadio = page.getByRole('radio', { name: 'Гэрэлтэй' })
+    await lightRadio.click()
+    await expect(page.locator('html')).not.toHaveClass(/(^|\s)dark(\s|$)/)
+    await expect(lightRadio).toHaveAttribute('aria-checked', 'true')
+
+    // Persistence was genuinely blocked — nothing landed in localStorage.
+    const stored = await page.evaluate(() =>
+      window.localStorage.getItem('loth-settings'),
+    )
+    expect(stored).toBeNull()
+  })
+
   test('theme system option uses short label "Систем"', async ({ page }) => {
     await page.goto(SETTINGS_URL)
     await expect(page.getByRole('radio', { name: 'Систем' })).toBeVisible()
