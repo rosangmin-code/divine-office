@@ -4,7 +4,7 @@
 > and FR/NFR IDs in test titles. **Do not edit by hand.**
 > The curated matrix lives in [`docs/traceability-matrix.md`](./traceability-matrix.md).
 
-Scan: 68 test files contributed 29 unique IDs.
+Scan: 68 test files contributed 30 unique IDs.
 
 | ID | Test file | Test title(s) |
 |---|---|---|
@@ -12,6 +12,7 @@ Scan: 68 test files contributed 29 unique IDs.
 | FR-011 | `e2e/special-days.spec.ts` | (tagged, title unknown)<br>Sunday firstVespers shares core propers with Sunday vespers (FR-011, 1st Vespers anchor relocated)<br>Sunday firstVespers differs from Sunday LAUDS (sanity: fallback is hour-scoped) |
 | FR-011 | `src/lib/__tests__/first-vespers.test.ts` | (tagged, title unknown) |
 | FR-011 | `src/lib/__tests__/loth-service.test.ts` | Sunday firstVespers concluding prayer matches Sunday vespers (FR-011 anchor X) |
+| FR-017i | `e2e/page-references.spec.ts` | PDF viewer edge cases (FR-017i) |
 | FR-017j | `e2e/page-references.spec.ts` | PDF viewer UX (FR-017j)<br>swipe left advances bookPage by 1<br>swipe right retreats bookPage by 1<br>swipe left at MAX (969) is a no-op<br>swipe right at MIN (1) is a no-op<br>keyboard ArrowRight advances bookPage<br>keyboard ArrowLeft retreats bookPage<br>canvas occupies the full frame width (fit-to-width)<br>aria-live page indicator updates when page changes |
 | FR-028 | `e2e/settings.spec.ts` | home header no longer renders a theme toggle (FR-028)<br>guide header no longer renders a theme toggle (FR-028) |
 | FR-029 | `e2e/settings.spec.ts` | back link navigates from /settings to home (FR-029) |

@@ -243,6 +243,44 @@ test.describe('PDF page references', () => {
     })
   })
 
+  // FR-017i: out-of-range page URL guard + pdfjs document load-failure fallback.
+  // These exercise the two edge paths the route/component already implement but
+  // that previously lacked e2e coverage (traceability-matrix FR-017i gap).
+  // @fr FR-017i
+  test.describe('PDF viewer edge cases (FR-017i)', () => {
+    test('out-of-range bookPage URLs render not-found, not the viewer', async ({ page }) => {
+      // src/app/pdf/[page]/page.tsx calls notFound() for page < 1 (MIN),
+      // page > 969 (MAX_BOOK_PAGE), or a non-numeric segment. Next dev streams
+      // the not-found page with HTTP 200, so assert on rendered content (the
+      // viewer must not mount) rather than on the response status code.
+      for (const bad of ['0', '970', 'abc']) {
+        await page.goto(`/pdf/${bad}`)
+        await expect(
+          page.locator('[data-role="pdf-viewer-container"]'),
+          `/pdf/${bad} must not mount the viewer`,
+        ).toHaveCount(0)
+        await expect(page.getByText('Хуудас олдсонгүй')).toBeVisible()
+      }
+    })
+
+    test('pdfjs document load failure shows the error fallback', async ({ page }) => {
+      // Abort the PDF asset so getDocument(PDF_ASSET_PATH) rejects, driving the
+      // viewer into its status='error' branch (data-role="pdf-error").
+      await page.route('**/psalter.pdf', (route) => route.abort())
+      await page.goto('/pdf/58')
+
+      const errorBox = page.locator('[data-role="pdf-error"]')
+      await expect(errorBox).toBeVisible({ timeout: 15_000 })
+      await expect(errorBox.getByText('Уншиж чадсангүй.')).toBeVisible()
+      // Fallback offers the raw asset as a direct download.
+      await expect(
+        errorBox.getByRole('link', { name: /PDF татах/ }),
+      ).toHaveAttribute('href', '/psalter.pdf')
+      // The canvas never reaches the ready state.
+      await expect(page.locator('[data-role="pdf-canvas"]')).not.toBeVisible()
+    })
+  })
+
   // FR-017j: PDF viewer UX rewrite — fit-to-width canvas, swipe + keyboard
   // navigation, floating Буцах, page indicator with aria-live.
   // @fr FR-017j
