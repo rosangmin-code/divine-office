@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { parseIntercessions } from '../../hours/intercessions'
+import week4 from '../../../data/loth/psalter/week-4.json'
 
 describe('parseIntercessions', () => {
   describe('psalter commons format (multi-line intro + single-line refrain + " - " separator)', () => {
@@ -87,6 +88,70 @@ describe('parseIntercessions', () => {
 
     it('has no closing when source omits the Lord\'s Prayer hint', () => {
       expect(parsed.closing).toBeUndefined()
+    })
+  })
+
+  // GOAL #51 / WI-52 (@fr FR-150) — multi-element (wrapped) refrain regression.
+  // Root cause (#50 diagnosis): a psalter-format refrain that the source PDF
+  // wrapped across 2+ array elements was captured as a SINGLE element, so the
+  // tail was dropped from the refrain AND mis-absorbed as a prefix into the
+  // first petition's versicle. Fix: accumulate continuation elements up to the
+  // sentence-ending boundary or the first petition SEPARATOR, without
+  // over-accumulating single-element refrains.
+  describe('psalter commons format — multi-element (wrapped) refrain accumulation', () => {
+    it('restores the full wrapped refrain and leaves petition[0].versicle uncontaminated (week-4 WED vespers, p470)', () => {
+      // Real production data — the exact user-reported 2026-05-27 Vespers case.
+      const raw = (week4 as { days: Record<string, { vespers: { intercessions: string[] } }> })
+        .days.WED.vespers.intercessions
+      const parsed = parseIntercessions(raw)
+      // Refrain restored end-to-end (was truncated at "...Таны дотор").
+      expect(parsed.refrain).toBe(
+        'Эзэн, Танд итгэж найддаг бүгд Таны дотор баясан цэнгэх болтугай.',
+      )
+      // The recovered tail no longer pollutes the first petition's versicle.
+      expect(parsed.petitions[0].versicle).toBe(
+        'Эзэн, Та Өөрийн Хүүгээ энэ ертөнцийг шүүхээр бус харин аврахаар илгээснээ санагтун.',
+      )
+      expect(parsed.petitions[0].versicle).not.toContain('баясан цэнгэх болтугай')
+      expect(parsed.petitions).toHaveLength(5)
+    })
+
+    it('accumulates a wrapped refrain up to the sentence-ending boundary', () => {
+      const raw = [
+        'Бид Түүнд хандан ийн залбирцгаая:',
+        'Эзэн минь, биднийг сонсож', // refrain line 1 — no sentence end
+        'хайрлан соёрхоно уу.', // refrain line 2 — sentence end → stop accumulating
+        'Та биднийг хайрласан тул - Бид Танд талархъя.', // first petition (separator)
+      ]
+      const parsed = parseIntercessions(raw)
+      expect(parsed.refrain).toBe('Эзэн минь, биднийг сонсож хайрлан соёрхоно уу.')
+      expect(parsed.petitions).toHaveLength(1)
+      expect(parsed.petitions[0].versicle).toBe('Та биднийг хайрласан тул')
+      expect(parsed.petitions[0].response).toBe('Бид Танд талархъя.')
+    })
+
+    it('stops at the first petition SEPARATOR boundary even when the refrain lacks end punctuation', () => {
+      const raw = [
+        'Бид Түүнд хандан ийн залбирцгаая:',
+        'Эзэн минь, биднийг сонсооч', // refrain — no sentence end, next line is a petition
+        'Та биднийг бүтээсэн тул - Бид Танд талархъя.', // separator boundary → refrain stops here
+      ]
+      const parsed = parseIntercessions(raw)
+      expect(parsed.refrain).toBe('Эзэн минь, биднийг сонсооч')
+      expect(parsed.petitions).toHaveLength(1)
+      expect(parsed.petitions[0].versicle).toBe('Та биднийг бүтээсэн тул')
+    })
+
+    it('does NOT over-accumulate a single-element refrain that is already sentence-complete', () => {
+      const raw = [
+        'Бид Түүнд хандан ийн залбирцгаая:',
+        'Эзэн минь, биднийг адислаач.', // single-element refrain ending in "." → stop after one element
+        'Та биднийг бүтээсэн тул - Бид Танд талархъя.', // must remain the petition, not be pulled into refrain
+      ]
+      const parsed = parseIntercessions(raw)
+      expect(parsed.refrain).toBe('Эзэн минь, биднийг адислаач.')
+      expect(parsed.petitions).toHaveLength(1)
+      expect(parsed.petitions[0].versicle).toBe('Та биднийг бүтээсэн тул')
     })
   })
 

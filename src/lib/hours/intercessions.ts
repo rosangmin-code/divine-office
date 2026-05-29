@@ -76,9 +76,20 @@ export function parseIntercessions(raw: readonly string[]): ParsedIntercessions 
     if (afterColon) {
       result.refrain = afterColon
     } else if (i < lines.length && !isClosingLine(lines[i]) && !SEPARATOR.test(lines[i])) {
-      // 시편집 포맷: refrain이 다음 단독 원소
-      result.refrain = lines[i]
-      i += 1
+      // 시편집 포맷: refrain이 다음 원소(들). 원문 PDF 줄바꿈 때문에 한 응답이
+      // 여러 배열 원소로 쪼개질 수 있다(예: week-4 WED vespers
+      //   ["Эзэн, Танд итгэж найддаг бүгд Таны дотор", "баясан цэнгэх болтугай."]).
+      // 문장 종결부호 또는 첫 petition 구분자(SEPARATOR)/closing 경계까지 누적해
+      // 하나의 refrain으로 결합한다. 단일 원소 refrain(이미 종결부호로 끝남)은
+      // 첫 원소에서 break 하여 과누적을 막는다(정상 블록 동작 보존).
+      const refrainBuf: string[] = []
+      while (i < lines.length && !isClosingLine(lines[i]) && !SEPARATOR.test(lines[i])) {
+        const piece = lines[i]
+        refrainBuf.push(piece)
+        i += 1
+        if (endsSentence(piece)) break
+      }
+      result.refrain = refrainBuf.join(' ').replace(/\s+/g, ' ').trim()
     }
     break
   }

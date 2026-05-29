@@ -46,6 +46,23 @@ test.describe('Intercessions (Гуйлтын залбирал) role structure', 
       expect(intercessions.items).toBeInstanceOf(Array)
       expect(intercessions.items.length).toBeGreaterThan(0)
     })
+
+    // @fr FR-150
+    // WI-52 regression (#50 diagnosis): the OT Week 4 Wednesday Vespers refrain
+    // wraps across two source array elements. It used to truncate at
+    // "...Таны дотор", dropping the tail (which polluted petition[0].versicle).
+    test('psalter commons: multi-element wrapped refrain is accumulated end-to-end', async ({ request }) => {
+      const res = await request.get(`/api/loth/${DATES.ordinaryWeekday}/vespers`)
+      expect(res.status()).toBe(200)
+      const body = await res.json()
+      const intercessions = body.sections.find((s: { type: string }) => s.type === 'intercessions')
+      expect(intercessions).toBeTruthy()
+      expect(intercessions.refrain).toBe(
+        'Эзэн, Танд итгэж найддаг бүгд Таны дотор баясан цэнгэх болтугай.',
+      )
+      // the recovered tail must NOT leak into the first petition's versicle
+      expect(intercessions.petitions[0].versicle).not.toContain('баясан цэнгэх болтугай')
+    })
   })
 
   test.describe('UI rendering', () => {
@@ -73,6 +90,22 @@ test.describe('Intercessions (Гуйлтын залбирал) role structure', 
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
       const responseNodes = page.locator('[data-role="intercessions-response"]')
       await expect(responseNodes.first()).toContainText('-')
+    })
+
+    // @fr FR-150
+    // WI-52 user-facing regression: the wrapped refrain must render to
+    // completion in the refrain box (OT Week 4 Wed Vespers — the user-reported
+    // 2026-05-27 case shares this psalter-week-4 content).
+    test('multi-element wrapped refrain renders to completion in the refrain box', async ({ page }) => {
+      await page.goto(`/pray/${DATES.ordinaryWeekday}/vespers`)
+      await expect(page.getByText('Гуйлтын залбирал')).toBeVisible()
+      const refrain = page.locator('[data-role="intercessions-refrain"]').first()
+      await expect(refrain).toBeVisible()
+      // previously-dropped tail is now present, full refrain end-to-end
+      await expect(refrain).toContainText('баясан цэнгэх болтугай')
+      await expect(refrain).toHaveText(
+        'Эзэн, Танд итгэж найддаг бүгд Таны дотор баясан цэнгэх болтугай.',
+      )
     })
   })
 
