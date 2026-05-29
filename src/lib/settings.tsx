@@ -122,15 +122,42 @@ export function parseStoredSettings(raw: string | null): Settings {
 
 let snapshotRaw: string | null = null
 let snapshotValue: Settings = DEFAULTS
+// In-memory latest value — becomes the source of truth once a write has
+// occurred this session. Survives blocked localStorage (iOS private mode /
+// in-app WebView) so the snapshot reflects the toggle even when the
+// persisted copy could not be updated. `null` until the first write.
+let memoryValue: Settings | null = null
 
-function getClientSnapshot(): Settings {
+export function getClientSnapshot(): Settings {
   if (typeof window === 'undefined') return DEFAULTS
+  // In-memory wins after a write (post-write SoT). The same object
+  // reference is returned between writes so useSyncExternalStore does not
+  // loop (it bails out when getSnapshot() returns an identical value).
+  if (memoryValue !== null) return memoryValue
   const raw = window.localStorage.getItem(STORAGE_KEY)
   if (raw !== snapshotRaw) {
     snapshotRaw = raw
     snapshotValue = parseStoredSettings(raw)
   }
   return snapshotValue
+}
+
+export function writeSettings(patch: Partial<Settings>): void {
+  if (typeof window === 'undefined') return
+  const current = getClientSnapshot()
+  const next: Settings = { ...current, ...patch, version: SETTINGS_VERSION }
+  // Always update the in-memory SoT first — this is what makes the toggle
+  // take effect even when the persistence below fails.
+  memoryValue = next
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+  } catch {
+    /* localStorage blocked (iOS private mode / in-app WebView) — in-memory
+       retains `next`; the change still applies for this session. */
+  }
+  // Fire ALWAYS (outside the try) so subscribers (useSyncExternalStore)
+  // wake and re-render even when the persist was blocked.
+  window.dispatchEvent(new Event(CHANGE_EVENT))
 }
 
 function getServerSnapshot(): Settings {
@@ -191,14 +218,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     () => ({
       settings,
       updateSettings(patch) {
-        const current = getClientSnapshot()
-        const next: Settings = { ...current, ...patch, version: SETTINGS_VERSION }
-        try {
-          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-          window.dispatchEvent(new Event(CHANGE_EVENT))
-        } catch {
-          /* ignore */
-        }
+        writeSettings(patch)
       },
     }),
     [settings],
