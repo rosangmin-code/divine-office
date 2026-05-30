@@ -1,6 +1,23 @@
-import type { HourSection, HourType, PrayerText } from '../../types'
+import type {
+  GospelCanticleAntiphonCandidate,
+  HourSection,
+  HourType,
+  PrayerText,
+} from '../../types'
 import { parseScriptureRef } from '../../scripture-ref-parser'
 import { lookupRef } from '../../bible-loader'
+
+// FR-168 (GOAL #90) — clamp an arbitrary selectedIndex into a valid
+// candidate index. Non-integer / out-of-range (incl. NaN) → 0 (option 1).
+// Single source of truth shared with the renderer's clamp so the
+// assembled `antiphon` (plain string) and the dropdown's default
+// selection never disagree (peer-corrected "safeIdx 일관").
+function clampCandidateIndex(idx: number | undefined, len: number): number {
+  if (len <= 0) return 0
+  return Number.isInteger(idx) && (idx as number) >= 0 && (idx as number) < len
+    ? (idx as number)
+    : 0
+}
 
 /**
  * Resolve the gospel canticle (Benedictus, Magnificat, or Nunc Dimittis).
@@ -33,6 +50,14 @@ export function resolveGospelCanticle(
   antiphon: string,
   page?: number,
   antiphonRich?: PrayerText,
+  // FR-168 (GOAL #90) — optional multi-candidate Benedictus antiphon
+  // (saturday-mary). Passed through verbatim to the HourSection; when
+  // present + non-empty, the section's plain `antiphon` is the selected
+  // candidate's text so legacy consumers (and the seasonal-antiphon path)
+  // keep working unchanged. Absent → legacy single-antiphon behaviour.
+  candidates?: GospelCanticleAntiphonCandidate[],
+  selectedIndex?: number,
+  rubric?: string,
 ): HourSection | null {
   let canticleKey: 'benedictus' | 'magnificat' | 'nuncDimittis'
 
@@ -43,6 +68,21 @@ export function resolveGospelCanticle(
 
   const canticleInfo = canticlesData[canticleKey]
   if (!canticleInfo) return null
+
+  // FR-168 — resolve the effective antiphon + candidate passthrough. When
+  // candidates are present, the plain `antiphon` becomes the selected
+  // option's text (clamped) so the assembled section stays self-consistent
+  // (unit test: section.antiphon === candidates[selectedIndex].text).
+  const hasCandidates = Array.isArray(candidates) && candidates.length > 0
+  const safeIdx = hasCandidates
+    ? clampCandidateIndex(selectedIndex, candidates!.length)
+    : 0
+  const effectiveAntiphon = hasCandidates
+    ? (candidates![safeIdx]?.text ?? antiphon)
+    : antiphon
+  const candidateFields = hasCandidates
+    ? { candidates, selectedIndex: selectedIndex ?? 0, rubric }
+    : {}
 
   // `page` is the seasonal antiphon page (from propers); `bodyPage` is the
   // fixed ordinarium page where the canticle verses are printed (same every
@@ -55,7 +95,7 @@ export function resolveGospelCanticle(
     return {
       type: 'gospelCanticle',
       canticle: canticleKey,
-      antiphon: antiphon || '',
+      antiphon: effectiveAntiphon || '',
       text: canticleInfo.verses.join('\n'),
       verses: canticleInfo.verses,
       doxology: canticleInfo.doxology,
@@ -65,6 +105,8 @@ export function resolveGospelCanticle(
       // WI #35 — passthrough within-canticle paragraph boundaries. Absent
       // in source data → undefined → renderer uses legacy uniform spacing.
       paragraphBoundaries: canticleInfo.paragraphBoundaries,
+      // FR-168 — multi-candidate dropdown fields (absent → {} spread).
+      ...candidateFields,
     }
   }
 
@@ -80,10 +122,12 @@ export function resolveGospelCanticle(
   return {
     type: 'gospelCanticle',
     canticle: canticleKey,
-    antiphon: antiphon || '',
+    antiphon: effectiveAntiphon || '',
     text,
     page,
     bodyPage,
     antiphonRich,
+    // FR-168 — multi-candidate dropdown fields (absent → {} spread).
+    ...candidateFields,
   }
 }

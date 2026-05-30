@@ -196,6 +196,13 @@ function applySkip(propers: HourPropers, locator: ConditionalRubricLocator, rubr
     case 'gospelCanticle':
       delete next.gospelCanticleAntiphon
       delete next.gospelCanticleAntiphonPage
+      delete next.gospelCanticleAntiphonRich
+      // FR-168 (GOAL #90) — a gospelCanticle skip must also clear the
+      // saturday-mary candidate fields; otherwise a skipped antiphon would
+      // leave an orphan dropdown (candidates without a primary antiphon).
+      delete next.gospelCanticleAntiphonCandidates
+      delete next.gospelCanticleAntiphonSelectedIndex
+      delete next.gospelCanticleAntiphonRubric
       break
     case 'psalmody':
     case 'invitatory':

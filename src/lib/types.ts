@@ -325,6 +325,14 @@ export interface HourPropers {
   shortReading?: ShortReading
   responsory?: Responsory
   gospelCanticleAntiphon?: string
+  // FR-168 (GOAL #90) — saturday-mary Benedictus 6-option candidates +
+  // default index + rubric. Additive optional; copied verbatim into the
+  // assembled gospelCanticle HourSection by `resolveGospelCanticle`. When
+  // present, the section's plain `antiphon` is the selected candidate's
+  // text. Absent for every legacy single-antiphon entry.
+  gospelCanticleAntiphonCandidates?: GospelCanticleAntiphonCandidate[]
+  gospelCanticleAntiphonSelectedIndex?: number
+  gospelCanticleAntiphonRubric?: string
   alleluiaConditional?: boolean         // true = append Alleluia outside Lent (e.g. sanctoral propers for 03-19, 03-25)
   gospelCanticleAntiphonPage?: number   // Source PDF page number
   intercessions?: string[]
@@ -426,6 +434,19 @@ export interface HymnCandidate {
   title: string
   text: string
   page?: number
+}
+
+// FR-168 (GOAL #90) — one selectable Benedictus antiphon option for the
+// saturday-mary memorial. `text` is the authentic breviary antiphon
+// (propers_final.txt L9856-9882, book p863-864); `page` is its printed
+// book page. Mirrors `HymnCandidate` / `MarianAntiphonCandidate`.
+export interface GospelCanticleAntiphonCandidate {
+  text: string
+  page?: number
+  // FR-168 (GOAL #90, spec §1a) — optional rich overlay for a candidate
+  // antiphon. Reserved for future seasonal/rich variants; the saturday-mary
+  // candidates ship plain text only, so this is unused today (additive).
+  textRich?: PrayerText
 }
 
 export interface MarianAntiphonCandidate {
@@ -876,6 +897,17 @@ export type HourSection =
       // `antiphon` string. Sourced from
       // `HourPropers.gospelCanticleAntiphonRich` via assembler wiring.
       antiphonRich?: PrayerText
+      // FR-168 (GOAL #90) — saturday-mary Benedictus 6-option dropdown.
+      // When `candidates` is present + non-empty, the renderer surfaces a
+      // dropdown (combobox) and `antiphon` is the text of
+      // `candidates[selectedIndex]` (the assembler pre-syncs the plain
+      // `antiphon` to the default option). `rubric` is the breviary
+      // instruction shown beside the dropdown (kept OUT of the antiphon
+      // body). Additive optional — absent for every legacy single-antiphon
+      // entry (mirrors the `hymn` candidates/selectedIndex pattern above).
+      candidates?: GospelCanticleAntiphonCandidate[]
+      selectedIndex?: number
+      rubric?: string
       /**
        * WI #35 — within-canticle paragraph boundaries for the `verses[]`
        * body. Each entry is a 0-based `verses[]` index at which a

@@ -715,7 +715,18 @@ export async function assembleHour(
   // BELOW (Layer 8b) and so Layer 5 plain augmentation is a no-op here;
   // we re-run `applySeasonalAntiphon` after the compline-defaults merge
   // so the Eastertide Alleluia surfaces on the plain path too.
-  if (mergedPropers.gospelCanticleAntiphon) {
+  // FR-168 (GOAL #90) — when a saturday-mary candidate list is present, the
+  // gospel-canticle antiphon is a fixed Marian proper chosen from
+  // `gospelCanticleAntiphonCandidates`; do NOT apply the seasonal-antiphon
+  // augmentation (Eastertide Alleluia) to it. The Saturday memorial of the
+  // BVM only surfaces on Ordinary-Time Saturdays anyway, so this is a
+  // no-op in practice — but skipping keeps the candidate texts byte-equal
+  // to the breviary source (peer-corrected "applySeasonalAntiphon skip").
+  if (
+    mergedPropers.gospelCanticleAntiphon &&
+    !(mergedPropers.gospelCanticleAntiphonCandidates &&
+      mergedPropers.gospelCanticleAntiphonCandidates.length > 0)
+  ) {
     mergedPropers.gospelCanticleAntiphon = applySeasonalAntiphon(
       mergedPropers.gospelCanticleAntiphon,
       day.season,

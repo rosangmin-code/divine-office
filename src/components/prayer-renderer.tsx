@@ -51,9 +51,21 @@ export function PrayerRenderer({ hour }: { hour: AssembledHour }) {
         const spacing =
           i === 0 ? '' : MAJOR_SECTIONS.has(section.type) ? 'mt-6' : 'mt-2'
 
+        // FR-168 (GOAL #90 / D2-E5) — date-stable key for the gospelCanticle
+        // section so the saturday-mary Benedictus dropdown's ephemeral
+        // selection state (useState) is REMOUNTED (reset to option 1) when
+        // the user navigates to a different date. Plain index-keying
+        // (`key={i}`) would let React reuse the same instance across dates
+        // at the same position, leaking the prior date's selected option.
+        // Other sections keep index-keying (regression-safe, stateless).
+        const key =
+          section.type === 'gospelCanticle'
+            ? `gc-${hour.date}-${hour.hourType}-${i}`
+            : i
+
         return (
           <div
-            key={i}
+            key={key}
             className={spacing}
             style={{ animation: `fadeIn 0.3s ease-out ${i * 0.05}s both` }}
           >
