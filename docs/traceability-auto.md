@@ -4,7 +4,7 @@
 > and FR/NFR IDs in test titles. **Do not edit by hand.**
 > The curated matrix lives in [`docs/traceability-matrix.md`](./traceability-matrix.md).
 
-Scan: 68 test files contributed 30 unique IDs.
+Scan: 71 test files contributed 32 unique IDs.
 
 | ID | Test file | Test title(s) |
 |---|---|---|
@@ -28,6 +28,7 @@ Scan: 68 test files contributed 30 unique IDs.
 | FR-145 | `src/components/__tests__/month-nav.test.ts` | MonthNav helper — shiftMonth (AC #2-5 boundary) |
 | FR-145 | `src/lib/__tests__/calendar-list-month.test.ts` | (tagged, title unknown) |
 | FR-145 | `src/lib/__tests__/calendar-list.test.ts` | calendar-list helpers (FR-145)<br>getCalendarRow (FR-145)<br>getTodayAnchorRow (FR-145)<br>getCalendarWindow (FR-145) |
+| FR-150 | `e2e/prayer-intercessions.spec.ts` | psalter commons: multi-element wrapped refrain is accumulated end-to-end<br>multi-element wrapped refrain renders to completion in the refrain box |
 | FR-152 | `e2e/prayer-responsory.spec.ts` | API exposes new 3-field responsory shape (fullResponse, versicle, shortResponse)<br>responsory section carries data-role marker for decoupled selectors |
 | FR-153 | `e2e/pdf-fidelity-pilot.spec.ts` | concluding prayer renders rich overlay without duplicating the section heading<br>responsory uses PDF <br>no silent regression on non-rich sections (core structure intact) |
 | FR-153 | `e2e/prayer-intercessions.spec.ts` | Advent weekday lauds uses rich overlay (single-node body, no data-role fallback)<br>rich response line renders muted rubric hyphen prefix (WI-62: 빨강→stone-500) |
@@ -86,12 +87,16 @@ Scan: 68 test files contributed 30 unique IDs.
 | FR-165 | `e2e/settings.spec.ts` | has 5 radios (font-family + theme), 1 font-size stepper, 2 switches (FR-165)<br>stepper Aa+ raises font size and persists (md → lg → xl) (FR-165)<br>all 9 font sizes round-trip via stepper (xs → x5l) (FR-165)<br>stepper indicator shows current label + percentage (FR-165) |
 | FR-167 | `e2e/gospel-canticle-verse-division.spec.ts` | lauds Benedictus(Захариагийн магтаал) renders 25 verses (capital-start 재분절)<br>lauds Benedictus: 이전 병합 절이 별개 절로 분리 (NFR-002 문구)<br>vespers Magnificat(Мариагийн магтаал) renders 19 verses (capital-start 재분절)<br>vespers Magnificat: 이전 병합 절이 별개 절로 분리 (NFR-002 문구) |
 | FR-167 | `src/components/prayer-sections/__tests__/gospel-canticle-section.test.ts` | FR-167 / WI #37 — capital-start verse division (committed canticles.json invariants) |
+| FR-168 | `e2e/saturday-mary-benedictus-dropdown.spec.ts` | [D1] saturday-mary Lauds Benedictus 후렴 = 옵션1, 평일과 다름<br>[D2] 드롭다운(combobox) 노출 + 옵션3 선택 → 후렴 교체<br>[D2-H3] 동일 mount 내 옵션 선택 후 유지 (같은 화면)<br>[D2-E5] 새로고침 시 옵션1 리셋 (ephemeral, carry-over 없음)<br>[D2-E5] 다른 날짜(saturday-mary)로 이동 시 옵션1 리셋 (cross-date 누수 없음)<br>[D3] 안내 루브릭이 후렴 본문과 분리되어 표시 + 드롭다운 동반<br>[D3-E1] 평일 Lauds 는 드롭다운/루브릭 미표시 (legacy 단일 후렴)<br>[D4] 6개 후렴 모두 breviary 원문(키릴), 영어 fallback 0<br>[D3-E4] a11y — combobox 에 몽골어 accessible name(영어 fallback 없음) |
+| FR-168 | `src/components/prayer-sections/__tests__/gospel-canticle-section-dropdown.test.ts` | FR-168 [D2] GospelCanticleSection 드롭다운 렌더 (candidates 존재 시)<br>FR-168 [D2-E2/E3] 범위 밖/손상 index → 옵션1 clamp (크래시·빈 후렴 없음)<br>FR-168 [D3] 안내 루브릭 렌더 (후렴 본문과 분리, 드롭다운 동반)<br>FR-168 [D3-E4] 접근성(a11y) — combobox role + aria-selected |
+| FR-168 | `src/lib/__tests__/saturday-mary-benedictus-antiphon.test.ts` | FR-168 [D1] saturday-mary Lauds Benedictus 후렴 = 옵션1(default), 평일과 불일치<br>FR-168 [D2] 6개 후렴 candidates 보존 (드롭다운 데이터 원천)<br>FR-168 [D3] 안내 루브릭 — 별도 필드(후렴 본문과 분리)<br>FR-168 [D4] 후렴 데이터 무결성 + authentic 몽골어 (NFR-002) |
 | NFR-002 | `e2e/footer-toggle.spec.ts` | no English aria-label fallback on footer controls (NFR-002) |
 | NFR-002 | `e2e/gospel-canticle-verse-division.spec.ts` | lauds Benedictus: 이전 병합 절이 별개 절로 분리 (NFR-002 문구)<br>vespers Magnificat: 이전 병합 절이 별개 절로 분리 (NFR-002 문구) |
 | NFR-002 | `e2e/page-redirect.spec.ts` | Mongolian Cyrillic labels: catalog labels are PDF-original (NFR-002) |
 | NFR-002 | `src/components/__tests__/footer.test.ts` | has no English aria-label fallback (NFR-002) |
 | NFR-002 | `src/components/__tests__/marian-antiphon-section.test.ts` | preserves the original text verbatim across joined lines (NFR-002 contract)<br>NFR-002 —  |
 | NFR-002 | `src/components/__tests__/prayer-footer.test.ts` | preserves data-role + Mongolian aria-label on the menu links (NFR-002) |
+| NFR-002 | `src/lib/__tests__/saturday-mary-benedictus-antiphon.test.ts` | 영어 fallback 0 — 후렴/루브릭/antiphon 에 라틴 문자 없음 (NFR-002) |
 | NFR-009k | `e2e/hymn-contamination.spec.ts` | 2026-05-25 lauds магтуу = real hymn #3 <br>lauds магтуу API body for 2026-05-25 carries the corrected hymn |
 | NFR-009k | `src/lib/__tests__/hymn-contamination.test.ts` | NFR-009k hymn contamination guard |
 | NFR-013 | `e2e/mobile.spec.ts` | prayer article inner width >= 320px for readability (NFR-013)<br>antiphon inner width >= 320px on mobile (NFR-013) |
