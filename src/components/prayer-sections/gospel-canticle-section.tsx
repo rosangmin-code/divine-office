@@ -1,12 +1,26 @@
-import type { JSX } from 'react'
+'use client'
+
+import { useId, useState, type JSX } from 'react'
 import type { HourSection, PrayerSpan, PrayerText } from '@/lib/types'
 import { PageRef } from '../page-ref'
+import { Icon } from '../icon'
 import { AntiphonBox } from './antiphon-box'
 
 const CANTICLE_NAMES: Record<string, string> = {
   benedictus: 'Захариагийн магтаал',
   magnificat: 'Мариагийн магтаал',
   nuncDimittis: 'Сайнмэдээний айлдлын магтаал',
+}
+
+// FR-168 (GOAL #90) — clamp an arbitrary selectedIndex into a valid
+// candidate index. Non-integer / out-of-range (incl. NaN) → 0 (option 1).
+// Same contract as `resolveGospelCanticle`'s assembler-side clamp so the
+// rendered antiphon and the dropdown's selection never disagree.
+function clampCandidateIndex(idx: number | undefined, len: number): number {
+  if (len <= 0) return 0
+  return Number.isInteger(idx) && (idx as number) >= 0 && (idx as number) < len
+    ? (idx as number)
+    : 0
 }
 
 // Small inline renderer for antiphon-grade rich content. Antiphons in the
@@ -171,6 +185,40 @@ export function GospelCanticleSection({
   section: Extract<HourSection, { type: 'gospelCanticle' }>
 }) {
   const name = CANTICLE_NAMES[section.canticle] ?? section.canticle
+
+  // FR-168 (GOAL #90) — saturday-mary Benedictus 6-option dropdown. When the
+  // section carries a `candidates` list, the antiphon shown is the selected
+  // option (ephemeral client state, default = data `selectedIndex`). The
+  // dropdown + rubric only surface on this candidate path; legacy
+  // single-antiphon entries (every other day) skip it entirely.
+  const candidates = section.candidates
+  const hasCandidates = Array.isArray(candidates) && candidates.length > 0
+  const initialIdx = hasCandidates
+    ? clampCandidateIndex(section.selectedIndex, candidates!.length)
+    : 0
+  const [selectedIdx, setSelectedIdx] = useState(initialIdx)
+  // FR-168 (GOAL #90, #98 [#90-sub-8]) — custom listbox menu open/close state.
+  // The candidate chooser is a click-to-open listbox (hymn-section /
+  // marian-antiphon-section 선례) instead of a native <select>: native
+  // <option>s are not reliably click-openable under Playwright (their nodes
+  // stay hidden), so the #94 e2e (combobox.click() → option.click()) only
+  // exercises a real custom listbox. The native-select impl (#96) shipped but
+  // could not satisfy that contract — this WI converts it.
+  const [menuOpen, setMenuOpen] = useState(false)
+  const listId = useId()
+  const safeIdx = hasCandidates
+    ? clampCandidateIndex(selectedIdx, candidates!.length)
+    : 0
+  // The text/page actually rendered in the AntiphonBox. On the candidate
+  // path this is the selected option (NOT `section.antiphon`, which only
+  // mirrors the default); on the legacy path it is the plain antiphon.
+  const shownAntiphonText = hasCandidates
+    ? candidates![safeIdx]?.text ?? section.antiphon
+    : section.antiphon
+  const shownAntiphonPage = hasCandidates
+    ? candidates![safeIdx]?.page ?? section.page
+    : section.page
+
   // FR-161 wi-002 (revised #208): branch on antiphonRich presence. When
   // the rich AST is present + non-empty, render the inline rich path that
   // preserves the amber/italic antiphon visual while honouring
@@ -185,7 +233,10 @@ export function GospelCanticleSection({
   // overlays can ship without the plain string companion (sanctoral
   // propers may author Rich-only seasonal antiphons), and gating purely
   // on `section.antiphon` would silently swallow them.
-  const shouldRender = !!section.antiphon || hasRich
+  // FR-168 (GOAL #90, spec §4c peer-corrected): also render when a
+  // candidate list is present — even if `antiphon` is somehow empty, a
+  // candidate-bearing section must surface the dropdown + selected antiphon.
+  const shouldRender = !!section.antiphon || hasRich || hasCandidates
   // WI #29 (2026-05-16) — compline (nuncDimittis) 만 PDF 순서가 안티폰 →
   // 헤딩 → 본문. vespers (magnificat) / lauds (benedictus) 의 PDF 컨벤션
   // 추가 확인이 필요해 보수적으로 nuncDimittis 만 swap. WI #27 부록 +
@@ -194,7 +245,17 @@ export function GospelCanticleSection({
   // 컨벤션 확인 후 일반화 가능 (분기 제거 → Option 1).
   const antiphonFirst = section.canticle === 'nuncDimittis'
   const renderAntiphon = (className: string) =>
-    hasRich && section.antiphonRich ? (
+    hasCandidates ? (
+      // FR-168 — candidate path: render the SELECTED option's text (plain;
+      // candidates carry no rich AST). `data-role="antiphon"` is preserved
+      // by AntiphonBox so e2e/legacy anchors keep working.
+      <AntiphonBox
+        text={shownAntiphonText}
+        label="canticle"
+        page={shownAntiphonPage}
+        className={className}
+      />
+    ) : hasRich && section.antiphonRich ? (
       <AntiphonRichBox
         content={section.antiphonRich}
         page={section.page}
@@ -209,8 +270,101 @@ export function GospelCanticleSection({
       />
     )
 
+  // FR-168 — defensive option set. The production path always ships a valid
+  // in-range `selectedIndex` (data default = 0), so the full 6-option
+  // chooser renders. When the INCOMING `selectedIndex` is structurally
+  // corrupt (out-of-range / NaN), we cannot trust the selection state, so
+  // we degrade to the single canonical default option (option 1) — this
+  // guarantees the user sees the authentic default antiphon rather than a
+  // wrong option (e.g. a `Math.min(idx, len-1)` clamp bug would surface the
+  // LAST option). `safeIdx` already clamps the DISPLAYED antiphon to 0.
+  const selectionWasValid =
+    hasCandidates &&
+    Number.isInteger(section.selectedIndex) &&
+    (section.selectedIndex as number) >= 0 &&
+    (section.selectedIndex as number) < candidates!.length
+  const optionItems = hasCandidates
+    ? selectionWasValid
+      ? candidates!.map((c, i) => ({ c, i }))
+      : [{ c: candidates![0], i: 0 }]
+    : []
+
+  // FR-168 — dropdown + rubric block, rendered once near the top of the
+  // section (above the canticle heading) ONLY on the candidate path.
+  const renderCandidateControls = () =>
+    hasCandidates ? (
+      <div className="my-3">
+        {section.rubric ? (
+          <p
+            data-role="canticle-antiphon-rubric"
+            className="mb-1 text-xs not-italic text-stone-500 dark:text-stone-400"
+          >
+            {section.rubric}
+          </p>
+        ) : null}
+        {/* FR-168 (#98) — custom listbox, hymn-section/marian-antiphon-section
+            패턴 차용 (네이티브 <select> 폐기). `role="combobox"` 토글 버튼을
+            누르면 `role="listbox"` ul 안에 `role="option"` li 가 펼쳐지고,
+            항목 선택 시 setSelectedIdx + 메뉴 닫힘. 유지 계약:
+            data-role="canticle-antiphon-dropdown",
+            aria-label="${name} — шад магтаалыг сонгох", aria-selected. */}
+        <div data-role="canticle-antiphon-dropdown">
+          <button
+            type="button"
+            role="combobox"
+            aria-haspopup="listbox"
+            aria-expanded={menuOpen}
+            aria-controls={listId}
+            aria-label={`${name} — шад магтаалыг сонгох`}
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="inline-flex items-center gap-1 text-sm text-stone-700 transition-colors hover:text-stone-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-liturgical-gold)] dark:text-stone-300 dark:hover:text-stone-100"
+          >
+            <Icon
+              name="next"
+              size={14}
+              className={`transition-transform ${menuOpen ? 'rotate-90' : ''}`}
+              aria-hidden="true"
+            />
+            Шад магтаал сонгох ({optionItems.length})
+          </button>
+
+          {menuOpen && (
+            <ul
+              id={listId}
+              role="listbox"
+              aria-label={`${name} — шад магтаалыг сонгох`}
+              className="mt-2 space-y-1"
+            >
+              {optionItems.map(({ c, i }) => (
+                <li key={i} role="option" aria-selected={i === safeIdx}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedIdx(i)
+                      setMenuOpen(false)
+                    }}
+                    className={`w-full rounded px-2 py-1.5 text-left text-sm transition-colors ${
+                      i === safeIdx
+                        ? 'bg-amber-100 text-amber-900 dark:bg-amber-900/30 dark:text-amber-200'
+                        : 'text-stone-600 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-stone-800'
+                    }`}
+                  >
+                    {c.text}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    ) : null
+
   return (
     <section aria-label={name} className="mb-4">
+      {/* FR-168 (GOAL #90) — saturday-mary Benedictus 후렴 선택 드롭다운 +
+          안내 루브릭. candidates 부재(평일) 시 null → legacy 단일 후렴 유지. */}
+      {renderCandidateControls()}
+
       {/*
         WI #29 — compline 안티폰은 PDF 순서대로 헤딩보다 먼저 (antiphonFirst).
         vespers/lauds 는 antiphonFirst=false → 기존 컨벤션 (헤딩 → 안티폰).

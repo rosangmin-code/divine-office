@@ -36,6 +36,12 @@ const PARSED_DIR = path.join(BASE, 'parsed_data')
 const PSALTER_DIR = path.join(BASE, 'src', 'data', 'loth', 'psalter')
 const OUTPUT = path.join(BASE, 'src', 'data', 'loth', 'psalter-texts.json')
 
+// GOAL #105 (spec §A C1/C3) — sentence-terminal set for the psalm-prayer
+// completeness gate: a period/exclamation/question/ellipsis, optionally
+// followed by a closing paren or right quote. A trailing comma (or no
+// terminator) is treated as INCOMPLETE (a page-break wrap continuation).
+const PRAYER_TERMINAL_RE = /[.!?…][)”»]*\s*$/
+
 // ── Noise filters (reused from extract-psalter-commons.js) ──
 
 const SKIP_PATTERNS = [
@@ -357,7 +363,17 @@ function extractPsalmBody(lines, headerIdx, title, ownHeaderRegexes = []) {
  *
  * Returns the prayer as a single string, or null if no prayer is found.
  */
-function extractPsalmPrayer(lines, startIdx) {
+/**
+ * @param {string[]} lines
+ * @param {number} startIdx
+ * @param {(entry: {line: number, tailRaw: string, nextHead: string}) => void} [onNeedsReview]
+ *   GOAL #105 (spec §A C4 / §D.2): invoked when the prayer collected so far is
+ *   already TERMINAL but the next meaningful line is a non-marker — i.e. the
+ *   prayer STOPs without absorbing, but the boundary is flagged for review so a
+ *   future genuine complete-sentence-then-continuation case cannot silently
+ *   truncate. `line` is the 1-based marker line; the caller annotates `week`.
+ */
+function extractPsalmPrayer(lines, startIdx, onNeedsReview) {
   const PRAYER_MARKER = /^Дууллыг төгсгөх залбирал/
   const SEARCH_WINDOW = 40
 
@@ -382,9 +398,7 @@ function extractPsalmPrayer(lines, startIdx) {
       // After content: a blank usually means a new rubric/section follows.
       // BUT the PDF has page breaks that split a single prayer paragraph
       // across pages — blank + page-number/header + blank + continuation.
-      // Peek past the blank/noise block: if the next meaningful line starts
-      // with a lowercase Cyrillic letter, it's a wrap continuation and we
-      // should keep collecting; otherwise the prayer ends here.
+      // Peek past the blank/noise block to the next meaningful line.
       let j = i + 1
       while (j < lines.length) {
         const tj = lines[j].trim()
@@ -393,8 +407,32 @@ function extractPsalmPrayer(lines, startIdx) {
       }
       if (j >= lines.length) break
       const next = lines[j].trim()
+      // (1) Hard guards FIRST — an end-marker / next-section header always stops
+      // the prayer, regardless of completeness (GOAL #105 spec §A C2).
       if (isEndMarker(next) || ANY_PSALM_HEADER_RE.test(next) || ANY_CANTICLE_HEADER_RE.test(next)) break
-      if (!/^[а-яёөү]/.test(next)) break
+      // (2) Completeness gate (GOAL #105 spec §A C1) — REPLACES the former
+      // lowercase-only case gate `if (!/^[а-яёөү]/.test(next)) break`. Decide by
+      // the completeness of the text collected SO FAR, not the case of `next`:
+      //   - collected ends INCOMPLETE (comma / no sentence-terminal) → this is a
+      //     page-break wrap continuation → ABSORB (keep collecting), even when
+      //     `next` starts with an uppercase letter (e.g. Psalm 114 "Та ус ба...").
+      //   - collected ends TERMINAL (. ! ? … + optional closing ) ” ») → the
+      //     prayer is complete → STOP. Because `next` is a non-marker here, flag
+      //     it NEEDS_REVIEW (spec §A C4 — neither silently trust nor absorb).
+      const lastCollected = prayerLines.length
+        ? prayerLines[prayerLines.length - 1].trim()
+        : ''
+      if (PRAYER_TERMINAL_RE.test(lastCollected)) {
+        if (typeof onNeedsReview === 'function') {
+          onNeedsReview({
+            line: markerIdx + 1,
+            tailRaw: lastCollected.slice(-40),
+            nextHead: next.slice(0, 40),
+          })
+        }
+        break
+      }
+      // incomplete → absorb the continuation
       i = j
       continue
     }
@@ -532,6 +570,12 @@ function main() {
   // Write output
   fs.writeFileSync(OUTPUT, JSON.stringify(result, null, 2), 'utf-8')
   console.log(`Written to ${OUTPUT}`)
+  // NOTE (GOAL #105): the NEEDS_REVIEW baseline (spec §D.2) is produced by the
+  // dedicated 102-marker sweep `scripts/build-psalmprayer-needs-review.mjs`, NOT
+  // here — main() is ref-based + de-duped, so it misses markers (e.g. week3:644)
+  // and would emit an incomplete 3/4 baseline. main() also performs a full
+  // re-extraction that is NON-idempotent against the curated psalter-texts.json
+  // (see header L14-28); the surgical applier is the data path, not this.
 
   // Print sample
   const sampleRef = 'Psalm 5:2-10, 12-13'
@@ -548,4 +592,9 @@ function main() {
   }
 }
 
-main()
+// GOAL #105 (spec §C7a) — export extractPsalmPrayer for direct unit testing and
+// guard main() so `require()` does NOT trigger a full re-extraction (which would
+// overwrite psalter-texts.json as a side effect of import).
+module.exports = { extractPsalmPrayer, PRAYER_TERMINAL_RE }
+
+if (require.main === module) main()

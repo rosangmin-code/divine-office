@@ -13,6 +13,33 @@ import { z } from 'zod'
 
 const PageSchema = z.number().int().nonnegative().optional()
 
+// FR-168 (GOAL #90) — saturday-mary Benedictus 6-option dropdown.
+// One selectable antiphon: non-empty authentic text + optional book page.
+const GospelCanticleAntiphonCandidateSchema = z
+  .object({
+    text: z.string().min(1),
+    page: PageSchema,
+  })
+  .loose()
+
+// Integrity assertion (mirrors the unit-test D4 contract): a candidate
+// list must be non-empty, contain no blank entries, and have no duplicate
+// texts (whitespace-normalised). Applied wherever the candidate list is
+// validated; additive + optional so legacy single-antiphon data is
+// untouched.
+const GospelCanticleAntiphonCandidatesSchema = z
+  .array(GospelCanticleAntiphonCandidateSchema)
+  .min(1)
+  .refine(
+    (cands) => {
+      const norm = (s: string) => s.replace(/\s+/g, ' ').trim()
+      const texts = cands.map((c) => norm(c.text))
+      if (texts.some((t) => t.length === 0)) return false
+      return new Set(texts).size === texts.length
+    },
+    { message: 'gospelCanticleAntiphonCandidates must be non-empty and unique' },
+  )
+
 const ShortReadingSchema = z
   .object({
     ref: z.string(),
@@ -68,6 +95,12 @@ const HourPsalmodyLooseSchema = z
     responsory: ResponsorySchema.optional(),
     gospelCanticleAntiphon: z.string().optional(),
     gospelCanticleAntiphonPage: PageSchema,
+    // FR-168 (GOAL #90) — saturday-mary Benedictus candidate dropdown
+    // (additive optional; absent for every legacy single-antiphon entry).
+    gospelCanticleAntiphonCandidates:
+      GospelCanticleAntiphonCandidatesSchema.optional(),
+    gospelCanticleAntiphonSelectedIndex: z.number().int().optional(),
+    gospelCanticleAntiphonRubric: z.string().optional(),
     intercessions: z.array(z.string()).optional(),
     intercessionsPage: PageSchema,
     concludingPrayer: z.string().optional(),
