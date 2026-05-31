@@ -525,7 +525,13 @@
 // /pray/[date]/lauds SSR HTML output changes (caption markup moves from a body
 // stanza phrase to the post-title header slot) → bump so existing PWA installs do
 // not serve stale HTML/asset. See CLAUDE.md "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v46'
+// v47 — GOAL #147 (Trinity Sunday 2nd Vespers + Lauds concluding prayer/collect
+// added) + GOAL #150 (Trinity First Vespers proper psalmody now taken from Week-1
+// Sunday First Vespers: Psalm 141/142/Philippians 2 with antiphons, replacing the
+// stale Sunday-2nd-Vespers fallback). Both change SSR HTML output for Trinity
+// Sunday Vespers/Lauds -> bump so existing PWA installs do not serve stale
+// HTML/asset. See CLAUDE.md "Service Worker 캐시 — 배포 회귀 1순위 리스크".
+const CACHE_VERSION = 'divine-office-v47'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
