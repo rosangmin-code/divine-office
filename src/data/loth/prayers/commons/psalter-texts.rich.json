@@ -9,28 +9,10 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Гэм нүглийн харанхуйгаас салсан хэнбугай ч"
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Тэнгэрбурханыг хүсэн тэмүүлнэ."
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
                   "text": "Тэнгэрбурхан, Та миний Тэнгэрбурхан"
                 }
               ],
-              "indent": 1
+              "indent": 0
             },
             {
               "spans": [
@@ -136,7 +118,7 @@
                 1,
                 1
               ],
-              "indent": 0
+              "indent": 1
             },
             {
               "lineRange": [
@@ -200,25 +182,10 @@
                 10
               ],
               "indent": 1
-            },
-            {
-              "lineRange": [
-                11,
-                11
-              ],
-              "indent": 1
-            },
-            {
-              "lineRange": [
-                12,
-                12
-              ],
-              "indent": 1
             }
           ],
           "paragraphBoundaries": [
-            2,
-            8
+            6
           ]
         },
         {

@@ -1,6 +1,20 @@
 {
   "_doc": "FR-160-C psalter-headers catalog. Patristic Father preface + NT typological citation that appear at psalm-header position in the Mongolian LOTH PDF (between \"Дуулал N\" title and the first verse). Loader: src/lib/prayers/rich-overlay.ts::loadPsalterHeaderRich(ref). Renderer: src/components/psalm-block.tsx — PsalterHeaderRich block above the psalm body. Multiple entries per ref are possible because the same psalm reappears in different liturgical positions (different PDF pages) with different patristic/typological prefaces. Source: scripts/extract-psalter-headers.js (raw-text pattern match against parsed_data/full_pdf.txt) → scripts/build-psalter-headers-catalog.js. PDF evidence: page + evidence_line_range[start,end] line numbers in parsed_data/full_pdf.txt. See PRD §12.1 FR-160-C, NFR-009h.",
   "refs": {
+    "Psalm 63:2-9": {
+      "entries": [
+        {
+          "kind": "uncited_caption",
+          "preface_text": "Гэм нүглийн харанхуйгаас салсан хэнбугай ч\nТэнгэрбурханыг хүсэн тэмүүлнэ.",
+          "page": 58,
+          "source": "manual",
+          "evidence_line_range": [
+            1812,
+            1813
+          ]
+        }
+      ]
+    },
     "Psalm 67:2-8": {
       "entries": [
         {
