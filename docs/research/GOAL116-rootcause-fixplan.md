@@ -14,7 +14,7 @@
 
 #105는 `extractPsalmPrayer`의 page-boundary continuation 문제다. mental model은 `extractPsalmPrayer` L397의 case gate를 완결성 기반으로 바꾸고, 시편기도 외 영역은 비목표라고 고정한다(`docs/design/mental-models/goal105-psalmprayer-truncation-fix.md:27-31`, `:45-58`). 이번 문제는 `extractPsalmBody`의 title/epigraph/body 분류 문제이며 코드 구간이 다르다(`scripts/extract-psalm-texts.js:273-349` vs #105의 prayer loop). 따라서 로직 수정은 독립적이어야 한다.
 
-공유되는 것은 재생성 산출물과 배포 운영이다. #105도 `psalter-texts.json`/`psalter-texts.rich.json` 변경과 `CACHE_VERSION` bump를 요구한다(`docs/design/mental-models/goal105-psalmprayer-truncation-fix.md:70-82`). 현재 `public/sw.js`는 `divine-office-v43`이다(`public/sw.js:511`). 두 GOAL이 모두 데이터 번들 출력을 바꾸면 머지 순서에 따라 단일 cache bump를 조율해야 한다.
+공유되는 것은 재생성 산출물과 배포 운영이다. #105도 `psalter-texts.json`/`psalter-texts.rich.json` 변경과 `CACHE_VERSION` bump를 요구한다(`docs/design/mental-models/goal105-psalmprayer-truncation-fix.md:70-82`). 현재 `public/sw.js`는 `divine-office-v43`이다(`public/sw.js:511`). 단 #105 mental model C8은 #90/#96/#98이 `v44`를 먼저 점유할 수 있다고 명시한다(`docs/design/mental-models/goal105-psalmprayer-truncation-fix.md:79-80`). 따라서 Step 6 구현 시 현재값을 다시 확인하고, 먼저 머지되는 GOAL이 `v44`, 나중 GOAL은 `v45` 또는 통합 머지의 단일 bump를 사용해야 한다.
 
 ## 본래 위치 판정
 
@@ -24,7 +24,7 @@
 
 ## 범위
 
-확정된 동일 텍스트 오염은 Psalm 63 한 건이다.
+확정된 동일 텍스트 오염은 Psalm 63 한 건이다. 이 범위 주장은 아래 **exact text grep**과 **2-line structural signature sweep** 안에서만 유효하다. 1줄/3줄 이상 caption, 또는 본문 첫 줄도 무들여쓰기인 다른 형태의 caption은 이 sweep으로 corpus-wide 부재를 증명하지 못한다.
 
 명령:
 
@@ -53,19 +53,19 @@ Revelation 19:1-7 :: "Аллэлуяа!" | "Тэнгэрбурханд авра�
 Psalm 139:1-18 :: "I" | "Аяа ЭЗЭН, Та намайг судлан, намайг мэдсэн билээ." | "  Миний сууж, босохыг ч хүртэл Та мэддэг юм."
 ```
 
-수기 판정: `Revelation 19:1-7`은 원문 자체가 `Илчлэл 19:1-7` 뒤 `Аллэлуяа!`로 본문을 시작한다(`parsed_data/full_pdf.txt:2271-2278`, `src/data/loth/psalter-texts.json:239-248`). `Psalm 139:1-18`은 epigraph가 `(Ром 11:34)`로 끝난 뒤 `I` part marker와 본문이 시작한다(`parsed_data/full_pdf.txt:16066-16073`, `src/data/loth/psalter-texts.json:4422-4428`). 이 sweep에서 실제 caption 오분류는 Psalm 63뿐이다.
+수기 판정: `Revelation 19:1-7`은 원문 자체가 `Илчлэл 19:1-7` 뒤 `Аллэлуяа!`로 본문을 시작한다(`parsed_data/full_pdf.txt:2271-2278`, `src/data/loth/psalter-texts.json:239-248`). `Psalm 139:1-18`은 epigraph가 `(Ром 11:34)`로 끝난 뒤 `I` part marker와 본문이 시작한다(`parsed_data/full_pdf.txt:16066-16073`, `src/data/loth/psalter-texts.json:4422-4428`). 따라서 이 text-grep + 2-line signature 범위 안에서 실제 caption 오분류는 Psalm 63뿐이며, shape-only 제거 rule은 금지해야 한다.
 
 ## 수정 계획
 
-1. `scripts/extract-psalm-texts.js`에 psalm-header/caption skip rule을 추가한다. 위치는 `extractPsalmBody`에서 title skip 직후, body collection 직전이다. 기존 `skipEpigraph`는 parenthetical citation용으로 유지하되, Psalm 63처럼 citation 없는 fixed caption을 body에서 제거하는 좁은 rule이어야 한다.
-2. 캡션을 보존하려면 `src/data/loth/prayers/commons/psalter-headers.rich.json`에 `Psalm 63:2-9` entry를 추가하거나, header extractor에 uncited caption 타입을 추가한다. 현재 renderer는 `headerRich`를 title 뒤, stanza 앞에 표시할 수 있으므로 UI 순서 변경은 불필요하다(`src/components/psalm-block.tsx:81-114`).
+1. `scripts/extract-psalm-texts.js`에 psalm-header/caption skip rule을 추가한다. 위치는 `extractPsalmBody`에서 title skip 직후, body collection 직전이다. 기존 `skipEpigraph`는 parenthetical citation용으로 유지한다. 새 rule은 **Psalm 63 exact-text/ref-keyed match**로 제한한다: `ref === "Psalm 63:2-9"`이고 다음 두 의미줄이 정확히 `Гэм нүглийн харанхуйгаас салсан хэнбугай ч` / `Тэнгэрбурханыг хүсэн тэмүүлнэ.`일 때만 body 수집 시작점을 두 줄 뒤로 이동한다. 일반적인 "2-unindented-then-indented" shape heuristic은 `Revelation 19:1-7`과 `Psalm 139:1-18` 정상 본문을 손상시키므로 금지한다(`parsed_data/full_pdf.txt:2271-2278`, `:16066-16073`).
+2. 캡션 보존은 **필수**다. 이 두 줄은 PDF 원문에 존재하고(`parsed_data/full_pdf.txt:1812-1813`), 사용자 의도도 삭제가 아니라 제목 뒤 배치다. #105 mental model도 원문무손실 원칙을 둔다(`docs/design/mental-models/goal105-psalmprayer-truncation-fix.md:29`). 따라서 기본 수정안은 `src/data/loth/prayers/commons/psalter-headers.rich.json`에 `Psalm 63:2-9` entry를 추가하거나 header extractor에 uncited caption 타입을 추가해서, renderer가 이미 지원하는 title 뒤 / stanza 앞 위치에 보존하는 것이다(`src/components/psalm-block.tsx:81-114`). 단순 삭제는 금지한다.
 3. 재생성 산출물:
    - `src/data/loth/psalter-texts.json`: `Psalm 63:2-9`의 `stanzas[0]`에서 두 caption 줄 제거. 첫 줄은 `Тэнгэрбурхан, Та миний Тэнгэрбурхан`이어야 한다.
    - `src/data/loth/prayers/commons/psalter-texts.rich.json`: `Psalm 63:2-9.stanzasRich.blocks[0].lines`에서도 같은 두 줄 제거. 이 rich builder는 source JSON을 입력으로 쓰므로 source 수정 뒤 재실행해야 한다(`scripts/build-psalter-texts-rich.mjs:4-7`, `:127-130`).
    - `src/data/loth/psalter/week-1.json`: ref/title/antiphon mapping은 이미 올바르므로 변경 대상이 아니다(`src/data/loth/psalter/week-1.json:8-14`).
-   - `src/data/loth/prayers/commons/psalter-headers.rich.json`: caption 보존을 선택하면 Psalm 63 entry 추가. 보존하지 않기로 결정한다면 명시적인 데이터 제거 근거가 필요하다.
+   - `src/data/loth/prayers/commons/psalter-headers.rich.json`: Psalm 63 caption entry 추가 필수. 이 entry는 제목 뒤, 첫 stanza 앞에서 렌더되어야 한다.
 4. #105와 같은 머지 wave에서 재추출한다면 `psalmPrayer` fix와 stanza/header fix를 한 번에 반영하되, diff 검토는 별도로 한다. #105는 `psalmPrayer`만, #116은 `stanzas/stanzasRich/headerRich`만 바꾸는 것이 기대 delta다.
-5. `public/sw.js` `CACHE_VERSION`은 데이터 번들 변경으로 bump한다. 현재값은 v43(`public/sw.js:511`). #105 또는 다른 GOAL이 먼저 bump하면 다음 번호를 사용한다.
+5. `public/sw.js` `CACHE_VERSION`은 데이터 번들 변경으로 bump한다. 현재값은 v43(`public/sw.js:511`). #90/#96/#98 또는 #105가 먼저 `v44`를 사용하면 본 GOAL은 다음 번호를 사용한다(`docs/design/mental-models/goal105-psalmprayer-truncation-fix.md:79-80`).
 
 ## 회귀 검증
 
@@ -74,8 +74,10 @@ Psalm 139:1-18 :: "I" | "Аяа ЭЗЭН, Та намайг судлан, нам
 ```text
 Psalm 63:2-9 stanzas[0][0] === "Тэнгэрбурхан, Та миний Тэнгэрбурхан"
 Psalm 63:2-9 stanzasRich first rendered line === "Тэнгэрбурхан, Та миний Тэнгэрбурхан"
-Psalm 63:2-9 header/caption, if preserved, renders after title and before first stanza
+Psalm 63:2-9 header/caption renders after title and before first stanza
 Psalm 63:2-9 antiphon remains src/data/loth/psalter/week-1.json default_antiphon
+Revelation 19:1-7 stanzas[0][0] === "Аллэлуяа!"
+Psalm 139:1-18 stanzas[0][0] === "I"
 ```
 
 명령:
@@ -110,3 +112,11 @@ exit=1
   ]
 }
 ```
+
+## 리뷰 CONDITIONAL 5이슈 반영 요약
+
+1. **over-broad-fix 회귀 위험**: fix rule을 Psalm 63 exact-text/ref-keyed match로 제한했고, `Revelation 19:1-7` 및 `Psalm 139:1-18` 음성 회귀 단언을 추가했다(`parsed_data/full_pdf.txt:2271-2278`, `:16066-16073`).
+2. **rule-scope 모호성**: `fixed caption`을 일반 shape가 아니라 `ref === "Psalm 63:2-9"` + 정확한 두 원문 줄로 못박았다.
+3. **캡션 보존**: `psalter-headers.rich.json`에 Psalm 63 entry를 추가해 제목 뒤 렌더로 보존하는 것을 필수 경로로 바꾸고, 단순 삭제를 금지했다(`parsed_data/full_pdf.txt:1812-1813`, `docs/design/mental-models/goal105-psalmprayer-truncation-fix.md:29`).
+4. **범위 주장 한정**: scope 문장을 exact text grep + 2-line structural signature 범위로 제한하고, 다른 shape의 caption은 미검사임을 명시했다.
+5. **cache bump 조율**: 현재 v43 확인과 함께 #90/#96/#98 또는 #105가 `v44`를 먼저 점유할 경우 다음 번호를 써야 한다고 명시했다(`public/sw.js:511`, `docs/design/mental-models/goal105-psalmprayer-truncation-fix.md:79-80`).
