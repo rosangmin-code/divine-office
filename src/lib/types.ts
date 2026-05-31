@@ -957,7 +957,7 @@ export type HourSection =
       directives?: SectionOverride[]
     }
   | { type: 'ourFather' }
-  | { type: 'concludingPrayer'; text: string; page?: number; alternateText?: string; textRich?: PrayerText; alternateTextRich?: PrayerText }
+  | { type: 'concludingPrayer'; text: string; page?: number; alternateText?: string; alternatePage?: number; textRich?: PrayerText; alternateTextRich?: PrayerText }
   | { type: 'dismissal'; priest: { greeting: { versicle: string; response: string }; blessing: { text: string; response: string }; dismissalVersicle: { versicle: string; response: string } }; individual: { versicle: string; response: string }; directives?: SectionOverride[] }
   | { type: 'examen'; text: string; page?: number }
   | { type: 'blessing'; text: string; response: string; page?: number }

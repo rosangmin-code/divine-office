@@ -56,6 +56,7 @@ export interface ConcludingPrayerFields {
   text: string
   page?: number
   alternateText?: string
+  alternatePage?: number
   textRich?: PrayerText
   alternateTextRich?: PrayerText
 }
@@ -80,6 +81,7 @@ export function buildConcludingPrayerFields(
       text: inputs.alternateText ?? '',
       page: inputs.alternatePage ?? inputs.primaryPage,
       alternateText: inputs.primaryText,
+      alternatePage: inputs.primaryPage,
       textRich: inputs.alternateRich,
       alternateTextRich: inputs.primaryRich,
     }
@@ -88,6 +90,7 @@ export function buildConcludingPrayerFields(
     text: inputs.primaryText ?? '',
     page: inputs.primaryPage,
     alternateText: inputs.alternateText,
+    alternatePage: inputs.alternatePage,
     textRich: inputs.primaryRich,
     alternateTextRich: inputs.alternateRich,
   }
