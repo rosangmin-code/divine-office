@@ -26,7 +26,12 @@ export interface ParsedIntercessions {
 const SEPARATOR = /\s[-—]\s/
 const CLOSING_PREFIX = 'Тэнгэр дэх Эцэг'
 
-function isClosingLine(line: string): boolean {
+// FR-169 (#115 C1): exported so the render layer (intercessions-section.tsx)
+// can reuse the EXACT same closing-incipit predicate (SSOT — same
+// CLOSING_PREFIX + quote-stripping). This adds an `export` keyword only;
+// `parseIntercessions` and every internal call site are byte-for-byte
+// unchanged — no parse-layer behavior change (regression guard D3-a).
+export function isClosingLine(line: string): boolean {
   const cleaned = line.replace(/^[\s"'“”«»]+/u, '')
   return cleaned.startsWith(CLOSING_PREFIX)
 }
