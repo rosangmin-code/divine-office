@@ -4,7 +4,7 @@
 > and FR/NFR IDs in test titles. **Do not edit by hand.**
 > The curated matrix lives in [`docs/traceability-matrix.md`](./traceability-matrix.md).
 
-Scan: 71 test files contributed 32 unique IDs.
+Scan: 73 test files contributed 33 unique IDs.
 
 | ID | Test file | Test title(s) |
 |---|---|---|
@@ -88,8 +88,10 @@ Scan: 71 test files contributed 32 unique IDs.
 | FR-167 | `e2e/gospel-canticle-verse-division.spec.ts` | lauds Benedictus(Захариагийн магтаал) renders 25 verses (capital-start 재분절)<br>lauds Benedictus: 이전 병합 절이 별개 절로 분리 (NFR-002 문구)<br>vespers Magnificat(Мариагийн магтаал) renders 19 verses (capital-start 재분절)<br>vespers Magnificat: 이전 병합 절이 별개 절로 분리 (NFR-002 문구) |
 | FR-167 | `src/components/prayer-sections/__tests__/gospel-canticle-section.test.ts` | FR-167 / WI #37 — capital-start verse division (committed canticles.json invariants) |
 | FR-168 | `e2e/saturday-mary-benedictus-dropdown.spec.ts` | [D1] saturday-mary Lauds Benedictus 후렴 = 옵션1, 평일과 다름<br>[D2] 드롭다운(combobox) 노출 + 옵션3 선택 → 후렴 교체<br>[D2-H3] 동일 mount 내 옵션 선택 후 유지 (같은 화면)<br>[D2-E5] 새로고침 시 옵션1 리셋 (ephemeral, carry-over 없음)<br>[D2-E5] 다른 날짜(saturday-mary)로 이동 시 옵션1 리셋 (cross-date 누수 없음)<br>[D3] 안내 루브릭이 후렴 본문과 분리되어 표시 + 드롭다운 동반<br>[D3-E1] 평일 Lauds 는 드롭다운/루브릭 미표시 (legacy 단일 후렴)<br>[D4] 6개 후렴 모두 breviary 원문(키릴), 영어 fallback 0<br>[D3-E4] a11y — combobox 에 몽골어 accessible name(영어 fallback 없음) |
-| FR-168 | `src/components/prayer-sections/__tests__/gospel-canticle-section-dropdown.test.ts` | FR-168 [D2] GospelCanticleSection 드롭다운 렌더 (candidates 존재 시)<br>FR-168 [D2-E2/E3] 범위 밖/손상 index → 옵션1 clamp (크래시·빈 후렴 없음)<br>FR-168 [D3] 안내 루브릭 렌더 (후렴 본문과 분리, 드롭다운 동반)<br>FR-168 [D3-E4] 접근성(a11y) — combobox role + aria-selected |
+| FR-168 | `src/components/prayer-sections/__tests__/gospel-canticle-section-dropdown.test.ts` | FR-168 [D2] GospelCanticleSection 드롭다운 렌더 (candidates 존재 시)<br>FR-168 [D2-E2/E3] 범위 밖/손상 index → 옵션1 clamp (크래시·빈 후렴 없음)<br>FR-168 [D3] 안내 루브릭 렌더 (후렴 본문과 분리, 드롭다운 동반)<br>FR-168 [D3-E4] 접근성(a11y) — combobox role + listbox 팝업 제어 |
 | FR-168 | `src/lib/__tests__/saturday-mary-benedictus-antiphon.test.ts` | FR-168 [D1] saturday-mary Lauds Benedictus 후렴 = 옵션1(default), 평일과 불일치<br>FR-168 [D2] 6개 후렴 candidates 보존 (드롭다운 데이터 원천)<br>FR-168 [D3] 안내 루브릭 — 별도 필드(후렴 본문과 분리)<br>FR-168 [D4] 후렴 데이터 무결성 + authentic 몽골어 (NFR-002) |
+| FR-169 | `e2e/lords-prayer-rubric-amen.spec.ts` | [D1-structured] no «…» Lord\<br>[D1-legacy] no incipit bullet on ${label} (legacy items[] path)<br>[D2] Lord\ |
+| FR-169 | `src/components/prayer-sections/__tests__/lords-prayer-rubric-amen-removal.test.ts` | GOAL #115 [D1] — Lord\<br>GOAL #115 [D2] — Lord\<br>GOAL #115 [D3] — regression guards (must NOT change) |
 | NFR-002 | `e2e/footer-toggle.spec.ts` | no English aria-label fallback on footer controls (NFR-002) |
 | NFR-002 | `e2e/gospel-canticle-verse-division.spec.ts` | lauds Benedictus: 이전 병합 절이 별개 절로 분리 (NFR-002 문구)<br>vespers Magnificat: 이전 병합 절이 별개 절로 분리 (NFR-002 문구) |
 | NFR-002 | `e2e/page-redirect.spec.ts` | Mongolian Cyrillic labels: catalog labels are PDF-original (NFR-002) |

@@ -2,6 +2,9 @@ import type { HourSection } from '@/lib/types'
 import { PageRef } from '../page-ref'
 import { RichContent } from './rich-content'
 import { DirectiveBlock, partitionDirectives } from './directive-block'
+// FR-169 (#115 C2.1): reuse the parser's closing-incipit predicate (SSOT) to
+// filter the Lord's-Prayer cue out of the legacy items[] render path.
+import { isClosingLine } from '@/lib/hours/intercessions'
 
 // F-X12 Phase A (#374): legacy-path heuristic — when a petition line ends with
 // "...залбирцгаая" (cohortative "let us pray") plus optional sentence-end
@@ -136,11 +139,11 @@ export function IntercessionsSection({
               </li>
             ))}
           </ul>
-          {section.closing && (
-            <p className="mt-3 font-serif italic text-stone-700 dark:text-stone-300">
-              «{section.closing}»
-            </p>
-          )}
+          {/* FR-169 (#115 C2.2): the Lord's-Prayer guidance cue («closing»)
+              is removed. The Lord's Prayer (ourFather) section follows
+              immediately, so no incipit cue is needed. `section.closing` is
+              still populated by the parser (petition-boundary detection
+              unchanged — D3-a) but is intentionally no longer rendered. */}
         </>
       ) : (
         <>
@@ -150,27 +153,38 @@ export function IntercessionsSection({
             </p>
           )}
           <ul className="mt-2 space-y-2">
-            {section.items.map((item, i) => {
-              // F-X12 Phase A: cohortative trigger on previous line elevates
-              // the next item to refrain (italic). i === 0 always plain.
-              const prev = i > 0 ? section.items[i - 1] : ''
-              const isRefrain =
-                i > 0 &&
-                LEGACY_INTERCESSION_REFRAIN_LEAD_RE.test(prev.trim())
-              return (
-                <li
-                  key={i}
-                  data-role={
-                    isRefrain ? 'intercessions-refrain' : undefined
-                  }
-                  className={`font-serif text-stone-800 dark:text-stone-200${
-                    isRefrain ? ' italic' : ''
-                  }`}
-                >
-                  — {item}
-                </li>
-              )
-            })}
+            {section.items
+              // FR-169 (#115 C2.3): filter the trailing Lord's-Prayer incipit
+              // cue out of the legacy render path (the 3 legacy+incipit blocks:
+              // week-3 SUN lauds, week-4 SUN lauds, week-4 MON vespers). Reuses
+              // the parser's `isClosingLine` predicate (SSOT — same
+              // `Тэнгэр дэх Эцэг` prefix + quote-stripping). The other 8 legacy
+              // blocks carry no incipit, so the filter is a safe no-op there.
+              .filter((item) => !isClosingLine(item.trim()))
+              .map((item, i, items) => {
+                // F-X12 Phase A: cohortative trigger on previous line elevates
+                // the next item to refrain (italic). i === 0 always plain.
+                // `prev` look-back sources from the FILTERED `items` (map 3rd
+                // arg) so refrain detection stays index-consistent after the
+                // trailing incipit is dropped.
+                const prev = i > 0 ? items[i - 1] : ''
+                const isRefrain =
+                  i > 0 &&
+                  LEGACY_INTERCESSION_REFRAIN_LEAD_RE.test(prev.trim())
+                return (
+                  <li
+                    key={i}
+                    data-role={
+                      isRefrain ? 'intercessions-refrain' : undefined
+                    }
+                    className={`font-serif text-stone-800 dark:text-stone-200${
+                      isRefrain ? ' italic' : ''
+                    }`}
+                  >
+                    — {item}
+                  </li>
+                )
+              })}
           </ul>
         </>
       )}
