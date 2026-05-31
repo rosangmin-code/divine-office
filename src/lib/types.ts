@@ -829,10 +829,21 @@ export interface PageRedirectBodyMeta {
 // (Үйлс / Матай / Иохан / Лук / Марк / Ром / Еврей / Ефес / Галат /
 // Илчлэл / Филиппой). Catalog: src/data/loth/prayers/commons/
 // psalter-headers.rich.json. Loader: loadPsalterHeaderRich(ref).
+//
+// GOAL #130 — a third kind `uncited_caption` was added for the Psalm 63 Lauds
+// caption (`Гэм нүглийн … тэмүүлнэ.`): a 2-line caption that carries NO
+// patristic / NT attribution and is relocated from the psalm body to the
+// post-title header slot. `attribution` is therefore OPTIONAL: it is absent
+// for `uncited_caption` and the renderer omits the `(attribution)` parenthesis
+// for that kind. `patristic_preface` / `nt_typological` entries remain
+// attribution-backed in the data (every catalog entry carries one) and their
+// render path is unchanged.
+// See docs/design/mental-models/goal130-psalm63-caption-reposition.md §C2.
 export interface PsalterHeaderRich {
-  kind: 'patristic_preface' | 'nt_typological'
-  attribution: string       // e.g. "Хэсихиус", "Гэгээн Августин", "Үйлс 2:42"
-  preface_text: string      // The full preface body (the citation/quote text)
+  kind: 'patristic_preface' | 'nt_typological' | 'uncited_caption'
+  attribution?: string      // e.g. "Хэсихиус", "Гэгээн Августин", "Үйлс 2:42";
+                            // absent for `uncited_caption`
+  preface_text: string      // The full preface / caption body
   page?: number             // Book page where this header appears
 }
 

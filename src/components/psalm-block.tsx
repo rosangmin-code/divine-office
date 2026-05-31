@@ -44,7 +44,7 @@ function escapeRegExp(s: string): string {
 export function sanitizePsalmHeaderPreface(
   prefaceText: string,
   title: string | undefined,
-  attribution: string,
+  attribution: string | undefined,
 ): string {
   let pt = prefaceText
   const trimmedTitle = title?.trim() ?? ''
@@ -94,20 +94,36 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
             suffix that some catalog entries inadvertently bundled into
             `preface_text` (see `sanitizePsalmHeaderPreface` doc above). */}
         {psalm.headerRich && (() => {
+          const header = psalm.headerRich
+          // GOAL #130 — `uncited_caption` (e.g. the Psalm 63 Lauds caption) has
+          // NO attribution. Render it in the same post-title header slot but
+          // WITHOUT the `(attribution)` parenthesis / empty attribution span.
+          // `whitespace-pre-line` preserves the caption's 2-line break.
+          if (header.kind === 'uncited_caption') {
+            return (
+              <p
+                data-role="psalm-header-rich"
+                data-kind="uncited_caption"
+                className="mt-1 whitespace-pre-line text-xs italic text-stone-500 dark:text-stone-400"
+              >
+                {header.preface_text}
+              </p>
+            )
+          }
           const prefaceBody = sanitizePsalmHeaderPreface(
-            psalm.headerRich.preface_text,
+            header.preface_text,
             psalm.title,
-            psalm.headerRich.attribution,
+            header.attribution,
           )
           return (
             <p
               data-role="psalm-header-rich"
-              data-kind={psalm.headerRich.kind}
+              data-kind={header.kind}
               className="mt-1 text-xs italic text-stone-500 dark:text-stone-400"
             >
               {prefaceBody}
               {prefaceBody ? ' (' : '('}
-              <span data-role="psalm-header-attribution">{psalm.headerRich.attribution}</span>
+              <span data-role="psalm-header-attribution">{header.attribution}</span>
               {')'}
             </p>
           )

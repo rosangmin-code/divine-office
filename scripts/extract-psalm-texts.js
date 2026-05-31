@@ -274,9 +274,47 @@ function loadWeekText(week) {
   return text
 }
 
+// ── GOAL #130 — Psalm 63 Lauds caption reposition (ref-keyed body skip) ──
+//
+// The Psalm 63:2-9 header carries a 2-line caption that, UNLIKE the patristic /
+// NT epigraphs handled by `skipEpigraph`, ends with NO parenthetical citation —
+// so `skipEpigraph` leaves it in the body and it lands as the psalm's first
+// stanza. This skip removes it from the body, keyed EXACTLY on the canonical
+// `ref` AND the two verbatim source lines. It is deliberately NOT a shape-only
+// heuristic (e.g. "two unindented lines then indented body"): such a heuristic
+// would corrupt the legitimate body starts of `Revelation 19:1-7` (`Аллэлуяа!`)
+// and `Psalm 139:1-18` (`I`), whose first lines share that shape but are genuine
+// body text. The caption is preserved as an `uncited_caption` entry in
+// `psalter-headers.rich.json` and rendered after the psalm title.
+// See docs/research/GOAL130-spec.md §1 and the mental model §C1.
+const PSALM63_CAPTION_REF = 'Psalm 63:2-9'
+const PSALM63_CAPTION_LINES = [
+  'Гэм нүглийн харанхуйгаас салсан хэнбугай ч',
+  'Тэнгэрбурханыг хүсэн тэмүүлнэ.',
+]
+
+function skipPsalm63Caption(lines, startIdx, ref) {
+  if (ref !== PSALM63_CAPTION_REF) return startIdx
+  // Collect the next `PSALM63_CAPTION_LINES.length` meaningful source lines
+  // (non-blank, non-noise) and require an exact, in-order match.
+  const seen = []
+  let i = startIdx
+  while (i < lines.length && seen.length < PSALM63_CAPTION_LINES.length) {
+    const trimmed = lines[i].trim()
+    if (!trimmed || isNoiseLine(lines[i])) { i++; continue }
+    seen.push({ idx: i, text: trimmed })
+    i++
+  }
+  if (seen.length < PSALM63_CAPTION_LINES.length) return startIdx
+  const exact = seen.every((s, k) => s.text === PSALM63_CAPTION_LINES[k])
+  if (!exact) return startIdx
+  // Advance to just past the last matched caption line.
+  return seen[seen.length - 1].idx + 1
+}
+
 // ── Extract psalm body from text at a given position ──
 
-function extractPsalmBody(lines, headerIdx, title, ownHeaderRegexes = []) {
+function extractPsalmBody(lines, headerIdx, title, ownHeaderRegexes = [], ref = null) {
   // Skip header line
   let i = headerIdx + 1
 
@@ -308,6 +346,10 @@ function extractPsalmBody(lines, headerIdx, title, ownHeaderRegexes = []) {
   // Pattern: epigraph ends with (Гэгээн ...), (1 Коринт 15:25), (Илчлэл 8:4). etc.
   const epigraphEnd = skipEpigraph(lines, i)
   i = epigraphEnd
+
+  // GOAL #130: drop the Psalm 63 post-title caption from the body (ref-keyed,
+  // exact-text). NOP for every other ref — see `skipPsalm63Caption` above.
+  i = skipPsalm63Caption(lines, i, ref)
 
   // Collect psalm body lines until end marker or next psalm/canticle header
   const bodyLines = []
@@ -542,7 +584,7 @@ function main() {
           if (t.includes('нь урих дуудлагын')) continue
           if (t.includes('нь х.')) continue
 
-          const { stanzas, endIdx } = extractPsalmBody(lines, idx, info.title, headerRegexes)
+          const { stanzas, endIdx } = extractPsalmBody(lines, idx, info.title, headerRegexes, ref)
           if (stanzas.length > 0 && stanzas.some(s => s.length > 0)) {
             const entry = { stanzas }
             const prayer = extractPsalmPrayer(lines, endIdx)
