@@ -71,8 +71,9 @@ test.describe('FR-168 saturday-mary Benedictus 후렴 드롭다운 + 루브릭',
     await gotoMaryLauds(page, OT_SATURDAY)
     const section = benedictus(page)
     await expect(section).toBeVisible()
-    // 후렴 본문 = 옵션1 (getByText 키릴, NFR-002).
-    await expect(section.getByText(OPT[0], { exact: false })).toBeVisible()
+    // 후렴 본문 = 옵션1 (getByText 키릴, NFR-002). 안티폰은 헤딩 아래 +
+    // 본문 아래 recap 으로 2회 렌더(#29) → .first() 로 strict-mode 회피.
+    await expect(section.getByText(OPT[0], { exact: false }).first()).toBeVisible()
     // 평일 ferial 후렴이 표시되지 않는다.
     await expect(section.getByText(FERIAL_BENEDICTUS, { exact: false })).toHaveCount(0)
   })
@@ -84,7 +85,7 @@ test.describe('FR-168 saturday-mary Benedictus 후렴 드롭다운 + 루브릭',
     await expect(section.locator(DROPDOWN)).toBeVisible()
     await expect(section.getByRole('combobox')).toBeVisible()
     await selectOption(page, OPT[2]) // 옵션3
-    await expect(section.locator(ANTIPHON).getByText(OPT[2], { exact: false })).toBeVisible()
+    await expect(section.locator(ANTIPHON).getByText(OPT[2], { exact: false }).first()).toBeVisible()
   })
 
   // @fr FR-168
@@ -93,7 +94,7 @@ test.describe('FR-168 saturday-mary Benedictus 후렴 드롭다운 + 루브릭',
     const section = benedictus(page)
     await selectOption(page, OPT[3]) // 옵션4
     // 같은 mount(네비/리로드 없음) — 선택 유지.
-    await expect(section.locator(ANTIPHON).getByText(OPT[3], { exact: false })).toBeVisible()
+    await expect(section.locator(ANTIPHON).getByText(OPT[3], { exact: false }).first()).toBeVisible()
     await expect(section.getByText(OPT[0], { exact: false })).toHaveCount(0)
   })
 
@@ -102,11 +103,11 @@ test.describe('FR-168 saturday-mary Benedictus 후렴 드롭다운 + 루브릭',
     await gotoMaryLauds(page, OT_SATURDAY)
     const section = benedictus(page)
     await selectOption(page, OPT[2]) // 옵션3
-    await expect(section.locator(ANTIPHON).getByText(OPT[2], { exact: false })).toBeVisible()
+    await expect(section.locator(ANTIPHON).getByText(OPT[2], { exact: false }).first()).toBeVisible()
     await page.reload()
     await expect(page.getByRole('heading', { name: 'Өглөөний даатгал залбирал' })).toBeVisible()
     // 리로드 후 default(옵션1) 복귀.
-    await expect(benedictus(page).getByText(OPT[0], { exact: false })).toBeVisible()
+    await expect(benedictus(page).getByText(OPT[0], { exact: false }).first()).toBeVisible()
     await expect(benedictus(page).getByText(OPT[2], { exact: false })).toHaveCount(0)
   })
 
@@ -121,7 +122,7 @@ test.describe('FR-168 saturday-mary Benedictus 후렴 드롭다운 + 루브릭',
     await gotoMaryLauds(page, OT_SATURDAY)
     await selectOption(page, OPT[2]) // 옵션3
     await gotoMaryLauds(page, OT_SATURDAY_2)
-    await expect(benedictus(page).getByText(OPT[0], { exact: false })).toBeVisible()
+    await expect(benedictus(page).getByText(OPT[0], { exact: false }).first()).toBeVisible()
     await expect(benedictus(page).getByText(OPT[2], { exact: false })).toHaveCount(0)
   })
 
@@ -178,5 +179,11 @@ test.describe('FR-168 saturday-mary Benedictus 후렴 드롭다운 + 루브릭',
     // accessible name 은 몽골어 키릴, 영어 fallback 없음(NFR-002).
     expect(label).toMatch(/[Ѐ-ӿ]/)
     expect(label).not.toMatch(/[A-Za-z]/)
+    // aria-selected 는 열린 listbox 옵션 속성(커스텀 listbox — component SSR
+    // 닫힘 상태엔 부재 → 상호작용으로 검증). 기본 선택 = 옵션1.
+    await combo.click()
+    const selectedOpt = benedictus(page).getByRole('option', { selected: true })
+    await expect(selectedOpt).toHaveCount(1)
+    await expect(selectedOpt).toContainText(OPT[0])
   })
 })
