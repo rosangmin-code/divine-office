@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, type JSX } from 'react'
+import { useId, useState, type JSX } from 'react'
 import type { HourSection, PrayerSpan, PrayerText } from '@/lib/types'
 import { PageRef } from '../page-ref'
+import { Icon } from '../icon'
 import { AntiphonBox } from './antiphon-box'
 
 const CANTICLE_NAMES: Record<string, string> = {
@@ -196,6 +197,15 @@ export function GospelCanticleSection({
     ? clampCandidateIndex(section.selectedIndex, candidates!.length)
     : 0
   const [selectedIdx, setSelectedIdx] = useState(initialIdx)
+  // FR-168 (GOAL #90, #98 [#90-sub-8]) — custom listbox menu open/close state.
+  // The candidate chooser is a click-to-open listbox (hymn-section /
+  // marian-antiphon-section 선례) instead of a native <select>: native
+  // <option>s are not reliably click-openable under Playwright (their nodes
+  // stay hidden), so the #94 e2e (combobox.click() → option.click()) only
+  // exercises a real custom listbox. The native-select impl (#96) shipped but
+  // could not satisfy that contract — this WI converts it.
+  const [menuOpen, setMenuOpen] = useState(false)
+  const listId = useId()
   const safeIdx = hasCandidates
     ? clampCandidateIndex(selectedIdx, candidates!.length)
     : 0
@@ -292,20 +302,60 @@ export function GospelCanticleSection({
             {section.rubric}
           </p>
         ) : null}
-        <select
-          data-role="canticle-antiphon-dropdown"
-          role="combobox"
-          aria-label={`${name} — шад магтаалыг сонгох`}
-          value={safeIdx}
-          onChange={(e) => setSelectedIdx(Number(e.target.value))}
-          className="w-full rounded border border-stone-300 bg-white px-2 py-1 text-sm text-stone-800 dark:border-stone-600 dark:bg-neutral-900 dark:text-stone-200"
-        >
-          {optionItems.map(({ c, i }) => (
-            <option key={i} value={i} aria-selected={i === safeIdx}>
-              {c.text}
-            </option>
-          ))}
-        </select>
+        {/* FR-168 (#98) — custom listbox, hymn-section/marian-antiphon-section
+            패턴 차용 (네이티브 <select> 폐기). `role="combobox"` 토글 버튼을
+            누르면 `role="listbox"` ul 안에 `role="option"` li 가 펼쳐지고,
+            항목 선택 시 setSelectedIdx + 메뉴 닫힘. 유지 계약:
+            data-role="canticle-antiphon-dropdown",
+            aria-label="${name} — шад магтаалыг сонгох", aria-selected. */}
+        <div data-role="canticle-antiphon-dropdown">
+          <button
+            type="button"
+            role="combobox"
+            aria-haspopup="listbox"
+            aria-expanded={menuOpen}
+            aria-controls={listId}
+            aria-label={`${name} — шад магтаалыг сонгох`}
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="inline-flex items-center gap-1 text-sm text-stone-700 transition-colors hover:text-stone-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-liturgical-gold)] dark:text-stone-300 dark:hover:text-stone-100"
+          >
+            <Icon
+              name="next"
+              size={14}
+              className={`transition-transform ${menuOpen ? 'rotate-90' : ''}`}
+              aria-hidden="true"
+            />
+            Шад магтаал сонгох ({optionItems.length})
+          </button>
+
+          {menuOpen && (
+            <ul
+              id={listId}
+              role="listbox"
+              aria-label={`${name} — шад магтаалыг сонгох`}
+              className="mt-2 space-y-1"
+            >
+              {optionItems.map(({ c, i }) => (
+                <li key={i} role="option" aria-selected={i === safeIdx}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedIdx(i)
+                      setMenuOpen(false)
+                    }}
+                    className={`w-full rounded px-2 py-1.5 text-left text-sm transition-colors ${
+                      i === safeIdx
+                        ? 'bg-amber-100 text-amber-900 dark:bg-amber-900/30 dark:text-amber-200'
+                        : 'text-stone-600 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-stone-800'
+                    }`}
+                  >
+                    {c.text}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
     ) : null
 
