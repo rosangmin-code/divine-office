@@ -519,7 +519,13 @@
 // the trailing "Амэн" from the Lord's Prayer body). Both change SSR HTML output
 // (prayer body text / rubric+amen markup) → bump so existing PWA installs do not
 // serve stale HTML/asset. See CLAUDE.md "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v45'
+// v46 — GOAL #130 (Psalm 63:2-9 Lauds caption reposition): the 2-line uncited
+// caption ('Гэм нүглийн…' / '…тэмүүлнэ.') is relocated out of the psalm body and
+// rendered as an uncited_caption header directly after the psalm title. The
+// /pray/[date]/lauds SSR HTML output changes (caption markup moves from a body
+// stanza phrase to the post-title header slot) → bump so existing PWA installs do
+// not serve stale HTML/asset. See CLAUDE.md "Service Worker 캐시 — 배포 회귀 1순위 리스크".
+const CACHE_VERSION = 'divine-office-v46'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
