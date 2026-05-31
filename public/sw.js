@@ -513,7 +513,13 @@
 // 의 SSR HTML 출력이 바뀌고(드롭다운/루브릭 마크업) gospel-canticle 섹션의
 // 클라이언트 hydration 동작이 추가됨 → 기존 PWA 설치본이 stale HTML/asset
 // 을 서빙하지 않도록 bump. CLAUDE.md "Service Worker 캐시" 참조.
-const CACHE_VERSION = 'divine-office-v44'
+// v45 — GOAL #105 (Psalm 114 psalm-prayer page-boundary truncation root-fix:
+// psalmPrayer restored to the complete text from the PDF source) + GOAL #115
+// (remove the closing Lord's-Prayer guidance rubric after intercessions + drop
+// the trailing "Амэн" from the Lord's Prayer body). Both change SSR HTML output
+// (prayer body text / rubric+amen markup) → bump so existing PWA installs do not
+// serve stale HTML/asset. See CLAUDE.md "Service Worker 캐시 — 배포 회귀 1순위 리스크".
+const CACHE_VERSION = 'divine-office-v45'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
