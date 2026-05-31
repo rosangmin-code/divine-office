@@ -122,6 +122,34 @@ describe.each(SOLEMNITIES)(
   },
 )
 
+describe('Trinity Sunday (2026-05-31) — concludingPrayer injection', () => {
+  it('/vespers renders Second Vespers collect with optional prayer metadata', async () => {
+    const h = await assembleHour('2026-05-31', 'vespers')
+    expect(h).not.toBeNull()
+
+    const cp = section(h!, 'concludingPrayer')
+    expect(cp.text).toContain('Өөрийн Үгийг илгээсэн')
+    expect(cp.alternateText).toContain('Төгс хүчит Эцэг')
+    expect(cp.page).toBe(745)
+    expect(cp.alternatePage).toBe(748)
+
+    expect(psalmRefs(h!)).toEqual(WEEK1_SUN_VESPERS)
+  })
+
+  it('/lauds renders Trinity collect with optional prayer metadata', async () => {
+    const h = await assembleHour('2026-05-31', 'lauds')
+    expect(h).not.toBeNull()
+
+    const cp = section(h!, 'concludingPrayer')
+    expect(cp.text).toContain('Өөрийн Үгийг илгээсэн')
+    expect(cp.alternateText).toContain('Төгс хүчит Эцэг')
+    expect(cp.page).toBe(745)
+    expect(cp.alternatePage).toBe(748)
+
+    expect(psalmRefs(h!)).toEqual(WEEK1_SUN_LAUDS)
+  })
+})
+
 describe('runaway-parse contamination truncated (firstVespers prayers)', () => {
   // The five Solemnities + Pentecost: their firstVespers concluding /
   // alternative-concluding prayer previously swallowed the whole Second
