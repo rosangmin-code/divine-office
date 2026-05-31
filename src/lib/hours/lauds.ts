@@ -70,6 +70,12 @@ export const assembleLauds: HourAssembler = (ctx) => {
     ctx.mergedPropers.gospelCanticleAntiphon ?? '',
     ctx.mergedPropers.gospelCanticleAntiphonPage,
     ctx.mergedPropers.gospelCanticleAntiphonRich,
+    // FR-168 (GOAL #90) — saturday-mary Benedictus 6-option dropdown.
+    // vespers/compline assemblers are untouched (no candidate data ships
+    // for those hours; the Marian memorial is Lauds-only per GOAL #91).
+    ctx.mergedPropers.gospelCanticleAntiphonCandidates,
+    ctx.mergedPropers.gospelCanticleAntiphonSelectedIndex,
+    ctx.mergedPropers.gospelCanticleAntiphonRubric,
   )
   if (canticle) sections.push(canticle)
 

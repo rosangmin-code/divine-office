@@ -508,7 +508,12 @@
 // HTML/asset cache so existing PWA installs do NOT serve a 404 from
 // stale `network-only` HTML or stale precache. See CLAUDE.md
 // "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v43'
+// v44 — FR-168 (GOAL #90): saturday-mary Lauds Benedictus 후렴 6옵션
+// 드롭다운 + 안내 루브릭 도입. /pray/[date]/lauds?celebration=saturday-mary
+// 의 SSR HTML 출력이 바뀌고(드롭다운/루브릭 마크업) gospel-canticle 섹션의
+// 클라이언트 hydration 동작이 추가됨 → 기존 PWA 설치본이 stale HTML/asset
+// 을 서빙하지 않도록 bump. CLAUDE.md "Service Worker 캐시" 참조.
+const CACHE_VERSION = 'divine-office-v44'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
