@@ -14,6 +14,8 @@
     "test:e2e:api": "playwright test api.spec.ts",
     "traceability": "node scripts/generate-test-fr-map.mjs",
     "traceability:check": "node scripts/generate-test-fr-map.mjs --check",
+    "verify:body-purity": "node scripts/verify-body-purity.js",
+    "verify:body-purity:check": "node scripts/verify-body-purity.js --check",
     "verify:first-vespers-ref": "node scripts/verify-first-vespers-ref-coverage.js",
     "verify:phrase-coverage": "node scripts/verify-phrase-coverage.js",
     "verify:phrase-coverage:check": "node scripts/verify-phrase-coverage.js --check"
