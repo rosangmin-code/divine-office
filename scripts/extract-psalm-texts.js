@@ -86,6 +86,37 @@ function isEndMarker(line) {
   return END_MARKERS.some(p => p.test(t))
 }
 
+const BODY_SKIP_PATTERNS = [
+  /^Төгсгөлийг дэг жаягийн дагуу дуусгана,\s*х\.\s*\d+\.?$/,
+]
+
+function isBodySkipLine(line) {
+  const t = line.trim()
+  return BODY_SKIP_PATTERNS.some(p => p.test(t))
+}
+
+function isLowercaseCyrillicContinuation(line) {
+  return /^[а-яёөү]/.test(line.charAt(0))
+}
+
+function isStandaloneDivineNameWrap(line, previousLine) {
+  const t = line.trim()
+  if (!/^ЭЗЭН,?$/.test(t)) return false
+  if (!previousLine) return false
+  // Targeted exception for vocative wraps like
+  // "Бидний эцэг өвөг Израилийн Тэнгэрбурхан" + "ЭЗЭН,".
+  // Do not merge broad uppercase acclamations in Revelation/Daniel.
+  if (!/Тэнгэрбурхан\s*$/.test(previousLine.trim())) return false
+  return !/[.!?…:;”»)]\s*$/.test(previousLine.trim())
+}
+
+function shouldMergeWrapContinuation(line, previousLine) {
+  return (
+    isLowercaseCyrillicContinuation(line) ||
+    isStandaloneDivineNameWrap(line, previousLine)
+  )
+}
+
 /**
  * Merge PDF column-wrap continuations into the previous line.
  *
@@ -102,9 +133,8 @@ function isEndMarker(line) {
 function mergeColumnWraps(stanza) {
   const out = []
   for (const line of stanza) {
-    const first = line.charAt(0)
-    const isLowerCyrillic = /^[а-яёөү]/.test(first)
-    if (out.length > 0 && isLowerCyrillic) {
+    const previousLine = out[out.length - 1]
+    if (out.length > 0 && shouldMergeWrapContinuation(line, previousLine)) {
       out[out.length - 1] = out[out.length - 1] + ' ' + line
     } else {
       out.push(line)
@@ -123,9 +153,9 @@ function mergeAcrossStanzaBoundaries(stanzas) {
   const out = []
   for (const stanza of stanzas) {
     if (stanza.length === 0) continue
-    const first = stanza[0].charAt(0)
-    const isLowerCyrillic = /^[а-яёөү]/.test(first)
-    if (out.length > 0 && isLowerCyrillic) {
+    const previousStanza = out[out.length - 1]
+    const previousLine = previousStanza?.[previousStanza.length - 1]
+    if (out.length > 0 && shouldMergeWrapContinuation(stanza[0], previousLine)) {
       const prev = out[out.length - 1]
       prev[prev.length - 1] = prev[prev.length - 1] + ' ' + stanza[0]
       for (let i = 1; i < stanza.length; i++) prev.push(stanza[i])
@@ -293,23 +323,39 @@ const PSALM63_CAPTION_LINES = [
   'Тэнгэрбурханыг хүсэн тэмүүлнэ.',
 ]
 
-function skipPsalm63Caption(lines, startIdx, ref) {
-  if (ref !== PSALM63_CAPTION_REF) return startIdx
-  // Collect the next `PSALM63_CAPTION_LINES.length` meaningful source lines
-  // (non-blank, non-noise) and require an exact, in-order match.
+const UNCITED_PREFACE_LINES_BY_REF = {
+  'Psalm 5:2-10, 12-13': [
+    'Үгийг зүрх сэтгэлийнхээ зочин болгон, хүлээн',
+    'авдаг тэдгээр нь цаглашгүй баяр баясгаланг',
+    'эдлэх болно',
+  ],
+}
+
+function skipExactLeadingLines(lines, startIdx, expectedLines) {
   const seen = []
   let i = startIdx
-  while (i < lines.length && seen.length < PSALM63_CAPTION_LINES.length) {
+  while (i < lines.length && seen.length < expectedLines.length) {
     const trimmed = lines[i].trim()
     if (!trimmed || isNoiseLine(lines[i])) { i++; continue }
     seen.push({ idx: i, text: trimmed })
     i++
   }
-  if (seen.length < PSALM63_CAPTION_LINES.length) return startIdx
-  const exact = seen.every((s, k) => s.text === PSALM63_CAPTION_LINES[k])
+  if (seen.length < expectedLines.length) return startIdx
+  const exact = seen.every((s, k) => s.text === expectedLines[k])
   if (!exact) return startIdx
-  // Advance to just past the last matched caption line.
   return seen[seen.length - 1].idx + 1
+}
+
+function skipPsalm63Caption(lines, startIdx, ref) {
+  if (ref !== PSALM63_CAPTION_REF) return startIdx
+  // Advance to just past the last matched caption line.
+  return skipExactLeadingLines(lines, startIdx, PSALM63_CAPTION_LINES)
+}
+
+function skipUncitedPreface(lines, startIdx, ref) {
+  const expectedLines = UNCITED_PREFACE_LINES_BY_REF[ref]
+  if (!expectedLines) return startIdx
+  return skipExactLeadingLines(lines, startIdx, expectedLines)
 }
 
 // ── Extract psalm body from text at a given position ──
@@ -351,6 +397,12 @@ function extractPsalmBody(lines, headerIdx, title, ownHeaderRegexes = [], ref = 
   // exact-text). NOP for every other ref — see `skipPsalm63Caption` above.
   i = skipPsalm63Caption(lines, i, ref)
 
+  // GOAL #172 D2: drop ref-keyed uncited prefaces that are printed after the
+  // title but before the actual psalm body and do not carry a parenthetical
+  // citation for `skipEpigraph` to detect. Exact-text only, to avoid removing
+  // legitimate uppercase acclamations at real body starts.
+  i = skipUncitedPreface(lines, i, ref)
+
   // Collect psalm body lines until end marker or next psalm/canticle header
   const bodyLines = []
   while (i < lines.length) {
@@ -369,8 +421,9 @@ function extractPsalmBody(lines, headerIdx, title, ownHeaderRegexes = [], ref = 
       if (!isOwnHeader) break
     }
 
-    // Skip noise
-    if (isNoiseLine(line)) { i++; continue }
+    // Skip noise and page-directive rubrics that can land inside body capture
+    // after column/page extraction drift.
+    if (isNoiseLine(line) || isBodySkipLine(line)) { i++; continue }
 
     // Keep the line (even blank lines for stanza detection)
     bodyLines.push(trimmed)
@@ -637,6 +690,14 @@ function main() {
 // GOAL #105 (spec §C7a) — export extractPsalmPrayer for direct unit testing and
 // guard main() so `require()` does NOT trigger a full re-extraction (which would
 // overwrite psalter-texts.json as a side effect of import).
-module.exports = { extractPsalmPrayer, PRAYER_TERMINAL_RE }
+module.exports = {
+  extractPsalmPrayer,
+  extractPsalmBody,
+  mergeColumnWraps,
+  mergeAcrossStanzaBoundaries,
+  isBodySkipLine,
+  shouldMergeWrapContinuation,
+  PRAYER_TERMINAL_RE,
+}
 
 if (require.main === module) main()
