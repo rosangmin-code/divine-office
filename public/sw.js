@@ -1,3 +1,11 @@
+// v50 — GOAL #210: hymn page-break stanza-drift correction deploy prep. 본
+// bump 는 `scripts/fix-hymn-pagebreak-stanza-drift.mjs` 의 20개 hymn 대상
+// 병합과 `src/data/loth/prayers/hymns/*.rich.json` + `src/data/loth/
+// ordinarium/hymns.json` 본문/phrase 재생성으로 영향 받는 시간경의 SSR HTML
+// 출력이 바뀌는 것을 반영한다. stale-cache 클라이언트가 cache-first 구 chunk
+// 로 구 본문을 계속 받는 회귀 방지를 위해 v49 → v50. SW 로직 변경 없음 —
+// navigation 은 `network-only` 유지, caches.put(html) 미도입. 자산 경로/
+// PRECACHE 대상(offline.html·icon.svg) 무변경.
 // v49 — GOAL #193: psalter body DATA correction deploy prep. 본 bump 는
 // `src/data/loth/psalter-texts.json` + `src/data/loth/prayers/commons/
 // psalter-texts.rich.json` 의 본문 데이터 교정(27개 page-break stanza 병합 +
@@ -546,7 +554,7 @@
 // stale Sunday-2nd-Vespers fallback). Both change SSR HTML output for Trinity
 // Sunday Vespers/Lauds -> bump so existing PWA installs do not serve stale
 // HTML/asset. See CLAUDE.md "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v49'
+const CACHE_VERSION = 'divine-office-v50'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 

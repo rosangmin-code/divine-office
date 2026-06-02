@@ -43,7 +43,7 @@
  *   node scripts/fix-hymn-pagebreak-stanza-drift.mjs --dry-run # preview
  *
  * Post-step (MANDATORY when --apply changed any rich.json file):
- *   node scripts/build-hymn-phrases-into-rich.mjs --ids 41,45,111
+ *   node scripts/build-hymn-phrases-into-rich.mjs --ids 8,14,21,23,27,37,42,48,55,69,71,77,79,86,93,99,115,117,119,122
  */
 
 import { readFileSync, writeFileSync } from 'node:fs'
@@ -88,6 +88,171 @@ const RICH_TARGETS = [
   },
 ]
 
+const GOAL210_RICH_TARGETS = [
+  {
+    hymnId: '8',
+    headBlockIdx: 2,
+    headFirstLine: 'Дахилт: Ертөнцийн Эзэний сургаалаар',
+    tailFirstLine: 'Өөрийн бие шигээ нэгнээ хайрлацгаая',
+    expectedHeadLineCount: 1,
+    expectedTailLineCount: 7,
+  },
+  {
+    hymnId: '14',
+    headBlockIdx: 2,
+    headFirstLine: 'Бядуучуудын Эцэг буугтун!',
+    tailFirstLine: 'Аятайхнаар та гийгүүлэгтүн!',
+    expectedHeadLineCount: 11,
+    expectedTailLineCount: 16,
+  },
+  {
+    hymnId: '21',
+    headBlockIdx: 0,
+    headFirstLine: 'Баярлан магтан хүндэтгэцгээе сүр жавхлантай',
+    tailFirstLine: 'Булаг мэтээр амьдрал ундарч далай мэтээр',
+    expectedHeadLineCount: 17,
+    expectedTailLineCount: 6,
+  },
+  {
+    hymnId: '23',
+    headBlockIdx: 0,
+    headFirstLine: 'Өө өө өө би Таныг магтъя',
+    tailFirstLine: 'Бидний итгэлийг аваач Есүс ээ',
+    expectedHeadLineCount: 8,
+    expectedTailLineCount: 5,
+  },
+  {
+    hymnId: '27',
+    headBlockIdx: 0,
+    headFirstLine: '1.Бидний нүглийг уучилаач, биднийг өршөөгөөч',
+    tailFirstLine: 'Гэрэл цацарсан хайраа бидэн рүү тусгаач',
+    expectedHeadLineCount: 3,
+    expectedTailLineCount: 1,
+  },
+  {
+    hymnId: '37',
+    headBlockIdx: 0,
+    headFirstLine: 'Дээдийн дээд Хаадын Хаан болсон Эзэн',
+    tailFirstLine: 'Зүрх сэтгэлийн гүнээс магтъя',
+    expectedHeadLineCount: 9,
+    expectedTailLineCount: 3,
+  },
+  {
+    hymnId: '42',
+    headBlockIdx: 0,
+    headFirstLine: 'Есүс хамгийн нандин нэр юм аа',
+    tailFirstLine: 'ӨӨ Есүс ээ чанга дуугаар өргөн магтъя',
+    expectedHeadLineCount: 10,
+    expectedTailLineCount: 2,
+  },
+  {
+    hymnId: '48',
+    headBlockIdx: 0,
+    headFirstLine: 'Зовлонгийн үе ойртон ирэхэд',
+    tailFirstLine: 'Айдсын дунд цустай хөлсөө урсган',
+    expectedHeadLineCount: 2,
+    expectedTailLineCount: 2,
+  },
+  {
+    hymnId: '55',
+    headBlockIdx: 0,
+    headFirstLine: 'Их Эзэний минь цус Их Эзэний минь цус',
+    tailFirstLine: 'Аврагч Эзэний нандин тэр цус Ариун тахил юм',
+    expectedHeadLineCount: 2,
+    expectedTailLineCount: 12,
+  },
+  {
+    hymnId: '69',
+    headBlockIdx: 0,
+    headFirstLine: 'Намайг өөрчлөөч намайг өөрчлөөч',
+    tailFirstLine: 'Төгс биелүүлж чадахын тулд',
+    expectedHeadLineCount: 2,
+    expectedTailLineCount: 5,
+  },
+  {
+    hymnId: '71',
+    headBlockIdx: 2,
+    headFirstLine: 'Дахилт:',
+    tailFirstLine: 'Эрдэнийн эх дэлхийгээ хамгаалан',
+    expectedHeadLineCount: 6,
+    expectedTailLineCount: 3,
+  },
+  {
+    hymnId: '77',
+    headBlockIdx: 2,
+    headFirstLine: '1. Эзэнийг магтан дуулагтун',
+    tailFirstLine: 'Бүх ард түмнүүдээ',
+    expectedHeadLineCount: 6,
+    expectedTailLineCount: 2,
+  },
+  {
+    hymnId: '79',
+    headBlockIdx: 0,
+    headFirstLine: '(Veni, creator Spiritus)',
+    tailFirstLine: 'Ариун Сүнсэнд жавхланг',
+    expectedHeadLineCount: 26,
+    expectedTailLineCount: 3,
+  },
+  {
+    hymnId: '86',
+    headBlockIdx: 0,
+    headFirstLine: 'Та бол хайрыг авахын төлөө төрсөн хүн билээ',
+    tailFirstLine: 'Энэ хорвоо дэлхий дээр таны амьдарч байгаа',
+    expectedHeadLineCount: 7,
+    expectedTailLineCount: 7,
+  },
+  {
+    hymnId: '93',
+    headBlockIdx: 0,
+    headFirstLine: '1. Танд хайртай миний Есүсээ Танд хайртай',
+    tailFirstLine: 'Миний хайртай охин Би чамайг ерөөж байна',
+    expectedHeadLineCount: 5,
+    expectedTailLineCount: 1,
+  },
+  {
+    hymnId: '99',
+    headBlockIdx: 0,
+    headFirstLine: 'Ундран оргилох булаг мэт',
+    tailFirstLine: 'Зовлонт сэтгэлийн хүлээсийг тайлна',
+    expectedHeadLineCount: 3,
+    expectedTailLineCount: 7,
+  },
+  {
+    hymnId: '115',
+    headBlockIdx: 8,
+    headFirstLine: '4. Энэхэн нялх хөвгүүн',
+    tailFirstLine: 'Эгээрэл ба өршөөлийн',
+    expectedHeadLineCount: 4,
+    expectedTailLineCount: 2,
+  },
+  {
+    hymnId: '117',
+    headBlockIdx: 12,
+    headFirstLine: '6. Эгээрэл ба туйлын их баяртай',
+    tailFirstLine: 'Энсэн гуйн хүлээж суумуй.',
+    expectedHeadLineCount: 3,
+    expectedTailLineCount: 1,
+  },
+  {
+    hymnId: '119',
+    headBlockIdx: 6,
+    headFirstLine: '2. Агуу Эзэнийг магтан дуулахад',
+    tailFirstLine: 'Алдарт Эзэний энэрэнгүй сэтгэл',
+    expectedHeadLineCount: 2,
+    expectedTailLineCount: 2,
+  },
+  {
+    hymnId: '122',
+    headBlockIdx: 0,
+    headFirstLine: 'Эзэнийг магтан хүндэтгэн',
+    tailFirstLine: 'Миний бүх зүйл болсон Их Эзэн',
+    expectedHeadLineCount: 2,
+    expectedTailLineCount: 13,
+  },
+]
+
+const ALL_RICH_TARGETS = [...RICH_TARGETS, ...GOAL210_RICH_TARGETS]
+
 // Each plain-text target points at one empty line inside an
 // ordinarium/hymns.json text field that should be spliced out. `lineIdx`
 // is the index of the empty line in the `text.split('\n')` array; the two
@@ -114,6 +279,131 @@ const PLAIN_TARGETS = [
     nextLine: 'Үзүүлэхүй дор тэд тийн',
   },
 ]
+
+const GOAL210_PLAIN_TARGETS = [
+  {
+    hymnId: '8',
+    lineIdx: 5,
+    prevLine: 'Дахилт: Ертөнцийн Эзэний сургаалаар',
+    nextLine: 'Өөрийн бие шигээ нэгнээ хайрлацгаая',
+  },
+  {
+    hymnId: '14',
+    lineIdx: 15,
+    prevLine: 'Алив сүсэгтний сэтгэлийг',
+    nextLine: 'Аятайхнаар та гийгүүлэгтүн!',
+  },
+  {
+    hymnId: '21',
+    lineIdx: 17,
+    prevLine: 'учраас',
+    nextLine: 'Булаг мэтээр амьдрал ундарч далай мэтээр',
+  },
+  {
+    hymnId: '23',
+    lineIdx: 8,
+    prevLine: 'Өө өө Бид Tаны хайраар амьдарьяа',
+    nextLine: 'Бидний итгэлийг аваач Есүс ээ',
+  },
+  {
+    hymnId: '27',
+    lineIdx: 3,
+    prevLine: 'Гэмт амьдралаас минь биднийг татаач',
+    nextLine: 'Гэрэл цацарсан хайраа бидэн рүү тусгаач',
+  },
+  {
+    hymnId: '37',
+    lineIdx: 9,
+    prevLine: 'Магтан дуулъя Эзэний нэрийг',
+    nextLine: 'Зүрх сэтгэлийн гүнээс магтъя',
+  },
+  {
+    hymnId: '42',
+    lineIdx: 10,
+    prevLine: 'Есүс Таны хайр хязгааргүй юм аа',
+    nextLine: 'ӨӨ Есүс ээ чанга дуугаар өргөн магтъя',
+  },
+  {
+    hymnId: '48',
+    lineIdx: 2,
+    prevLine: 'Есүс Эзэн ууланд очжээ',
+    nextLine: 'Айдсын дунд цустай хөлсөө урсган',
+  },
+  {
+    hymnId: '55',
+    lineIdx: 2,
+    prevLine: 'Хүч чадлыг надад өглөө',
+    nextLine: 'Аврагч Эзэний нандин тэр цус Ариун тахил юм',
+  },
+  {
+    hymnId: '69',
+    lineIdx: 2,
+    prevLine: 'Таны дуудсан дуудлагыг',
+    nextLine: 'Төгс биелүүлж чадахын тулд',
+  },
+  {
+    hymnId: '71',
+    lineIdx: 10,
+    prevLine: 'Энэрэлт Эзэний үгийг түгээж',
+    nextLine: 'Эрдэнийн эх дэлхийгээ хамгаалан',
+  },
+  {
+    hymnId: '77',
+    lineIdx: 7,
+    prevLine: '*сайнмэдээг тунхаглагтун',
+    nextLine: 'Бүх ард түмнүүдээ ',
+  },
+  {
+    hymnId: '79',
+    lineIdx: 26,
+    prevLine: 'Эцэг, Хөвгүүн хийгээд',
+    nextLine: 'Ариун Сүнсэнд жавхланг',
+  },
+  {
+    hymnId: '86',
+    lineIdx: 7,
+    prevLine: 'гарган',
+    nextLine: 'Энэ хорвоо дэлхий дээр таны амьдарч байгаа',
+  },
+  {
+    hymnId: '93',
+    lineIdx: 5,
+    prevLine: 'Миний хайртай хүү Би чамайг сайн мэднэ',
+    nextLine: 'Миний хайртай охин Би чамайг ерөөж байна',
+  },
+  {
+    hymnId: '99',
+    lineIdx: 3,
+    prevLine: 'Хүчит аварга хүрхрээ мэт тэнгэрээс асгарч',
+    nextLine: 'Зовлонт сэтгэлийн хүлээсийг тайлна',
+  },
+  {
+    hymnId: '115',
+    lineIdx: 25,
+    prevLine: 'Эргүү хорыг засч',
+    nextLine: 'Эгээрэл ба өршөөлийн',
+  },
+  {
+    hymnId: '117',
+    lineIdx: 25,
+    prevLine: 'Энх жаргалын Ариун Сүнс буухуйг',
+    nextLine: 'Энсэн гуйн хүлээж суумуй.',
+  },
+  {
+    hymnId: '119',
+    lineIdx: 9,
+    prevLine: 'Айх зүйл бидэнд байхгүй',
+    nextLine: 'Алдарт Эзэний энэрэнгүй сэтгэл',
+  },
+  {
+    hymnId: '122',
+    lineIdx: 2,
+    prevLine: 'Миний хэлэхийг хүсэж буй үг нь Би Танд хайртай',
+    nextLine: 'Миний бүх зүйл болсон Их Эзэн',
+  },
+]
+
+const ALL_PLAIN_TARGETS = [...PLAIN_TARGETS, ...GOAL210_PLAIN_TARGETS]
 
 // ── Helpers ──────────────────────────────────────────────────────────────
 
@@ -308,7 +598,7 @@ function main() {
   let richMerged = 0
   let richNoop = 0
   let richError = 0
-  for (const t of RICH_TARGETS) {
+  for (const t of ALL_RICH_TARGETS) {
     const r = processRichTarget(t)
     if (r.status === 'merged') richMerged += 1
     else if (r.status === 'noop') richNoop += 1
@@ -318,7 +608,7 @@ function main() {
 
   console.log()
   console.log('ordinarium/hymns.json targets:')
-  const plainResults = processPlainTargets(PLAIN_TARGETS)
+  const plainResults = processPlainTargets(ALL_PLAIN_TARGETS)
   let plainMerged = 0
   let plainNoop = 0
   let plainError = 0
@@ -334,7 +624,7 @@ function main() {
   if (richMerged > 0) {
     console.log()
     console.log('NEXT STEP: re-run F-X3 builder so merged stanzas get fresh phrases:')
-    console.log('  node scripts/build-hymn-phrases-into-rich.mjs --ids 41,45,111')
+    console.log('  node scripts/build-hymn-phrases-into-rich.mjs --ids 8,14,21,23,27,37,42,48,55,69,71,77,79,86,93,99,115,117,119,122')
   }
 
   if (richError + plainError > 0) {

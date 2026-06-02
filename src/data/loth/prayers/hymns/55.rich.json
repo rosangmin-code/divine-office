@@ -21,31 +21,7 @@
               }
             ],
             "indent": 0
-          }
-        ],
-        "phrases": [
-          {
-            "lineRange": [
-              0,
-              0
-            ],
-            "indent": 0
           },
-          {
-            "lineRange": [
-              1,
-              1
-            ],
-            "indent": 0
-          }
-        ]
-      },
-      {
-        "kind": "divider"
-      },
-      {
-        "kind": "stanza",
-        "lines": [
           {
             "spans": [
               {
@@ -237,6 +213,20 @@
             "lineRange": [
               11,
               11
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              12,
+              12
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              13,
+              13
             ],
             "indent": 0
           }

@@ -83,6 +83,24 @@
               }
             ],
             "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Бүх ард түмнүүдээ"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "*сайнмэдээг тунхаглагтун"
+              }
+            ],
+            "indent": 0
           }
         ],
         "phrases": [
@@ -127,46 +145,18 @@
               5
             ],
             "indent": 0
-          }
-        ]
-      },
-      {
-        "kind": "divider"
-      },
-      {
-        "kind": "stanza",
-        "lines": [
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Бүх ард түмнүүдээ"
-              }
-            ],
-            "indent": 0
           },
           {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "*сайнмэдээг тунхаглагтун"
-              }
-            ],
-            "indent": 0
-          }
-        ],
-        "phrases": [
-          {
             "lineRange": [
-              0,
-              0
+              6,
+              6
             ],
             "indent": 0
           },
           {
             "lineRange": [
-              1,
-              1
+              7,
+              7
             ],
             "indent": 0
           }
