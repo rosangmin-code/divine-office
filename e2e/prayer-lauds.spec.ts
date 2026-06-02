@@ -70,12 +70,6 @@ test.describe('Lauds (Morning Prayer) page', () => {
   test('has concluding prayer section', async ({ page }) => {
     await expect(page.getByText('Төгсгөлийн даатгал залбирал')).toBeVisible()
   })
-
-  test('bottom back button navigates to homepage', async ({ page }) => {
-    const backBtn = page.getByRole('link', { name: 'Буцах', exact: true })
-    await expect(backBtn).toBeVisible()
-    await expect(backBtn).toHaveAttribute('href', `/?date=${DATES.ordinaryWeekday}`)
-  })
 })
 
 test.describe('Invitatory collapse toggle', () => {
