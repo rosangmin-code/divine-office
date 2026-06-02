@@ -112,7 +112,7 @@ describe('Pilot snapshot — rich.json post-inject', () => {
   // the same commit, then bump CACHE (v26 → v27).
   const EXPECTED = {
     'Psalm 63:2-9': {
-      0: [2, 8], // text-based old [8] became PDF-based [2, 8]
+      0: [6], // PDF y-gap derived [6] (was stale [2,8] PoC; see GOAL204-ps63-pb.md)
       1: [6], // new finding
     },
     'Psalm 42:2-6': {
