@@ -81,4 +81,107 @@ describe('extract-psalm-texts boundary guards', () => {
       'Түүнд зориулан сүйт бүсгүй нь гоёжээ.',
     ])
   })
+
+  it('merges Ps24 uppercase continuation across page/header-noise-bounded gap', () => {
+    const lines = [
+      'Дуулал 24:1-10',
+      'ЭЗЭНий гэрт хэн очиж болох вэ?',
+      'Иаковын Тэнгэрбурхан,',
+      '',
+      '68',
+      'Даваа гарагийн өглөө',
+      '',
+      'Таны царайг хайдаг хүмүүс юм.',
+      'Эцэг, Хүү, Ариун Сүнсэнд жавхланг…',
+    ]
+
+    const result = extractPsalmBody(
+      lines,
+      0,
+      'ЭЗЭНий гэрт хэн очиж болох вэ?',
+      [],
+      'Psalm 24:1-10',
+    )
+
+    expect(result.stanzas).toEqual([
+      ['Иаковын Тэнгэрбурхан, Таны царайг хайдаг хүмүүс юм.'],
+    ])
+  })
+
+  it('merges Ps29 uppercase continuation across page/header-noise-bounded gap', () => {
+    const lines = [
+      'Дуулал 29:1-11',
+      'ЭЗЭНий дуу хоолой',
+      'Сирионыг зэрлэг үхрийн тугал шиг',
+      '',
+      '116',
+      'Мягмар гарагийн орой',
+      '',
+      'Тэрээр оодгонуулдаг билээ.',
+      'Эцэг, Хүү, Ариун Сүнсэнд жавхланг…',
+    ]
+
+    const result = extractPsalmBody(
+      lines,
+      0,
+      'ЭЗЭНий дуу хоолой',
+      [],
+      'Psalm 29:1-11',
+    )
+
+    expect(result.stanzas).toEqual([
+      ['Сирионыг зэрлэг үхрийн тугал шиг Тэрээр оодгонуулдаг билээ.'],
+    ])
+  })
+
+  it('preserves genuine stanza breaks when the gap is not page/header noise', () => {
+    const lines = [
+      'Дуулал 99:1-9',
+      'ЭЗЭН бол хаан',
+      'ЭЗЭН Сионд агуу бөгөөд',
+      '',
+      'Ард түмнүүдийн дээр өргөмжлөгдсөн.',
+      'Эцэг, Хүү, Ариун Сүнсэнд жавхланг…',
+    ]
+
+    const result = extractPsalmBody(
+      lines,
+      0,
+      'ЭЗЭН бол хаан',
+      [],
+      'Psalm 99:1-9',
+    )
+
+    expect(result.stanzas).toEqual([
+      ['ЭЗЭН Сионд агуу бөгөөд'],
+      ['Ард түмнүүдийн дээр өргөмжлөгдсөн.'],
+    ])
+  })
+
+  it('preserves page/header-noise-bounded breaks after terminal punctuation', () => {
+    const lines = [
+      'Дуулал 33:1-9',
+      'Магтаалын дуу',
+      'Ятгаар Түүнд магтаал өргө.',
+      '',
+      '180',
+      'Баасан гарагийн өглөө',
+      '',
+      'Шинэ дууг Түүнд дуулагтун.',
+      'Эцэг, Хүү, Ариун Сүнсэнд жавхланг…',
+    ]
+
+    const result = extractPsalmBody(
+      lines,
+      0,
+      'Магтаалын дуу',
+      [],
+      'Psalm 33:1-9',
+    )
+
+    expect(result.stanzas).toEqual([
+      ['Ятгаар Түүнд магтаал өргө.'],
+      ['Шинэ дууг Түүнд дуулагтун.'],
+    ])
+  })
 })

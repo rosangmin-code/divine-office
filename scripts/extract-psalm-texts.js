@@ -49,7 +49,7 @@ const SKIP_PATTERNS = [
   /^\d+\s+долоо хоног/,             // "N долоо хоног" page headers
   /^\d+\s+дүгээр долоо хоног/,      // "N дүгээр долоо хоног"
   /^\d+\s+дугаар долоо хоног/,
-  /гарагийн\s+(өглөө|орой)/i,       // "Даваа гарагийн өглөө" etc.
+  /гарагийн\s+(өглөө|орой|өдөр)/i,  // "Даваа гарагийн өглөө" etc.
   /^\d+\s+1 дүгээр/,
   /^\d+\s+2 дугаар/,
   /^\d+\s+3 дугаар/,
@@ -117,6 +117,14 @@ function shouldMergeWrapContinuation(line, previousLine) {
   )
 }
 
+function isIncompleteBodyLine(line) {
+  return !/[.!?…:][)”»)]*\s*$/.test((line || '').trim())
+}
+
+function isNoiseBoundedGap(tokens) {
+  return tokens.includes('blank') && tokens.includes('noise')
+}
+
 /**
  * Merge PDF column-wrap continuations into the previous line.
  *
@@ -151,11 +159,16 @@ function mergeColumnWraps(stanza) {
  */
 function mergeAcrossStanzaBoundaries(stanzas) {
   const out = []
-  for (const stanza of stanzas) {
+  for (const entry of stanzas) {
+    const stanza = Array.isArray(entry) ? entry : entry.lines
     if (stanza.length === 0) continue
     const previousStanza = out[out.length - 1]
     const previousLine = previousStanza?.[previousStanza.length - 1]
-    if (out.length > 0 && shouldMergeWrapContinuation(stanza[0], previousLine)) {
+    const hasGapMetadata = !Array.isArray(entry)
+    const shouldMerge = hasGapMetadata
+      ? entry.gapBeforeNoiseBounded && isIncompleteBodyLine(previousLine)
+      : shouldMergeWrapContinuation(stanza[0], previousLine)
+    if (out.length > 0 && shouldMerge) {
       const prev = out[out.length - 1]
       prev[prev.length - 1] = prev[prev.length - 1] + ' ' + stanza[0]
       for (let i = 1; i < stanza.length; i++) prev.push(stanza[i])
@@ -403,8 +416,10 @@ function extractPsalmBody(lines, headerIdx, title, ownHeaderRegexes = [], ref = 
   // legitimate uppercase acclamations at real body starts.
   i = skipUncitedPreface(lines, i, ref)
 
-  // Collect psalm body lines until end marker or next psalm/canticle header
-  const bodyLines = []
+  // Collect psalm body tokens until end marker or next psalm/canticle header.
+  // Keep blank/noise distinction so page/header-bounded gaps can be
+  // distinguished from genuine stanza breaks during grouping.
+  const bodyTokens = []
   while (i < lines.length) {
     const line = lines[i]
     const trimmed = line.trim()
@@ -421,30 +436,58 @@ function extractPsalmBody(lines, headerIdx, title, ownHeaderRegexes = [], ref = 
       if (!isOwnHeader) break
     }
 
-    // Skip noise and page-directive rubrics that can land inside body capture
-    // after column/page extraction drift.
-    if (isNoiseLine(line) || isBodySkipLine(line)) { i++; continue }
+    // Skip page-directive rubrics that can land inside body capture after
+    // column/page extraction drift; they are semantic noise, not page-break
+    // noise that should authorize stanza-boundary absorption.
+    if (isBodySkipLine(line)) { i++; continue }
 
-    // Keep the line (even blank lines for stanza detection)
-    bodyLines.push(trimmed)
+    if (isNoiseLine(line)) {
+      bodyTokens.push({ type: 'noise' })
+      i++
+      continue
+    }
+
+    if (trimmed === '') {
+      bodyTokens.push({ type: 'blank' })
+      i++
+      continue
+    }
+
+    bodyTokens.push({ type: 'line', text: trimmed })
     i++
   }
 
-  // Group into stanzas by blank lines, then merge PDF column-wrap continuations.
+  // Group into stanzas by blank/noise gaps. Each stanza records whether the
+  // immediately preceding gap contained page/header noise; cross-stanza merge
+  // may absorb that boundary when the prior body line is incomplete.
   const stanzas = []
   let currentStanza = []
-  for (const line of bodyLines) {
-    if (line === '') {
-      if (currentStanza.length > 0) {
-        stanzas.push(mergeColumnWraps(currentStanza))
-        currentStanza = []
+  let currentGapBeforeNoiseBounded = false
+  let pendingGapTokens = []
+  for (const token of bodyTokens) {
+    if (token.type === 'line') {
+      if (currentStanza.length === 0 && pendingGapTokens.length > 0) {
+        currentGapBeforeNoiseBounded = isNoiseBoundedGap(pendingGapTokens)
+        pendingGapTokens = []
       }
+      currentStanza.push(token.text)
     } else {
-      currentStanza.push(line)
+      if (currentStanza.length > 0) {
+        stanzas.push({
+          lines: mergeColumnWraps(currentStanza),
+          gapBeforeNoiseBounded: currentGapBeforeNoiseBounded,
+        })
+        currentStanza = []
+        currentGapBeforeNoiseBounded = false
+      }
+      if (stanzas.length > 0) pendingGapTokens.push(token.type)
     }
   }
   if (currentStanza.length > 0) {
-    stanzas.push(mergeColumnWraps(currentStanza))
+    stanzas.push({
+      lines: mergeColumnWraps(currentStanza),
+      gapBeforeNoiseBounded: currentGapBeforeNoiseBounded,
+    })
   }
 
   return { stanzas: mergeAcrossStanzaBoundaries(stanzas), endIdx: i }
