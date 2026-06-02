@@ -42,11 +42,22 @@ describe('FR-160-C psalter-headers catalog', () => {
       expect(Array.isArray(entry.entries)).toBe(true)
       expect(entry.entries.length).toBeGreaterThan(0)
       for (const e of entry.entries) {
-        expect(['patristic_preface', 'nt_typological']).toContain(e.kind)
-        expect(typeof e.attribution).toBe('string')
+        expect([
+          'patristic_preface',
+          'nt_typological',
+          'uncited_caption',
+        ]).toContain(e.kind)
         expect(typeof e.preface_text).toBe('string')
-        expect(e.attribution.length).toBeGreaterThan(0)
         expect(e.preface_text.length).toBeGreaterThan(0)
+        if (
+          e.kind === 'patristic_preface' ||
+          e.kind === 'nt_typological'
+        ) {
+          expect(typeof e.attribution).toBe('string')
+          expect(e.attribution.length).toBeGreaterThan(0)
+        } else {
+          expect(e.attribution).toBeUndefined()
+        }
       }
     }
   })
@@ -119,13 +130,21 @@ describe('FR-160-C psalter-headers catalog', () => {
     expect(violations).toEqual([])
   })
 
-  it('handles refs that are in psalter-texts.json but have no header', () => {
-    // Psalm 63:2-9 is a canonical psalter ref — catalog typically does not
-    // author a header for every psalm. If absent → null (loader contract).
-    const raw = JSON.parse(readFileSync(CATALOG_PATH, 'utf-8'))
-    if (!raw.refs['Psalm 63:2-9']) {
-      expect(loadPsalterHeaderRich('Psalm 63:2-9')).toBeNull()
-    }
+  it('loads Psalm 63 uncited caption without attribution', () => {
+    // GOAL #130 moved this uncited PDF caption out of the psalm body and
+    // into a dedicated header entry. The two lines are verbatim from
+    // parsed_data/full_pdf.txt:1812-1813.
+    const header = loadPsalterHeaderRich('Psalm 63:2-9')
+
+    expect(header).not.toBeNull()
+    expect(header!.kind).toBe('uncited_caption')
+    expect(header!.preface_text).toContain(
+      'Гэм нүглийн харанхуйгаас салсан хэнбугай ч',
+    )
+    expect(header!.preface_text).toContain(
+      'Тэнгэрбурханыг хүсэн тэмүүлнэ.',
+    )
+    expect(header!.attribution).toBeUndefined()
   })
 
   // F-X9 (#362) invariant — preface_text must NOT carry the PDF title prefix
@@ -232,6 +251,7 @@ describe('FR-160-C psalter-headers catalog', () => {
         },
       ][]) {
         for (const e of refEntry.entries) {
+          if (!e.attribution) continue
           // Match the same shape the renderer emits and the extractor
           // strips: optional `харьцуул.\s+` cf-prefix + attribution +
           // optional trailing period.
