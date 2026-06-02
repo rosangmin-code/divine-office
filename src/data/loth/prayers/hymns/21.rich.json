@@ -156,6 +156,60 @@
               }
             ],
             "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Булаг мэтээр амьдрал ундарч далай мэтээр"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "бялхсан"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Агуу Эцгийн хайр ивээл дор бид нар нөхөд"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "болсон тул"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ахан дүүсээ хайрлан байхад Эзэн минь ээ хамт"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "байгаач"
+              }
+            ],
+            "indent": 0
           }
         ],
         "phrases": [
@@ -228,89 +282,25 @@
               16
             ],
             "indent": 0
-          }
-        ]
-      },
-      {
-        "kind": "divider"
-      },
-      {
-        "kind": "stanza",
-        "lines": [
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Булаг мэтээр амьдрал ундарч далай мэтээр"
-              }
-            ],
-            "indent": 0
           },
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "бялхсан"
-              }
-            ],
-            "indent": 0
-          },
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Агуу Эцгийн хайр ивээл дор бид нар нөхөд"
-              }
-            ],
-            "indent": 0
-          },
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "болсон тул"
-              }
-            ],
-            "indent": 0
-          },
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Ахан дүүсээ хайрлан байхад Эзэн минь ээ хамт"
-              }
-            ],
-            "indent": 0
-          },
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "байгаач"
-              }
-            ],
-            "indent": 0
-          }
-        ],
-        "phrases": [
           {
             "lineRange": [
-              0,
-              1
+              17,
+              18
             ],
             "indent": 0
           },
           {
             "lineRange": [
-              2,
-              3
+              19,
+              20
             ],
             "indent": 0
           },
           {
             "lineRange": [
-              4,
-              5
+              21,
+              22
             ],
             "indent": 0
           }

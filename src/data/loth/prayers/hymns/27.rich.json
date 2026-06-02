@@ -30,6 +30,15 @@
               }
             ],
             "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Гэрэл цацарсан хайраа бидэн рүү тусгаач"
+              }
+            ],
+            "indent": 0
           }
         ],
         "phrases": [
@@ -53,30 +62,11 @@
               2
             ],
             "indent": 0
-          }
-        ]
-      },
-      {
-        "kind": "divider"
-      },
-      {
-        "kind": "stanza",
-        "lines": [
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Гэрэл цацарсан хайраа бидэн рүү тусгаач"
-              }
-            ],
-            "indent": 0
-          }
-        ],
-        "phrases": [
+          },
           {
             "lineRange": [
-              0,
-              0
+              3,
+              3
             ],
             "indent": 0
           }

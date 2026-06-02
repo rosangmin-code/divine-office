@@ -66,59 +66,7 @@
               }
             ],
             "indent": 0
-          }
-        ],
-        "phrases": [
-          {
-            "lineRange": [
-              0,
-              0
-            ],
-            "indent": 0
           },
-          {
-            "lineRange": [
-              1,
-              1
-            ],
-            "indent": 0
-          },
-          {
-            "lineRange": [
-              2,
-              2
-            ],
-            "indent": 0
-          },
-          {
-            "lineRange": [
-              3,
-              3
-            ],
-            "indent": 0
-          },
-          {
-            "lineRange": [
-              4,
-              4
-            ],
-            "indent": 0
-          },
-          {
-            "lineRange": [
-              5,
-              6
-            ],
-            "indent": 0
-          }
-        ]
-      },
-      {
-        "kind": "divider"
-      },
-      {
-        "kind": "stanza",
-        "lines": [
           {
             "spans": [
               {
@@ -187,6 +135,13 @@
           {
             "lineRange": [
               0,
+              0
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              1,
               1
             ],
             "indent": 0
@@ -215,14 +170,49 @@
           {
             "lineRange": [
               5,
-              5
+              6
             ],
             "indent": 0
           },
           {
             "lineRange": [
-              6,
-              6
+              7,
+              8
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              9,
+              9
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              10,
+              10
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              11,
+              11
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              12,
+              12
+            ],
+            "indent": 0
+          },
+          {
+            "lineRange": [
+              13,
+              13
             ],
             "indent": 0
           }

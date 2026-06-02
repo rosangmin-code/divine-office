@@ -93,6 +93,24 @@
               }
             ],
             "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "ӨӨ Есүс ээ чанга дуугаар өргөн магтъя"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Хамгийн нандин Түүний нэр Есүс"
+              }
+            ],
+            "indent": 0
           }
         ],
         "phrases": [
@@ -165,46 +183,18 @@
               9
             ],
             "indent": 0
-          }
-        ]
-      },
-      {
-        "kind": "divider"
-      },
-      {
-        "kind": "stanza",
-        "lines": [
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "ӨӨ Есүс ээ чанга дуугаар өргөн магтъя"
-              }
-            ],
-            "indent": 0
           },
           {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Хамгийн нандин Түүний нэр Есүс"
-              }
-            ],
-            "indent": 0
-          }
-        ],
-        "phrases": [
-          {
             "lineRange": [
-              0,
-              0
+              10,
+              10
             ],
             "indent": 0
           },
           {
             "lineRange": [
-              1,
-              1
+              11,
+              11
             ],
             "indent": 0
           }

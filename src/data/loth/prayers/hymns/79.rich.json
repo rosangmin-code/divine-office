@@ -237,6 +237,33 @@
               }
             ],
             "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Ариун Сүнсэнд жавхланг"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Анхан цагт байсан мэт"
+              }
+            ],
+            "indent": 0
+          },
+          {
+            "spans": [
+              {
+                "kind": "text",
+                "text": "Аливаа цагт болготугай! Амэн."
+              }
+            ],
+            "indent": 0
           }
         ],
         "phrases": [
@@ -421,62 +448,25 @@
               25
             ],
             "indent": 0
-          }
-        ]
-      },
-      {
-        "kind": "divider"
-      },
-      {
-        "kind": "stanza",
-        "lines": [
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Ариун Сүнсэнд жавхланг"
-              }
-            ],
-            "indent": 0
           },
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Анхан цагт байсан мэт"
-              }
-            ],
-            "indent": 0
-          },
-          {
-            "spans": [
-              {
-                "kind": "text",
-                "text": "Аливаа цагт болготугай! Амэн."
-              }
-            ],
-            "indent": 0
-          }
-        ],
-        "phrases": [
           {
             "lineRange": [
-              0,
-              0
+              26,
+              26
             ],
             "indent": 0
           },
           {
             "lineRange": [
-              1,
-              1
+              27,
+              27
             ],
             "indent": 0
           },
           {
             "lineRange": [
-              2,
-              2
+              28,
+              28
             ],
             "indent": 0
           }
