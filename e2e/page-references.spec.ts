@@ -226,20 +226,6 @@ test.describe('PDF page references', () => {
       const canvas = page.locator('[data-role="pdf-canvas"]')
       await expect(canvas).toBeVisible({ timeout: 15_000 })
       await expect(canvas).toHaveAttribute('data-book-page', '58')
-      await expect(page.getByRole('button', { name: /Буцах/ })).toBeVisible()
-    })
-
-    test('Буцах button returns to the prayer page', async ({ page }) => {
-      await presetPageRefs(page, true)
-      await page.goto(LAUDS_URL)
-      await page.waitForSelector('article')
-
-      const link = page.locator('[data-role="page-ref-link"]', { hasText: /\(х\.\s*58\)/ }).first()
-      await link.click()
-      await expect(page).toHaveURL(/\/pdf\/58$/)
-
-      await page.getByRole('button', { name: /Буцах/ }).click()
-      await expect(page).toHaveURL(new RegExp(LAUDS_URL.replace(/\//g, '\\/') + '$'))
     })
   })
 
@@ -282,7 +268,7 @@ test.describe('PDF page references', () => {
   })
 
   // FR-017j: PDF viewer UX rewrite — fit-to-width canvas, swipe + keyboard
-  // navigation, floating Буцах, page indicator with aria-live.
+  // navigation, page indicator with aria-live.
   // @fr FR-017j
   test.describe('PDF viewer UX (FR-017j)', () => {
     async function gotoViewer(page: Page, bookPage: number): Promise<void> {

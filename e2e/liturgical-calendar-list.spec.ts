@@ -181,9 +181,8 @@ test.describe.skip('Liturgical calendar list — 인터랙션 (P2 inline expand)
     await firstHourLink.click()
     await expect(page).toHaveURL(new RegExp(`/pray/${TODAY}/`))
 
-    // Back link on the pray page → returns to / with the anchor preserved.
-    // The existing prayer pages use a back link with aria-label /Бүх цагийн залбирлууд руу буцах/.
-    const back = page.getByRole('link', { name: /Бүх цагийн залбирлууд руу буцах|Буцах/ }).first()
+    // Back link on the pray page returns to / with the anchor preserved.
+    const back = page.getByRole('link', { name: 'Бүх цагийн залбирлууд руу буцах' }).first()
     const backHref = await back.getAttribute('href')
     expect(backHref).toMatch(new RegExp(`/(\\?|$)`))
     // The anchor date must survive the round-trip — either via ?date= or

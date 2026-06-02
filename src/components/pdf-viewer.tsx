@@ -1,7 +1,6 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { bookPageToPdfPage, bookPageSide, PDF_ASSET_PATH } from '@/lib/pdf-page'
 
 const MIN_BOOK_PAGE = 1
@@ -36,7 +35,6 @@ type PdfDoc = {
 }
 
 export function PdfViewer({ initialBookPage }: { initialBookPage: number }) {
-  const router = useRouter()
   const frameRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const pdfDocRef = useRef<PdfDoc | null>(null)
@@ -59,15 +57,6 @@ export function PdfViewer({ initialBookPage }: { initialBookPage: number }) {
   )
   const goHome = useCallback(() => setBookPage(MIN_BOOK_PAGE), [])
   const goEnd = useCallback(() => setBookPage(MAX_BOOK_PAGE), [])
-
-  const goBack = () => {
-    // Prefer browser history so the originating prayer page restores its scroll.
-    if (typeof window !== 'undefined' && window.history.length > 1) {
-      router.back()
-    } else {
-      router.push('/')
-    }
-  }
 
   // 1) Load the PDF document once on mount and cache via ref.
   //    Subsequent page changes only call doc.getPage(...) — no re-fetch.
@@ -275,20 +264,6 @@ export function PdfViewer({ initialBookPage }: { initialBookPage: number }) {
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerCancel}
     >
-      {/* Floating Буцах — 44x44 touch target, dark mode + safe-area-inset. */}
-      <button
-        type="button"
-        onClick={goBack}
-        aria-label="Буцах"
-        className="absolute z-20 flex h-11 w-11 items-center justify-center rounded-full bg-white/80 text-lg text-stone-800 shadow-md backdrop-blur-sm hover:bg-white dark:bg-neutral-900/70 dark:text-stone-100 dark:hover:bg-neutral-900"
-        style={{
-          top: 'max(0.75rem, env(safe-area-inset-top, 0px))',
-          left: 'max(0.75rem, env(safe-area-inset-left, 0px))',
-        }}
-      >
-        <span aria-hidden>←</span>
-      </button>
-
       {/* Page indicator — aria-live announces page changes for AT users. */}
       <div
         role="status"

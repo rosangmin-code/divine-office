@@ -66,7 +66,7 @@ export default async function PrayPage({
 
   const { liturgicalDay } = assembled
 
-  // GOAL #24 WI-C — PrayerFooter Огноо 링크 prop. 기존 Буцах link 의
+  // GOAL #24 WI-C — PrayerFooter Огноо link prop. The top return link's
   // celebration 처리 (`celebration && celebration !== 'default'`) 와 정합
   // — 'default' 는 query 미부착 컨벤션 유지.
   const footerCelebration =
@@ -79,7 +79,7 @@ export default async function PrayPage({
     // PrayerFooter 컨테이너 안에 별도로 처리됨.
     <div className="mx-auto max-w-2xl lg:max-w-3xl px-1 md:px-3 py-6 pb-16">
       {/* GOAL #24 WI-C (D5=a) — 상단 ⚙ SettingsLink 제거. 진입점은 하단
-          PrayerFooter 의 [⚙ Тохиргоо] 메뉴로 단일화. 좌측 Буцах link 만
+          PrayerFooter 의 [⚙ Тохиргоо] 메뉴로 단일화. 좌측 return link 만
           유지 — 명시적 buy-out 진입로 (PrayerFooter Огноо 와 destination
           동일하지만 사용자가 직관적으로 위쪽으로 회귀 시도하는 path 보존). */}
       <div className="mb-4 flex items-center">
@@ -121,17 +121,6 @@ export default async function PrayPage({
       <article>
         <PrayerRenderer hour={assembled} />
       </article>
-
-      {/* Back to home — prev/next hour navigation 제거됨 (사용자 피드백: 시간대 간
-          직접 이동 불필요). task #10 / CACHE_VERSION bump 필요 (링크 스키마 변경). */}
-      <nav aria-label="Залбирлын навигаци" className="mt-6 flex items-center justify-center">
-        <Link
-          href={`/?date=${date}${celebration && celebration !== 'default' ? `&celebration=${encodeURIComponent(celebration)}` : ''}`}
-          className="rounded-lg bg-stone-200 px-6 py-2 text-sm font-medium text-stone-700 hover:bg-stone-300 dark:bg-stone-700 dark:text-stone-200 dark:hover:bg-stone-600"
-        >
-          Буцах
-        </Link>
-      </nav>
 
       {/* Footer — credit chevron 별개 컴포넌트 (D4=b). PrayerFooter 와
           공존: PrayerFooter 가 fixed bottom (z-40) 으로 viewport 하단에
