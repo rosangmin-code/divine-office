@@ -33,7 +33,13 @@ export function InvitatorySection({ section }: InvitatoryProps) {
     <section aria-label="Урих дуудлага" className="mb-4">
       <div className="flex items-center gap-2">
         <p className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark">
-          Урих дуудлага {!collapsed && <PageRef page={activePage} />}
+          {/* #273-F1: 출처 page-ref 를 헤더에 항상 노출 — hymn-section.tsx:44
+              / psalm-block.tsx:87 의 "항상 보이는 헤더 PageRef" 패턴.
+              기본 invitatoryCollapsed=true 에서도 접힘 헤더에 (х. N) 이
+              보여야 한다 (RCA #268: 이전 `!collapsed &&` 게이팅 탓에 접힌
+              기본 화면엔 초대송 page-ref 가 0개였음). body·antiphon ref 는
+              아래 `!collapsed` 블록 안에 있어 펼침 전용으로 유지. */}
+          Урих дуудлага <PageRef page={activePage} />
         </p>
         <button
           type="button"
