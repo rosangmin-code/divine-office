@@ -554,7 +554,18 @@
 // stale Sunday-2nd-Vespers fallback). Both change SSR HTML output for Trinity
 // Sunday Vespers/Lauds -> bump so existing PWA installs do not serve stale
 // HTML/asset. See CLAUDE.md "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v50'
+// v51 — GOAL #273 F1 (#284): invitatory 헤더의 출처 page-ref 를 접힘
+// 상태에서도 항상 렌더하도록 invitatory-section.tsx 의 `!collapsed &&`
+// 게이트 제거 (RCA #268 — 기본 invitatoryCollapsed=true 접힘 화면에서
+// page-ref 0건이던 회귀 해소). navigation 은 여전히 network-only (HTML
+// 미캐시) 이고 Next 청크는 content-hash 라 hard requirement 는 아니지만,
+// (1) invitatory 접힘 분기의 client 빌드 청크 해시 변동, (2) 모든
+// /pray/[date]/[hour] 의 SSR HTML 헤더 markup 변경 — v30/v31 의 보수적
+// bump 선례 (navigation network-only + 기본사용자 SSR 무변경이어도 client
+// 청크 해시가 바뀌면 connected-deploy 일관성을 위해 bump) 를 따라
+// conservative bump. activate 훅이 구버전 캐시를 정리. PRECACHE_URLS 변동
+// 없음. See CLAUDE.md "Service Worker 캐시 — 배포 회귀 1순위 리스크".
+const CACHE_VERSION = 'divine-office-v51'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
