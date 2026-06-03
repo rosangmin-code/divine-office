@@ -100,7 +100,7 @@ test.describe('PDF page references', () => {
   // page-refs for the invitatory — the only hour section that hid its source
   // page from the user. hymn / psalmody keep the page-ref on an always-
   // visible header; this regression test pins the invitatory to that pattern.
-  // @fr FR-017g
+  // @fr FR-017
   test('invitatory header shows page reference while collapsed (default)', async ({ page }) => {
     await presetPageRefs(page, true)
     await page.goto(LAUDS_URL)

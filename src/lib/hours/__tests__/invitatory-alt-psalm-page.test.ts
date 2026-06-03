@@ -23,7 +23,14 @@ import { loadOrdinarium } from '../loaders'
  */
 describe('invitatory alternate-psalm page data (GOAL #273 F2)', () => {
   const section = buildInvitatory(loadOrdinarium(), 'Test antiphon')
-  const candidates = section.candidates!
+  // buildInvitatory returns the HourSection union; `candidates` lives only on
+  // the invitatory variant and is optional there. Narrow the variant AND
+  // assert candidates present so `candidates` is strongly typed without a
+  // non-null assertion — `npx tsc --noEmit` (CI quality gate) rejects the `!`.
+  if (section.type !== 'invitatory' || !section.candidates) {
+    throw new Error('expected an invitatory section with candidates')
+  }
+  const candidates = section.candidates
 
   it('exposes all four invitatory psalm candidates in book order', () => {
     expect(candidates).toHaveLength(4)
