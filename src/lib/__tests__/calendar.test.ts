@@ -44,6 +44,55 @@ describe('getLiturgicalDay', () => {
     expect(day).not.toBeNull()
     expect(['A', 'B', 'C']).toContain(day!.sundayCycle)
   })
+
+  it('computes Ordinary-Time weeks by date across post-Pentecost boundaries', () => {
+    const cases = [
+      ['2026-06-03', 9, 'Жирийн цаг улирлын 9-р долоо хоног'],
+      ['2026-06-04', 9, 'Жирийн цаг улирлын 9-р долоо хоног'],
+      ['2026-06-08', 10, 'Жирийн цаг улирлын 10-р долоо хоног'],
+      ['2025-06-09', 10, 'Жирийн цаг улирлын 10-р долоо хоног'],
+    ] as const
+
+    for (const [date, otWeek, nameMn] of cases) {
+      const day = getLiturgicalDay(date)
+      expect(day, date).not.toBeNull()
+      expect(day!.season, date).toBe('ORDINARY_TIME')
+      expect(day!.otWeek, date).toBe(otWeek)
+      expect(day!.nameMn, date).toBe(nameMn)
+    }
+  })
+
+  it('keeps early Ordinary-Time week numbering before Lent', () => {
+    const day = getLiturgicalDay('2026-02-10')
+    expect(day).not.toBeNull()
+    expect(day!.season).toBe('ORDINARY_TIME')
+    expect(day!.otWeek).toBe(5)
+    expect(day!.nameMn).toBe('Жирийн цаг улирлын 5-р долоо хоног')
+  })
+
+  it('assigns OT weeks to boundary solemnities without replacing their names', () => {
+    const cases = [
+      ['2026-05-31', 9, 'Туйлын Ариун Нандин Гурвалын Ням гараг — Их баяр'],
+      ['2026-06-07', 10, 'Христийн Туйлын Ариун Нандин Бие ба Цус — Их баяр'],
+      ['2026-11-22', 34, 'Есүс Христ Бидний Эзэн Ертөнцийн Хаан — Их баяр'],
+    ] as const
+
+    for (const [date, otWeek, nameMn] of cases) {
+      const day = getLiturgicalDay(date)
+      expect(day, date).not.toBeNull()
+      expect(day!.season, date).toBe('ORDINARY_TIME')
+      expect(day!.otWeek, date).toBe(otWeek)
+      expect(day!.nameMn, date).toBe(nameMn)
+    }
+  })
+
+  it('does not assign an Ordinary-Time week to Advent', () => {
+    const day = getLiturgicalDay('2026-11-29')
+    expect(day).not.toBeNull()
+    expect(day!.season).toBe('ADVENT')
+    expect(day!.otWeek).toBeUndefined()
+    expect(day!.nameMn).toBe('Ирэлтийн цаг улирлын 1-р Ням')
+  })
 })
 
 describe('getCalendarForYear', () => {

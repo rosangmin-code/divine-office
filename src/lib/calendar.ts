@@ -15,6 +15,7 @@ import {
 import { getSanctoralPropers, resolveSpecialKey } from './propers-loader'
 
 const DOW_CODES: DayOfWeek[] = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
+const DAY_MS = 24 * 60 * 60 * 1000
 
 interface RomcalEntry {
   moment: string
@@ -170,26 +171,63 @@ export function getCalendarForYear(year: number): LiturgicalDayInfo[] {
 }
 
 function assignOTWeeks(days: LiturgicalDayInfo[]): void {
-  for (const day of days) {
-    if (day.season !== 'ORDINARY_TIME') continue
-    const m = day.name.match(/(\d+)\w*\s+(?:Sunday|week)\s+of\s+Ordinary\s+Time/i)
-    if (m) {
-      day.otWeek = parseInt(m[1], 10)
-    }
-  }
+  const advent1 = days.find((day) => {
+    if (day.season !== 'ADVENT') return false
+    return utcDate(day.date).getUTCDay() === 0
+  })
+  const christTheKingAnchor = advent1
+    ? addDays(utcDate(advent1.date), -7)
+    : undefined
 
-  let currentOTWeek: number | undefined
-  for (const day of days) {
-    if (day.season !== 'ORDINARY_TIME') {
-      currentOTWeek = undefined
+  let index = 0
+  while (index < days.length) {
+    if (days[index].season !== 'ORDINARY_TIME') {
+      index++
       continue
     }
-    if (day.otWeek !== undefined) {
-      currentOTWeek = day.otWeek
-    } else if (currentOTWeek !== undefined) {
-      day.otWeek = currentOTWeek
+
+    const start = index
+    while (index < days.length && days[index].season === 'ORDINARY_TIME') {
+      index++
+    }
+    const segment = days.slice(start, index)
+    const hasPriorEaster = days
+      .slice(0, start)
+      .some((day) => day.season === 'EASTER')
+
+    if (hasPriorEaster && christTheKingAnchor) {
+      for (const day of segment) {
+        const sundayAnchor = weekStartSunday(utcDate(day.date))
+        const weeksBack = diffWeeks(sundayAnchor, christTheKingAnchor)
+        day.otWeek = 34 - weeksBack
+      }
+      continue
+    }
+
+    const firstSundayAnchor = weekStartSunday(utcDate(segment[0].date))
+    for (const day of segment) {
+      const sundayAnchor = weekStartSunday(utcDate(day.date))
+      day.otWeek = diffWeeks(firstSundayAnchor, sundayAnchor) + 1
     }
   }
+}
+
+function utcDate(dateStr: string): Date {
+  return new Date(dateStr + 'T00:00:00Z')
+}
+
+function addDays(date: Date, days: number): Date {
+  const result = new Date(date)
+  result.setUTCDate(result.getUTCDate() + days)
+  return result
+}
+
+function weekStartSunday(date: Date): Date {
+  return addDays(date, -date.getUTCDay())
+}
+
+function diffWeeks(earlier: Date, later: Date): number {
+  return Math.floor((later.getTime() - earlier.getTime()) / (7 * DAY_MS))
 }
 
 export function getLiturgicalDay(dateStr: string): LiturgicalDayInfo | null {
