@@ -93,6 +93,33 @@ test.describe('PDF page references', () => {
     await expect(page.getByRole('button', { name: /Хуудасны лавлагаа/ })).toHaveCount(0)
   })
 
+  // #273-F1 (RCA #268): the invitatory source page-ref must render in the
+  // section HEADER even while the body is collapsed (default
+  // `invitatoryCollapsed=true`). Previously the header PageRef was gated
+  // behind `!collapsed`, so the default collapsed view surfaced ZERO
+  // page-refs for the invitatory — the only hour section that hid its source
+  // page from the user. hymn / psalmody keep the page-ref on an always-
+  // visible header; this regression test pins the invitatory to that pattern.
+  // @fr FR-017g
+  test('invitatory header shows page reference while collapsed (default)', async ({ page }) => {
+    await presetPageRefs(page, true)
+    await page.goto(LAUDS_URL)
+    await page.waitForSelector('article')
+
+    const invSection = page.locator('section[aria-label="Урих дуудлага"]').first()
+    await expect(invSection).toBeVisible()
+    // Prove we are asserting against the COLLAPSED layout: the body toggle
+    // reads "дэлгэх" (expand) only while collapsed (default state).
+    await expect(
+      invSection.getByRole('button', { name: /Урих дуудлага дэлгэх/ }),
+    ).toBeVisible()
+    // The collapsed header must still surface at least one source page-ref
+    // link — the user-facing outcome the RCA #268 bug regressed.
+    const links = invSection.locator('[data-role="page-ref-link"]')
+    await expect(links.first()).toBeVisible()
+    expect(await links.count()).toBeGreaterThanOrEqual(1)
+  })
+
   // FR-017a/b/c/d coverage: each new annotation source surfaces in UI.
   test.describe('expanded coverage', () => {
     test('hymn section shows page reference', async ({ page }) => {
