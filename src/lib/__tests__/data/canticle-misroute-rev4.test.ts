@@ -55,6 +55,7 @@ interface RichLine {
 interface RichBlock {
   kind: string
   lines?: RichLine[]
+  paragraphBoundaries?: number[]
 }
 interface RichEntry {
   stanzasRich?: { blocks: RichBlock[] }
@@ -150,6 +151,25 @@ describe('GOAL #290 — Rev 4:11b canticle misroute fix', () => {
       const lines = richLines(PSALM21_REF)
       expect(lines).not.toContain(LINE_A)
       expect(lines).not.toContain(LINE_B)
+    })
+
+    // #298/#303 regression guard: Rev 4:11 is ONE continuous verse
+    // (full_pdf.txt:3409-3422 — only page-break noise internally, no blank-line
+    // stanza separator), so the canticle's first stanza block must carry NO
+    // within-stanza paragraph boundary. #298 set paragraphBoundaries [5]->[] to
+    // remove a spurious mt-3 gap rendered ABOVE the last line (before-line
+    // semantics, types.ts F-X11). Without this assertion a future rich regen
+    // could silently re-introduce [5] and every other test would stay green.
+    // toEqual deep-compares: [5] !== [], so a re-introduced gap FAILS here.
+    // `?? []` treats an absent field as "no gap" (also a pass) while still
+    // failing on any non-empty boundary array.
+    it('canticle first stanza block has NO within-stanza gap (paragraphBoundaries === [])', () => {
+      const entry = rich[CANTICLE_REF]
+      if (!entry?.stanzasRich) {
+        throw new Error(`rich entry not found: ${CANTICLE_REF}`)
+      }
+      const block0 = entry.stanzasRich.blocks[0]
+      expect(block0.paragraphBoundaries ?? []).toEqual([])
     })
   })
 })
