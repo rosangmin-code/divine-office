@@ -9498,45 +9498,6 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Таны хүслийн улмаас"
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Тэдгээр нь тогтоогдсон бөгөөд бүтээгдсэн юм."
-                }
-              ],
-              "indent": 0
-            }
-          ],
-          "phrases": [
-            {
-              "lineRange": [
-                0,
-                0
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                1,
-                1
-              ],
-              "indent": 0
-            }
-          ]
-        },
-        {
-          "kind": "stanza",
-          "lines": [
-            {
-              "spans": [
-                {
-                  "kind": "text",
                   "text": "Учир нь хаан ЭЗЭНд түшдэг бөгөөд"
                 }
               ],
@@ -9683,6 +9644,24 @@
                 }
               ],
               "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Таны хүслийн улмаас"
+                }
+              ],
+              "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Тэдгээр нь тогтоогдсон бөгөөд бүтээгдсэн юм."
+                }
+              ],
+              "indent": 1
             }
           ],
           "phrases": [
@@ -9713,10 +9692,24 @@
                 3
               ],
               "indent": 1
+            },
+            {
+              "lineRange": [
+                4,
+                4
+              ],
+              "indent": 1
+            },
+            {
+              "lineRange": [
+                5,
+                5
+              ],
+              "indent": 1
             }
           ],
           "paragraphBoundaries": [
-            3
+            5
           ]
         },
         {
