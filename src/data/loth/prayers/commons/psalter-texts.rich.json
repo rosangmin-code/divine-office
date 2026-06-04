@@ -9708,9 +9708,7 @@
               "indent": 1
             }
           ],
-          "paragraphBoundaries": [
-            5
-          ]
+          "paragraphBoundaries": []
         },
         {
           "kind": "stanza",
