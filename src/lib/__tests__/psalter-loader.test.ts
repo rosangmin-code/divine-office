@@ -1,5 +1,13 @@
 import { describe, it, expect } from 'vitest'
+import fs from 'fs'
+import path from 'path'
 import { getPsalterCommons } from '../psalter-loader'
+
+const ROOT = path.resolve(__dirname, '../../..')
+
+function readJson(rel: string) {
+  return JSON.parse(fs.readFileSync(path.join(ROOT, rel), 'utf8'))
+}
 
 describe('getPsalterCommons — page propagation', () => {
   it('exposes shortReading.page when set in psalter JSON', () => {
@@ -17,6 +25,21 @@ describe('getPsalterCommons — page propagation', () => {
     // Week 1 SUN lauds: intercessionsPage was injected by extract-psalter-pages.js
     const commons = getPsalterCommons(1, 'SUN', 'lauds')
     expect(typeof commons?.intercessionsPage).toBe('number')
+  })
+
+  it('keeps W1 Monday vespers shortReading complete across plain and rich data', () => {
+    const continuation =
+      'өвийг хуваалцахад биднийг боломжтой болгосон Эцэгт талархал өргөөсэй хэмээн хүсэж байна. Тэр биднийг харанхуйн эрх мэдлээс авраад, хайрт Хүүгийнхээ хаанчлалд шилжүүлсэн юм.'
+    const commons = getPsalterCommons(1, 'MON', 'vespers')
+    const rich = readJson(
+      'src/data/loth/prayers/commons/psalter/w1-MON-vespers.rich.json',
+    )
+    const richText = rich.shortReadingRich.blocks[0].spans[0].text
+
+    expect(commons?.shortReading?.ref).toBe('Колоссай 1:9б-13')
+    expect(commons?.shortReading?.text).toContain(continuation)
+    expect(commons?.shortReading?.text).toMatch(/шилжүүлсэн юм\.$/)
+    expect(richText).toBe(commons?.shortReading?.text)
   })
 
   it('returns null for compline (separate cycle)', () => {
