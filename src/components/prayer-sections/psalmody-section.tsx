@@ -4,8 +4,19 @@ import { DirectiveBlock, partitionDirectives } from './directive-block'
 
 export function PsalmodySection({
   section,
+  hoistInlinedSubstituteNote = false,
 }: {
   section: Extract<HourSection, { type: 'psalmody' }>
+  /**
+   * GOAL #48: when true, the `bodyInlined` substitute notice ("psalms +
+   * canticles borrowed from Week 1 Sunday") is NOT re-rendered below the
+   * psalms here — the parent (`PrayerRenderer`) hoists it to the top of
+   * the prayer body (after the title, before УДИРТГАЛ) instead, so the
+   * note appears exactly once. The psalm BODY is unaffected (it still
+   * renders). Non-bodyInlined substitutes are untouched. Default false
+   * keeps standalone usage backward-compatible (note below psalms).
+   */
+  hoistInlinedSubstituteNote?: boolean
 }) {
   const showNumbers = section.psalms.length > 1
   const { hasSkip, hasSubstitute, prepends, appends, substitutes, skips } =
@@ -45,9 +56,18 @@ export function PsalmodySection({
             />
           ))}
           {/* inlined-substitute note kept as a small affordance below the
-              psalms (page-ref / source rubric) — body is primary. */}
+              psalms (page-ref / source rubric) — body is primary. GOAL #48:
+              when the parent hoists the bodyInlined notice to the top of the
+              prayer body, drop it here so it is not rendered twice; any
+              non-bodyInlined substitute (rare) still shows below the psalms. */}
           {hasSubstitute && substituteInlined && (
-            <DirectiveBlock directives={substitutes} />
+            <DirectiveBlock
+              directives={
+                hoistInlinedSubstituteNote
+                  ? substitutes.filter((d) => !d.bodyInlined)
+                  : substitutes
+              }
+            />
           )}
         </>
       )}
