@@ -41,7 +41,12 @@ describe('PrayerRenderer candidate section keys', () => {
   })
 
   it('keeps ordinary stateless sections index-keyed', () => {
-    const section = { type: 'openingVersicle', text: 'Эзэн минь', response: 'Амен' } as Section
+    const section = {
+      type: 'openingVersicle',
+      versicle: 'Эзэн минь',
+      response: 'Амен',
+      gloryBe: 'Эцэг, Хүү, Ариун Сүнсэнд жавхланг.',
+    } as Section
 
     expect(getPrayerSectionRenderKey(hour, section, 0)).toBe(0)
   })
