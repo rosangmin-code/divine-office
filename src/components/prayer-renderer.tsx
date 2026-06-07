@@ -31,6 +31,37 @@ const MAJOR_SECTIONS = new Set([
   'concludingPrayer',
 ])
 
+export function getPrayerSectionRenderKey(
+  hour: Pick<AssembledHour, 'date' | 'hourType'>,
+  section: AssembledHour['sections'][number],
+  index: number,
+): string | number {
+  const isEphemeralCandidateSection =
+    (section.type === 'hymn' ||
+      section.type === 'marianAntiphon' ||
+      section.type === 'gospelCanticle') &&
+    Array.isArray(section.candidates) &&
+    section.candidates.length > 0
+
+  // FR-168 (GOAL #90 / D2-E5), generalized by WI-83 — candidate
+  // dropdown selections are ephemeral client state. Key candidate
+  // sections by date + hour so client-side route changes remount them
+  // with the new assembler-selected default instead of leaking the
+  // previous date's useState selection.
+  if (isEphemeralCandidateSection) {
+    return `${section.type}-${hour.date}-${hour.hourType}-${index}`
+  }
+
+  // Preserve the original gospel-canticle date key for non-candidate
+  // entries too. The visible stale-state bug is candidate-specific, but
+  // this keeps the existing FR-168 lifecycle surface unchanged.
+  if (section.type === 'gospelCanticle') {
+    return `gc-${hour.date}-${hour.hourType}-${index}`
+  }
+
+  return index
+}
+
 export function PrayerRenderer({ hour }: { hour: AssembledHour }) {
   const { settings } = useSettings()
 
@@ -90,17 +121,7 @@ export function PrayerRenderer({ hour }: { hour: AssembledHour }) {
         const spacing =
           i === 0 ? '' : MAJOR_SECTIONS.has(section.type) ? 'mt-6' : 'mt-2'
 
-        // FR-168 (GOAL #90 / D2-E5) — date-stable key for the gospelCanticle
-        // section so the saturday-mary Benedictus dropdown's ephemeral
-        // selection state (useState) is REMOUNTED (reset to option 1) when
-        // the user navigates to a different date. Plain index-keying
-        // (`key={i}`) would let React reuse the same instance across dates
-        // at the same position, leaking the prior date's selected option.
-        // Other sections keep index-keying (regression-safe, stateless).
-        const key =
-          section.type === 'gospelCanticle'
-            ? `gc-${hour.date}-${hour.hourType}-${i}`
-            : i
+        const key = getPrayerSectionRenderKey(hour, section, i)
 
         return (
           <div
