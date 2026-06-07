@@ -348,9 +348,10 @@ const AREA_HASHES = {
   // WI-81 intended default_antiphon trim.
   'src/data/loth/propers/advent.json':
     '858d31b602dc4ab2f5a18e029665005575bc6e116dfb6870f99173cb8fcacab5',
-  // WI-81 intended default_antiphon trim.
+  // WI-88 (#87): dec25.SUN.vespers2 proper psalmody wiring (Ps 110:1-5,7 /
+  // Ps 130 / Col 1:12-20, full_pdf p.592-596).
   'src/data/loth/propers/christmas.json':
-    '163bdaed228c55d288fecdf5748854a72a0bbd0ef1aed44b1f3033cff8522be0',
+    '06837c6af60899053b94bb55850063f281773a2f2207e768a3c9080d83b9077d',
   // WI-81 intended default_antiphon trim.
   'src/data/loth/propers/easter.json':
     'a463d103dd4f875ba7611f3be5034ea669b403f6bae2348ebad8be58c1bac681',
