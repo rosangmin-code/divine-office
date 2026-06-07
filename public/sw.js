@@ -613,7 +613,7 @@
 // 위해 conservative bump. activate 훅이 구버전 캐시를 정리.
 // PRECACHE_URLS=['/offline.html','/icon.svg'] 변동 없음. See CLAUDE.md
 // "Service Worker 캐시".
-const CACHE_VERSION = 'divine-office-v55'
+const CACHE_VERSION = 'divine-office-v56'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
