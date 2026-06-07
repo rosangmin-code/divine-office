@@ -324,6 +324,23 @@ export function parseIntercessions(raw: readonly string[]): ParsedIntercessions 
 
   // 2) Petitions: 구분자를 만날 때마다 경계 확정. 구분자가 없는 줄은
   //    현재 진행 중인 petition의 versicle(응답 시작 전) 또는 response(응답 시작 후)에 append.
+  //
+  // #74 (GOAL #64 / H1) — "versicle-only" block detection. A petition region
+  // that carries NO separator at all (no " - " / " — " response marker on ANY
+  // petition) is a versicle-only block: every petition is a single complete
+  // sentence and the response is communal/implicit. The live case is lent W6 FRI
+  // (Good Friday) vespers — 11 petitions, zero separators — which the
+  // separatorless-line accumulator below would otherwise merge into one
+  // 619-char versicle. ONLY in such a block does a sentence-terminated element
+  // start a new petition. Blocks WITH separators (versicle→response petitions)
+  // keep the prior accumulation untouched, because there a versicle may span
+  // multiple sentences before its separator — e.g. W3 TUE Lauds petition-4
+  // ("…санагтун. Мөн … зөвшөөрч, - …", full_pdf.txt:11519-11523) and the
+  // "Учир нь" continuation in W4 SUN Lauds. Scope is proven byte-for-byte by a
+  // full-data before/after diff (only Good Friday changes).
+  const versicleOnlyBlock = !lines
+    .slice(i)
+    .some((l) => !isClosingLine(l) && splitOnSeparator(l, petitionSeparator) !== null)
   let current: ParsedPetition | null = null
   let inResponse = false
 
@@ -385,7 +402,20 @@ export function parseIntercessions(raw: readonly string[]): ParsedIntercessions 
       } else {
         current.response = [current.response, line].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim()
       }
+    } else if (versicleOnlyBlock && endsSentence(current.versicle)) {
+      // #74 (GOAL #64 / H1) — versicle-only block (see versicleOnlyBlock above).
+      // The accumulated versicle already ends a sentence and there is no
+      // separator anywhere in this block, so the next separatorless line is a
+      // NEW petition, not a continuation. Mirrors the inResponse branch above
+      // (which flushes when the response ends a sentence). Data stays
+      // byte-verbatim (MT 금지); the boundary is recovered structurally (#31 철학).
+      flush()
+      current = { versicle: line }
+      inResponse = false
     } else {
+      // Mid-sentence wrap (PDF line break) OR a versicle→response block where the
+      // versicle legitimately spans multiple sentences before its separator —
+      // keep accumulating into the current versicle (prior behavior, unchanged).
       current.versicle = [current.versicle, line].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim()
     }
     i += 1
