@@ -41,14 +41,15 @@ function HourCard({
         className="h-7 w-7 shrink-0 text-stone-500 dark:text-stone-400"
       />
 
-      {/* Content */}
+      {/* Content — Mongolian hour name only. The raw English HourType enum
+          (lauds/vespers/compline) was previously rendered here as a caption,
+          which violated NFR-002 (no English text in the Mongolian-only UI).
+          `hour.nameMn` already carries the full Mongolian label, so no
+          secondary caption is needed (#64 fix-H3). */}
       <div className="flex-1">
         <h3 className="font-semibold text-stone-800 dark:text-stone-200">
           {hour.nameMn}
         </h3>
-        <p className="text-[10px] uppercase tracking-wider text-stone-400 opacity-50 dark:text-stone-500">
-          {hour.type}
-        </p>
       </div>
 
       {/* Arrow — desktop only (#361). 모바일에서는 카드 자체가 click
