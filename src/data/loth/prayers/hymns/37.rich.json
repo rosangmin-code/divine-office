@@ -198,6 +198,11 @@
             ],
             "indent": 0
           }
+        ],
+        "paragraphBoundaries": [
+          2,
+          6,
+          8
         ]
       }
     ],

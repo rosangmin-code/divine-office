@@ -565,7 +565,18 @@
 // 청크 해시가 바뀌면 connected-deploy 일관성을 위해 bump) 를 따라
 // conservative bump. activate 훅이 구버전 캐시를 정리. PRECACHE_URLS 변동
 // 없음. See CLAUDE.md "Service Worker 캐시 — 배포 회귀 1순위 리스크".
-const CACHE_VERSION = 'divine-office-v51'
+// v52 — GOAL #13 (магтуу 문단구분): rich-content.tsx 의 stanza phrase/
+// legacy line 렌더 경로에 `block.paragraphBoundaries` → `mt-3` 문단 간격
+// 적용 (psalm-block.tsx 미러) + 37.rich.json 에 paragraphBoundaries
+// [2,6,8] 추가. navigation 은 여전히 network-only (HTML 미캐시) 이고 Next
+// 청크는 content-hash 라 hard requirement 는 아니지만, (1) rich-content.tsx
+// 는 client 컴포넌트 (hymn-section/psalm-block) 가 import → client 빌드
+// 청크 해시 변동, (2) магтуу #37 등 hymn 의 SSR HTML 에 새 mt-3/
+// data-paragraph-boundary markup 추가 — v30/v31/v51 의 보수적 bump 선례
+// (cache-first 정적 자산이 구 no-gap 렌더 청크를 무한 서빙하는 회귀 방지)
+// 를 따라 conservative bump. activate 훅이 구버전 캐시를 정리.
+// PRECACHE_URLS 변동 없음. See CLAUDE.md "Service Worker 캐시".
+const CACHE_VERSION = 'divine-office-v52'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 

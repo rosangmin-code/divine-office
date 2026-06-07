@@ -380,6 +380,14 @@ function renderBlock(
     // ('refrain'/'doxology') maps to colour/italic. Falls back to legacy
     // line-by-line render when phrases are absent.
     if (block.phrases && block.phrases.length > 0) {
+      // GOAL #13 (GOAL#7 RCA Approach 1) — within-stanza paragraph
+      // boundaries, mirroring psalm-block.tsx (L148-153/194). When a
+      // phrase's first-line index appears in `paragraphBoundaries`,
+      // prepend `mt-3` so a smaller-than-stanza paragraph gap renders
+      // above it (магтуу #37 'Дээдийн дээд' stanza breaks, PDF p906).
+      // `block.paragraphBoundaries ?? []` guard → absent boundaries is a
+      // no-op, so existing hymns/phrase blocks are unaffected.
+      const paragraphBoundarySet = new Set(block.paragraphBoundaries ?? [])
       return (
         <p key={key} className={BODY_CLASS} data-render-mode="phrase">
           {block.phrases.map((phrase, pi) => {
@@ -404,7 +412,11 @@ function renderBlock(
               : isDoxology
               ? 'psalm-phrase-doxology'
               : 'psalm-phrase'
-            const cls = ['block', indent, roleClass].filter(Boolean).join(' ')
+            const isParagraphStart = paragraphBoundarySet.has(start)
+            const paragraphClass = isParagraphStart ? 'mt-3' : ''
+            const cls = ['block', indent, roleClass, paragraphClass]
+              .filter(Boolean)
+              .join(' ')
             // Insert spaces between joined lines' span sequences.
             const joined: JSX.Element[] = []
             const groups = block.lines.slice(start, end + 1)
@@ -413,7 +425,12 @@ function renderBlock(
               joined.push(...groups[gi].spans.map((s, si) => renderSpan(s, gi * 100 + si)))
             }
             return (
-              <span key={pi} data-role={dataRole} className={cls}>
+              <span
+                key={pi}
+                data-role={dataRole}
+                data-paragraph-boundary={isParagraphStart ? 'true' : undefined}
+                className={cls}
+              >
                 {joined}
               </span>
             )
@@ -421,13 +438,26 @@ function renderBlock(
         </p>
       )
     }
+    // GOAL #13 — paragraph boundaries also apply on the legacy (phrases-
+    // absent) line path, mirroring psalm-block.tsx (L211-218/241). Keeps
+    // paragraph rendering decoupled from phrase injection. `?? []` no-op
+    // when paragraphBoundaries absent.
+    const legacyParagraphBoundarySet = new Set(block.paragraphBoundaries ?? [])
     return (
       <p key={key} className={BODY_CLASS}>
         {block.lines.map((line, li) => {
           const indent = indentClassFor(line.indent)
-          const cls = ['block', indent].filter(Boolean).join(' ')
+          const isParagraphStart = legacyParagraphBoundarySet.has(li)
+          const paragraphClass = isParagraphStart ? 'mt-3' : ''
+          const cls = ['block', indent, paragraphClass]
+            .filter(Boolean)
+            .join(' ')
           return (
-            <span key={li} className={cls}>
+            <span
+              key={li}
+              data-paragraph-boundary={isParagraphStart ? 'true' : undefined}
+              className={cls}
+            >
               {renderSpans(line.spans)}
             </span>
           )
