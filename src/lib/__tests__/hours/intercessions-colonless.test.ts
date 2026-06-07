@@ -180,31 +180,46 @@ describe('parseIntercessions — colonless psalter fallback (GOAL #31 / WI #33)'
     })
   })
 
-  // Routing-narrowing guard (review #33 iter-1 BLOCKER): the colonless fallback
-  // is gated on the PSALTER hyphen separator (" - "). Colonless PROPERS blocks
-  // use the em-dash separator (" — ") and are intentionally LEFT on their prior
-  // behavior (petitions:[] → flat fallback) by this WI — their intro+refrain
-  // share the first element, a shape this fix does not handle. This guard pins
-  // that scope so a future re-widening of the routing predicate is caught.
-  // When propers colonless support lands (follow-up WI), update this block.
-  describe('routing guard — colonless PROPERS (em-dash) stay out of scope', () => {
-    it('does NOT route the em-dash propers block through the fallback (advent W1 MON vespers)', () => {
+  // Routing-separation guard. The colonless fallback has TWO paths keyed on the
+  // petition separator: PSALTER hyphen (" - ", WI #33) and PROPERS em-dash
+  // (" — ", WI #41). This guard pins that an em-dash propers fixture routes
+  // through the PROPERS path (structured: petitions + refrain) and stays keyed
+  // on em-dash (no hyphen) — so the hyphen psalter path and the em-dash propers
+  // path never cross. Detailed per-block SoT assertions live in
+  // intercessions-propers-colonless.test.ts.
+  //
+  // (Updated from WI #33's "stays out of scope / petitions:[]" guard: WI #41
+  // brought the 7 colonless propers blocks INTO scope via the em-dash path.)
+  describe('routing separation — colonless PSALTER (hyphen) vs PROPERS (em-dash)', () => {
+    it('routes the em-dash propers block through the propers path (advent W1 MON vespers)', () => {
       const raw = (advent as unknown as {
         weeks: Record<
           string,
           Record<string, Record<string, { intercessions: string[] }>>
         >
       }).weeks['1'].MON.vespers.intercessions
-      // Sanity: this fixture is genuinely colonless + em-dash (the predicate
-      // the narrowing depends on).
+      // Sanity: this fixture is genuinely colonless + em-dash + no hyphen (the
+      // predicate the propers path depends on).
       expect(raw.some((l) => l.includes(':'))).toBe(false)
       expect(raw.some((l) => /\s—\s/.test(l))).toBe(true)
       expect(raw.some((l) => /\s-\s/.test(l))).toBe(false)
 
       const parsed = parseIntercessions(raw)
-      // Prior behavior preserved: no structured petitions, no refrain.
-      expect(parsed.petitions).toHaveLength(0)
-      expect(parsed.refrain).toBeUndefined()
+      // WI #41 behavior: structured via the propers path.
+      expect(parsed.petitions.length).toBeGreaterThan(0)
+      expect(parsed.refrain).toBe('Эзэн минь ирэгтүн! Биднийг аврагтун!')
+    })
+
+    it('still routes the hyphen psalter block through the psalter path (week-1 WED vespers)', () => {
+      const raw = (week1 as unknown as IntercessionsHost).days.WED.vespers
+        .intercessions
+      // Unaffected by the WI #41 em-dash route: hyphen, no em-dash.
+      expect(raw.some((l) => /\s-\s/.test(l))).toBe(true)
+      expect(raw.some((l) => /\s—\s/.test(l))).toBe(false)
+
+      const parsed = parseIntercessions(raw)
+      expect(parsed.petitions).toHaveLength(5)
+      expect(parsed.refrain).toBe('Эзэн, бидэнд Өөрийн хайраа харуулна уу.')
     })
   })
 })

@@ -9,6 +9,12 @@
  *    각 청원은 `" — "`(space-emdash-space) 구분자로 한 문자열에 완결된다.
  *
  * 두 포맷 모두 마지막 원소가 `"Тэнгэр дэх Эцэг минь ээ..."`이면 closing hint로 분리한다.
+ *
+ * 콜론 없는 변형(GOAL #31): 원문 PDF(full_pdf.txt)에 도입부 뒤 `":"`가 없는 블록이 있다.
+ *  - 시편집 4건(WI #33): hyphen `" - "` + refrain 단독 원소 → colonless psalter fallback.
+ *  - 고유문 7건(WI #41): em-dash `" — "` + intro·refrain 가 첫 원소에 결합 →
+ *    colonless propers fallback(cohortative 초대구 경계로 분리).
+ * 데이터에 `":"`를 삽입하지 않고(MT/SoT 금지) 파서에서 구조적으로 분리한다.
  */
 
 export interface ParsedPetition {
@@ -33,6 +39,23 @@ const SEPARATOR = /\s[-—]\s/
 // a different shape this WI does not handle) on their prior behavior. Petition
 // SPLITTING still uses the general SEPARATOR below — only ROUTING is narrowed.
 const SEPARATOR_PSALTER = /\s-\s/
+// GOAL #31 / WI #41 — the PROPERS petition separator is the em-dash
+// (space-emdash-space " — "). The 7 colonless propers blocks use it exclusively
+// (full-data scan: 0 of them carry a hyphen separator), so routing the colonless
+// fallback on it — AFTER the hyphen check — targets exactly those 7 blocks and
+// never the 4 hyphen psalter blocks.
+const SEPARATOR_PROPERS = /\s—\s/
+// GOAL #31 / WI #41 — colonless PROPERS invitation marker. In these blocks the
+// PDF→JSON extraction collapsed the SoT paragraph break and merged the intro +
+// refrain into ONE array element (e.g. advent W1 MON vespers — full_pdf.txt
+// 19314-19316 prints the refrain "Эзэн минь ирэгтүн!..." on its own line). The
+// intro ends with the leader's cohortative invitation ("let us pray/cry/
+// beseech" — Mongolian plural exhortative -цгаая / -цгээ / -цгааж); the refrain
+// is the response that follows. 5 of the 7 carry this marker; the other 2 are
+// doxological intros handled by a last-sentence fallback (see
+// extractColonlessPropersIntroRefrain). Cyrillic-only stem keeps ASCII keyword
+// interactions impossible.
+const COHORTATIVE_END = /(?:цгаая|цгээ|цгааж)$/u
 const CLOSING_PREFIX = 'Тэнгэр дэх Эцэг'
 
 // GOAL #31 / WI #33 — colonless psalter fallback. A petition-1 versicle that
@@ -134,6 +157,64 @@ function extractColonlessIntroRefrain(
   return vs
 }
 
+// Split text into sentences on whitespace that follows sentence-terminal
+// punctuation. Each returned sentence keeps its trailing punctuation, so the
+// intro and refrain re-join byte-for-byte (no Mongolian text mutated).
+function splitSentences(text: string): string[] {
+  return text
+    .split(/(?<=[.!?])\s+/u)
+    .map((s) => s.trim())
+    .filter(Boolean)
+}
+
+// GOAL #31 / WI #41 — colonless PROPERS fallback. Unlike the psalter colonless
+// shape (refrain on its own array element), the 7 propers blocks merge the
+// intro + refrain into the element(s) BEFORE the first em-dash petition. Split
+// that combined text into introduction + refrain at the invitation boundary,
+// then delegate petition parsing (em-dash separator, one petition per element)
+// to the shared loop UNCHANGED. ":"-bearing propers and the hyphen psalter path
+// are untouched — this branch only runs for colonless em-dash blocks.
+//
+// Boundary rule: the introduction ends at the LAST sentence carrying the
+// cohortative invitation marker (COHORTATIVE_END); the refrain is every
+// sentence after it. When no cohortative is present (2 doxological-intro blocks
+// — advent W1 FRI lauds, lent W6 SAT lauds) the refrain is the final sentence.
+function extractColonlessPropersIntroRefrain(
+  lines: readonly string[],
+  petitionStart: number,
+  result: ParsedIntercessions,
+): number {
+  const combined = lines
+    .slice(0, petitionStart)
+    .join(' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+  const sentences = splitSentences(combined)
+  if (sentences.length === 0) return petitionStart
+
+  let boundary = -1
+  for (let s = 0; s < sentences.length; s += 1) {
+    const bare = sentences[s].replace(/[.!?…”"'»]+$/u, '')
+    if (COHORTATIVE_END.test(bare)) boundary = s
+  }
+
+  let introSents: string[]
+  let refrainSents: string[]
+  if (boundary >= 0 && boundary < sentences.length - 1) {
+    introSents = sentences.slice(0, boundary + 1)
+    refrainSents = sentences.slice(boundary + 1)
+  } else {
+    // Doxological intro (no cohortative) OR cohortative is the final sentence:
+    // treat the last sentence as the refrain.
+    introSents = sentences.slice(0, -1)
+    refrainSents = sentences.slice(-1)
+  }
+
+  if (introSents.length > 0) result.introduction = introSents.join(' ').trim()
+  if (refrainSents.length > 0) result.refrain = refrainSents.join(' ').trim()
+  return petitionStart
+}
+
 export function parseIntercessions(raw: readonly string[]): ParsedIntercessions {
   const result: ParsedIntercessions = { petitions: [] }
   if (!raw || raw.length === 0) return result
@@ -142,21 +223,28 @@ export function parseIntercessions(raw: readonly string[]): ParsedIntercessions 
 
   let i = 0
 
-  // GOAL #31 / WI #33: when the source carries NO ":" anywhere but DOES carry a
-  // psalter (" - ") petition separator, the introduction is colonless (exactly
-  // the four affected psalter blocks: W1 WED Vespers, W3 SUN Lauds, W4 SUN
-  // Lauds, W4 MON Vespers). Route through the structural fallback. Every other
-  // shape — ":"-bearing psalter/proper formats, colonless PROPERS blocks (which
-  // use the em-dash " — " separator and a combined-first-element intro+refrain
-  // out of scope for this WI), AND no-colon-no-separator degenerate input —
-  // keeps the original colon-terminated intro accumulator, so colon-path
-  // behavior is byte-for-byte unchanged. SEPARATOR_PSALTER gating is what keeps
-  // the 7 colonless propers blocks on their prior flat-fallback behavior.
+  // Colonless routing (GOAL #31). When the source carries NO ":" anywhere, the
+  // intro/refrain boundary must be recovered structurally. Two colonless shapes,
+  // disambiguated by petition separator:
+  //   • psalter (WI #33): hyphen " - " — refrain on its own array element. The 4
+  //     blocks W1 WED Vespers, W3 SUN Lauds, W4 SUN Lauds, W4 MON Vespers.
+  //   • propers (WI #41): em-dash " — " — intro+refrain merged into the first
+  //     element. The 7 blocks advent W1 MON vespers / W1 FRI lauds / W1 FRI
+  //     vespers, christmas epiphany SUN lauds, easter W1 TUE vespers / W1 THU
+  //     vespers, lent W6 SAT lauds.
+  // A full-data scan confirms 0 of the 172 intercession blocks carry BOTH
+  // separators, so the hyphen check first / em-dash check second routes each
+  // colonless block to exactly one handler and leaves ":"-bearing formats AND
+  // the no-colon-no-separator degenerate input on the original colon path
+  // (byte-for-byte unchanged).
   const hasColon = lines.some((l) => l.includes(':'))
-  const firstSepIdx = lines.findIndex((l) => SEPARATOR_PSALTER.test(l))
+  const firstHyphenSep = lines.findIndex((l) => SEPARATOR_PSALTER.test(l))
+  const firstEmDashSep = lines.findIndex((l) => SEPARATOR_PROPERS.test(l))
 
-  if (!hasColon && firstSepIdx !== -1) {
-    i = extractColonlessIntroRefrain(lines, firstSepIdx, result)
+  if (!hasColon && firstHyphenSep !== -1) {
+    i = extractColonlessIntroRefrain(lines, firstHyphenSep, result)
+  } else if (!hasColon && firstEmDashSep !== -1) {
+    i = extractColonlessPropersIntroRefrain(lines, firstEmDashSep, result)
   } else {
     const introBuf: string[] = []
 
