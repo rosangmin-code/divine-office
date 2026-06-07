@@ -246,9 +246,9 @@ describe('Good Friday vespers render (real user path — #74 H1)', () => {
     expect(inter!.page).toBe(675)
     expect(inter!.items).toHaveLength(12)
     expect(inter!.petitions).toHaveLength(11)
-    expect(inter!.petitions[0].versicle).toBe(goodFridayFirstPetition)
-    expect(inter!.petitions[10].versicle).toBe(goodFridayLastPetition)
-    expect(inter!.petitions.every((petition) => !petition.response)).toBe(true)
+    expect(inter!.petitions?.[0]?.versicle).toBe(goodFridayFirstPetition)
+    expect(inter!.petitions?.[10]?.versicle).toBe(goodFridayLastPetition)
+    expect(inter!.petitions?.every((petition) => !petition.response)).toBe(true)
 
     const rich = inter!.rich
     expect(rich).toBeDefined()
@@ -271,8 +271,8 @@ describe('Good Friday vespers render (real user path — #74 H1)', () => {
       const inter = getIntercessionsSection(assembled!.sections)
       expect(inter?.page, date).toBe(675)
       expect(inter?.petitions, date).toHaveLength(11)
-      expect(inter?.petitions[0].versicle, date).toBe(goodFridayFirstPetition)
-      expect(inter?.petitions[10].versicle, date).toBe(goodFridayLastPetition)
+      expect(inter?.petitions?.[0]?.versicle, date).toBe(goodFridayFirstPetition)
+      expect(inter?.petitions?.[10]?.versicle, date).toBe(goodFridayLastPetition)
     }
   })
 
@@ -282,8 +282,8 @@ describe('Good Friday vespers render (real user path — #74 H1)', () => {
       expect(assembled, date).not.toBeNull()
       const inter = getIntercessionsSection(assembled!.sections)
       expect(inter?.page, date).not.toBe(675)
-      expect(inter?.petitions[0]?.versicle, date).not.toBe(goodFridayFirstPetition)
-      expect(inter?.petitions.at(-1)?.versicle, date).not.toBe(goodFridayLastPetition)
+      expect(inter?.petitions?.[0]?.versicle, date).not.toBe(goodFridayFirstPetition)
+      expect(inter?.petitions?.at(-1)?.versicle, date).not.toBe(goodFridayLastPetition)
     }
   })
 })
