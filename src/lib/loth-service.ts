@@ -17,7 +17,7 @@ import { getPsalterPsalmody, getComplinePsalmody, getFullComplineData, getPsalte
 import { getSeasonHourPropers, getSeasonFirstVespers, getSeasonVespers2, getSanctoralPropers, getHymnForHour, getHymnCandidatesForHour, resolveSpecialKey } from './propers-loader'
 import { resolveCelebration } from './celebrations'
 import { resolveRichOverlay } from './prayers/resolver'
-import { loadHymnRichOverlay } from './prayers/rich-overlay'
+import { loadHymnRichOverlay, loadSeasonalRichOverlay } from './prayers/rich-overlay'
 
 import {
   getAssembler,
@@ -35,6 +35,21 @@ import {
 import { applyPageRedirects, loadOrdinariumKeyCatalog } from './hours/page-redirect-resolver'
 import { warmBibleCache } from './bible-loader'
 import type { HourContext } from './hours'
+
+const GOOD_FRIDAY_TRIDUUM_WEEK = 6
+
+function usesGoodFridayVespersIntercessions(
+  day: LiturgicalDayInfo,
+  dayOfWeek: DayOfWeek,
+  hour: HourType,
+): boolean {
+  return (
+    hour === 'vespers' &&
+    day.season === 'LENT' &&
+    dayOfWeek === 'FRI' &&
+    day.name === 'Good Friday'
+  )
+}
 
 export interface AssembleHourOptions {
   celebrationId?: string | null
@@ -211,6 +226,28 @@ export async function assembleHour(
       // No-op for vespers2 cells without an inline `psalms` array.
       if (seasonVespers2.psalms && seasonVespers2.psalms.length > 0) {
         psalmEntries = seasonVespers2.psalms
+      }
+    }
+  }
+
+  const useGoodFridayVespersIntercessions =
+    usesGoodFridayVespersIntercessions(day, dayOfWeek, hour)
+  if (useGoodFridayVespersIntercessions) {
+    const goodFridayVespers = getSeasonHourPropers(
+      'LENT',
+      GOOD_FRIDAY_TRIDUUM_WEEK,
+      'FRI',
+      'vespers',
+      dateStr,
+      day.name,
+    )
+    if (goodFridayVespers?.intercessions) {
+      seasonPropers = {
+        ...(seasonPropers ?? {}),
+        intercessions: goodFridayVespers.intercessions,
+        ...(typeof goodFridayVespers.intercessionsPage === 'number'
+          ? { intercessionsPage: goodFridayVespers.intercessionsPage }
+          : {}),
       }
     }
   }
@@ -684,7 +721,7 @@ export async function assembleHour(
   // Identical predicate to `isEveOfFollowingDay` (computed before step 6.5);
   // reuse it so the eve/promotion signal has a single source of truth.
   const firstVespersBranchActive = isEveOfFollowingDay
-  const richOverlay = resolveRichOverlay({
+  let richOverlay = resolveRichOverlay({
     season: day.season,
     weekKey: String(day.weekOfSeason),
     // For firstCompline: rich overlay keyed on SAT slot (mirrors
@@ -697,6 +734,22 @@ export async function assembleHour(
     celebrationName: day.name,
     dateStr,
   })
+  if (useGoodFridayVespersIntercessions) {
+    const goodFridayRichOverlay = loadSeasonalRichOverlay(
+      'LENT',
+      String(GOOD_FRIDAY_TRIDUUM_WEEK),
+      'FRI',
+      'vespers',
+      day.name,
+      dateStr,
+    )
+    if (goodFridayRichOverlay?.intercessionsRich) {
+      richOverlay = {
+        ...richOverlay,
+        intercessionsRich: goodFridayRichOverlay.intercessionsRich,
+      }
+    }
+  }
   mergedPropers = { ...mergedPropers, ...richOverlay }
 
   // Layer 4.5: FR-160-B conditional + page-redirect hydration.
