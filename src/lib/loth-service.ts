@@ -183,7 +183,16 @@ export async function assembleHour(
   if (
     hour === 'vespers' &&
     day.rank === 'SOLEMNITY' &&
-    resolveSpecialKey(day.season, day.name) != null
+    // GOAL #87: pass `dateStr` so DATE-matched Christmas-season special keys
+    // (dec25 / jan1 / octave) resolve here, not just NAME-matched movable
+    // solemnities. Without it the Christmas Day Second Vespers swap never
+    // fired (Christmas has no name-key), so `/pray/<dec25>/vespers` rendered
+    // the regular (First-Vespers-shaped) `weeks.dec25.SUN.vespers` cell with
+    // the running-week weekday psalter instead of the proper EP-II content.
+    // Movable EASTER/OT keys ignore `dateStr` (name-matched) → unchanged;
+    // jan1/octave carry no `christmas.json` vespers2 → getSeasonVespers2
+    // returns null → no behavior change (jan1 stays on the sanctoral swap).
+    resolveSpecialKey(day.season, day.name, dateStr) != null
   ) {
     const seasonVespers2 = getSeasonVespers2(
       day.season,
@@ -191,7 +200,19 @@ export async function assembleHour(
       dateStr,
       day.name,
     )
-    if (seasonVespers2) seasonPropers = seasonVespers2
+    if (seasonVespers2) {
+      seasonPropers = seasonVespers2
+      // GOAL #87: a fixed-date season-proper Solemnity whose Second Vespers
+      // prints its OWN proper psalmody in the book (Christmas Day —
+      // Ps 110:1-5,7 / Ps 130 / Col 1:12-20, full_pdf p.592-596) — NOT a
+      // Week-1 Sunday borrow (Ps 130 is not a Week-1 Sunday psalm). Mirror
+      // the firstVespers psalms override (above) so the proper psalmody +
+      // its proper antiphons surface instead of the running weekday psalter.
+      // No-op for vespers2 cells without an inline `psalms` array.
+      if (seasonVespers2.psalms && seasonVespers2.psalms.length > 0) {
+        psalmEntries = seasonVespers2.psalms
+      }
+    }
   }
 
   // Track whether the Saturday→Sunday first-vespers branch applies so the

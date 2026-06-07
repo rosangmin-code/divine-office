@@ -322,6 +322,13 @@ export interface Responsory {
 
 export interface HourPropers {
   antiphons?: Record<string, string>    // antiphon_key -> Mongolian text override
+  // GOAL #87: proper psalmody printed in-line for an hour whose book page
+  // prints its OWN psalms (not a 4-week-psalter slot nor a Week-1 borrow).
+  // Used by the Second Vespers of fixed-date season-proper Solemnities
+  // (Christmas Day — Ps 110:1-5,7 / Ps 130 / Col 1:12-20, full_pdf
+  // p.592-596). Mirrors `FirstVespersPropers.psalms`; absent for every
+  // hour that draws psalmody from the running psalter. additive optional.
+  psalms?: PsalmEntry[]
   shortReading?: ShortReading
   responsory?: Responsory
   gospelCanticleAntiphon?: string
