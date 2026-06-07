@@ -82,6 +82,26 @@ test.describe('Homepage', () => {
     }
   })
 
+  // @fr NFR-002 (#64 fix-H3) — hour cards must not leak the raw English
+  // HourType enum (lauds/vespers/compline) as a caption under the Mongolian
+  // hour name. The h3 already carries the full Mongolian name (HOUR_NAMES_MN);
+  // the lowercase English enum subtitle in hour-card-list.tsx violated
+  // NFR-002 (no English text in the Mongolian-only UI).
+  test('hour cards do not leak the English HourType enum caption (NFR-002)', async ({ page }) => {
+    await page.goto(`/?date=${DATES.ordinaryWeekday}`)
+
+    for (const hour of ALL_HOURS) {
+      const link = page.locator(`a[href="/pray/${DATES.ordinaryWeekday}/${hour}"]`)
+      await expect(link).toBeVisible()
+      // Mongolian name is still rendered (regression guard — fix must not
+      // remove the actual hour label).
+      await expect(link.getByText(HOUR_NAMES_MN[hour])).toBeVisible()
+      // The raw English enum value must NOT appear as visible card text.
+      // Pre-fix: <p>{hour.type}</p> rendered "lauds"/"vespers"/"compline".
+      await expect(link.getByText(hour, { exact: true })).toHaveCount(0)
+    }
+  })
+
   test('shows "Өнөөдөр" button when viewing non-today date', async ({ page }) => {
     await page.goto(`/?date=${DATES.ordinaryWeekday}`)
 
