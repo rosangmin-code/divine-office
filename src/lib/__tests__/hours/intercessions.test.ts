@@ -1,6 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import { parseIntercessions } from '../../hours/intercessions'
 import week4 from '../../../data/loth/psalter/week-4.json'
+import lent from '../../../data/loth/propers/lent.json'
+import { assembleHour } from '../../loth-service'
+import type { HourSection } from '../../types'
 
 describe('parseIntercessions', () => {
   describe('psalter commons format (multi-line intro + single-line refrain + " - " separator)', () => {
@@ -165,5 +168,72 @@ describe('parseIntercessions', () => {
       expect(parsed.petitions).toHaveLength(0)
       expect(parsed.refrain).toBeUndefined()
     })
+  })
+
+  // #74 (GOAL #64 / H1) — colon-path "versicle-only" block hardening.
+  //
+  // LATENT / DEAD-DATA. `lent.weeks.6.FRI.vespers` is "Friday of the 6th week of
+  // Lent" = Good Friday, but the calendar remaps the Sacred Triduum (Holy
+  // Thu/Fri/Sat) to LENT week 1, so a 2024–2032 full scan finds ZERO days
+  // resolving to LENT wk6 FRI — this block is UNREACHABLE via the only
+  // (date-based) route. The merge symptom (11 petitions → one 619-char versicle)
+  // reproduced ONLY by calling parseIntercessions on this block in isolation
+  // (mechanism ≠ outcome). The ACTUAL Good Friday renders the wk1 RICH overlay
+  // with 5 separated petitions — guarded by the 'Good Friday vespers render'
+  // suite below. This suite pins the defensive parser fix: a colon-path block
+  // whose petition region carries NO separator (the versicleOnlyBlock guard)
+  // splits each sentence-terminated element into its own petition rather than
+  // merging them. Data is byte-verbatim (no ":" inserted — MT/SoT 금지).
+  describe('colon-path versicle-only block (#74 H1 — latent/dead-data hardening)', () => {
+    const raw = lent.weeks['6'].FRI.vespers.intercessions
+    const parsed = parseIntercessions(raw)
+
+    it('splits the 11 separator-less petitions instead of merging them into one versicle', () => {
+      expect(raw).toHaveLength(12) // element[0] = intro+":"+refrain, [1..11] = 11 petitions
+      expect(raw.filter((l) => /\s[-—]\s/.test(l))).toHaveLength(0) // zero separators
+      expect(parsed.petitions).toHaveLength(11)
+    })
+
+    it('keeps each petition a distinct complete sentence (no 619-char merge blob)', () => {
+      expect(parsed.introduction).toBeDefined()
+      expect(parsed.refrain).toBe(
+        'Эзэн, Та Хүүгийнхээ үхлийн гавьяагаар биднийг сонсоно уу.',
+      )
+      // First + last of the 11 solemn intercessions, byte-verbatim from data.
+      expect(parsed.petitions[0].versicle).toBe(
+        'Та Өөрийн Шашинд эв нэгдлийг хайрлана уу.',
+      )
+      expect(parsed.petitions[10].versicle).toBe(
+        'Та эдүгээгийн талийгаачдыг өрөвдөнө үү.',
+      )
+      // versicle-only block → no petition carries a "-"-prefixed response.
+      expect(parsed.petitions.every((p) => !p.response)).toBe(true)
+      // None is the merged 619-char blob.
+      expect(parsed.petitions.every((p) => p.versicle.length < 100)).toBe(true)
+    })
+  })
+})
+
+// #74 (GOAL #64 / H1) — real user-path regression guard.
+//
+// The date-based route is the only way users reach an Office. Good Friday remaps
+// to LENT wk1 (Triduum), so its intercessions come from the wk1 RICH overlay
+// (lent.weeks.1.FRI / w1-FRI-vespers.rich.json), NOT the unreachable
+// lent.weeks.6.FRI block above. This guard pins the USER-FACING outcome: the
+// petitions render SEPARATED (5 distinct rich stanza blocks), never merged. If
+// the separate Good-Friday content decision (book page 675 Triduum solemn
+// intercessions vs page 647 weekday set — pending user judgment, leader-owned)
+// rewires this date, update this guard intentionally.
+describe('Good Friday vespers render (real user path — #74 H1)', () => {
+  it('renders 5 separated petitions via the wk1 RICH overlay (2026-04-03)', async () => {
+    const assembled = await assembleHour('2026-04-03', 'vespers')
+    expect(assembled).not.toBeNull()
+    const inter = assembled!.sections.find((s) => s.type === 'intercessions')
+    expect(inter).toBeDefined()
+    const rich = (inter as Extract<HourSection, { type: 'intercessions' }>).rich
+    expect(rich).toBeDefined()
+    expect(rich!.blocks.length).toBeGreaterThan(0)
+    const stanzas = rich!.blocks.filter((b) => b.kind === 'stanza')
+    expect(stanzas).toHaveLength(5)
   })
 })
