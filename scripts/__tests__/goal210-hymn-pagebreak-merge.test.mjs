@@ -345,20 +345,26 @@ const HISTORICAL_MERGED_TARGETS = [
 const AREA_HASHES = {
   'src/data/loth/ordinarium/compline.json':
     '10261a2e03d3b73bf479abbdfea6bf0ca72f15ce4a24b88db94cedc76ee86a4c',
+  // WI-81 intended default_antiphon trim.
   'src/data/loth/propers/advent.json':
-    '41c528f556ca5a0d88021b0513697e4d3f1a37b26c81b7e279df4075dc782987',
+    '858d31b602dc4ab2f5a18e029665005575bc6e116dfb6870f99173cb8fcacab5',
+  // WI-81 intended default_antiphon trim.
   'src/data/loth/propers/christmas.json':
-    'd22e8925b09ff74c44c31d6580515fb6f2824e164fe05b58849649bcec78704c',
+    '163bdaed228c55d288fecdf5748854a72a0bbd0ef1aed44b1f3033cff8522be0',
+  // WI-81 intended default_antiphon trim.
   'src/data/loth/propers/easter.json':
-    'f6fba649cf8f36f2b7b1e72697fc5d9422c7f3ec29570abe8943dd0eb3aae52d',
+    'a463d103dd4f875ba7611f3be5034ea669b403f6bae2348ebad8be58c1bac681',
+  // WI-81 intended default_antiphon trim.
   'src/data/loth/propers/lent.json':
-    '47dfdb96e159a474adbe5f0517b640fea668ae3d679a7aeab35035491d46fd49',
+    'a2cd756b86df1dd637f07413471649f5d752f5813e129ca2bd5b661fab77a089',
+  // WI-81 intended default_antiphon trim.
   'src/data/loth/propers/ordinary-time.json':
-    '5cbec009830ac92e441bf389ab6bb0ed289570dc0eb92ab3189508e53083c1ff',
+    '0c68fbdded75f6c508517e270d75867cfbf81091dbeb6fc8b6c41d3a26fc4ffb',
   'src/data/loth/sanctoral/feasts.json':
     'aed354d01103442536a502924f4e53c03cf040341fa14e079dded1869d8653e6',
+  // WI-76 intended memorials page 863->862.
   'src/data/loth/sanctoral/memorials.json':
-    '4e6d78947eba4ab95f0bbf998b894d9b6a55769aa907b927d2277430a4ea6d02',
+    '8f7ef921766a12cecbd1c966802637ecc4266000a311f25db6ff5e50e0555c52',
   'src/data/loth/sanctoral/optional-memorials.json':
     'ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356',
   'src/data/loth/sanctoral/solemnities.json':
