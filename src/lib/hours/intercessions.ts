@@ -24,6 +24,15 @@ export interface ParsedIntercessions {
 }
 
 const SEPARATOR = /\s[-—]\s/
+// GOAL #31 / WI #33 — the colonless fallback routing is gated on the PSALTER
+// separator (space-hyphen-space " - ") ONLY. The file-header format contract is
+// psalter=hyphen, propers=em-dash (" — "); a full-data scan confirms the split
+// is exact (4 colonless psalter blocks use " - " and 0 em-dash; the 7 colonless
+// propers blocks use " — " and 0 hyphen). Gating routing on this separator
+// keeps colonless PROPERS blocks (whose intro+refrain share the first element —
+// a different shape this WI does not handle) on their prior behavior. Petition
+// SPLITTING still uses the general SEPARATOR below — only ROUTING is narrowed.
+const SEPARATOR_PSALTER = /\s-\s/
 const CLOSING_PREFIX = 'Тэнгэр дэх Эцэг'
 
 // GOAL #31 / WI #33 — colonless psalter fallback. A petition-1 versicle that
@@ -134,13 +143,17 @@ export function parseIntercessions(raw: readonly string[]): ParsedIntercessions 
   let i = 0
 
   // GOAL #31 / WI #33: when the source carries NO ":" anywhere but DOES carry a
-  // petition separator, the introduction is colonless (the four affected
-  // psalter blocks). Route through the structural fallback. Every other shape —
-  // including ":"-bearing psalter/proper formats AND the no-colon-no-separator
-  // degenerate input — keeps the original colon-terminated intro accumulator,
-  // so colon-path behavior is byte-for-byte unchanged.
+  // psalter (" - ") petition separator, the introduction is colonless (exactly
+  // the four affected psalter blocks: W1 WED Vespers, W3 SUN Lauds, W4 SUN
+  // Lauds, W4 MON Vespers). Route through the structural fallback. Every other
+  // shape — ":"-bearing psalter/proper formats, colonless PROPERS blocks (which
+  // use the em-dash " — " separator and a combined-first-element intro+refrain
+  // out of scope for this WI), AND no-colon-no-separator degenerate input —
+  // keeps the original colon-terminated intro accumulator, so colon-path
+  // behavior is byte-for-byte unchanged. SEPARATOR_PSALTER gating is what keeps
+  // the 7 colonless propers blocks on their prior flat-fallback behavior.
   const hasColon = lines.some((l) => l.includes(':'))
-  const firstSepIdx = lines.findIndex((l) => SEPARATOR.test(l))
+  const firstSepIdx = lines.findIndex((l) => SEPARATOR_PSALTER.test(l))
 
   if (!hasColon && firstSepIdx !== -1) {
     i = extractColonlessIntroRefrain(lines, firstSepIdx, result)

@@ -3,6 +3,7 @@ import { parseIntercessions } from '../../hours/intercessions'
 import week1 from '../../../data/loth/psalter/week-1.json'
 import week3 from '../../../data/loth/psalter/week-3.json'
 import week4 from '../../../data/loth/psalter/week-4.json'
+import advent from '../../../data/loth/propers/advent.json'
 
 // GOAL #31 / WI #33 (#31-sub-2) — colonless psalter intercessions regression.
 //
@@ -176,6 +177,34 @@ describe('parseIntercessions — colonless psalter fallback (GOAL #31 / WI #33)'
         'гэгээнтнүүдийн хамтаар',
       )
       expect(parsed.closing).toContain('Тэнгэр дэх Эцэг')
+    })
+  })
+
+  // Routing-narrowing guard (review #33 iter-1 BLOCKER): the colonless fallback
+  // is gated on the PSALTER hyphen separator (" - "). Colonless PROPERS blocks
+  // use the em-dash separator (" — ") and are intentionally LEFT on their prior
+  // behavior (petitions:[] → flat fallback) by this WI — their intro+refrain
+  // share the first element, a shape this fix does not handle. This guard pins
+  // that scope so a future re-widening of the routing predicate is caught.
+  // When propers colonless support lands (follow-up WI), update this block.
+  describe('routing guard — colonless PROPERS (em-dash) stay out of scope', () => {
+    it('does NOT route the em-dash propers block through the fallback (advent W1 MON vespers)', () => {
+      const raw = (advent as unknown as {
+        weeks: Record<
+          string,
+          Record<string, Record<string, { intercessions: string[] }>>
+        >
+      }).weeks['1'].MON.vespers.intercessions
+      // Sanity: this fixture is genuinely colonless + em-dash (the predicate
+      // the narrowing depends on).
+      expect(raw.some((l) => l.includes(':'))).toBe(false)
+      expect(raw.some((l) => /\s—\s/.test(l))).toBe(true)
+      expect(raw.some((l) => /\s-\s/.test(l))).toBe(false)
+
+      const parsed = parseIntercessions(raw)
+      // Prior behavior preserved: no structured petitions, no refrain.
+      expect(parsed.petitions).toHaveLength(0)
+      expect(parsed.refrain).toBeUndefined()
     })
   })
 })
