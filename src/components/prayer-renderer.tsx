@@ -1,7 +1,8 @@
 'use client'
 
-import type { AssembledHour } from '@/lib/types'
+import type { AssembledHour, SectionOverride } from '@/lib/types'
 import { useSettings } from '@/lib/settings'
+import { DirectiveBlock } from './prayer-sections/directive-block'
 import { InvitatorySection } from './invitatory-section'
 import { OpeningVersicleSection } from './opening-versicle-section'
 import { HymnSection } from './hymn-section'
@@ -44,8 +45,37 @@ export function PrayerRenderer({ hour }: { hour: AssembledHour }) {
     return true
   })
 
+  // GOAL #48 — hoist the "psalms + canticles borrowed from psalter Week 1
+  // Sunday" solemnity notice to the very TOP of the prayer body: after the
+  // title header (rendered by the page, outside this component) and BEFORE
+  // the first section (УДИРТГАЛ / openingVersicle). On a psalterFrom
+  // solemnity (Corpus Christi, Trinity Sunday, Ascension, Pentecost,
+  // Christmas, Jan 1 …) the user should be told up-front that the psalmody
+  // is borrowed — it is special. The notice is EXACTLY the `bodyInlined`
+  // psalmody-`substitute` directive (the only override flag set when a
+  // psalmody substitute carries a structured `target.psalterRef` —
+  // conditional-rubric-resolver.ts `rubricToOverride`). Note-only
+  // substitutes, skip / append / prepend directives, and plain days are
+  // NOT hoisted (AC D2 — no section-order regression). PsalmodySection is
+  // told to skip re-rendering these (`hoistInlinedSubstituteNote`) so the
+  // notice appears exactly once, here at the top.
+  const hoistedPsalterNotices: SectionOverride[] = hour.sections.flatMap(
+    (section) =>
+      section.type === 'psalmody'
+        ? (section.directives ?? []).filter(
+            (d) => d.mode === 'substitute' && d.bodyInlined,
+          )
+        : [],
+  )
+
   return (
     <div>
+      {hoistedPsalterNotices.length > 0 && (
+        <DirectiveBlock
+          directives={hoistedPsalterNotices}
+          className="mb-4"
+        />
+      )}
       {visibleSections.map((section, i) => {
         const showDivider = i > 0
         const spacing =
@@ -78,7 +108,7 @@ export function PrayerRenderer({ hour }: { hour: AssembledHour }) {
             )}
             {section.type === 'hymn' && <HymnSection section={section} />}
             {section.type === 'psalmody' && (
-              <PsalmodySection section={section} />
+              <PsalmodySection section={section} hoistInlinedSubstituteNote />
             )}
             {section.type === 'shortReading' && (
               <ShortReadingSection section={section} />

@@ -589,7 +589,12 @@
 // 보수적 bump 선례 (cache-first 정적 자산이 구 flat 렌더 청크를 무한
 // 서빙하는 회귀 방지) 를 따라 conservative bump. activate 훅이 구버전
 // 캐시를 정리. PRECACHE_URLS 변동 없음. See CLAUDE.md "Service Worker 캐시".
-const CACHE_VERSION = 'divine-office-v53'
+// v54 (GOAL #48): psalter-fallback 안내(대축일 시편 Week-1 차용 안내)를
+// psalmody 뒤 → 제목 다음·УДИРТГАЛ 앞 최상단으로 이동 (prayer-renderer
+// hoist). client render 청크 내용 변경 → 구 청크 무한 서빙 회귀 방지용
+// conservative bump. ⚠️ GOAL #43 도 동시 v53→v54 bump 중 — 머지 충돌 시
+// 리더가 last-merged 를 다음 번호로 rebase.
+const CACHE_VERSION = 'divine-office-v54'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
