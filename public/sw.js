@@ -602,7 +602,18 @@
 // 에서 versicle+response 로 변경 — v53 의 보수적 bump 선례를 따라
 // conservative bump. activate 훅이 구버전 캐시를 정리. PRECACHE_URLS 변동
 // 없음. See CLAUDE.md "Service Worker 캐시".
-const CACHE_VERSION = 'divine-office-v54'
+// v55 — #48 notice-hoist + #76 saturday-mary page-ref + #75 home hour-card
+// enum-label removal + #74 intercessions parser. Bundled changes include
+// prayer-renderer/psalmody-section client + SSR markup shifts, memorials.json
+// page-ref SSR output 863→862, hour-card-list client + SSR label output
+// change, and intercessions parser client chunk hash change (render output
+// unchanged). navigation 은 여전히 network-only (HTML 미캐시) 이고
+// caches.put(html) 미도입. Next 청크는 content-hash 라 hard requirement 는
+// 아니지만 v51~v54 의 보수적 bump 선례를 따라 connected-deploy 일관성을
+// 위해 conservative bump. activate 훅이 구버전 캐시를 정리.
+// PRECACHE_URLS=['/offline.html','/icon.svg'] 변동 없음. See CLAUDE.md
+// "Service Worker 캐시".
+const CACHE_VERSION = 'divine-office-v55'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
