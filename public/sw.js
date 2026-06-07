@@ -576,7 +576,20 @@
 // (cache-first 정적 자산이 구 no-gap 렌더 청크를 무한 서빙하는 회귀 방지)
 // 를 따라 conservative bump. activate 훅이 구버전 캐시를 정리.
 // PRECACHE_URLS 변동 없음. See CLAUDE.md "Service Worker 캐시".
-const CACHE_VERSION = 'divine-office-v52'
+// v53 — GOAL #31 / WI #33 (콜론 없는 청원 파싱): parseIntercessions
+// (lib/hours/intercessions.ts) 에 colonless psalter fallback 추가 — 원문
+// PDF 에 ':' 가 없는 4개 시편집 청원(W1 WED Vespers, W3 SUN Lauds,
+// W4 SUN Lauds, W4 MON Vespers)이 petitions:[] 로 떨어져 intercessions-
+// section.tsx 가 flat fallback 을 렌더하던 회귀 해소. navigation 은 여전히
+// network-only (HTML 미캐시) 이고 Next 청크는 content-hash 라 hard
+// requirement 는 아니지만, (1) intercessions-section.tsx (client 컴포넌트)
+// 가 @/lib/hours/intercessions 를 import → client 빌드 청크 해시 변동,
+// (2) 위 4개 /pray/[date]/[hour] 의 SSR HTML 이 flat 불릿에서 structured
+// (introduction/refrain/petitions) markup 으로 변경 — v30/v31/v51/v52 의
+// 보수적 bump 선례 (cache-first 정적 자산이 구 flat 렌더 청크를 무한
+// 서빙하는 회귀 방지) 를 따라 conservative bump. activate 훅이 구버전
+// 캐시를 정리. PRECACHE_URLS 변동 없음. See CLAUDE.md "Service Worker 캐시".
+const CACHE_VERSION = 'divine-office-v53'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 

@@ -26,6 +26,20 @@ export interface ParsedIntercessions {
 const SEPARATOR = /\s[-—]\s/
 const CLOSING_PREFIX = 'Тэнгэр дэх Эцэг'
 
+// GOAL #31 / WI #33 — colonless psalter fallback. A petition-1 versicle that
+// wraps backward from the first separator normally stops at the previous
+// sentence boundary; it must NOT stop when the versicle's leading sentence is
+// grammatically dependent on the one before it (a subordinating/causal
+// "Учир нь" / "for, because" clause), because the two sentences are then ONE
+// versicle. Scoped to the single such boundary among the four affected
+// colonless psalter blocks (W4 SUN Lauds, full_pdf.txt:14258-14266). Extend
+// case-by-case only if a future colonless block exposes another binding
+// conjunction at the refrain↔versicle seam.
+// NB: a trailing `\b` does NOT work here — JS `\w`/`\b` treat Cyrillic letters
+// as non-word characters even under `/u`, so `\b` after "нь" never matches.
+// Use an explicit whitespace/end lookahead instead.
+const CONTINUATION_LEAD = /^Учир нь(?=\s|$)/u
+
 // FR-169 (#115 C1): exported so the render layer (intercessions-section.tsx)
 // can reuse the EXACT same closing-incipit predicate (SSOT — same
 // CLOSING_PREFIX + quote-stripping). This adds an `export` keyword only;
@@ -51,6 +65,66 @@ function splitOnSeparator(text: string): [string, string] | null {
   return [before, after]
 }
 
+// GOAL #31 / WI #33 — colonless psalter fallback. The Mongolian book PDF
+// (parsed_data/full_pdf.txt) prints four psalter intercession blocks with NO
+// ":" after the introduction (W1 WED Vespers, W3 SUN Lauds, W4 SUN Lauds,
+// W4 MON Vespers). The colon-terminated intro accumulator in the main parser
+// then swallows every line and returns petitions:[], so the render layer
+// (intercessions-section.tsx) drops the structured path. Inserting a ":" into
+// the data would fabricate punctuation absent from the SoT (MT/날조 금지), so
+// the fix lives here: anchor on the petition SEPARATOR (the per-petition
+// versicle↔response boundary that survives the PDF→JSON line merge) and split
+// intro / refrain / petitions structurally.
+//
+//   • petition-1 versicle wraps BACKWARD from the first separator over its
+//     continuation lines; a sentence-ending line is the boundary EXCEPT when
+//     the versicle's leading sentence is a CONTINUATION_LEAD clause (then the
+//     two sentences are one versicle).
+//   • refrain = the single sentence-unit immediately before that versicle
+//     (may wrap across array elements — W4 MON, full_pdf.txt:15153-15154).
+//   • introduction = everything before the refrain.
+//
+// Returns the index at which the shared petition loop should begin. Petition
+// parsing itself (separator split, wrapped responses, closing incipit) is
+// delegated UNCHANGED to that loop — colon-path behavior is not touched.
+function extractColonlessIntroRefrain(
+  lines: readonly string[],
+  firstSepIdx: number,
+  result: ParsedIntercessions,
+): number {
+  // Walk back from the first separator to the petition-1 versicle start.
+  let vs = firstSepIdx
+  while (vs - 1 >= 0) {
+    const prev = lines[vs - 1]
+    if (!endsSentence(prev)) {
+      vs -= 1 // clear continuation — prev wraps into this versicle
+      continue
+    }
+    if (CONTINUATION_LEAD.test(lines[vs])) {
+      vs -= 1 // dependent leading clause — absorb the preceding sentence too
+      continue
+    }
+    break
+  }
+
+  // Refrain = the sentence-unit ending at vs-1 (accumulate its wrapped head).
+  let rs = vs
+  if (rs - 1 >= 0) {
+    rs -= 1
+    while (rs - 1 >= 0 && !endsSentence(lines[rs - 1])) rs -= 1
+  }
+
+  const introLines = lines.slice(0, rs)
+  const refrainLines = lines.slice(rs, vs)
+  if (introLines.length > 0) {
+    result.introduction = introLines.join(' ').replace(/\s+/g, ' ').trim()
+  }
+  if (refrainLines.length > 0) {
+    result.refrain = refrainLines.join(' ').replace(/\s+/g, ' ').trim()
+  }
+  return vs
+}
+
 export function parseIntercessions(raw: readonly string[]): ParsedIntercessions {
   const result: ParsedIntercessions = { petitions: [] }
   if (!raw || raw.length === 0) return result
@@ -58,49 +132,63 @@ export function parseIntercessions(raw: readonly string[]): ParsedIntercessions 
   const lines = raw.map((l) => l.trim()).filter((l) => l.length > 0)
 
   let i = 0
-  const introBuf: string[] = []
 
-  // 1) Intro: ":"로 끝나는 줄까지 누적. 계절 고유문은 ":"가 줄 중간에 있을 수 있다.
-  while (i < lines.length) {
-    const line = lines[i]
-    if (isClosingLine(line)) break
+  // GOAL #31 / WI #33: when the source carries NO ":" anywhere but DOES carry a
+  // petition separator, the introduction is colonless (the four affected
+  // psalter blocks). Route through the structural fallback. Every other shape —
+  // including ":"-bearing psalter/proper formats AND the no-colon-no-separator
+  // degenerate input — keeps the original colon-terminated intro accumulator,
+  // so colon-path behavior is byte-for-byte unchanged.
+  const hasColon = lines.some((l) => l.includes(':'))
+  const firstSepIdx = lines.findIndex((l) => SEPARATOR.test(l))
 
-    const colonIdx = line.indexOf(':')
-    if (colonIdx === -1) {
-      introBuf.push(line)
-      i += 1
-      continue
-    }
+  if (!hasColon && firstSepIdx !== -1) {
+    i = extractColonlessIntroRefrain(lines, firstSepIdx, result)
+  } else {
+    const introBuf: string[] = []
 
-    // ":" 뒤에 텍스트가 남아있으면 refrain과 같은 줄에 있는 형태
-    const afterColon = line.slice(colonIdx + 1).trim()
-    const beforeColon = line.slice(0, colonIdx).trim()
-    if (beforeColon) introBuf.push(beforeColon)
-    i += 1
+    // 1) Intro: ":"로 끝나는 줄까지 누적. 계절 고유문은 ":"가 줄 중간에 있을 수 있다.
+    while (i < lines.length) {
+      const line = lines[i]
+      if (isClosingLine(line)) break
 
-    if (afterColon) {
-      result.refrain = afterColon
-    } else if (i < lines.length && !isClosingLine(lines[i]) && !SEPARATOR.test(lines[i])) {
-      // 시편집 포맷: refrain이 다음 원소(들). 원문 PDF 줄바꿈 때문에 한 응답이
-      // 여러 배열 원소로 쪼개질 수 있다(예: week-4 WED vespers
-      //   ["Эзэн, Танд итгэж найддаг бүгд Таны дотор", "баясан цэнгэх болтугай."]).
-      // 문장 종결부호 또는 첫 petition 구분자(SEPARATOR)/closing 경계까지 누적해
-      // 하나의 refrain으로 결합한다. 단일 원소 refrain(이미 종결부호로 끝남)은
-      // 첫 원소에서 break 하여 과누적을 막는다(정상 블록 동작 보존).
-      const refrainBuf: string[] = []
-      while (i < lines.length && !isClosingLine(lines[i]) && !SEPARATOR.test(lines[i])) {
-        const piece = lines[i]
-        refrainBuf.push(piece)
+      const colonIdx = line.indexOf(':')
+      if (colonIdx === -1) {
+        introBuf.push(line)
         i += 1
-        if (endsSentence(piece)) break
+        continue
       }
-      result.refrain = refrainBuf.join(' ').replace(/\s+/g, ' ').trim()
-    }
-    break
-  }
 
-  if (introBuf.length > 0) {
-    result.introduction = introBuf.join(' ').replace(/\s+/g, ' ').trim()
+      // ":" 뒤에 텍스트가 남아있으면 refrain과 같은 줄에 있는 형태
+      const afterColon = line.slice(colonIdx + 1).trim()
+      const beforeColon = line.slice(0, colonIdx).trim()
+      if (beforeColon) introBuf.push(beforeColon)
+      i += 1
+
+      if (afterColon) {
+        result.refrain = afterColon
+      } else if (i < lines.length && !isClosingLine(lines[i]) && !SEPARATOR.test(lines[i])) {
+        // 시편집 포맷: refrain이 다음 원소(들). 원문 PDF 줄바꿈 때문에 한 응답이
+        // 여러 배열 원소로 쪼개질 수 있다(예: week-4 WED vespers
+        //   ["Эзэн, Танд итгэж найддаг бүгд Таны дотор", "баясан цэнгэх болтугай."]).
+        // 문장 종결부호 또는 첫 petition 구분자(SEPARATOR)/closing 경계까지 누적해
+        // 하나의 refrain으로 결합한다. 단일 원소 refrain(이미 종결부호로 끝남)은
+        // 첫 원소에서 break 하여 과누적을 막는다(정상 블록 동작 보존).
+        const refrainBuf: string[] = []
+        while (i < lines.length && !isClosingLine(lines[i]) && !SEPARATOR.test(lines[i])) {
+          const piece = lines[i]
+          refrainBuf.push(piece)
+          i += 1
+          if (endsSentence(piece)) break
+        }
+        result.refrain = refrainBuf.join(' ').replace(/\s+/g, ' ').trim()
+      }
+      break
+    }
+
+    if (introBuf.length > 0) {
+      result.introduction = introBuf.join(' ').replace(/\s+/g, ' ').trim()
+    }
   }
 
   // 2) Petitions: 구분자를 만날 때마다 경계 확정. 구분자가 없는 줄은
