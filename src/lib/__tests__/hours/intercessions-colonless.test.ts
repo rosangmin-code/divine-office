@@ -110,6 +110,37 @@ describe('parseIntercessions — colonless psalter fallback (GOAL #31 / WI #33)'
       // The closing Lord's-Prayer incipit must not become a petition.
       expect(parsed.closing).toContain('Тэнгэр дэх Эцэг')
     })
+
+    // #42 (GOAL #43) — petition-4 versicle/response split across the
+    // no-trailing-space dash marker. The Mongolian book (full_pdf.txt:10355-10356)
+    // prints petition-4's response marker as "-Тэдэнд" (dash with NO trailing
+    // space), unlike its three siblings which print "- Word" (dash + space). The
+    // data preserves this byte-verbatim (week-3.json:92 "...санана уу, -Тэдэнд
+    // цорын ганц..."), so the strict /\s[-—]\s/ separator never matched and
+    // petition-4 rendered as a versicle-only entry with no response (the
+    // user-visible #42 bug). SoT discipline: the dash is a STRUCTURAL petition
+    // marker the parser consumes/discards (never rendered) — its inconsistent
+    // spacing is a typesetting artifact, so the fix lives in the parser (optional
+    // trailing space on the colonless-PSALTER petition split), NOT a space
+    // inserted into the source-faithful data.
+    it('splits petition-4 across the no-trailing-space dash marker (#42 / full_pdf.txt:10355-10356)', () => {
+      // Tightened from the prior ">= 3" bound, which let the petition-4
+      // no-response defect escape.
+      expect(parsed.petitions).toHaveLength(4)
+      const p4 = parsed.petitions[3]
+      expect(p4.versicle).toBe(
+        'Үндэстнүүдийн гэгээн гэрэл Та харанхуйд үлдсэн ' +
+          'хүмүүсийг эргэн санана уу,',
+      )
+      expect(p4.response).toBe(
+        'Тэдэнд цорын ганц үнэн Тэнгэрбурханыг таниулан нүдийг нь өгнө үү.',
+      )
+      // Every petition (including #4) now carries a response — the predicate the
+      // render layer (intercessions-section.tsx) keys the structured path on.
+      for (const p of parsed.petitions) {
+        expect(p.response).toBeTruthy()
+      }
+    })
   })
 
   describe('W4 SUN Lauds (week-4.json:75-100 / full_pdf.txt:14253-14280)', () => {
