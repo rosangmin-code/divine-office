@@ -193,4 +193,20 @@ describe('GOAL #48 — no regression for non-psalterFrom cases (D2)', () => {
     expect(udirtgalIdx).toBeGreaterThanOrEqual(0)
     expect(udirtgalIdx).toBeLessThan(psalmodyIdx)
   })
+
+  it('defensive edge: bodyInlined substitute with ZERO psalms renders the notice exactly once (no double render)', () => {
+    // review #48 iter-1 nit: the hoist gate (bodyInlined) was broader than
+    // PsalmodySection's inline-drop gate (bodyInlined && hasPsalms). In the
+    // unreachable-in-production edge where a bodyInlined substitute carries
+    // no psalms, the hoist now also requires psalms.length > 0 — so it stays
+    // out and PsalmodySection's note-only (hideBody) branch renders the
+    // notice once in-section. Either way: NEVER twice.
+    const hour = makeHour([
+      makeOpeningVersicle(),
+      makeHymn(),
+      { type: 'psalmody', psalms: [], directives: [PSALTER_FROM_NOTICE] },
+    ])
+    const html = render(createElement(PrayerRenderer, { hour }))
+    expect(count(html, NOTICE)).toBe(1)
+  })
 })

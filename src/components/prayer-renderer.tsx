@@ -59,9 +59,18 @@ export function PrayerRenderer({ hour }: { hour: AssembledHour }) {
   // NOT hoisted (AC D2 — no section-order regression). PsalmodySection is
   // told to skip re-rendering these (`hoistInlinedSubstituteNote`) so the
   // notice appears exactly once, here at the top.
+  //
+  // The `psalms.length > 0` gate MIRRORS PsalmodySection's
+  // `substituteInlined = substitutes.some(bodyInlined) && hasPsalms`
+  // gate (review #48 iter-1 nit): the hoist fires EXACTLY when
+  // PsalmodySection would have shown the body + inline note, so the two
+  // gates are symmetric. In the defensive edge where a bodyInlined
+  // substitute carries zero psalms, the hoist stays out and
+  // PsalmodySection falls back to its legacy note-only surface (the note
+  // renders once, in-section) — never a double render.
   const hoistedPsalterNotices: SectionOverride[] = hour.sections.flatMap(
     (section) =>
-      section.type === 'psalmody'
+      section.type === 'psalmody' && section.psalms.length > 0
         ? (section.directives ?? []).filter(
             (d) => d.mode === 'substitute' && d.bodyInlined,
           )
