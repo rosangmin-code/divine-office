@@ -589,7 +589,20 @@
 // 보수적 bump 선례 (cache-first 정적 자산이 구 flat 렌더 청크를 무한
 // 서빙하는 회귀 방지) 를 따라 conservative bump. activate 훅이 구버전
 // 캐시를 정리. PRECACHE_URLS 변동 없음. See CLAUDE.md "Service Worker 캐시".
-const CACHE_VERSION = 'divine-office-v53'
+// v54 — #42 (GOAL #43, W3 SUN Lauds 청원-4 분리): parseIntercessions
+// (lib/hours/intercessions.ts) 의 colonless psalter petition split 이 응답
+// 마커의 끝 공백을 선택적으로 허용 (SEPARATOR_PSALTER_PETITION). 원문 PDF
+// (full_pdf.txt:10356) 가 청원-4 응답마커를 '-Тэдэнд'(대시 뒤 공백 없음)
+// 로 인쇄 → 데이터가 byte-verbatim 보존 (week-3.json:92) → strict
+// /\s[-—]\s/ 미매칭 → 청원-4 가 versicle-only 로 렌더되던 #42 버그 해소.
+// navigation 은 여전히 network-only (HTML 미캐시) 이고 Next 청크는
+// content-hash 라 hard requirement 는 아니지만, (1) intercessions-section.tsx
+// (client 컴포넌트) 가 @/lib/hours/intercessions 를 import → client 빌드
+// 청크 해시 변동, (2) W3 SUN Lauds /pray SSR HTML 의 청원-4 가 versicle-only
+// 에서 versicle+response 로 변경 — v53 의 보수적 bump 선례를 따라
+// conservative bump. activate 훅이 구버전 캐시를 정리. PRECACHE_URLS 변동
+// 없음. See CLAUDE.md "Service Worker 캐시".
+const CACHE_VERSION = 'divine-office-v54'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 

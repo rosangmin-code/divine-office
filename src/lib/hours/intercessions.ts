@@ -45,6 +45,26 @@ const SEPARATOR_PSALTER = /\s-\s/
 // fallback on it — AFTER the hyphen check — targets exactly those 7 blocks and
 // never the 4 hyphen psalter blocks.
 const SEPARATOR_PROPERS = /\s—\s/
+// #42 (GOAL #43) — colonless-PSALTER petition-split separator. Identical to the
+// strict SEPARATOR (space-dash-space) EXCEPT the trailing space is OPTIONAL, so
+// it ALSO matches W3 SUN Lauds' petition-4 response marker, which the Mongolian
+// book PDF (full_pdf.txt:10356) prints as "-Тэдэнд" — a dash with NO trailing
+// space, unlike that block's three siblings ("- Word"). The data preserves this
+// byte-verbatim (week-3.json:92 "...санана уу, -Тэдэнд..."); the dash is a
+// STRUCTURAL petition marker the parser consumes/discards (never rendered), so
+// inserting a space would mutate source-faithful text (MT/날조 금지) — the
+// relaxation lives here instead.
+//
+// SCOPED to the colonless-PSALTER petition loop ONLY (gated by `colonlessPsalter`
+// in parseIntercessions) — NEVER the colon path or the em-dash propers path. A
+// full-data scan of all 4 colonless psalter blocks (W1 WED Vespers, W3 SUN
+// Lauds, W4 SUN Lauds, W4 MON Vespers) confirms every "space-dash" occurrence is
+// a petition marker and the other 3 blocks use "- " exclusively, so the
+// optional-trailing-space relaxation matches the SAME positions as the strict
+// separator there (0 regression) and additionally recovers only W3 petition-4.
+// The global SEPARATOR is untouched, so colon-path false positives (a stray
+// " -word" in normal prose) remain impossible.
+const SEPARATOR_PSALTER_PETITION = /\s[-—]\s?/
 // GOAL #31 / WI #41 — colonless PROPERS invitation marker. In these blocks the
 // PDF→JSON extraction collapsed the SoT paragraph break and merged the intro +
 // refrain into ONE array element (e.g. advent W1 MON vespers — full_pdf.txt
@@ -88,8 +108,11 @@ function endsSentence(text: string | undefined): boolean {
   return /[.!?。！？]$/.test(trimmed)
 }
 
-function splitOnSeparator(text: string): [string, string] | null {
-  const m = text.match(SEPARATOR)
+function splitOnSeparator(
+  text: string,
+  separator: RegExp = SEPARATOR,
+): [string, string] | null {
+  const m = text.match(separator)
   if (!m || m.index === undefined) return null
   const before = text.slice(0, m.index).trim()
   const after = text.slice(m.index + m[0].length).trim()
@@ -241,8 +264,15 @@ export function parseIntercessions(raw: readonly string[]): ParsedIntercessions 
   const firstHyphenSep = lines.findIndex((l) => SEPARATOR_PSALTER.test(l))
   const firstEmDashSep = lines.findIndex((l) => SEPARATOR_PROPERS.test(l))
 
+  // Petition-split separator. The colonless-PSALTER route relaxes the trailing
+  // space (SEPARATOR_PSALTER_PETITION / #42) so W3 SUN Lauds' "-Тэдэнд" marker
+  // splits; every other route keeps the strict space-dash-space SEPARATOR, so the
+  // colon path and the em-dash propers path stay byte-for-byte unchanged.
+  let petitionSeparator: RegExp = SEPARATOR
+
   if (!hasColon && firstHyphenSep !== -1) {
     i = extractColonlessIntroRefrain(lines, firstHyphenSep, result)
+    petitionSeparator = SEPARATOR_PSALTER_PETITION
   } else if (!hasColon && firstEmDashSep !== -1) {
     i = extractColonlessPropersIntroRefrain(lines, firstEmDashSep, result)
   } else {
@@ -320,7 +350,7 @@ export function parseIntercessions(raw: readonly string[]): ParsedIntercessions 
       break
     }
 
-    const split = splitOnSeparator(line)
+    const split = splitOnSeparator(line, petitionSeparator)
     if (split) {
       const [before, after] = split
       if (current) {
