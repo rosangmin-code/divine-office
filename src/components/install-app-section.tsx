@@ -148,7 +148,12 @@ export function InstallAppSection() {
   )
 }
 
-function renderBody(
+// Exported for unit testing: the iOS-install branches ('ios' / 'iosDismissed')
+// are only reachable via runtime userAgent detection (useEffect), so SSR of
+// <InstallAppSection /> never renders them. Exposing this pure status→JSX
+// renderer lets the NFR-002 test assert the iOS-branch labels (Хуваалцах,
+// no English "Share") across every status without faking navigator.
+export function renderBody(
   status: InstallStatus,
   onInstall: () => void,
   onIosDismiss: () => void,
@@ -205,7 +210,7 @@ function renderBody(
             <span className="flex flex-wrap items-center gap-1">
               Safari-гийн
               <ShareIcon />
-              Share товчийг дар
+              Хуваалцах товчийг дар
             </span>
           </li>
           <li className="flex gap-2">
@@ -227,7 +232,7 @@ function renderBody(
   if (status === 'iosDismissed') {
     return (
       <p className="text-sm text-stone-500 dark:text-stone-400">
-        Safari-гийн Share: &quot;Нүүр дэлгэцэнд нэмэх&quot;.
+        Safari-гийн Хуваалцах: &quot;Нүүр дэлгэцэнд нэмэх&quot;.
       </p>
     )
   }

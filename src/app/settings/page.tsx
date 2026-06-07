@@ -28,9 +28,14 @@ const FONT_SIZE_DEFAULT_INDEX = FONT_SIZES.findIndex(o => o.value === 'md')
 export const STEPPER_BTN_DISABLED =
   'border-stone-200 text-stone-300 cursor-not-allowed dark:border-stone-800 dark:text-stone-700'
 
+// NFR-002: 라벨은 몽골어 키릴만 사용한다. 영어 글꼴 분류어("Sans"/"Serif")
+// 대신, 같은 파일의 글꼴 설명 문구(아래 'font-family-heading' 섹션)에서
+// 이미 쓰던 몽골어 글로스("Орчин үеийн"/"Сонгодог")로 통일한다.
+// sampleClass(font-sans/font-serif)가 버튼 라벨을 해당 글꼴로 렌더하므로
+// 라벨 자체가 글꼴 미리보기 역할을 한다 → 브랜드명 병기는 불필요.
 const FONT_FAMILIES: { value: FontFamily; label: string; sampleClass: string }[] = [
-  { value: 'sans', label: 'Sans (Noto Sans)', sampleClass: 'font-sans' },
-  { value: 'serif', label: 'Serif (Noto Serif)', sampleClass: 'font-serif' },
+  { value: 'sans', label: 'Орчин үеийн', sampleClass: 'font-sans' },
+  { value: 'serif', label: 'Сонгодог', sampleClass: 'font-serif' },
 ]
 
 const THEMES: { value: ThemeMode; label: string }[] = [
@@ -102,7 +107,8 @@ export default function SettingsPage() {
         <h1 className="mb-2 text-center text-2xl md:text-3xl font-bold text-stone-900 dark:text-stone-100">
           Тохиргоо
         </h1>
-        <p className="text-center text-sm text-stone-500 dark:text-stone-400">Settings</p>
+        {/* NFR-002: h1 가 이미 몽골어 'Тохиргоо' 이므로 중복 영어 부제("Settings")는
+            제거한다. (guide 페이지의 영어 부제는 원전 제목 인용이라 별개 — 본 WI 범위 밖.) */}
       </header>
 
       <div className="space-y-6">
@@ -166,7 +172,7 @@ export default function SettingsPage() {
             Үсгийн хэлбэр
           </h2>
           <p className="mb-4 text-sm text-stone-500 dark:text-stone-400">
-            Sans (орчин үеийн) эсвэл Serif (сонгодог)
+            Орчин үеийн эсвэл сонгодог
           </p>
           <div role="radiogroup" aria-labelledby="font-family-heading" className="grid grid-cols-2 gap-2">
             {FONT_FAMILIES.map(opt => {
