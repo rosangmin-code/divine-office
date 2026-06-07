@@ -3,6 +3,7 @@ import { parseIntercessions } from '../../hours/intercessions'
 import week4 from '../../../data/loth/psalter/week-4.json'
 import lent from '../../../data/loth/propers/lent.json'
 import { assembleHour } from '../../loth-service'
+import { getCalendarForYear } from '../../calendar'
 import type { HourSection } from '../../types'
 
 describe('parseIntercessions', () => {
@@ -214,26 +215,75 @@ describe('parseIntercessions', () => {
   })
 })
 
-// #74 (GOAL #64 / H1) — real user-path regression guard.
+const goodFridayFirstPetition = 'Та Өөрийн Шашинд эв нэгдлийг хайрлана уу.'
+const goodFridayLastPetition = 'Та эдүгээгийн талийгаачдыг өрөвдөнө үү.'
+
+function getIntercessionsSection(sections: HourSection[]) {
+  return sections.find((s) => s.type === 'intercessions') as
+    | Extract<HourSection, { type: 'intercessions' }>
+    | undefined
+}
+
+function goodFridayDateForYear(year: number): string {
+  const day = getCalendarForYear(year).find((entry) => entry.name === 'Good Friday')
+  if (!day) throw new Error(`Good Friday not found for ${year}`)
+  return day.date
+}
+
+// #78 / WI-92 — real user-path regression guard.
 //
-// The date-based route is the only way users reach an Office. Good Friday remaps
-// to LENT wk1 (Triduum), so its intercessions come from the wk1 RICH overlay
-// (lent.weeks.1.FRI / w1-FRI-vespers.rich.json), NOT the unreachable
-// lent.weeks.6.FRI block above. This guard pins the USER-FACING outcome: the
-// petitions render SEPARATED (5 distinct rich stanza blocks), never merged. If
-// the separate Good-Friday content decision (book page 675 Triduum solemn
-// intercessions vs page 647 weekday set — pending user judgment, leader-owned)
-// rewires this date, update this guard intentionally.
+// The date-based route is the only way users reach an Office. Good Friday's
+// Triduum calendar identity keeps most routing on LENT week 1, but its Vespers
+// intercessions are authored as the Good Friday solemn intercessions at
+// lent.weeks.6.FRI.vespers (book pp. 675-676). The user-facing outcome must
+// therefore render 11 distinct Good Friday petitions, not the weekday p.647 set.
 describe('Good Friday vespers render (real user path — #74 H1)', () => {
-  it('renders 5 separated petitions via the wk1 RICH overlay (2026-04-03)', async () => {
+  it('renders 11 separated solemn petitions from lent week 6 Friday (2026-04-03)', async () => {
     const assembled = await assembleHour('2026-04-03', 'vespers')
     expect(assembled).not.toBeNull()
-    const inter = assembled!.sections.find((s) => s.type === 'intercessions')
+    const inter = getIntercessionsSection(assembled!.sections)
     expect(inter).toBeDefined()
-    const rich = (inter as Extract<HourSection, { type: 'intercessions' }>).rich
+    expect(inter!.page).toBe(675)
+    expect(inter!.items).toHaveLength(12)
+    expect(inter!.petitions).toHaveLength(11)
+    expect(inter!.petitions[0].versicle).toBe(goodFridayFirstPetition)
+    expect(inter!.petitions[10].versicle).toBe(goodFridayLastPetition)
+    expect(inter!.petitions.every((petition) => !petition.response)).toBe(true)
+
+    const rich = inter!.rich
     expect(rich).toBeDefined()
-    expect(rich!.blocks.length).toBeGreaterThan(0)
-    const stanzas = rich!.blocks.filter((b) => b.kind === 'stanza')
-    expect(stanzas).toHaveLength(5)
+    expect(rich!.source).toMatchObject({
+      kind: 'seasonal',
+      season: 'LENT',
+      weekKey: '6',
+      dayKey: 'FRI',
+      hour: 'vespers',
+    })
+    const paragraphs = rich!.blocks.filter((block) => block.kind === 'para')
+    expect(paragraphs).toHaveLength(13)
+  })
+
+  it('routes every Good Friday from 2024 through 2032 to the 11 solemn petitions', async () => {
+    for (let year = 2024; year <= 2032; year++) {
+      const date = goodFridayDateForYear(year)
+      const assembled = await assembleHour(date, 'vespers')
+      expect(assembled, date).not.toBeNull()
+      const inter = getIntercessionsSection(assembled!.sections)
+      expect(inter?.page, date).toBe(675)
+      expect(inter?.petitions, date).toHaveLength(11)
+      expect(inter?.petitions[0].versicle, date).toBe(goodFridayFirstPetition)
+      expect(inter?.petitions[10].versicle, date).toBe(goodFridayLastPetition)
+    }
+  })
+
+  it('does not apply the Good Friday intercessions to adjacent Triduum days or ordinary Lent Fridays', async () => {
+    for (const date of ['2026-04-02', '2026-04-04', '2026-03-06']) {
+      const assembled = await assembleHour(date, 'vespers')
+      expect(assembled, date).not.toBeNull()
+      const inter = getIntercessionsSection(assembled!.sections)
+      expect(inter?.page, date).not.toBe(675)
+      expect(inter?.petitions[0]?.versicle, date).not.toBe(goodFridayFirstPetition)
+      expect(inter?.petitions.at(-1)?.versicle, date).not.toBe(goodFridayLastPetition)
+    }
   })
 })
