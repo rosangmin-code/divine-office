@@ -32,7 +32,6 @@ const fs = require('fs')
 const path = require('path')
 const {
   tokenize,
-  buildSourceIndex,
   buildFirstTokenIndex,
   findAllPagesForFingerprint,
 } = require('./lib/page-fingerprint')
@@ -46,6 +45,36 @@ const DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 const HOURS = ['lauds', 'vespers']
 const WINDOW_RADIUS = 2  // declared ±2 accepted (absorbs spread-layout + cross-refs)
 const STANZA_TOKEN_COUNT = 6
+const DAY_NAMES = '(Ням|Даваа|Мягмар|Лхагва|Пүрэв|Баасан|Бямба)'
+
+function isPsalterRunningHeader(line) {
+  return (
+    /^[1-4]\s+д(үгээр|угаар) долоо хоног$/i.test(line) ||
+    new RegExp(`^${DAY_NAMES} гарагийн (өглөө|орой)$`, 'i').test(line) ||
+    /^(Эзэний мэндлэлтийн цаг улирал|Дөчин хоногийн цаг улирал|Ариун нандин гурван хоног)$/i.test(line)
+  )
+}
+
+function buildAuditSourceIndex(filePath) {
+  const raw = fs.readFileSync(filePath, 'utf8')
+  const lines = raw.split(/\r?\n/)
+  let currentPage = null
+  const tokens = []
+  for (const line of lines) {
+    const trimmed = line.trim()
+    if (/^\d{1,4}$/.test(trimmed)) {
+      currentPage = parseInt(trimmed, 10)
+      continue
+    }
+    // Preserve page attribution while ignoring running headers inserted mid-stanza.
+    if (!trimmed || isPsalterRunningHeader(trimmed)) continue
+    const lineTokens = tokenize(trimmed)
+    for (const t of lineTokens) {
+      tokens.push({ token: t, page: currentPage })
+    }
+  }
+  return tokens
+}
 
 function firstStanzaTokens(ref, psalmTexts) {
   const entry = psalmTexts[ref]
@@ -115,7 +144,7 @@ function collect(psalmTexts, srcTokens, firstTokenIndex) {
 function main() {
   const asJson = process.argv.includes('--json')
   const psalmTexts = JSON.parse(fs.readFileSync(TEXTS_PATH, 'utf8'))
-  const srcTokens = buildSourceIndex(SRC_PATH)
+  const srcTokens = buildAuditSourceIndex(SRC_PATH)
   const firstTokenIndex = buildFirstTokenIndex(srcTokens)
 
   const { suspects, skipped, checked } = collect(psalmTexts, srcTokens, firstTokenIndex)
