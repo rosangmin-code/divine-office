@@ -818,7 +818,7 @@ describe('FR-156 Phase 4b — movable solemnity firstVespers data (real loader)'
     expect(fv!.gospelCanticleAntiphon).toContain('Ариун Сүнс бууж')
   })
 
-  it('Trinity Sunday — getSeasonFirstVespers(ORDINARY_TIME, _, _, "Trinity Sunday") returns injected firstVespers', async () => {
+  it('Trinity Sunday — getSeasonFirstVespers returns propers without the unsourced inline psalm copy', async () => {
     const { getSeasonFirstVespers } = await import('../propers-loader')
     const fv = getSeasonFirstVespers(
       'ORDINARY_TIME' as never,
@@ -832,15 +832,11 @@ describe('FR-156 Phase 4b — movable solemnity firstVespers data (real loader)'
     expect(fv!.gospelCanticleAntiphon).toContain('Танд бид талархлаа өргөе')
     expect(fv!.gospelCanticleAntiphon).toContain('Ганц бөгөөд үнэн Ариун Гурвал')
     expect(fv!.concludingPrayer).toContain('Өөрийн Үгийг илгээсэн')
-    expect(fv!.psalms!.map((p) => p.ref)).toEqual([
-      'Psalm 141:1-9',
-      'Psalm 142:1-7',
-      'Philippians 2:6-11',
-    ])
-    expect(fv!.psalms!.every((p) => p.default_antiphon.trim().length > 0)).toBe(true)
-    expect(fv!.psalms!.map((p) => p.ref)).not.toContain('Psalm 113:1-9')
-    expect(fv!.psalms!.map((p) => p.ref)).not.toContain('Psalm 147:12-20')
-    expect(fv!.psalms!.map((p) => p.ref)).not.toContain('Ephesians 1:3-10')
+    expect(fv!.psalms).toBeUndefined()
+    expect(fv!.conditionalRubrics?.some((r) =>
+      r.rubricId === 'ot-trinity-sun-firstvespers-weekday-psalmody-notice' &&
+      r.action === 'prepend'
+    )).toBe(true)
   })
 
   it('Corpus Christi — getSeasonFirstVespers matches "Corpus Christi" and "Body and Blood"', async () => {

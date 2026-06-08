@@ -27,6 +27,36 @@
             "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
           }
         }
+      ],
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-solemnity-03-19-st-joseph-lauds-psalmody-substitute",
+          "when": {
+            "dateRange": {
+              "from": "03-19",
+              "to": "03-19"
+            },
+            "predicate": "isFirstHourOfDay"
+          },
+          "action": "substitute",
+          "target": {
+            "text": "Дууллууд ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна. х. 58.",
+            "psalterRef": {
+              "week": 1,
+              "day": "SUN",
+              "hour": "lauds"
+            }
+          },
+          "appliesTo": {
+            "section": "psalmody"
+          },
+          "evidencePdf": {
+            "page": 823,
+            "line": 28015,
+            "text": "[Ерөнхий хэм хэмжээ] Их баярын Өглөөний даатгал залбирлын Дуулал ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна."
+          },
+          "liturgicalBasis": "Mental Model \"Intended behavior\" / GILH §227: solemnity Morning Prayer uses psalter Week 1 Sunday. The Mongolian sanctoral excerpt prints only the Benedictus antiphon and collect, so the existing Week-1 Sunday psalterRef pattern is reused without new text."
+        }
       ]
     },
     "vespers2": {
@@ -34,13 +64,61 @@
       "alleluiaConditional": true,
       "concludingPrayer": "Аяа, Эцэг минь, Та бидний Аврагчийг Гэгээн Иосефийн халамжид даатгасан тул түүний залбирлын тус дэмээр Таны Шашин Есүс Христ Эзэндээ үргэлжлүүлэн үйлчлэх болтугай.",
       "concludingPrayerPage": 823,
-      "gospelCanticleAntiphonPage": 824
+      "gospelCanticleAntiphonPage": 824,
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-solemnity-03-19-st-joseph-vespers2-weekday-psalmody-notice",
+          "when": {
+            "dateRange": {
+              "from": "03-19",
+              "to": "03-19"
+            }
+          },
+          "action": "prepend",
+          "target": {
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "appliesTo": {
+            "section": "psalmody"
+          },
+          "evidencePdf": {
+            "page": 580,
+            "line": 20071,
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "liturgicalBasis": "Mental Model \"Policy - source absent weekday fallback\" / GILH §226 visibility boundary: no local Mongolian proper antiphons are available for this solemnity hour, so the running four-week psalter remains visible and the existing current-week rubric text is reused without fabrication."
+        }
+      ]
     },
     "firstVespers": {
       "gospelCanticleAntiphon": "Үзэгтүн, тэр итгэмжит бөгөөд ухаалаг зардас мөн. Эзэн түүнийг гэр бүлийнхээ тэргүүнээр томилсон юм (Аллэлуяа!).",
       "concludingPrayer": "Аяа, Эцэг минь, Та бидний Аврагчийг Гэгээн Иосефийн халамжид даатгасан тул түүний залбирлын тус дэмээр Таны Шашин Есүс Христ Эзэндээ үргэлжлүүлэн үйлчлэх болтугай. Тэрээр Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг цорын ганц Тэнгэрбурхан билээ.",
       "concludingPrayerPage": 823,
-      "gospelCanticleAntiphonPage": 823
+      "gospelCanticleAntiphonPage": 823,
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-solemnity-03-19-st-joseph-firstvespers-weekday-psalmody-notice",
+          "when": {
+            "dateRange": {
+              "from": "03-19",
+              "to": "03-19"
+            }
+          },
+          "action": "prepend",
+          "target": {
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "appliesTo": {
+            "section": "psalmody"
+          },
+          "evidencePdf": {
+            "page": 580,
+            "line": 20071,
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "liturgicalBasis": "Mental Model \"Policy - source absent weekday fallback\" / GILH §226 visibility boundary: no local Mongolian proper antiphons are available for this solemnity hour, so the running four-week psalter remains visible and the existing current-week rubric text is reused without fabrication."
+        }
+      ]
     }
   },
   "03-25": {
@@ -72,6 +150,36 @@
             "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
           }
         }
+      ],
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-solemnity-03-25-annunciation-lauds-psalmody-substitute",
+          "when": {
+            "dateRange": {
+              "from": "03-25",
+              "to": "03-25"
+            },
+            "predicate": "isFirstHourOfDay"
+          },
+          "action": "substitute",
+          "target": {
+            "text": "Дууллууд ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна. х. 58.",
+            "psalterRef": {
+              "week": 1,
+              "day": "SUN",
+              "hour": "lauds"
+            }
+          },
+          "appliesTo": {
+            "section": "psalmody"
+          },
+          "evidencePdf": {
+            "page": 825,
+            "line": 28062,
+            "text": "[Ерөнхий хэм хэмжээ] Их баярын Өглөөний даатгал залбирлын Дуулал ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна."
+          },
+          "liturgicalBasis": "Mental Model \"Intended behavior\" / GILH §227: solemnity Morning Prayer uses psalter Week 1 Sunday. The Mongolian sanctoral excerpt prints only the Benedictus antiphon and collect, so the existing Week-1 Sunday psalterRef pattern is reused without new text."
+        }
       ]
     },
     "vespers2": {
@@ -79,13 +187,61 @@
       "alleluiaConditional": true,
       "concludingPrayer": "Аяа, Тэнгэрбурхан Эцэг минь, Таны Үг бие махбод болж, Цэвэр Охин Мариагаас мэндэлсэн тул бид Есүс Христ лугаа улам илүү адил болох болтугай. Учир нь Түүнийг бид үнэн Тэнгэрбурхан, үнэн хүн болсон хүмүүний цагааттагч хэмээн хүлээн зөвшөөрдөг.",
       "concludingPrayerPage": 825,
-      "gospelCanticleAntiphonPage": 826
+      "gospelCanticleAntiphonPage": 826,
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-solemnity-03-25-annunciation-vespers2-weekday-psalmody-notice",
+          "when": {
+            "dateRange": {
+              "from": "03-25",
+              "to": "03-25"
+            }
+          },
+          "action": "prepend",
+          "target": {
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "appliesTo": {
+            "section": "psalmody"
+          },
+          "evidencePdf": {
+            "page": 580,
+            "line": 20071,
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "liturgicalBasis": "Mental Model \"Policy - source absent weekday fallback\" / GILH §226 visibility boundary: no local Mongolian proper antiphons are available for this solemnity hour, so the running four-week psalter remains visible and the existing current-week rubric text is reused without fabrication."
+        }
+      ]
     },
     "firstVespers": {
       "gospelCanticleAntiphon": "“Мариа, -Ариун Сүнс чам дээр ирж, Хамгийн Дээдийн хүч чамайг бүрхэнэ“ (Аллэлуяа!).",
       "concludingPrayer": "Аяа, Тэнгэрбурхан Эцэг минь, Таны Үг бие махбод болж, Цэвэр Охин Мариагаас мэндэлсэн тул бид Есүс Христ лүгээ улам илүү адил болох болтугай. Учир нь Түүнийг бид үнэн Тэнгэрбурхан, үнэн хүн болсон хүмүүний цагаатгагч хэмээн хүлээн зөвшөөрдөг. Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан Есүс Христ бидний Эзэн, Таны Хүүгээр уламжлан тийн болтугай.",
       "concludingPrayerPage": 825,
-      "gospelCanticleAntiphonPage": 825
+      "gospelCanticleAntiphonPage": 825,
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-solemnity-03-25-annunciation-firstvespers-weekday-psalmody-notice",
+          "when": {
+            "dateRange": {
+              "from": "03-25",
+              "to": "03-25"
+            }
+          },
+          "action": "prepend",
+          "target": {
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "appliesTo": {
+            "section": "psalmody"
+          },
+          "evidencePdf": {
+            "page": 580,
+            "line": 20071,
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "liturgicalBasis": "Mental Model \"Policy - source absent weekday fallback\" / GILH §226 visibility boundary: no local Mongolian proper antiphons are available for this solemnity hour, so the running four-week psalter remains visible and the existing current-week rubric text is reused without fabrication."
+        }
+      ]
     }
   },
   "06-24": {
@@ -115,19 +271,97 @@
             "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
           }
         }
+      ],
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-solemnity-06-24-baptist-lauds-psalmody-substitute",
+          "when": {
+            "dateRange": {
+              "from": "06-24",
+              "to": "06-24"
+            },
+            "predicate": "isFirstHourOfDay"
+          },
+          "action": "substitute",
+          "target": {
+            "text": "Дууллууд ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна. х. 58.",
+            "psalterRef": {
+              "week": 1,
+              "day": "SUN",
+              "hour": "lauds"
+            }
+          },
+          "appliesTo": {
+            "section": "psalmody"
+          },
+          "evidencePdf": {
+            "page": 827,
+            "line": 28123,
+            "text": "[Ерөнхий хэм хэмжээ] Их баярын Өглөөний даатгал залбирлын Дуулал ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна."
+          },
+          "liturgicalBasis": "Mental Model \"Intended behavior\" / GILH §227: solemnity Morning Prayer uses psalter Week 1 Sunday. The Mongolian sanctoral excerpt prints only the Benedictus antiphon and collect, so the existing Week-1 Sunday psalterRef pattern is reused without new text."
+        }
       ]
     },
     "vespers2": {
       "gospelCanticleAntiphon": "Бидний төлөө мэндэлсэн энэ хүүхэд аливаа нэгэн эш үзүүлэгчээс илүү агуу юм. Түүний тухай Аврагч ийн хэлсэн: \"Эмэгтэйгээс төрөгсдийн дунд Баптисм хүртээгч Иоханаас илүү нэгэн байгаагүй\".",
       "concludingPrayer": "Аяа, Тэнгэрбурхан Эцэг минь, Та Эзэн Христэд зориулж төгс хүмүүсийг бэлдэхийн тулд Баптисм хүртээгч Иоханыг өргөсөн билээ. Та Өөрийн Шашинд сүнслэг баяр баяслыг хайрлан соёрхож, Танд итгэгчдийг амар амгалан болон Авралын зам мөрөөр удирдана уу.",
       "concludingPrayerPage": 828,
-      "gospelCanticleAntiphonPage": 828
+      "gospelCanticleAntiphonPage": 828,
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-solemnity-06-24-baptist-vespers2-weekday-psalmody-notice",
+          "when": {
+            "dateRange": {
+              "from": "06-24",
+              "to": "06-24"
+            }
+          },
+          "action": "prepend",
+          "target": {
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "appliesTo": {
+            "section": "psalmody"
+          },
+          "evidencePdf": {
+            "page": 580,
+            "line": 20071,
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "liturgicalBasis": "Mental Model \"Policy - source absent weekday fallback\" / GILH §226 visibility boundary: no local Mongolian proper antiphons are available for this solemnity hour, so the running four-week psalter remains visible and the existing current-week rubric text is reused without fabrication."
+        }
+      ]
     },
     "firstVespers": {
       "gospelCanticleAntiphon": "Захариаг Эзэний сүмд ороход Габриел тэнгэрэлч утлагын тахилын ширээний баруун талд зогсож байгаа нь түүнд үзэгдэв.",
       "concludingPrayer": "Аяа, төгс хүчит Тэнгэрбурхан минь, Өөрийн ард түмнийг авралын замаар замнахад тусална уу. Баптисм хүртээгч Иоханы заасныг дагаснаараа бид Таны Хүү, бидний Эзэн Есүс Христ дээр ирэх болтугай. Тэрээр Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг цорын ганц Тэнгэрбурхан билээ.",
       "concludingPrayerPage": 827,
-      "gospelCanticleAntiphonPage": 827
+      "gospelCanticleAntiphonPage": 827,
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-solemnity-06-24-baptist-firstvespers-weekday-psalmody-notice",
+          "when": {
+            "dateRange": {
+              "from": "06-24",
+              "to": "06-24"
+            }
+          },
+          "action": "prepend",
+          "target": {
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "appliesTo": {
+            "section": "psalmody"
+          },
+          "evidencePdf": {
+            "page": 580,
+            "line": 20071,
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "liturgicalBasis": "Mental Model \"Policy - source absent weekday fallback\" / GILH §226 visibility boundary: no local Mongolian proper antiphons are available for this solemnity hour, so the running four-week psalter remains visible and the existing current-week rubric text is reused without fabrication."
+        }
+      ]
     }
   },
   "06-29": {
@@ -157,19 +391,97 @@
             "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
           }
         }
+      ],
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-solemnity-06-29-peter-paul-lauds-psalmody-substitute",
+          "when": {
+            "dateRange": {
+              "from": "06-29",
+              "to": "06-29"
+            },
+            "predicate": "isFirstHourOfDay"
+          },
+          "action": "substitute",
+          "target": {
+            "text": "Дууллууд ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна. х. 58.",
+            "psalterRef": {
+              "week": 1,
+              "day": "SUN",
+              "hour": "lauds"
+            }
+          },
+          "appliesTo": {
+            "section": "psalmody"
+          },
+          "evidencePdf": {
+            "page": 829,
+            "line": 28189,
+            "text": "[Ерөнхий хэм хэмжээ] Их баярын Өглөөний даатгал залбирлын Дуулал ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна."
+          },
+          "liturgicalBasis": "Mental Model \"Intended behavior\" / GILH §227: solemnity Morning Prayer uses psalter Week 1 Sunday. The Mongolian sanctoral excerpt prints only the Benedictus antiphon and collect, so the existing Week-1 Sunday psalterRef pattern is reused without new text."
+        }
       ]
     },
     "vespers2": {
       "gospelCanticleAntiphon": "Аяа Эзэн минь, Элч Петр, харь үндэстний багш Паул тэр хоёр бээр Таны хуулийг бидэнд заан сургасан билээ.",
       "concludingPrayer": "Аяа. Тэнгэрбурхан Эцэг минь, өнөөдөр Петр, Паул элч нарын их баярыг тэмдэглэлцэж Та бидний байсган чигнүүлж байгаа билээ. Тэр хоёроор дамжуулан Таны Шашин анх итгэл бишрэлийг хүлээн авсан тул тэдний номлол сургаалд үнэнч байхад бидэнд тусална уу.",
       "concludingPrayerPage": 830,
-      "gospelCanticleAntiphonPage": 830
+      "gospelCanticleAntiphonPage": 830,
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-solemnity-06-29-peter-paul-vespers2-weekday-psalmody-notice",
+          "when": {
+            "dateRange": {
+              "from": "06-29",
+              "to": "06-29"
+            }
+          },
+          "action": "prepend",
+          "target": {
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "appliesTo": {
+            "section": "psalmody"
+          },
+          "evidencePdf": {
+            "page": 580,
+            "line": 20071,
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "liturgicalBasis": "Mental Model \"Policy - source absent weekday fallback\" / GILH §226 visibility boundary: no local Mongolian proper antiphons are available for this solemnity hour, so the running four-week psalter remains visible and the existing current-week rubric text is reused without fabrication."
+        }
+      ]
     },
     "firstVespers": {
       "gospelCanticleAntiphon": "Христийн элч нар хэчнээн сүр жавхлантай вэ! Тэд амьдрал дээр бие биеэ хайрладаг байсан. Үхэлд тэд мөнхөд хамт баясдаг билээ.",
       "concludingPrayer": "Аяа. Эзэн Тэнгэрбурхан минь, Гэгээн Петр, Паулын залбирлаар дамжуулан Та биднийг зоригжуулна уу. Өсөж байсан Шашны итгэл бишрэлийг хүчирхэгжүүлсэн гэгээн элч нар Авралын замаар явахад бидэнд туслах болтугай. Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан Есүс Христ бидний Эзэн, Таны Хүүгээр уламжлан тийн болтугай.",
       "concludingPrayerPage": 829,
-      "gospelCanticleAntiphonPage": 829
+      "gospelCanticleAntiphonPage": 829,
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-solemnity-06-29-peter-paul-firstvespers-weekday-psalmody-notice",
+          "when": {
+            "dateRange": {
+              "from": "06-29",
+              "to": "06-29"
+            }
+          },
+          "action": "prepend",
+          "target": {
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "appliesTo": {
+            "section": "psalmody"
+          },
+          "evidencePdf": {
+            "page": 580,
+            "line": 20071,
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "liturgicalBasis": "Mental Model \"Policy - source absent weekday fallback\" / GILH §226 visibility boundary: no local Mongolian proper antiphons are available for this solemnity hour, so the running four-week psalter remains visible and the existing current-week rubric text is reused without fabrication."
+        }
+      ]
     }
   },
   "08-15": {
@@ -198,19 +510,97 @@
             "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
           }
         }
+      ],
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-solemnity-08-15-assumption-lauds-psalmody-substitute",
+          "when": {
+            "dateRange": {
+              "from": "08-15",
+              "to": "08-15"
+            },
+            "predicate": "isFirstHourOfDay"
+          },
+          "action": "substitute",
+          "target": {
+            "text": "Дууллууд ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна. х. 58.",
+            "psalterRef": {
+              "week": 1,
+              "day": "SUN",
+              "hour": "lauds"
+            }
+          },
+          "appliesTo": {
+            "section": "psalmody"
+          },
+          "evidencePdf": {
+            "page": 833,
+            "line": 28309,
+            "text": "[Ерөнхий хэм хэмжээ] Их баярын Өглөөний даатгал залбирлын Дуулал ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна."
+          },
+          "liturgicalBasis": "Mental Model \"Intended behavior\" / GILH §227: solemnity Morning Prayer uses psalter Week 1 Sunday. The Mongolian sanctoral excerpt prints only the Benedictus antiphon and collect, so the existing Week-1 Sunday psalterRef pattern is reused without new text."
+        }
       ]
     },
     "vespers2": {
       "gospelCanticleAntiphon": "Өнөөдөр Цэвэр Охин Мариа тэнгэрт залагдсан. Түүнийг Христтэй хамт үүрд мөнх хаанчлахын нь төлөө баярлацгааа.",
       "concludingPrayer": "Аяа, төгс хүчит Тэнгэрбурхан минь, Та Өөрийн Хүүгийн эх байх дархан эрхийг цэвэр ариун, эгэл даруухан охинд соёрхсон бөгөөд сүр жавхлант титмийг тэнгэрийн оронд өмсгөсөн билээ. Цэвэр Охин Мариагийн зуучлалын залбирал бидний Христийн авралд хүргэж, мөнхийн амьдралд аваачив болтугай.",
       "concludingPrayerPage": 833,
-      "gospelCanticleAntiphonPage": 834
+      "gospelCanticleAntiphonPage": 834,
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-solemnity-08-15-assumption-vespers2-weekday-psalmody-notice",
+          "when": {
+            "dateRange": {
+              "from": "08-15",
+              "to": "08-15"
+            }
+          },
+          "action": "prepend",
+          "target": {
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "appliesTo": {
+            "section": "psalmody"
+          },
+          "evidencePdf": {
+            "page": 580,
+            "line": 20071,
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "liturgicalBasis": "Mental Model \"Policy - source absent weekday fallback\" / GILH §226 visibility boundary: no local Mongolian proper antiphons are available for this solemnity hour, so the running four-week psalter remains visible and the existing current-week rubric text is reused without fabrication."
+        }
+      ]
     },
     "firstVespers": {
       "gospelCanticleAntiphon": "Харагтун, энэ цагаас хойш намайг ерөөгдөгч гэж бүх үеийнхэн тооцно. Учир нь Хүчит Нэгэн нь миний төлөө агуу үйлсийг хийсэн билээ. Аллэлуяа!",
       "concludingPrayer": "Аяа, төгс хүчит Тэнгэрбурхан минь, Та Өөрийн Хүүгийн эх байх дархан эрхийг цэвэр ариун, эгэл даруухан охинд соёрхсон бөгөөд сүр жавхлант титмийг тэнгэрийн оронд өмсгөсөн билээ. Цэвэр Охин Мариагийн зуучлалын залбирал биднийг Христийн авралд хүргэж, мөнхийн амьдралд аваачих болтугай. Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан Есүс Христ бидний Эзэн, Таны Хүүгээр уламжлан тийн болтугай.",
       "concludingPrayerPage": 833,
-      "gospelCanticleAntiphonPage": 833
+      "gospelCanticleAntiphonPage": 833,
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-solemnity-08-15-assumption-firstvespers-weekday-psalmody-notice",
+          "when": {
+            "dateRange": {
+              "from": "08-15",
+              "to": "08-15"
+            }
+          },
+          "action": "prepend",
+          "target": {
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "appliesTo": {
+            "section": "psalmody"
+          },
+          "evidencePdf": {
+            "page": 580,
+            "line": 20071,
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "liturgicalBasis": "Mental Model \"Policy - source absent weekday fallback\" / GILH §226 visibility boundary: no local Mongolian proper antiphons are available for this solemnity hour, so the running four-week psalter remains visible and the existing current-week rubric text is reused without fabrication."
+        }
+      ]
     }
   },
   "11-01": {
@@ -240,19 +630,97 @@
             "text": "Урих дуудлагын дуулал: дэг жаягийн дагуу, х. 28."
           }
         }
+      ],
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-solemnity-11-01-all-saints-lauds-psalmody-substitute",
+          "when": {
+            "dateRange": {
+              "from": "11-01",
+              "to": "11-01"
+            },
+            "predicate": "isFirstHourOfDay"
+          },
+          "action": "substitute",
+          "target": {
+            "text": "Дууллууд ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна. х. 58.",
+            "psalterRef": {
+              "week": 1,
+              "day": "SUN",
+              "hour": "lauds"
+            }
+          },
+          "appliesTo": {
+            "section": "psalmody"
+          },
+          "evidencePdf": {
+            "page": 837,
+            "line": 28417,
+            "text": "[Ерөнхий хэм хэмжээ] Их баярын Өглөөний даатгал залбирлын Дуулал ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна."
+          },
+          "liturgicalBasis": "Mental Model \"Intended behavior\" / GILH §227: solemnity Morning Prayer uses psalter Week 1 Sunday. The Mongolian sanctoral excerpt prints only the Benedictus antiphon and collect, so the existing Week-1 Sunday psalterRef pattern is reused without new text."
+        }
       ]
     },
     "vespers2": {
       "gospelCanticleAntiphon": "Хамаг гэгээнтнүүд Христтэй хамт баясан цэнгэдэг хаанчлал хэчнээн сүр жавхлантай вэ! Цагаан хувцас өмссөн тэд Хургыг хаана ч явсан дагадаг.",
       "concludingPrayer": "Аяа, төгс хүчит мөнхийн Тэнгэрбурхан минь, өнөөдөр бид бүх цаг үе болон газар газрын гэгээн эрэгтэй, эмэгтэйчүүдийг хүндэтгэн бишрэч байгаа тул тэдний залбирал бидэнд Таны хайр энэрэл болон ууч уучлал өршөөлийг хүртээх болтугай.",
       "concludingPrayerPage": 837,
-      "gospelCanticleAntiphonPage": 838
+      "gospelCanticleAntiphonPage": 838,
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-solemnity-11-01-all-saints-vespers2-weekday-psalmody-notice",
+          "when": {
+            "dateRange": {
+              "from": "11-01",
+              "to": "11-01"
+            }
+          },
+          "action": "prepend",
+          "target": {
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "appliesTo": {
+            "section": "psalmody"
+          },
+          "evidencePdf": {
+            "page": 580,
+            "line": 20071,
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "liturgicalBasis": "Mental Model \"Policy - source absent weekday fallback\" / GILH §226 visibility boundary: no local Mongolian proper antiphons are available for this solemnity hour, so the running four-week psalter remains visible and the existing current-week rubric text is reused without fabrication."
+        }
+      ]
     },
     "firstVespers": {
       "gospelCanticleAntiphon": "Аяа Ариун Гурвал аа, нэг л Тэнгэрбурхан минь, Эзэний элч нарын сүр жавхлант нэгдэл Таныг магтъя. Эш үзүүлэгч нарын эрхэм нөхөрлөл Таныг магтъя. Тарчлагсдын цагаан өмсгөлтэй цэрэг Таныг магтъя. Хамаг гэгээнтнүүд Таны сүр жавхланг хамтдаа дуулья.",
       "concludingPrayer": "Аяа, төгс хүчит мөнхийн Тэнгэрбурхан минь, өнөөдөр бид бүх цаг үе болон газар газрын гэгээн эрэгтэй, эмэгтэйчүүдийг хүндэтгэн биширч байгаа тул тэдний залбирал бидэнд Таны хайр энэрэл болон уучлал өршөөлийг хүртээх болтугай. Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан Есүс Христ бидний Эзэн, Таны Хүүгээр уламжлан тийн болтугай.",
       "concludingPrayerPage": 837,
-      "gospelCanticleAntiphonPage": 837
+      "gospelCanticleAntiphonPage": 837,
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-solemnity-11-01-all-saints-firstvespers-weekday-psalmody-notice",
+          "when": {
+            "dateRange": {
+              "from": "11-01",
+              "to": "11-01"
+            }
+          },
+          "action": "prepend",
+          "target": {
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "appliesTo": {
+            "section": "psalmody"
+          },
+          "evidencePdf": {
+            "page": 580,
+            "line": 20071,
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "liturgicalBasis": "Mental Model \"Policy - source absent weekday fallback\" / GILH §226 visibility boundary: no local Mongolian proper antiphons are available for this solemnity hour, so the running four-week psalter remains visible and the existing current-week rubric text is reused without fabrication."
+        }
+      ]
     }
   },
   "12-08": {
@@ -267,19 +735,97 @@
       "gospelCanticleAntiphon": "Эзэн Тэнгэрбурхан нөгөө могойд \"Би тэр эмэгтэй та хоёрын хооронд, Бас чиний үр, тэр эмэгтэйн үрийн хооронд дайсагнал үүсгэнэ. Тэр үр толгойг чинь бяцална\" гэж хэлсэн. Аллэлуяа!",
       "concludingPrayer": "Аяа, Эцэг минь, Язгуурын гэм нүгэлгүй бүрэлдсэн Цэвэр охин Мариагаар Хүүгийнхээ эхийн алтан савыг Та бэлтгэсэн бөгөөд Хүүгийнхээ үхлийг зөгнөхдөө түүний хамаг гэм нүглээс сахин хамгаалсан тул Цэвэр Охин Мариагийн зуучлалын залбирлаар уламжлан ариусгалтаасан бид Тантай учран золгохыг Та болгоон соёрхоно уу.",
       "concludingPrayerPage": 842,
-      "gospelCanticleAntiphonPage": 842
+      "gospelCanticleAntiphonPage": 842,
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-solemnity-12-08-immaculate-conception-lauds-psalmody-substitute",
+          "when": {
+            "dateRange": {
+              "from": "12-08",
+              "to": "12-08"
+            },
+            "predicate": "isFirstHourOfDay"
+          },
+          "action": "substitute",
+          "target": {
+            "text": "Дууллууд ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна. х. 58.",
+            "psalterRef": {
+              "week": 1,
+              "day": "SUN",
+              "hour": "lauds"
+            }
+          },
+          "appliesTo": {
+            "section": "psalmody"
+          },
+          "evidencePdf": {
+            "page": 842,
+            "line": 28565,
+            "text": "[Ерөнхий хэм хэмжээ] Их баярын Өглөөний даатгал залбирлын Дуулал ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна."
+          },
+          "liturgicalBasis": "Mental Model \"Intended behavior\" / GILH §227: solemnity Morning Prayer uses psalter Week 1 Sunday. The Mongolian sanctoral excerpt prints only the Benedictus antiphon and collect, so the existing Week-1 Sunday psalterRef pattern is reused without new text."
+        }
+      ]
     },
     "vespers2": {
       "gospelCanticleAntiphon": "Амар амгалан Мариа минь ээ, Та хишиг ивээлээр бялхам билээ. Эзэн Тантай хамт байна. Таныг эмэгтэйчүүдийн дундаас адисалсан билээ. Таны хэвлий дэх үрийг бас адисалсан билээ.",
       "concludingPrayer": "Аяа, Эцэг минь, Язгуурын гэм нүгэлгүй бүрэлдсэн Цэвэр охин Мариагаар Хүүгийнхээ эхийн алтан савыг Та бэлтгэсэн бөгөөд Хүүгийнхээ үхлийг зөгнөхдөө түүний хамаг гэм нүглээс сахин хамгаалсан тул Цэвэр Охин Мариагийн зуучлалын залбирлаар уламжлан ариусгалтаасан бид Тантай учран золгохыг Та болгоон соёрхоно уу.",
       "gospelCanticleAntiphonPage": 843,
-      "concludingPrayerPage": 842
+      "concludingPrayerPage": 842,
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-solemnity-12-08-immaculate-conception-vespers2-weekday-psalmody-notice",
+          "when": {
+            "dateRange": {
+              "from": "12-08",
+              "to": "12-08"
+            }
+          },
+          "action": "prepend",
+          "target": {
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "appliesTo": {
+            "section": "psalmody"
+          },
+          "evidencePdf": {
+            "page": 580,
+            "line": 20071,
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "liturgicalBasis": "Mental Model \"Policy - source absent weekday fallback\" / GILH §226 visibility boundary: no local Mongolian proper antiphons are available for this solemnity hour, so the running four-week psalter remains visible and the existing current-week rubric text is reused without fabrication."
+        }
+      ]
     },
     "firstVespers": {
       "gospelCanticleAntiphon": "Харагтун, энэ цагаас хойш намайг ерөөгдөгч гэж бүх үеийнхэн тооцно. Учир нь Хүчит Нэгэн нь миний төлөө агуу үйлсийг хийсэн билээ,",
       "concludingPrayer": "Аяа, Эцэг минь, Язгуурын гэм нүгэлгүй бүрэлдсэн Цэвэр охин Мариагаар Хүүгийнхээ эхийн алтан савыг Та бэлтгэсэн бөгөөд Хүүгийнхээ үхлийг зөгнөхдөө түүнийг хамаг гэм нүглээс сахин хамгаалсан тул Цэвэр Охин Мариагийн зуучлалын залбирлаар уламжлан ариусгагдсан бид Тантай учран золгохыг Та болгоон соёрхоно уу. Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан Есүс Христ бидний Эзэн, Таны Хүүгээр уламжлан тийн болтугай.",
       "concludingPrayerPage": 842,
-      "gospelCanticleAntiphonPage": 833
+      "gospelCanticleAntiphonPage": 833,
+      "conditionalRubrics": [
+        {
+          "rubricId": "sanctoral-solemnity-12-08-immaculate-conception-firstvespers-weekday-psalmody-notice",
+          "when": {
+            "dateRange": {
+              "from": "12-08",
+              "to": "12-08"
+            }
+          },
+          "action": "prepend",
+          "target": {
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "appliesTo": {
+            "section": "psalmody"
+          },
+          "evidencePdf": {
+            "page": 580,
+            "line": 20071,
+            "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+          },
+          "liturgicalBasis": "Mental Model \"Policy - source absent weekday fallback\" / GILH §226 visibility boundary: no local Mongolian proper antiphons are available for this solemnity hour, so the running four-week psalter remains visible and the existing current-week rubric text is reused without fabrication."
+        }
+      ]
     }
   },
   "12-25": {

@@ -1066,7 +1066,22 @@
           "alternativeConcludingPrayer": "Аяа, Тэнгэр дэх Эцэг минь, Та Христийг бидний нүдний өмнөөс авсан үед бидний оюун ухаан Таны хаанчлалын ирэхүйн төлөө бэлэн байсан болохоор бид Түүнийг сүр жавхланд нь эрэн хайх болно. Түүнийг бид явсан замаар нь дагаж яваад, Түүний сүр жавхлангаас өөрсдийн горьдол найдварыг олох болтугай. Тэрээр мөнхийн мөнх Эзэн билээ.",
           "concludingPrayerPage": 731,
           "alternativeConcludingPrayerPage": 732,
-          "gospelCanticleAntiphonPage": 731
+          "gospelCanticleAntiphonPage": 731,
+          "conditionalRubrics": [
+            {
+              "rubricId": "easter-ascension-sun-firstvespers-weekday-psalmody-notice",
+              "when": { "season": ["EASTER"] },
+              "action": "prepend",
+              "target": { "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна." },
+              "appliesTo": { "section": "psalmody" },
+              "evidencePdf": {
+                "page": 580,
+                "line": 20071,
+                "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+              },
+              "liturgicalBasis": "Mental Model policy: Ascension First Vespers lacks sourced Mongolian Laudate antiphons; keep the running four-week psalter and surface the existing current-week rubric text."
+            }
+          ]
         }
       }
     },
