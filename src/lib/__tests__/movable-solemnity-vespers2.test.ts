@@ -37,7 +37,7 @@ function hasBody(hour: AssembledHour, idx: number): boolean {
 
 const WEEK1_SUN_LAUDS = ['Psalm 63:2-9', 'Daniel 3:57-88, 56', 'Psalm 149:1-9']
 const WEEK1_SUN_VESPERS = ['Psalm 110:1-5, 7', 'Psalm 114:1-8', 'Revelation 19:1-7']
-const WEEK1_SUN_FIRST_VESPERS = ['Psalm 141:1-9', 'Psalm 142:1-7', 'Philippians 2:6-11']
+const CURRENT_WEEK_NOTICE = 'Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна.'
 
 interface Sol {
   name: string
@@ -124,17 +124,19 @@ describe.each(SOLEMNITIES)(
 )
 
 describe('Trinity Sunday (2026-05-31) — concludingPrayer injection', () => {
-  it('/firstVespers renders Week-1 Sunday first Vespers psalmody with antiphons', async () => {
+  it('/firstVespers falls back to running psalter with a visible current-week rubric', async () => {
     const h = await assembleHour('2026-05-31', 'firstVespers')
     expect(h).not.toBeNull()
 
     const psalmody = section(h!, 'psalmody')
-    expect(psalmRefs(h!)).toEqual(WEEK1_SUN_FIRST_VESPERS)
+    expect(psalmRefs(h!)).toEqual(WEEK1_SUN_VESPERS)
+    expect(psalmRefs(h!)).not.toContain('Psalm 141:1-9')
+    expect(psalmRefs(h!)).not.toContain('Psalm 142:1-7')
+    expect(psalmRefs(h!)).not.toContain('Philippians 2:6-11')
     expect(psalmRefs(h!)).not.toContain('Psalm 113:1-9')
-    expect(psalmRefs(h!)).not.toContain('Psalm 114:1-8')
     expect(psalmRefs(h!)).not.toContain('Psalm 147:12-20')
     expect(psalmRefs(h!)).not.toContain('Ephesians 1:3-10')
-    expect(psalmRefs(h!)).not.toContain('Revelation 19:1-7')
+    expect(psalmody.directives?.some((d) => d.mode === 'prepend' && d.text === CURRENT_WEEK_NOTICE)).toBe(true)
     expect(psalmody.psalms.every((p) => p.antiphon.trim().length > 0)).toBe(true)
     expect(hasBody(h!, 0)).toBe(true)
     expect(hasBody(h!, 1)).toBe(true)
@@ -153,7 +155,7 @@ describe('Trinity Sunday (2026-05-31) — concludingPrayer injection', () => {
 
     expect(psalmRefs(h!)).toEqual(WEEK1_SUN_VESPERS)
     expect(psalmRefs(h!)).toContain('Psalm 114:1-8')
-    expect(psalmRefs(h!)).not.toEqual(WEEK1_SUN_FIRST_VESPERS)
+    expect(psalmRefs(h!)).not.toContain('Psalm 141:1-9')
   })
 
   it('/lauds renders Trinity collect with optional prayer metadata', async () => {

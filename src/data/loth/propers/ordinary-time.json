@@ -3468,67 +3468,27 @@
     "trinitySunday": {
       "SUN": {
         "firstVespers": {
-          "psalms": [
-            {
-              "type": "psalm",
-              "ref": "Psalm 141:1-9",
-              "antiphon_key": "fv-w1-sun-ps1",
-              "default_antiphon": "Аяа Эзэн минь, залбирал минь таны өмнө утлага адил тавигдаг.",
-              "gloria_patri": true,
-              "seasonal_antiphons": {
-                "advent": "Сайнмэдээний айлдлыг бүх үндэстнүүдэд тунхаглагтун. Бидний Тэнгэрбурхан биднийг аврахаар ирнэ.",
-                "lentSunday": {
-                  "1": "Аяа Эзэн Тэнгэрбурхан минь, Та биднийг хүлээн авна уу. Эмтэрсэн, гэмшсэн зүрхээр өргөж буй бидний энэ өдрийн тахил өргөлийг та таалан болгооно уу.",
-                  "5": "Би хуулиа тэдний зүрхэн дээр бичнэ. Би тэдний Тэнгэрбурхан, тэд миний ард түмэн болно."
-                },
-                "easterSunday": {
-                  "5": "Аяа Эзэн минь, үдшийн тахил өргөж байгаа мэт миний гар танд хандан залбирч байна. Аллэлуяа!"
-                }
-              },
-              "page": 49
-            },
-            {
-              "type": "psalm",
-              "ref": "Psalm 142:1-7",
-              "antiphon_key": "fv-w1-sun-ps2",
-              "default_antiphon": "Аяа Эзэн, Та бол миний хоргодох газар, амьдрал дахь миний хамаг хүсэл эрмэлзэл.",
-              "gloria_patri": true,
-              "seasonal_antiphons": {
-                "lentSunday": {
-                  "1": "Эзэн Өөрийн бүх гэгээнтнүүдийн хамт ирэх бөгөөд тэр өдөр гайхамшигтай гэрэл гийх болно гэдгийг мэдэгтүн. Аллэлуяа!",
-                  "5": "Би Христ Есүс Эзэнээ танин мэдэхүйн хосгүй давуу талын төлөө бүх юмсыг хохирол болгодог гэж үздэг."
-                },
-                "easterSunday": {
-                  "5": "Та намайг Өөрийн нэрд талархал өргүүлэхийн тулд намайг шоронгоос гаргасан. Аллэлуяа!"
-                }
-              },
-              "page": 51
-            },
-            {
-              "type": "canticle",
-              "ref": "Philippians 2:6-11",
-              "antiphon_key": "fv-w1-sun-cant",
-              "default_antiphon": "Эзэн Есүс Өөрийгөө даруу болгон, Тэнгэрбурхан Түүнийг үүрд мөнх өргөмжлөв.",
-              "gloria_patri": true,
-              "seasonal_antiphons": {
-                "advent": "Эзэн цог жавхлантайгаар бууж ирэх бөгөөд нүд бүр Түүнийг харна.",
-                "lentSunday": {
-                  "1": "Христ ч нэг удаа нүглийн төлөөнөөс үхэж, биднийг Тэнгэрбурханд аваачихын тулд зөвт нь зөвт бусыг орлосон. Ингэхдээ махбодод үхэж, сүнсэнд амилуулагдав.",
-                  "5": "Христ Тэнгэрбурханы Хүү нь байсан хэр нь зовсон зүйлсээсээ дуулгавартай байдалд суралцсан."
-                },
-                "easterSunday": {
-                  "5": "Тэнгэрбурханы Хүү зовсон зүйлсээсээ дуулгавартай байдалд суралцсан бөгөөд Өөрт нь дуулгавартай байдаг бүхэнд мөнх авралын эх үндэс нь болсон. Аллэлуяа!"
-                }
-              },
-              "page": 53
-            }
-          ],
           "gospelCanticleAntiphon": "Аяа, Тэнгэрбурхан минь, Танд бид талархлаа өргөе. Ганц бөгөөд үнэн Ариун Гурвал, ганц бөгөөд дээдийн дээд Тэнгэрбурхан, ганц бөгөөд ариун Нэгдэл Танд бид талархлаа өргөе.",
           "concludingPrayer": "Аяа, Эцэг минь, Та биднийг үнэн рүү авчрахын тулд Өөрийн Үгийг илгээсэн бөгөөд биднийг ариун болгохын тулд Өөрийн Сүнсийг илгээсэн билээ. Эдгээрээр дамжуулан бид Таны амьдралын далд нууцыг мэдэж эхэлсэн. Биднийг Танд итгэх итгэл бишрэлээ тунхаглаж, түүгээр амьдарснаараа Гурван бодгаль дахь ганц Тэнгэрбурханд мөргөхөд тусална уу. Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан Есүс Христ бидний Эзэн, Таны Хүүгээр уламжлан тийн болтугай.",
           "alternativeConcludingPrayer": "Аяа, Тэнгэрбурхан минь, бид Таныг магтан дуулж байна. Төгс хүчит Эцэг, Аврагч Эзэн Христ, Хайрын Сүнс минь, Та биднийг Өөрийн амьдрал болон хайрыг хуваалцахад удирддаг. Гурван бодгаль дахь ганц Тэнгэрбурхан Та Өөрийн дүр төрхөөр бүтээсэн хүмүүстэйгээ ойр дотно байж, Өөрийн хайраар амьд болгосон энэ дэлхий ертөнцтэй ойр дөт харилцаатай явна уу. Үүнийг бид үүрд мөнх, үнэн амьд цорын ганц Тэнгэрбурхан Эцэг, Хүү, Ариун Сүнсээр уламжлан гуйж байна.",
           "concludingPrayerPage": 745,
           "alternativeConcludingPrayerPage": 748,
-          "gospelCanticleAntiphonPage": 745
+          "gospelCanticleAntiphonPage": 745,
+          "conditionalRubrics": [
+            {
+              "rubricId": "ot-trinity-sun-firstvespers-weekday-psalmody-notice",
+              "when": { "season": ["ORDINARY_TIME"] },
+              "action": "prepend",
+              "target": { "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна." },
+              "appliesTo": { "section": "psalmody" },
+              "evidencePdf": {
+                "page": 580,
+                "line": 20071,
+                "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+              },
+              "liturgicalBasis": "Mental Model policy: Trinity First Vespers lacks sourced Mongolian Laudate antiphons; remove the incorrect Week-1 Sunday First Vespers inline psalms and keep the running four-week psalter with the existing current-week rubric text."
+            }
+          ]
         },
         "lauds": {
           "gospelCanticleAntiphon": "Аяа, ариун бөгөөд хуваагдашгүй Ариун Гурвал, юм бүхнийг Бүтээгч ба Захирагч минь, бүх магтаал одоо болон мөнхөд, үеийн үед Танд байх болтугай.",
@@ -3592,7 +3552,22 @@
           "alternativeConcludingPrayer": "Аяа, Эзэн Есүс Христ минь, Таны ариун бие ба эрдэнэт цусны үндсэн ёслолоор уламжлан бидний дундах Таныг тахин шүтье. Бид тэнгэр дэх Эцэгтээ хувиршгүй хайраар дүүрэн нэгэн тангаргийг өргөх болтугай. Бид ахан дүүстээ хаанчлалын төлөө хайраар дүүрэн нэгэн үйлчлэлд зориулсан өөрсдийн амьдралыг өргөх болтугай. Тэрхүү хаанчлалд Та Тэнгэр Эцэгтэй болон Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан билээ.",
           "concludingPrayerPage": 749,
           "alternativeConcludingPrayerPage": 750,
-          "gospelCanticleAntiphonPage": 749
+          "gospelCanticleAntiphonPage": 749,
+          "conditionalRubrics": [
+            {
+              "rubricId": "ot-corpus-sun-firstvespers-weekday-psalmody-notice",
+              "when": { "season": ["ORDINARY_TIME"] },
+              "action": "prepend",
+              "target": { "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна." },
+              "appliesTo": { "section": "psalmody" },
+              "evidencePdf": {
+                "page": 580,
+                "line": 20071,
+                "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+              },
+              "liturgicalBasis": "Mental Model policy: First Vespers Laudate antiphons are not locally sourced; keep the running four-week psalter and surface the existing current-week rubric text."
+            }
+          ]
         },
         "lauds": {
           "gospelCanticleAntiphon": "Би бол тэнгэрээс бууж ирсэн амьд талх байна. Хэрэв хэн нэгэн энэ талхнаас идвэл, тэр мөнхөд амьдарна. Аллэлуяа!",
@@ -3648,7 +3623,22 @@
           "alternativeConcludingPrayer": "Аяа, Эцэг минь, хүний хэрцгийллээс болж эмтэрсэн Таны Хүүгийн зүрхийг бид хүндэтгэж байна. Тэр бол ялагч хайрын бэлгэ тэмдэг, хүний заяагдмал эрхэм дуудлагын амлалт мөн. Бусдын амьдралтай тааралдсанаараа Христийг харах хийгээд ахан дүүс нартаа хайраар дүүрэн үйлчлэлийг үзүүлснээрээ Танд амьд тахилыг өргөхийг Та бидэнд зааж өгнө үү. Үүнийг бид Эзэн Христээр уламжлан гуйж байна.",
           "concludingPrayerPage": 751,
           "alternativeConcludingPrayerPage": 752,
-          "gospelCanticleAntiphonPage": 751
+          "gospelCanticleAntiphonPage": 751,
+          "conditionalRubrics": [
+            {
+              "rubricId": "ot-sacredheart-sun-firstvespers-weekday-psalmody-notice",
+              "when": { "season": ["ORDINARY_TIME"] },
+              "action": "prepend",
+              "target": { "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна." },
+              "appliesTo": { "section": "psalmody" },
+              "evidencePdf": {
+                "page": 580,
+                "line": 20071,
+                "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+              },
+              "liturgicalBasis": "Mental Model policy: First Vespers Laudate antiphons are not locally sourced; keep the running four-week psalter and surface the existing current-week rubric text."
+            }
+          ]
         },
         "lauds": {
           "gospelCanticleAntiphon": "Нигүүлсэнгүй өршөөлөөр бидний Тэнгэрбурхан Өөрийн хүмүүс рүү ирж, тэднийг чөлөөлсөн юм.",
@@ -3702,7 +3692,22 @@
           "gospelCanticleAntiphon": "Эзэн Тэнгэрбурхан Түүнд өвөг Давидынх нь хаан ширээг өгөх болно. Тэр Иаковын гэрийг үүрд хаанчлах бөгөөд хаанчлалд нь төгсгөл гэж үгүй. Аллэлуяа!",
           "concludingPrayer": "Аяа, төгс хүчит, нигүүлсэхүйн Тэнгэрбурхан минь, Та энэ ертөнцийн Хаан, Өөрийн Хүү Есүс Христээр хорон муу нэгний эрх мэдлийг устгаж, юм бүхнийг шинэ болгосон билээ. Тэнгэр, газар дээрх юм бүхэн Таны сүр жавхланг тунхаглаж, Таныг алдаршуулахаа хэзээ ч бүү болих болтугай. Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан Есүс Христ бидний Эзэн, Таны Хүүгээр уламжлан тийн болтугай.",
           "concludingPrayerPage": 817,
-          "gospelCanticleAntiphonPage": 817
+          "gospelCanticleAntiphonPage": 817,
+          "conditionalRubrics": [
+            {
+              "rubricId": "ot-christtheking-sun-firstvespers-weekday-psalmody-notice",
+              "when": { "season": ["ORDINARY_TIME"] },
+              "action": "prepend",
+              "target": { "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна." },
+              "appliesTo": { "section": "psalmody" },
+              "evidencePdf": {
+                "page": 580,
+                "line": 20071,
+                "text": "Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна."
+              },
+              "liturgicalBasis": "Mental Model policy: First Vespers Laudate antiphons are not locally sourced; keep the running four-week psalter and surface the existing current-week rubric text."
+            }
+          ]
         },
         "lauds": {
           "gospelCanticleAntiphon": "Тэр биднийг хаанчлал төдийгүй, Тэнгэрбурхан ба Эцэгийнхээ төлөөх тахилч нар болгосон. Тэр үхэгсдээс анх төрсөн бөгөөд газрын хаадын захирагч мөн. Аллэлуяа!",

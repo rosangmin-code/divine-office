@@ -613,7 +613,11 @@
 // 위해 conservative bump. activate 훅이 구버전 캐시를 정리.
 // PRECACHE_URLS=['/offline.html','/icon.svg'] 변동 없음. See CLAUDE.md
 // "Service Worker 캐시".
-const CACHE_VERSION = 'divine-office-v57'
+// v58 — GOAL #105 fixed solemnity Lauds psalmody now borrows Week-1 Sunday
+// (Ps63/Dan3/Ps149), Trinity First Vespers removes the wrong inline
+// Ps141/Ps142/Phil2 copy, and fallback psalmody notice directives alter SSR
+// HTML. PRECACHE_URLS 변동 없음.
+const CACHE_VERSION = 'divine-office-v58'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
