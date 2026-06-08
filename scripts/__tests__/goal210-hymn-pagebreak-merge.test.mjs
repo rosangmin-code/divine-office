@@ -354,13 +354,13 @@ const AREA_HASHES = {
     '06837c6af60899053b94bb55850063f281773a2f2207e768a3c9080d83b9077d',
   // WI-81 intended default_antiphon trim.
   'src/data/loth/propers/easter.json':
-    'a463d103dd4f875ba7611f3be5034ea669b403f6bae2348ebad8be58c1bac681',
+    '6302329cd174b4f8b17f4e737d960a303d28df60f29448b67685648f13dfbd77',
   // WI-81 intended default_antiphon trim.
   'src/data/loth/propers/lent.json':
     'a2cd756b86df1dd637f07413471649f5d752f5813e129ca2bd5b661fab77a089',
   // WI-81 intended default_antiphon trim.
   'src/data/loth/propers/ordinary-time.json':
-    '0c68fbdded75f6c508517e270d75867cfbf81091dbeb6fc8b6c41d3a26fc4ffb',
+    '2f7f3067e32d11b91db7471301805045559756563d285cba0ca0b5a57f317e52',
   'src/data/loth/sanctoral/feasts.json':
     'aed354d01103442536a502924f4e53c03cf040341fa14e079dded1869d8653e6',
   // WI-76 intended memorials page 863->862.
@@ -369,7 +369,7 @@ const AREA_HASHES = {
   'src/data/loth/sanctoral/optional-memorials.json':
     'ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356',
   'src/data/loth/sanctoral/solemnities.json':
-    '3adc252bf6ce536cf64ab8fe2b93e7db200482fd7a29ea5d0cbe87a78e315643',
+    '0f24fe74d90884e2a1b0fb6936ad9ba7dbd78efcff0d211fccaf185cc6ab9e8b',
 }
 
 function readJson(path) {
