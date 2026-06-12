@@ -6,7 +6,7 @@
 > The heuristic surfaced ~40 anomaly candidates; rigorous E1–E4 + context + PDF-corpus
 > triage reduces them to **2 PDF-origin typos** (arl→ard seed + **Гэнгэрбурханд→Тэнгэрбурханд** NEW),
 > **2 data-entry divergences** (туд→тул, Харагтүн→Харагтун — restore PDF fidelity, no ledger),
-> and **1 CONFIRM** (ёолон, ambiguous target). The remaining ~33 are **KEEP** — legitimate
+> and **1 leader-resolved KEEP** (ёолон, valid Rom 8:26 "groaning" form). The remaining ~33 are **KEEP** — legitimate
 > rare words one edit from a common word (false positives the MM predicted). **Zero data edits**
 > in this WI. Coverage gaps (multi-char edits, word-boundary/spacing, punctuation) are documented
 > in §6 and feed follow-up scope.
@@ -72,7 +72,7 @@ Explicit exclusions: see §6.
 
 | # | Current → ? | Location | Why ambiguous | Verdict |
 |---|-------------|----------|---------------|---------|
-| C1 | `ёолон` → `ёслол`? / `ёслон`? | `gilh.json:73` (General Instruction reference doc) | `ёолон` likely non-word, but PDF has it **2×** (PDF-origin) AND target is ambiguous: `ёслол`="ceremony" 42× vs `ёслон`="observing" (converb) 26×. Meaning-dependent. | **CONFIRM** — user picks target; low user-facing priority (reference doc). |
+| C1 | `ёолон` | `gilh.json:73` (General Instruction reference doc) | Leader verdict: `ёолон` is valid here as the Rom 8:26 quote's "groaning" form (`ёолох` = groan); PDF has it **2×**. | **KEEP** — no data change. Recorded by D3 `wi-156-003`. |
 | C2 | `нэрэн`, `дүнд`, `хүртэнэ`, `тэрэнд`, `гэгэн`, `боджээ`, `зориулая` | various (see §4) | Each is a **valid form** in context (poetic/archaic/converb) but is a nonstandard or low-frequency variant a confusion-edit from a common word. Not obvious typos; flag only if a reviewer reading the screen disagrees. | **CONFIRM→lean KEEP** — see §4 reasons; no action unless reviewer flags. |
 
 ---
@@ -117,6 +117,7 @@ word**, contextually correct, that merely sits one confusion-edit from a high-fr
 | `дүнд` | дунд | `дүн`=**result**, "as a **result** of the trial" — 1 Pet 1:7. |
 | `хүртэнэ` | хүргэнэ | `хүртэх`=**receive/attain** — Pentecost antiphon; valid. |
 | `иерусалим` | йерусалим | transliteration variant of **Jerusalem** (data has both `Иерусалим` and `Йерусалим`) — normalization, not a typo (see §6). |
+| `ёолон` | ёслол / ёслон | **KEEP per leader verdict (D3 `wi-156-003`)** — valid `ёолох` "groan" form in the Rom 8:26 quotation; PDF uses the same form 2×, so `gilh.json:73` stays unchanged. |
 
 *(PASS-B recall-net remainder — ~200 lower-confidence single-substitution pairs — sampled;
 every sampled item resolved to KEEP for the same "valid word in context" reason. Full PASS-B
@@ -131,7 +132,7 @@ list is reproducible via `scratch/dvo/sweep_freq.py`.)*
 | PDF-origin, obvious | **A2** `Гэнгэрбурханд→Тэнгэрбурханд` | Correct in `psalter-headers.rich.json:643`; **ledger row** (intentional PDF-deviation). |
 | PDF-origin, obvious | **A1** `арл→ард` | Already owned by D1 `wi-156-001` — do not double-fix; ensure ledger row exists. |
 | Data-entry divergence | **B1** `туд→тул`, **B2** `Харагтүн→Харагтун` (×2) | Restore PDF fidelity; **no ledger** (PDF already has correct form — not a deviation). Optionally a separate "data-fidelity" note. |
-| Ambiguous | **C1** `ёолон` (+ C2 set if reviewer flags) | **User confirmation** before any edit. |
+| Leader-resolved KEEP | **C1** `ёолон` | No data change; KEEP note recorded above. |
 
 **Cross-artifact note (MM §4.3):** several locations exist in BOTH `psalter-texts.json` and the
 generated `psalter-texts.rich.json` / `psalter-headers.rich.json`. A2 lives only in the rich

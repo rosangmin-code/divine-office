@@ -620,7 +620,10 @@
 // v59 — GOAL #128 applies the source-PDF typo correction in psalter
 // week-2 Friday Vespers intercessions (`арл түмнийг` -> `ард түмнийг`).
 // Data bundle content changes; PRECACHE_URLS unchanged.
-const CACHE_VERSION = 'divine-office-v59'
+// v60 — GOAL #128 D3 applies A2 PDF-origin psalter-header correction plus
+// B1/B2 PDF-fidelity data restores. Data bundle content changes;
+// PRECACHE_URLS unchanged.
+const CACHE_VERSION = 'divine-office-v60'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
