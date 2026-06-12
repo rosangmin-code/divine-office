@@ -1,10 +1,14 @@
 import { describe, it, expect } from 'vitest'
 import { parseIntercessions } from '../../hours/intercessions'
+import week2 from '../../../data/loth/psalter/week-2.json'
 import week4 from '../../../data/loth/psalter/week-4.json'
 import lent from '../../../data/loth/propers/lent.json'
 import { assembleHour } from '../../loth-service'
 import { getCalendarForYear } from '../../calendar'
 import type { HourSection } from '../../types'
+
+const sourceTypoCorrectedResponse = 'Эзэн, Та Өөрийн ард түмнийг нигүүлсэнэ үү.'
+const sourceTypoOriginalResponse = 'Эзэн, Та Өөрийн арл түмнийг нигүүлсэнэ үү.'
 
 describe('parseIntercessions', () => {
   describe('psalter commons format (multi-line intro + single-line refrain + " - " separator)', () => {
@@ -156,6 +160,28 @@ describe('parseIntercessions', () => {
       expect(parsed.refrain).toBe('Эзэн минь, биднийг адислаач.')
       expect(parsed.petitions).toHaveLength(1)
       expect(parsed.petitions[0].versicle).toBe('Та биднийг бүтээсэн тул')
+    })
+  })
+
+  describe('GOAL #128 source-PDF typo correction guard', () => {
+    // @fr FR-NEW (#128 D1)
+    it('renders Week 2 Friday Vespers response as "ард түмнийг" in raw data and assembled user path', async () => {
+      const raw = (week2 as { days: Record<string, { vespers: { intercessions: string[] } }> })
+        .days.FRI.vespers.intercessions
+
+      expect(raw[3]).toBe(sourceTypoCorrectedResponse)
+      expect(raw.join('\n')).not.toContain(sourceTypoOriginalResponse)
+
+      const assembled = await assembleHour('2026-07-10', 'vespers')
+      expect(assembled).not.toBeNull()
+      expect(assembled!.psalterWeek).toBe(2)
+
+      const inter = getIntercessionsSection(assembled!.sections)
+      expect(inter).toBeDefined()
+      expect(inter!.page).toBe(276)
+      expect(inter!.items[3]).toBe(sourceTypoCorrectedResponse)
+      expect(inter!.refrain).toBe(sourceTypoCorrectedResponse)
+      expect(inter!.items.join('\n')).not.toContain(sourceTypoOriginalResponse)
     })
   })
 

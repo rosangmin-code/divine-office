@@ -617,7 +617,10 @@
 // (Ps63/Dan3/Ps149), Trinity First Vespers removes the wrong inline
 // Ps141/Ps142/Phil2 copy, and fallback psalmody notice directives alter SSR
 // HTML. PRECACHE_URLS 변동 없음.
-const CACHE_VERSION = 'divine-office-v58'
+// v59 — GOAL #128 applies the source-PDF typo correction in psalter
+// week-2 Friday Vespers intercessions (`арл түмнийг` -> `ард түмнийг`).
+// Data bundle content changes; PRECACHE_URLS unchanged.
+const CACHE_VERSION = 'divine-office-v59'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
