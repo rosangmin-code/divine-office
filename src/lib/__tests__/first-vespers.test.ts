@@ -218,6 +218,57 @@ describe('FR-156 Phase 2 — getSeasonFirstVespers returns injected data', () =>
     const sa = ps1W6.seasonal_antiphons as Record<string, unknown> | undefined
     expect(sa?.lentPassionSunday, 'Palm Sunday ps1 must carry lentPassionSunday variant from PDF_W2').toBeTruthy()
   })
+
+  it('GOAL #115 target solemnity firstVespers has zero invalid Week 1 copy psalmody', async () => {
+    const { getSanctoralPropers, getSeasonFirstVespers } = await import('../propers-loader')
+    const invalidWeek1Copy = ['Psalm 141:1-9', 'Psalm 142:1-7', 'Philippians 2:6-11']
+    const pentecostRefs = ['Psalm 113:1-9', 'Psalm 147:1-11', 'Revelation 15:3-4']
+    const targets: Array<{
+      label: string
+      fv: FirstVespersPropers | null | undefined
+      expectedRefs?: string[]
+    }> = [
+      { label: '03-19 St Joseph', fv: getSanctoralPropers('03-19')?.firstVespers },
+      { label: '03-25 Annunciation', fv: getSanctoralPropers('03-25')?.firstVespers },
+      { label: '06-24 Nativity of John the Baptist', fv: getSanctoralPropers('06-24')?.firstVespers },
+      { label: '06-29 Peter and Paul', fv: getSanctoralPropers('06-29')?.firstVespers },
+      { label: '08-15 Assumption', fv: getSanctoralPropers('08-15')?.firstVespers },
+      { label: '11-01 All Saints', fv: getSanctoralPropers('11-01')?.firstVespers },
+      { label: '12-08 Immaculate Conception', fv: getSanctoralPropers('12-08')?.firstVespers },
+      { label: 'Ascension', fv: getSeasonFirstVespers('EASTER' as never, 1, undefined, 'Ascension') },
+      {
+        label: 'Pentecost',
+        fv: getSeasonFirstVespers('EASTER' as never, 1, undefined, 'Pentecost'),
+        expectedRefs: pentecostRefs,
+      },
+      { label: 'Trinity Sunday', fv: getSeasonFirstVespers('ORDINARY_TIME' as never, 1, undefined, 'Trinity Sunday') },
+      {
+        label: 'Corpus Christi',
+        fv: getSeasonFirstVespers('ORDINARY_TIME' as never, 1, undefined, 'Corpus Christi'),
+      },
+      { label: 'Sacred Heart', fv: getSeasonFirstVespers('ORDINARY_TIME' as never, 1, undefined, 'Sacred Heart') },
+      {
+        label: 'Christ the King',
+        fv: getSeasonFirstVespers('ORDINARY_TIME' as never, 1, undefined, 'Christ the King'),
+      },
+    ]
+
+    const offenders: string[] = []
+    for (const target of targets) {
+      expect(target.fv, `${target.label} firstVespers must be present for audit`).toBeTruthy()
+      const refs = target.fv?.psalms?.map((p) => p.ref)
+      if (target.expectedRefs) {
+        expect(refs, `${target.label} keeps sourced Laudate psalmody`).toEqual(target.expectedRefs)
+      } else {
+        expect(refs ?? [], `${target.label} remains unsourced Laudate with no local psalms`).toEqual([])
+      }
+      if (refs?.length === invalidWeek1Copy.length && refs.every((ref, i) => ref === invalidWeek1Copy[i])) {
+        offenders.push(`${target.label}: ${refs.join(', ')}`)
+      }
+    }
+
+    expect(offenders, 'no GOAL #115 target may carry the invalid Week 1 copy trio').toEqual([])
+  })
 })
 
 describe('FR-156 Phase 1 — Saturday vespers uses firstVespers when authored', () => {
