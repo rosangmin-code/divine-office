@@ -10,9 +10,7 @@ const repoRoot = process.cwd()
 describe('GOAL #128 D3 source-typo and fidelity correction guards', () => {
   // @fr FR-NEW (#128 D3)
   it('restores Week 1 Thursday Vespers concluding prayer to PDF-fidelity "Тиймийн тул"', () => {
-    const prayer = (week1 as {
-      days: Record<string, { vespers: { concludingPrayer: string } }>
-    }).days.THU.vespers.concludingPrayer
+    const prayer = week1.days.THU.vespers.concludingPrayer
 
     expect(prayer).toContain('Тиймийн тул өглөө болоход')
     expect(prayer).not.toContain('Тиймийн туд')
@@ -70,7 +68,8 @@ describe('GOAL #128 D3 source-typo and fidelity correction guards', () => {
     }
 
     const intro8 = findSection(gilh, 'intro-8')
-    const paragraph = intro8?.paragraphs.join('\n') ?? ''
+    if (!intro8?.paragraphs) throw new Error('expected GILH intro-8 paragraphs')
+    const paragraph = intro8.paragraphs.join('\n')
     const candidates = readFileSync(
       resolve(repoRoot, 'docs/research/goal128-typo-sweep-candidates.md'),
       'utf-8',
