@@ -108,6 +108,30 @@ function endsSentence(text: string | undefined): boolean {
   return /[.!?。！？]$/.test(trimmed)
 }
 
+// GOAL #125 — parenthesized-alternate response boundary. The book prints an
+// optional alternate versicle/response inside a single parenthesis that opens
+// in the versicle ("(эсвэл …") and closes at the END of the response
+// ("… адисална уу)"). That response carries NO sentence terminal (the optative
+// "уу" is followed immediately by ")"), so `endsSentence` returns false and the
+// petition loop would otherwise glue the NEXT petition's first line onto it
+// (W2 WED Vespers, week-2.json days.WED.vespers.intercessions [18..21]). Treat a
+// response that CLOSES an open alternate as a complete petition boundary.
+//
+// Scoped by parenthesis BALANCE, not a blanket "ends in ')'" rule (MM A1):
+// fires only when the petition's versicle has an unmatched "(" AND the response
+// ends with ")". A full-data scan (root-cause Step 4, #132) confirms exactly ONE
+// intercessions block in src/data/loth carries "(" at all — the target — so this
+// gate has zero collateral. `endsSentence` (shared by the colonless intro/refrain
+// extractors and the colon-path refrain accumulator) is left untouched.
+function responseClosesParenAlternate(petition: ParsedPetition | null): boolean {
+  if (!petition || !petition.response) return false
+  const versicle = petition.versicle ?? ''
+  const openCount = (versicle.match(/\(/g) ?? []).length
+  const closeCount = (versicle.match(/\)/g) ?? []).length
+  const versicleHasUnclosedParen = openCount > closeCount
+  return versicleHasUnclosedParen && /\)\s*$/.test(petition.response)
+}
+
 function splitOnSeparator(
   text: string,
   separator: RegExp = SEPARATOR,
@@ -395,7 +419,7 @@ export function parseIntercessions(raw: readonly string[]): ParsedIntercessions 
       current = { versicle: line }
       inResponse = false
     } else if (inResponse) {
-      if (endsSentence(current.response)) {
+      if (endsSentence(current.response) || responseClosesParenAlternate(current)) {
         flush()
         current = { versicle: line }
         inResponse = false
