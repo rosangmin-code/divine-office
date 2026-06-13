@@ -60,14 +60,19 @@ describe('GOAL #105 — fixed-date solemnity Lauds uses Week-1 Sunday psalter', 
 })
 
 describe('GOAL #105 — sourced and unsourced First/Second Vespers branches', () => {
-  it('Trinity First Vespers drops the wrong Ps141/Ps142/Phil2 inline copy and falls back visibly', async () => {
+  it('Trinity First Vespers follows the running-week Sunday FIRST Vespers (GOAL #177) while keeping the current-week rubric', async () => {
     const h = await assembleHour('2026-05-31', 'firstVespers')
     expect(h).not.toBeNull()
 
-    expect(psalmRefs(h!)).toEqual(WEEK1_SUN_VESPERS)
-    expect(psalmRefs(h!)).not.toContain('Psalm 141:1-9')
-    expect(psalmRefs(h!)).not.toContain('Psalm 142:1-7')
-    expect(psalmRefs(h!)).not.toContain('Philippians 2:6-11')
+    // GOAL #177 supersedes the GOAL #105 fallback: First Vespers of the four
+    // in-scope OT movable Solemnities now follows the running psalter-week
+    // Sunday FIRST Vespers set (2026 Trinity = psalterWeek 1 = Ps141/142/Phil2),
+    // NOT the Sunday SECOND Vespers base (Ps110/114/Rev19) it previously fell
+    // through to.
+    expect(psalmRefs(h!)).toEqual(['Psalm 141:1-9', 'Psalm 142:1-7', 'Philippians 2:6-11'])
+    expect(psalmRefs(h!)).not.toEqual(WEEK1_SUN_VESPERS)
+    expect(psalmRefs(h!)).not.toContain('Psalm 110:1-5, 7')
+    expect(psalmRefs(h!)).not.toContain('Revelation 19:1-7')
 
     const directive = psalmodyDirectives(h!).find((d) => d.mode === 'prepend')
     expect(directive?.text).toBe(CURRENT_WEEK_NOTICE)

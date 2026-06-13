@@ -423,6 +423,45 @@ export async function assembleHour(
         day.name,
       )
       if (firstVespersData) isSelfContained = true
+      // GOAL #177 — running psalter-week Sunday FIRST Vespers psalmody
+      // fallback for the four in-scope OT movable Solemnities (Trinity
+      // Sunday / Corpus Christi / Sacred Heart / Christ the King). Their
+      // special-key `firstVespers` block is self-contained for proper
+      // fields (Magnificat antiphon + concluding prayer) but carries NO
+      // `psalms`. Without sourced Mongolian Laudate psalmody, First Vespers
+      // must follow the date's running psalter-week Sunday FIRST Vespers set
+      // `weeks[day.psalterWeek].SUN.firstVespers.psalms` (fv-wN-sun-*), NOT
+      // the regular Sunday SECOND Vespers base seeded at step 2
+      // (Ps 110 / Ps 114 / Rev 19). We pull ONLY the psalm array from the
+      // numeric weekly Sunday First Vespers block (passing neither date nor
+      // name so `getSeasonFirstVespers` bypasses the special-key lookup) and
+      // leave every proper field untouched. Pentecost is unaffected: its
+      // special-key block carries sourced `movable-pentecost-*` psalms, so
+      // the no-psalms guard never fires. See
+      // docs/design/mental-models/goal177-solemnity-firstvespers-running-week.md.
+      const otMovableSpecialKey = resolveSpecialKey(day.season, day.name)
+      if (
+        firstVespersData &&
+        (!firstVespersData.psalms || firstVespersData.psalms.length === 0) &&
+        (otMovableSpecialKey === 'trinitySunday' ||
+          otMovableSpecialKey === 'corpusChristi' ||
+          otMovableSpecialKey === 'sacredHeart' ||
+          otMovableSpecialKey === 'christTheKing')
+      ) {
+        const runningSundayFirstVespers = getSeasonFirstVespers(
+          day.season,
+          day.psalterWeek,
+        )
+        if (
+          runningSundayFirstVespers?.psalms &&
+          runningSundayFirstVespers.psalms.length > 0
+        ) {
+          firstVespersData = {
+            ...firstVespersData,
+            psalms: runningSundayFirstVespers.psalms,
+          }
+        }
+      }
     }
 
     // Path 3 — plain Sunday (or any season firstVespers entry as fallback)

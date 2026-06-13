@@ -124,15 +124,25 @@ describe.each(SOLEMNITIES)(
 )
 
 describe('Trinity Sunday (2026-05-31) — concludingPrayer injection', () => {
-  it('/firstVespers falls back to running psalter with a visible current-week rubric', async () => {
+  // GOAL #177: First Vespers of the four in-scope OT movable Solemnities now
+  // follows the running psalter-week Sunday FIRST Vespers set
+  // (week-1 = Ps 141 / Ps 142 / Phil 2), NOT the Sunday SECOND Vespers base
+  // (Ps 110 / Ps 114 / Rev 19) it previously fell through to. The current-week
+  // notice rubric is retained (psalmody is still borrowed from the running
+  // week — just the correct Sunday hour now).
+  const WEEK1_SUN_FIRST_VESPERS = ['Psalm 141:1-9', 'Psalm 142:1-7', 'Philippians 2:6-11']
+  it('/firstVespers follows the running-week Sunday FIRST Vespers with a visible current-week rubric', async () => {
     const h = await assembleHour('2026-05-31', 'firstVespers')
     expect(h).not.toBeNull()
 
     const psalmody = section(h!, 'psalmody')
-    expect(psalmRefs(h!)).toEqual(WEEK1_SUN_VESPERS)
-    expect(psalmRefs(h!)).not.toContain('Psalm 141:1-9')
-    expect(psalmRefs(h!)).not.toContain('Psalm 142:1-7')
-    expect(psalmRefs(h!)).not.toContain('Philippians 2:6-11')
+    // Trinity 2026 is psalterWeek 1 → week-1 Sunday First Vespers psalmody.
+    expect(psalmRefs(h!)).toEqual(WEEK1_SUN_FIRST_VESPERS)
+    // Must NOT be the Sunday Second Vespers base it used to fall through to.
+    expect(psalmRefs(h!)).not.toContain('Psalm 110:1-5, 7')
+    expect(psalmRefs(h!)).not.toContain('Psalm 114:1-8')
+    expect(psalmRefs(h!)).not.toContain('Revelation 19:1-7')
+    // Nor any other psalter week's First Vespers set.
     expect(psalmRefs(h!)).not.toContain('Psalm 113:1-9')
     expect(psalmRefs(h!)).not.toContain('Psalm 147:12-20')
     expect(psalmRefs(h!)).not.toContain('Ephesians 1:3-10')
