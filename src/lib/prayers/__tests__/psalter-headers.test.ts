@@ -90,6 +90,19 @@ describe('FR-160-C psalter-headers catalog', () => {
     expect(['patristic_preface', 'nt_typological']).toContain(header!.kind)
   })
 
+  // @fr FR-NEW (#128 D3)
+  it('returns corrected Psalm 116:10-19 header preface after source-PDF typo policy correction', () => {
+    const header = loadPsalterHeaderRich('Psalm 116:10-19')
+
+    expect(header).not.toBeNull()
+    expect(header!.kind).toBe('nt_typological')
+    expect(header!.attribution).toBe('Еврей 13:15')
+    expect(header!.preface_text).toBe(
+      'Христээр дамжуулан Тэнгэрбурханд магтаалын тахилыг үргэлж өргөцгөөе.',
+    )
+    expect(header!.preface_text).not.toContain('Гэнгэрбурханд')
+  })
+
   it('returns null for refs not present in catalog', () => {
     const header = loadPsalterHeaderRich('Psalm 999:9-9')
     expect(header).toBeNull()
