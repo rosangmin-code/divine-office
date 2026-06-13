@@ -369,7 +369,7 @@ const AREA_HASHES = {
   'src/data/loth/sanctoral/optional-memorials.json':
     'ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356',
   'src/data/loth/sanctoral/solemnities.json':
-    '0f24fe74d90884e2a1b0fb6936ad9ba7dbd78efcff0d211fccaf185cc6ab9e8b',
+    '294840e5d9f882796bbb3e31985e466e223adc7dbbafcf15670233b86a1a6e86',
 }
 
 function readJson(path) {
