@@ -623,7 +623,13 @@
 // v60 — GOAL #128 D3 applies A2 PDF-origin psalter-header correction plus
 // B1/B2 PDF-fidelity data restores. Data bundle content changes;
 // PRECACHE_URLS unchanged.
-const CACHE_VERSION = 'divine-office-v60'
+// v61 — GOAL #191 splits two PDF-origin space-drop concatenations:
+// `өвчтөнүүдийгтайвшруулж` -> `өвчтөнүүдийг тайвшруулж` (12× across propers
+// advent/easter/lent/ordinary-time) and `чамайгойлгох` -> `чамайг ойлгох`
+// (2× across ordinarium/hymns + prayers/hymns/31.rich). Data bundle content
+// changes; PRECACHE_URLS unchanged. See docs/data/source-typo-ledger.md
+// STC-003/STC-004.
+const CACHE_VERSION = 'divine-office-v61'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
