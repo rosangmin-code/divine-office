@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { readFileSync } from 'node:fs'
+import { readFileSync, readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 import week1 from '../../../data/loth/psalter/week-1.json'
 import solemnities from '../../../data/loth/sanctoral/solemnities.json'
@@ -79,5 +79,54 @@ describe('GOAL #128 D3 source-typo and fidelity correction guards', () => {
     expect(candidates).toContain('| C1 | `ёолон` |')
     expect(candidates).toContain('**KEEP**')
     expect(candidates).toContain('ёолох')
+  })
+})
+
+describe('GOAL #191 PDF-origin space-drop concatenation guards', () => {
+  // Recursively collect the raw text of every JSON file under src/data/loth so
+  // the guard catches a reintroduced concatenation ANYWHERE in the data bundle,
+  // not only in the files corrected by wi-191-003.
+  function collectJsonText(dir: string): string {
+    let text = ''
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const full = resolve(dir, entry.name)
+      if (entry.isDirectory()) {
+        text += collectJsonText(full)
+      } else if (entry.name.endsWith('.json')) {
+        text += readFileSync(full, 'utf-8') + '\n'
+      }
+    }
+    return text
+  }
+
+  const allData = collectJsonText(resolve(repoRoot, 'src/data/loth'))
+
+  function countOf(haystack: string, needle: string): number {
+    return haystack.split(needle).length - 1
+  }
+
+  // @fr FR-NEW (#191)
+  it('has zero reintroduced PDF-origin space-drop concatenations in src/data', () => {
+    // S1: өвчтөнүүдийг + тайвшруулж ; S2: чамайг + ойлгох
+    expect(allData).not.toContain('өвчтөнүүдийгтайвшруулж')
+    expect(allData).not.toContain('чамайгойлгох')
+  })
+
+  // @fr FR-NEW (#191)
+  it('keeps the corrected split forms present (S1 12×, S2 2×)', () => {
+    expect(countOf(allData, 'өвчтөнүүдийг тайвшруулж')).toBe(12)
+    expect(countOf(allData, 'чамайг ойлгох')).toBe(2)
+  })
+
+  // @fr FR-NEW (#191)
+  it('records both PDF-origin space-drop deviations in the ledger', () => {
+    const ledger = readFileSync(
+      resolve(repoRoot, 'docs/data/source-typo-ledger.md'),
+      'utf-8',
+    )
+    expect(ledger).toContain('STC-003')
+    expect(ledger).toContain('STC-004')
+    expect(ledger).toContain('өвчтөнүүдийг тайвшруулж')
+    expect(ledger).toContain('чамайг ойлгох')
   })
 })
