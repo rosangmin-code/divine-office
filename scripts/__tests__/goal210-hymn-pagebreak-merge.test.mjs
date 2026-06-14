@@ -345,22 +345,26 @@ const HISTORICAL_MERGED_TARGETS = [
 const AREA_HASHES = {
   'src/data/loth/ordinarium/compline.json':
     '10261a2e03d3b73bf479abbdfea6bf0ca72f15ce4a24b88db94cedc76ee86a4c',
-  // WI-81 intended default_antiphon trim.
+  // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
+  // space-split correction (owctononuudiig tailvshruulzh, advent:633).
   'src/data/loth/propers/advent.json':
-    '858d31b602dc4ab2f5a18e029665005575bc6e116dfb6870f99173cb8fcacab5',
+    '193f7d034c1a62380617e7ca5108baf269c01f7fddf6e882fec670a33462e84e',
   // WI-88 (#87): dec25.SUN.vespers2 proper psalmody wiring (Ps 110:1-5,7 /
   // Ps 130 / Col 1:12-20, full_pdf p.592-596).
   'src/data/loth/propers/christmas.json':
     '06837c6af60899053b94bb55850063f281773a2f2207e768a3c9080d83b9077d',
-  // WI-81 intended default_antiphon trim.
+  // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
+  // space-split correction (owctononuudiig tailvshruulzh, easter:540/865).
   'src/data/loth/propers/easter.json':
-    '6302329cd174b4f8b17f4e737d960a303d28df60f29448b67685648f13dfbd77',
-  // WI-81 intended default_antiphon trim.
+    'd1a8e024e42f175f1acdaf3b3009f004acd838a860c526cfbb20948ac56758da',
+  // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
+  // space-split correction (owctononuudiig tailvshruulzh, lent:618).
   'src/data/loth/propers/lent.json':
-    'a2cd756b86df1dd637f07413471649f5d752f5813e129ca2bd5b661fab77a089',
-  // WI-81 intended default_antiphon trim.
+    '2eaf15d01e4a18b50288b0d1b56918e680c7e355c3adffaeeddd2baf8d0bce39',
+  // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
+  // space-split correction (owctononuudiig tailvshruulzh, ordinary-time x8).
   'src/data/loth/propers/ordinary-time.json':
-    '2f7f3067e32d11b91db7471301805045559756563d285cba0ca0b5a57f317e52',
+    '9581c3177314e1d9687ebc0a74b924d1715f6c5546b136441e1fac597871ef28',
   'src/data/loth/sanctoral/feasts.json':
     'aed354d01103442536a502924f4e53c03cf040341fa14e079dded1869d8653e6',
   // WI-76 intended memorials page 863->862.
