@@ -372,8 +372,10 @@ const AREA_HASHES = {
     '8f7ef921766a12cecbd1c966802637ecc4266000a311f25db6ff5e50e0555c52',
   'src/data/loth/sanctoral/optional-memorials.json':
     'ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356',
+  // #203 (WI-212): 06-24 John Baptist lauds + vespers2 concludingPrayer
+  // truncation — restored Trinitarian doxology from full_pdf p.828 (L28144-47).
   'src/data/loth/sanctoral/solemnities.json':
-    '294840e5d9f882796bbb3e31985e466e223adc7dbbafcf15670233b86a1a6e86',
+    '8ee1201a88ba40097c3198d30f05e90b76faac0db117120c63798efc62e3d959',
 }
 
 function readJson(path) {
