@@ -368,14 +368,18 @@ const AREA_HASHES = {
   'src/data/loth/sanctoral/feasts.json':
     'aed354d01103442536a502924f4e53c03cf040341fa14e079dded1869d8653e6',
   // WI-76 intended memorials page 863->862.
+  // #203 (WI-215): 11-02 All Souls + deceased lauds/vespers concludingPrayer
+  // truncation — restored Trinitarian doxology from full_pdf p.852 (L28884-87).
   'src/data/loth/sanctoral/memorials.json':
-    '8f7ef921766a12cecbd1c966802637ecc4266000a311f25db6ff5e50e0555c52',
+    'e999e4c6bcc1458a6dc9572fe1806b6d0845a81aba4868296c03dd58aabdb90b',
   'src/data/loth/sanctoral/optional-memorials.json':
     'ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356',
   // #203 (WI-212): 06-24 John Baptist lauds + vespers2 concludingPrayer
   // truncation — restored Trinitarian doxology from full_pdf p.828 (L28144-47).
+  // #203 (WI-215): 03-19 St Joseph lauds + vespers2 concludingPrayer truncation
+  // — restored short doxology variant from full_pdf p.824 (L28034-36).
   'src/data/loth/sanctoral/solemnities.json':
-    '8ee1201a88ba40097c3198d30f05e90b76faac0db117120c63798efc62e3d959',
+    '735273be7d2003480cb37b3388d9aa855661fc902d213ea48f5b3344e00e80fd',
 }
 
 function readJson(path) {
