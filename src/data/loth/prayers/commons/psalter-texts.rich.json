@@ -57558,7 +57558,7 @@
                   "text": "ойлгодог."
                 }
               ],
-              "indent": 0
+              "indent": 1
             },
             {
               "spans": [
@@ -57802,16 +57802,9 @@
             {
               "lineRange": [
                 4,
-                4
-              ],
-              "indent": 1
-            },
-            {
-              "lineRange": [
-                5,
                 5
               ],
-              "indent": 0
+              "indent": 1
             },
             {
               "lineRange": [
