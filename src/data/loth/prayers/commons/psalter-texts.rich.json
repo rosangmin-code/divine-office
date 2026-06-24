@@ -55603,6 +55603,114 @@
                 }
               ],
               "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хурууг минь тулалдахад бэлтгэдэг,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Миний хад ЭЗЭН магтагдах болтугай!"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Миний хайр энэрэл ба миний цайз,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Миний бэхлэлт ба миний аврагч,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Миний бамбай ба миний хоргоддог Нэгэн,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Ард түмнийг минь миний дор захируулагч."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Аяа ЭЗЭН, хүн гэгч нь юу болоод"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Та түүнийг мэддэг юм бэ?"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хүний хүү гэгч нь юу болоод"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Та түүний тухай боддог юм бэ?"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хүн амьсгалтай адил бөгөөд"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Өдрүүд нь улирч буй сүүдэр шиг билээ."
+                }
+              ],
+              "indent": 0
             }
           ],
           "phrases": [
@@ -55612,7 +55720,94 @@
                 0
               ],
               "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                4,
+                4
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                5,
+                5
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                6,
+                6
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                7,
+                7
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                8,
+                8
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                9,
+                9
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                10,
+                10
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                11,
+                11
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                12,
+                12
+              ],
+              "indent": 0
             }
+          ],
+          "paragraphBoundaries": [
+            7
           ]
         },
         {
