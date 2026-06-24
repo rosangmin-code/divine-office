@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { createElement } from 'react'
-import { DirectiveBlock, partitionDirectives } from '../directive-block'
+import { DirectiveBlock, partitionDirectives, directiveSourcePage } from '../directive-block'
 import { PsalmodySection } from '../psalmody-section'
 import { DismissalSection } from '../dismissal-section'
 import { IntercessionsSection } from '../intercessions-section'
@@ -38,6 +38,36 @@ describe('partitionDirectives helper', () => {
     expect(p.hasSkip).toBe(false)
     expect(p.hasSubstitute).toBe(false)
     expect(p.prepends).toEqual([])
+  })
+})
+
+describe('directiveSourcePage helper (GOAL #201 / #201-sub-2)', () => {
+  // @fr FR-160-B (GOAL #201) — surface evidencePdf.page when text has no inline ref
+  it('returns the page when the directive carries a page and no inline ref', () => {
+    const d: SectionOverride = {
+      rubricId: 'notice',
+      mode: 'prepend',
+      text: 'Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна.',
+      page: 580,
+    }
+    expect(directiveSourcePage(d)).toBe(580)
+  })
+
+  // @fr FR-160-B (GOAL #201) — suppress when text already embeds an inline `х. NN`
+  it('returns undefined when the directive text already has an inline page (х. 58)', () => {
+    const d: SectionOverride = {
+      rubricId: 'borrow-week1',
+      mode: 'substitute',
+      text: 'Дууллууд ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна. х. 58.',
+      page: 589,
+    }
+    expect(directiveSourcePage(d)).toBeUndefined()
+  })
+
+  // @fr FR-160-B (GOAL #201) — no page on the override → nothing to surface
+  it('returns undefined when the directive has no page', () => {
+    const d: SectionOverride = { rubricId: 'x', mode: 'skip' }
+    expect(directiveSourcePage(d)).toBeUndefined()
   })
 })
 
