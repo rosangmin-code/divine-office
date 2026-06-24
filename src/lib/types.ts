@@ -430,6 +430,16 @@ export interface SectionOverride {
    * legacy note-only surface so this WI does not regress their behavior.
    */
   bodyInlined?: boolean
+  /**
+   * GOAL #201 (#201-sub-2): the PDF page where this rubric's text is
+   * printed in the book, propagated from `ConditionalRubric.evidencePdf.page`
+   * by `rubricToOverride`. The UI surfaces it as a `(х. NNN)` PDF link next
+   * to the directive — but ONLY when the directive text does NOT already
+   * carry an inline page reference (the "Дууллууд … х. 58." substitute
+   * family embeds its borrowed-psalm page in the text, so a second ref
+   * would be redundant). Derived from the evidence SoT, never hand-set.
+   */
+  page?: number
 }
 
 export type SectionOverrideMap = Partial<

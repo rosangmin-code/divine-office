@@ -142,6 +142,12 @@ function rubricToOverride(
   if (rubric.target?.ref != null) out.ref = rubric.target.ref
   if (rubric.target?.ordinariumKey != null) out.ordinariumKey = rubric.target.ordinariumKey
   if (typeof rubric.appliesTo.index === 'number') out.index = rubric.appliesTo.index
+  // GOAL #201 (#201-sub-2): carry the rubric's PDF source page so the UI can
+  // surface it as a `(х. NNN)` link next to the directive note. Derived from
+  // the evidence SoT (`evidencePdf.page`), never hand-maintained. The
+  // DirectiveBlock decides whether to RENDER it (suppressed when the
+  // directive text already embeds an inline `х. NN` reference).
+  if (typeof rubric.evidencePdf?.page === 'number') out.page = rubric.evidencePdf.page
   // GOAL #13 (FR-160-B-6): a psalmody substitute carrying a structured
   // `psalterRef` has its borrowed psalms inlined into the section body by
   // the assembler (loth-service step 6.5). Flag the directive so the UI

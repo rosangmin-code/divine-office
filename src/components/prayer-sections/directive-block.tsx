@@ -1,4 +1,22 @@
 import type { SectionOverride } from '@/lib/types'
+import { PageRef } from '../page-ref'
+
+// GOAL #201 (#201-sub-2): an inline page reference already present in the
+// directive text — the "Дууллууд … х. 58." substitute family embeds its
+// borrowed-psalm page directly. Matches a Cyrillic `х.` + digit.
+const INLINE_PAGE_RE = /х\.\s*\d/
+
+// GOAL #201 (#201-sub-2): the PDF source page to surface as a `(х. NNN)`
+// link beside a directive — `evidencePdf.page` propagated onto the override
+// — UNLESS the directive text already carries its own inline page reference
+// (in which case a second link would be redundant). Pure + exported so the
+// decision is unit-testable without the `showPageRefs` settings gate that
+// `PageRef` itself applies.
+export function directiveSourcePage(d: SectionOverride): number | undefined {
+  if (typeof d.page !== 'number') return undefined
+  if (d.text != null && INLINE_PAGE_RE.test(d.text)) return undefined
+  return d.page
+}
 
 // FR-160-B PR-9a — render the conditional-rubric directives surfaced
 // by Layer 4.5 (`HourPropers.sectionOverrides`). Each directive is
@@ -27,6 +45,7 @@ export function DirectiveBlock({
       {filtered.map((d) => {
         const display =
           d.text ?? d.ref ?? (d.ordinariumKey ? `(${d.ordinariumKey})` : '')
+        const sourcePage = directiveSourcePage(d)
         return (
           <p
             key={d.rubricId}
@@ -36,6 +55,7 @@ export function DirectiveBlock({
             className="mt-2 text-sm italic text-stone-500 dark:text-stone-400"
           >
             {display}
+            {sourcePage != null && <PageRef page={sourcePage} />}
           </p>
         )
       })}

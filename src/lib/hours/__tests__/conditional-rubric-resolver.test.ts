@@ -253,6 +253,28 @@ describe('applyConditionalRubrics — PR-8 B4 5 신규 sections × 4 actions', (
     expect(out.propers.gospelCanticleAntiphon).toBe('unchanged')
   })
 
+  // @fr FR-160-B-4 (GOAL #201 / #201-sub-2 — surface the rubric's PDF source page)
+  it('prepend psalmody propagates evidencePdf.page onto the override (х. 580)', () => {
+    const rubric: ConditionalRubric = {
+      rubricId: 'goal201-psalmody-notice-source-page',
+      when: { dateRange: { from: '03-19', to: '03-19' } },
+      action: 'prepend',
+      target: { text: 'Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна.' },
+      appliesTo: { section: 'psalmody' },
+      evidencePdf: {
+        page: 580,
+        line: 20071,
+        text: 'Дуулал ба магтаалыг явагдаж буй долоо хоногоос',
+      },
+    }
+    const propers: HourPropers = { conditionalRubrics: [rubric] }
+    const out = applyConditionalRubrics(propers, { ...baseCtx, dateStr: '2026-03-19' })
+    const ov = out.propers.sectionOverrides?.psalmody?.[0]
+    expect(ov?.mode).toBe('prepend')
+    expect(ov?.page).toBe(580)
+    expect(ov?.text).toContain('явагдаж буй долоо хоног')
+  })
+
   // @fr FR-160-B-4
   it('substitute psalmody when wrong dayOfWeek → noop, no override recorded', () => {
     const rubric: ConditionalRubric = {
