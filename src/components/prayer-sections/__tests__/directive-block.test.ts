@@ -42,15 +42,33 @@ describe('partitionDirectives helper', () => {
 })
 
 describe('directiveSourcePage helper (GOAL #201 / #201-sub-2)', () => {
-  // @fr FR-160-B (GOAL #201) — surface evidencePdf.page when text has no inline ref
-  it('returns the page when the directive carries a page and no inline ref', () => {
+  // @fr FR-160-B (GOAL #201) — surface evidencePdf.page for a SUBSTITUTE
+  // directive when text has no inline ref (substitute cites real relocated
+  // content, e.g. the native Dec 24 psalmody substitute where p580 IS correct).
+  it('returns the page when a substitute directive carries a page and no inline ref', () => {
     const d: SectionOverride = {
-      rubricId: 'notice',
-      mode: 'prepend',
+      rubricId: 'dec24-lauds-substitute',
+      mode: 'substitute',
       text: 'Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна.',
       page: 580,
     }
     expect(directiveSourcePage(d)).toBe(580)
+  })
+
+  // @fr FR-160-B (GOAL #3 / g-21) — SUPPRESS the page-pointer for a `prepend`
+  // fallback notice. evidencePdf.page=580 is only the PROVENANCE of the
+  // borrowed string (its single PDF occurrence = book p580 / Dec 24), NOT a
+  // page about the solemnity/feast the notice prepends to. Surfacing (х. 580)
+  // sent the user to the wrong liturgical day (St. Joseph, Trinity, Ascension,
+  // …). All 19 src/data/loth prepend directives are this one notice.
+  it('returns undefined for a prepend fallback notice (g-21 fix — no misleading page link)', () => {
+    const d: SectionOverride = {
+      rubricId: 'sanctoral-solemnity-03-19-st-joseph-firstvespers-weekday-psalmody-notice',
+      mode: 'prepend',
+      text: 'Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна.',
+      page: 580,
+    }
+    expect(directiveSourcePage(d)).toBeUndefined()
   })
 
   // @fr FR-160-B (GOAL #201) — suppress when text already embeds an inline `х. NN`

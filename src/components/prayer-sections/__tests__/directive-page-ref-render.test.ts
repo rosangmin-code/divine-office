@@ -45,14 +45,19 @@ const psalmsBase = [
   },
 ]
 
-describe('GOAL #201 — notice source page in real production render', () => {
-  it('surfaces (х. 580) next to the "Дуулал ба магтаал" notice', () => {
+describe('GOAL #201 / #3 (g-21) — notice source page in real production render', () => {
+  // GOAL #3 (g-21): the prepend fallback notice ("Дуулал ба магтаал … current
+  // week") used to surface (х. 580) — but p580 is the Dec 24 PROVENANCE of the
+  // borrowed string, unrelated to the solemnity/feast that prepends this notice.
+  // The link sent the user to the wrong liturgical day. Real-render proof that
+  // the link is now SUPPRESSED while the notice text still renders.
+  it('does NOT surface (х. 580) next to the prepend "Дуулал ба магтаал" notice (g-21)', () => {
     const section: Extract<HourSection, { type: 'psalmody' }> = {
       type: 'psalmody',
       psalms: psalmsBase,
       directives: [
         {
-          rubricId: 'goal201-notice',
+          rubricId: 'sanctoral-solemnity-03-19-st-joseph-firstvespers-weekday-psalmody-notice',
           mode: 'prepend',
           text: 'Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна.',
           page: 580,
@@ -60,11 +65,34 @@ describe('GOAL #201 — notice source page in real production render', () => {
       ],
     }
     const out = renderToStaticMarkup(createElement(PsalmodySection, { section }))
+    // Notice text still renders (only the misleading page link is gone).
     expect(out).toContain('Дуулал ба магтаалыг явагдаж буй долоо хоног')
+    expect(out).not.toContain('(х. 580)')
+    expect(out).not.toContain('data-role="page-ref-link"')
+    // Body still renders (prepend does not hide it).
+    expect(out).toContain('v1')
+  })
+
+  // GOAL #3 (g-21): scope guard — a SUBSTITUTE directive KEEPS its (х. 580)
+  // link. This is the native Dec 24 Lauds psalmody substitute, where p580 is
+  // the CORRECT printed page. Proves the suppression is prepend-only and does
+  // not over-suppress legitimate substitute citations.
+  it('STILL surfaces (х. 580) for a substitute directive (native Dec 24 — page is correct)', () => {
+    const section: Extract<HourSection, { type: 'psalmody' }> = {
+      type: 'psalmody',
+      psalms: psalmsBase,
+      directives: [
+        {
+          rubricId: 'advent-dec24-sun-lauds-psalmody-substitute',
+          mode: 'substitute',
+          text: 'Дуулал ба магтаалыг явагдаж буй долоо хоногоос татаж авна.',
+          page: 580,
+        },
+      ],
+    }
+    const out = renderToStaticMarkup(createElement(PsalmodySection, { section }))
     expect(out).toContain('(х. 580)')
     expect(out).toContain('data-role="page-ref-link"')
-    // The notice (and its page ref) precede the psalm body (prepend).
-    expect(out.indexOf('580')).toBeLessThan(out.indexOf('v1'))
   })
 
   it('does NOT add a redundant ref to a notice that already embeds х. 58', () => {
