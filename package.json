@@ -18,7 +18,8 @@
     "verify:body-purity:check": "node scripts/verify-body-purity.js --check",
     "verify:first-vespers-ref": "node scripts/verify-first-vespers-ref-coverage.js",
     "verify:phrase-coverage": "node scripts/verify-phrase-coverage.js",
-    "verify:phrase-coverage:check": "node scripts/verify-phrase-coverage.js --check"
+    "verify:phrase-coverage:check": "node scripts/verify-phrase-coverage.js --check",
+    "verify:hymn-phrase-merge": "node scripts/verify-hymn-phrase-merge.js"
   },
   "dependencies": {
     "lucide-react": "^1.16.0",
