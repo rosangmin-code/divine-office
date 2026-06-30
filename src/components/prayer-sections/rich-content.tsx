@@ -27,23 +27,29 @@ function indentClassFor(level: 0 | 1 | 2 | undefined): string {
 // spacing units); viewport-wrapped continuation lines indent +6 further
 // via `text-indent: -1.5rem` (-indent-6). User spec: "구문 wrap 시 들여쓰기".
 //
-// F-X8 (#300) — `flush=true` overrides hanging indent with column-flush
-// rendering (no padding-left, no negative text-indent). Applied for hymn
-// (Магтуу) phrases where the user spec is "들여쓰기 없음" — capital lines
-// open new verses, lowercase wraps stay attached, and visual indentation
-// is intentionally absent. Levels are still honoured (1 / 2) so hymn
-// authors can opt back into nested indents in rare future cases without
-// reinstating hanging behaviour.
+// GOAL #4 (X.912) — F-X8 (#300) REVERTED. `flush=true` used to drop the
+// FR-161 R-13 hanging indent (`return ''`) so hymn (Магтуу) wrap
+// continuations rendered flush at column 0. RCA #9 showed that this made a
+// viewport-wrapped continuation visually indistinguishable from a real
+// verse-line boundary — the whole hymn read as a structureless "통짜 흐름"
+// on narrow screens. The hanging indent is the verse/wrap distinction cue:
+// the verse FIRST line still begins at column 0 (text-indent cancels the
+// padding, so #300's "verse 들여쓰기 없음" intent is preserved), and ONLY
+// the viewport-wrap continuation indents — which is exactly #300's
+// "lowercase wraps stay attached" intent expressed visually.
+//
+// ponytail: `flush` is now behaviorally identical to the default path (its
+// sole prior effect was dropping `-indent-6`, which was the bug). The prop +
+// plumbing are kept so the diff stays scoped to the hymn branch and does NOT
+// touch the shared RichContent signature / its psalm + intercession callers
+// / the flush test surface. Removing the now-vestigial `flush` prop is a
+// follow-up cleanup, not a fix.
 function phraseHangingIndentClass(
   level: 0 | 1 | 2 | undefined,
   flush = false,
 ): string {
+  void flush
   const lv = level ?? 0
-  if (flush) {
-    if (lv === 0) return ''
-    if (lv === 1) return 'pl-6'
-    return 'pl-12'
-  }
   if (lv === 0) return 'pl-6 -indent-6'
   if (lv === 1) return 'pl-12 -indent-6'
   return 'pl-18 -indent-6'

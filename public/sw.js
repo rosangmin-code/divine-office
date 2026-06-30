@@ -629,7 +629,16 @@
 // (2× across ordinarium/hymns + prayers/hymns/31.rich). Data bundle content
 // changes; PRECACHE_URLS unchanged. See docs/data/source-typo-ledger.md
 // STC-003/STC-004.
-const CACHE_VERSION = 'divine-office-v61'
+// v62 — GOAL #4/#1 МАГТУУ(hymn) 줄바꿈 수정: (1) rich-content.tsx 의 hymn
+// phrase 렌더가 viewport-wrap 연속행에 hanging indent(`pl-6 -indent-6`)를
+// 복원(F-X8 #300 revert) → 모든 Магтуу 시간경의 phrase span className 변동
+// 으로 SSR HTML 출력이 바뀐다. (2) prayers/hymns/21.rich.json(X.897)의 orphan
+// phrase 병합([0,0]+[1,1]→[0,1])으로 해당 hymn SSR HTML 본문 구조가 바뀐다.
+// stale-cache 클라이언트가 cache-first 구 chunk 로 구 출력(까지는 wrap 미구분
+// + 'Их Эзэнийг' 고립)을 계속 받는 회귀 방지를 위해 v61 → v62. SW 로직 변경
+// 없음 — navigation 은 `network-only` 유지, caches.put(html) 미도입.
+// PRECACHE 대상(offline.html·icon.svg) 무변경.
+const CACHE_VERSION = 'divine-office-v62'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 

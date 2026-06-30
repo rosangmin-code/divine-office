@@ -642,14 +642,17 @@ describe('RichContent — flow="sentence" inline para split (FR-161 R-18)', () =
 })
 
 // @fr FR-161
-describe('RichContent — flush=true (F-X8 #300 — Магтуу 줄바꿈 규칙)', () => {
-  // The flush prop strips the FR-161 R-13 hanging-indent classes from
-  // phrase rendering. Hymn-section is the only production caller; the
-  // rule expression "들여쓰기 없음" (no indent) maps to dropping the
-  // `pl-6 -indent-6` pair while keeping the per-phrase `<span class
-  // ="block">` boundaries that own the verse-line layout.
+describe('RichContent — flush=true (GOAL #4 X.912 — F-X8 #300 reverted)', () => {
+  // GOAL #4 (X.912): F-X8 (#300) made `flush=true` DROP the FR-161 R-13
+  // hanging indent, which made viewport-wrap continuations render flush at
+  // column 0 — visually indistinguishable from real verse-line boundaries
+  // (RCA #9). The revert restores the hanging indent: the verse FIRST line
+  // still begins at column 0 (text-indent cancels the padding) and ONLY the
+  // wrap continuation indents. `flush` is now behaviorally identical to the
+  // default phrase path; these tests pin that the hanging indent is present
+  // for hymn (flush) callers so the regression cannot silently return.
 
-  it('phrase render emits no -indent-6 / pl-6 padding when flush=true', () => {
+  it('phrase render RESTORES the -indent-6 hanging indent when flush=true', () => {
     const content = makeContent([
       makeStanzaBlock(['Аниргүй шөнө', 'Ариун шөнө'], {
         phrases: [
@@ -661,11 +664,10 @@ describe('RichContent — flush=true (F-X8 #300 — Магтуу 줄바꿈 규�
     const html = render(
       createElement(RichContent, { content, flush: true }),
     )
-    // Render-mode marker still flips to "phrase" — the data path is
-    // unchanged, only the indent class set differs.
+    // Render-mode marker still flips to "phrase".
     expect(html).toContain('data-render-mode="phrase"')
-    // Hanging-indent class set MUST be absent.
-    expect(html).not.toMatch(/-indent-6/)
+    // GOAL #4: hanging-indent class set MUST now be present (verse/wrap cue).
+    expect(html).toMatch(/-indent-6/)
     // Both verse phrases are emitted with the normal phrase data-role.
     const phraseSpans = (html.match(/data-role="psalm-phrase"/g) ?? []).length
     expect(phraseSpans).toBe(2)
@@ -708,7 +710,7 @@ describe('RichContent — flush=true (F-X8 #300 — Магтуу 줄바꿈 규�
     const html = render(
       createElement(RichContent, { content, flush: true }),
     )
-    expect(html).not.toMatch(/-indent-6/)
+    expect(html).toMatch(/-indent-6/)
     // Joined inline: capital line + space + lowercase wrap, all inside
     // a single phrase span (no per-line `<span class="block">`).
     const stripped = html.replace(/<[^>]+>/g, '')
@@ -734,7 +736,7 @@ describe('RichContent — flush=true (F-X8 #300 — Магтуу 줄바꿈 규�
     const html = render(
       createElement(RichContent, { content, flush: true }),
     )
-    expect(html).not.toMatch(/-indent-6/)
+    expect(html).toMatch(/-indent-6/)
     // WI #39: refrain phrase 의 className 에 text-red-* 색상 클래스 없음.
     expect(html).not.toMatch(
       /data-role="psalm-phrase-refrain"[^>]+class="[^"]*text-red-/,

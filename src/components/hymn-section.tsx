@@ -44,11 +44,13 @@ export function HymnSection({ section }: HymnSectionProps) {
         Магтуу <PageRef page={displayPage} />
       </p>
       {useRich ? (
-        // F-X8 (#300) — Магтуу 줄바꿈 규칙: flush=true drops phrase
-        // hanging indent so capital lines render flush at column 0 and
-        // lowercase wrap continuations stay attached without indenting.
-        // Phrase boundaries themselves are owned by the hymn builder
-        // (`scripts/build-hymn-phrases-into-rich.mjs` Pass A/B).
+        // GOAL #4 (X.912) — Магтуу 줄바꿈: each phrase renders as one verse
+        // line; its viewport-wrap continuation hangs-indents so it stays
+        // visually attached and is NOT mistaken for a new verse (F-X8 #300's
+        // "no indent" rule reverted — see rich-content.tsx). Phrase boundaries
+        // are owned by the hymn builder (`build-hymn-phrases-into-rich.mjs`).
+        // `flush` is now vestigial (no render effect) — kept until a dedicated
+        // prop-removal cleanup.
         <RichContent content={section.textRich!} className="mt-2" flush />
       ) : (
         <div className="mt-2 whitespace-pre-line font-serif text-stone-800 dark:text-stone-200">
