@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-05-27T09:41:23.627Z",
+  "generated": "2026-06-24T10:50:49.746Z",
   "entries": [
     {
       "file": "src/data/loth/psalter/week-1.json",
@@ -117,6 +117,28 @@
       "ref": "Psalm 136:10-26",
       "declared": 434,
       "reason": "part-II-skipped"
+    },
+    {
+      "file": "src/data/loth/psalter/week-4.json",
+      "locator": "days.TUE.lauds.psalms[2]",
+      "ref": "Psalm 144:1-10",
+      "declared": 444,
+      "reason": "no-HS-in-window",
+      "diag": {
+        "headerAll": [
+          444,
+          480
+        ],
+        "stanzaAll": [
+          480
+        ],
+        "antiphonAll": [],
+        "window": [
+          443,
+          444,
+          445
+        ]
+      }
     },
     {
       "file": "src/data/loth/psalter/week-4.json",
