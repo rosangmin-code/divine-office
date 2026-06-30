@@ -62,20 +62,36 @@ JSON 문장은 PDF 원문과 **단 한 문장 안에서 4곳** 어긋난다 (오
 | 3 | б**ай**сган | б**ая**сган | **신고된 오타** (я↔й 전치) |
 | 4 | **чи**гнүүлж | **цэ**нгүүлж | ц→ч, э→и 손상 |
 
-PDF가 (full_pdf / propers_final 양쪽) 내부적으로 일관되게 정확한데 JSON만 한 문장에서 4곳 어긋난다는 것은, **프로그램 추출(extraction)이라면 PDF와 일치했어야** 함을 의미한다. 4곳 모두 몽골어 키릴의 시각·발음 유사 오류(look/sound-alike) 패턴 → **사람이 손으로 옮겨 적는 과정의 전사 오류**가 root cause.
+PDF가 (full_pdf / propers_final 양쪽) 내부적으로 일관되게 정확한데 JSON만 한 문장에서 4곳 어긋나며, 4곳 모두 몽골어 키릴의 시각·발음 유사 오류(look/sound-alike) 패턴이다. → **가장 유력한 가설은 사람이 손으로 옮겨 적는 과정의 전사(transcription) 오류**.
 
-### git 추적 — 유입 시점/커밋
+**Epistemic 한계**: 단정은 아니다. 당시(2026-04 초) sanctoral 데이터 입력 파이프라인의 중간 산출물(폐기된 OCR/extraction 결과 등)이 git에 추적되지 않으므로, 지금은 사라진 추출/OCR 단계의 손상 가능성을 100% 배제할 수는 없다. 다만 **결론 방향은 견고하다**: 레포에 커밋된 PDF 원문(`full_pdf.txt` / `propers_final.txt`)은 정답(`баясган`)이며 **손상원이 아니다**. 오염은 PDF 다음 단계(데이터 엔트리 경로)에서 발생했고, 그 경로가 수기든 폐기된 추출도구든 최종 JSON만 어긋났다.
+
+### git 추적 — 유입 시점/커밋 (출처규명은 pickaxe, blame 아님)
+
+`git blame`은 '마지막으로 그 줄을 건드린' 커밋만 보여주는 함정이라 유입 규명에 부적합하다. blame은 `933b062a`(2026-04-18)를 가리키지만, 이는 page metadata 추가로 줄을 재기록한 것일 뿐 오타 유입이 아니다. 실제 유입은 pickaxe(`-S`)로 확인한다:
 
 ```
-$ git blame -L 378,378 src/data/loth/sanctoral/solemnities.json
-933b062a (Sangmin Ro 2026-04-18 10:33:19 +0800 378) "concludingPrayer": "...Та бидний байсган чигнүүлж байгаа билээ. ..."
-$ git blame -L 428,428 src/data/loth/sanctoral/solemnities.json
-933b062a (Sangmin Ro 2026-04-18 10:33:19 +0800 428) (동일)
+# whole-tree pickaxe — rename 함정까지 회피 (경로 필터 없이 전체 트리 count 변화 추적)
+$ git log -S 'байсган' --oneline --format='%h %ad %s' --date=short
+07f9f64 2026-04-04 Fix propers loading, sanctoral lookup, invitatory logic, and UTC dates
+b94eed0 2026-06-30 docs(bug-report): ...   # ← 본 리포트가 문자열을 포함해서 잡힘(무관)
+
+# 내용 수준 교차검증 (diff 렌더링에 의존 않음)
+$ git show 07f9f64^:src/data/loth/sanctoral/solemnities.json | grep -c байсган   → 0 (parent: 파일 부재)
+$ git show 07f9f64:src/data/loth/sanctoral/solemnities.json  | grep -c байсган   → 2 (at commit)
+
+# 실제 추가된 줄 (rtk proxy — bare `git show|grep`은 rtk 요약이 내용을 떨궈 0을 반환하는 아티팩트 발생)
+$ rtk proxy git show 07f9f64 -- src/data/loth/sanctoral/solemnities.json | grep '^+' | grep байсган
++      "concludingPrayer": "...Та бидний байсган чигнүүлж байгаа билээ. ..."   (×2)
 ```
 
-→ 두 줄 모두 커밋 `933b062a`(2026-04-18, 성인력 solemnities 초기 데이터 입력)에서 처음 들어왔고 이후 변경 없음. 이후의 오타 교정 커밋들(`9e93259` "apply source typo corrections", `800d62d` 맞춤법 정렬)이 이 문장은 잡지 못했다.
+→ 두 concludingPrayer 줄은 커밋 **`07f9f64`**(2026-04-04, 노상민/Sangmin Ro, subject "Fix propers loading, sanctoral lookup, invitatory logic, and UTC dates"; 커밋 본문 bullet "Add sanctoral data for solemnities, feasts, and memorials")에서 **오타째로 신규 추가**(parent엔 파일 부재, +115행 sanctoral 데이터). rename이 아니라 진짜 신규 입력이다(whole-tree pickaxe가 07f9f64 단일 확정).
 
-**결론**: 유입 단계 = **수동 데이터 입력(933b062a)**. PDF 원문 정상, 추출 스크립트 무관.
+`933b062a`(2026-04-18, "Annotate every prayer with its source PDF page")는 page metadata를 자동 채우며 해당 줄을 **재터치**한 것뿐 — 오타 유입 아님. 이후의 오타 교정 커밋들(`9e93259` "apply source typo corrections", `800d62d` 맞춤법 정렬)도 이 문장은 잡지 못했다.
+
+**방법론 주의**: ① 유입 규명은 `git blame`(last-touch 함정) 대신 `git log -S`(pickaxe). ② pickaxe도 `--follow` 없이 경로 필터를 쓰면 rename 사각이 생기므로, 경로 필터 없는 whole-tree pickaxe + parent/at content count로 교차검증. ③ diff 확인은 bare `git show|grep`(rtk 요약 아티팩트 위험)이 아니라 `rtk proxy git show` 또는 content-level grep.
+
+**결론**: 유입 커밋 = **`07f9f64`(2026-04-04)**, 단계 = 데이터 엔트리(가장 유력하게 수기 전사; §4 본문 epistemic 한계 참조). 커밋된 PDF 원문 정상, 레포 내 추출 스크립트 무관.
 
 ## 5. 권장 수정 방향 (※ 본 WI는 권고까지, 실제 수정은 후속 GOAL)
 
@@ -93,12 +109,16 @@ $ git blame -L 428,428 src/data/loth/sanctoral/solemnities.json
 
 ### 회귀 방지책
 1. **lauds/vespers2 중복**: 같은 종결기도가 두 키에 복붙되어 있어 한 곳만 고치면 drift 발생. 후속 수정 시 두 키 모두 반영하고, e2e selector는 텍스트 결합 대신 `data-role`(기능)과 텍스트(맞춤법, NFR-002)를 분리(CLAUDE.md selector 원칙).
-2. **sanctoral concludingPrayer ↔ PDF 정합 검증 부재**: psalter 계열은 `audit-psalter-ref-consistency.js`가 있으나 sanctoral 종결기도는 PDF 대조 verifier가 없다. 경량 가드 권장 — `solemnities.json`의 `concludingPrayer`를 `parsed_data/propers/propers_final.txt`(또는 full_pdf.txt) 본문과 정규화 비교해 suspect를 리포트하는 일회성/CI 스크립트. (이번 4곳 전사 오류는 이런 대조가 있었다면 검출됨.)
+2. **sanctoral concludingPrayer ↔ PDF 정합 검증 부재**: psalter 계열은 `audit-psalter-ref-consistency.js`가 있으나 sanctoral 종결기도는 PDF 대조 verifier가 없다. 권장 가드는 **기존 page verifier의 확장이 아니라 별개의 read-only 텍스트 정규화 동등성 체크**다:
+   - **read-only**: 데이터/PDF를 읽기만 하고 수정·생성하지 않음(어떤 파일도 mutate 금지).
+   - **정규화 동등성**: `solemnities.json`의 각 `concludingPrayer`를 `parsed_data/propers/propers_final.txt`(또는 `full_pdf.txt`)의 대응 본문과 비교하되, 공백/줄바꿈/문장부호 차이를 흡수하는 정규화(공백 collapse, NFC, 구두점 trim) 후 텍스트 동등성만 검사 → 어긋나면 suspect로 리포트.
+   - **CI-wired**: psalter verifier들처럼 CI에서 실행해 회귀를 막음(예: `scripts/verify-sanctoral-concludingprayer-pdf.js` 신설, 기존 `verify-sanctoral-pages.js`의 page-값 검사와는 별도 관심사).
+   - (이번 4곳 전사 오류는 이런 정규화 동등성 대조가 있었다면 즉시 suspect로 검출됨.)
 
 ---
 
 ## 참고(references)
 - 오타 SoT: `src/data/loth/sanctoral/solemnities.json:378` (`06-29.lauds.concludingPrayer`), `:428` (`06-29.vespers2.concludingPrayer`)
 - PDF 원문(정답): `parsed_data/full_pdf.txt:28206`, 파생본 `parsed_data/propers/propers_final.txt:8885`
-- 유입 커밋: `933b062a` (2026-04-18)
+- 유입 커밋(pickaxe 확정): `07f9f64` (2026-04-04, 노상민, sanctoral 데이터 신규 추가). `933b062a`(2026-04-18)는 page-annotation 재터치(유입 아님).
 - 본 리포트: `docs/bug-reports/2026-06-30-peterpaul-concludingprayer-baysgan-typo.md`
