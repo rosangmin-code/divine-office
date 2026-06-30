@@ -14,6 +14,17 @@ const INLINE_PAGE_RE = /х\.\s*\d/
 // `PageRef` itself applies.
 export function directiveSourcePage(d: SectionOverride): number | undefined {
   if (typeof d.page !== 'number') return undefined
+  // GOAL #3 (g-21): a `prepend` fallback notice ("Дуулал ба магтаалыг … явагдаж
+  // буй долоо хоногоос") carries `evidencePdf.page` purely as PROVENANCE of the
+  // borrowed string — its single PDF occurrence sits on book p.580 (Dec 24),
+  // unrelated to the solemnity/feast the notice prepends to. The notice means
+  // "psalms come from the CURRENT week" → there is no fixed page to point at,
+  // so surfacing a (х. NNN) navigation link sends the user to the wrong
+  // liturgical day. Suppress it for prepend notices. `substitute` directives
+  // keep their page — that cites real relocated content (e.g. the native
+  // Dec 24 substitute, where p.580 IS correct). All 19 prepend directives in
+  // src/data/loth are this one notice, so mode is an exact discriminator.
+  if (d.mode === 'prepend') return undefined
   if (d.text != null && INLINE_PAGE_RE.test(d.text)) return undefined
   return d.page
 }
