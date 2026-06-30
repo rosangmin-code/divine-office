@@ -4,7 +4,8 @@
 - 작성자: dvo-sol (team dvo)
 - 대상 GOAL: #4 (X.912 — "줄바꿈 전혀 미구현", systemic) / #1 (X.897 — "Их Эзэнийг" 비정상 분리, instance)
 - 범위: **원인 진단 + 해결방안 권고만**. 본 리포트 외 소스 변경 없음(코드 수정은 후속 GOAL).
-- 결론 한 줄: **두 증상은 같은 뿌리다 — 찬미가 본문이 PDF 단(段) 줄바꿈을 하드 `\n` 으로 품은 채 저장되고, "대문자=새 시행 / 소문자=wrap 연속" 휴리스틱(`regroupPhrasesByCapitalStart`)으로 시행을 복원하며, `flush`(들여쓰기 없음)로 렌더한다. (1) 휴리스틱이 대문자로 시작하는 wrap-연속행("Их Эзэнийг")을 새 시행으로 오분류하고(X.897), (2) flush 렌더가 viewport-wrap 연속과 시행 경계를 시각적으로 구분 불가능하게 만든다(X.912). 그리고 이 둘을 잡는 검출기가 없다.**
+- 결론 한 줄: **두 증상은 같은 enabling subsystem(PDF 단 줄바꿈을 하드 `\n` 으로 품은 데이터 + "대문자/비소문자=새 시행, 소문자=wrap 연속" phrase 휴리스틱 family)에서 비롯하나, root layer 는 서로 다르다.** (1) X.897 = **hymn 빌더**(`build-hymn-phrases-into-rich.mjs` 의 `splitMagtuuPhrasesOnCapitalBoundaries`+`mergeLowercaseWraps`)가 대문자로 시작하는 wrap-연속행("Их Эзэнийг")을 새 시행으로 오분류(데이터-층). (2) X.912 = **렌더 층**(`rich-content.tsx` flush)이 viewport-wrap 연속과 시행 경계를 시각 구분 불가능하게 만듦(빌더와 무관). 그리고 이 둘을 잡는 검출기가 없다.
+- ⚠️ **정정(2026-07-01, rev-cl #14 + codex peer)**: 초판은 (a) hymn 빌더를 psalter 전용 `regroupPhrasesByCapitalStart` 로 오귀속, (b) 두 증상을 "동일 뿌리"로 과결합, (c) §2/§4(B)에서 권고한 "직전행 미종결+대문자=연속" 결합신호(rec-B)가 실제로는 코퍼스 93%(1466 중 1363)를 over-merge 함 — **그대로 적용 금지**. 본 개정판이 (a)(b)(c) 정정. 본문 내 ⊳ 표식 참조.
 
 ---
 
@@ -46,7 +47,7 @@ parsed_data/full_pdf.txt (PDF 추출, 단 폭 줄바꿈이 \n 으로 박힘)
    │  extract-hymns* / strip-*-noise
    ▼
 src/data/loth/ordinarium/hymns.json   ← plain text: "text" 필드에 \n 으로 시행 저장
-   │  build-hymn-phrases-into-rich.mjs  +  regroupPhrasesByCapitalStart()
+   │  build-hymn-phrases-into-rich.mjs (splitMagtuuPhrasesOnCapitalBoundaries → mergeLowercaseWraps)
    ▼
 src/data/loth/prayers/hymns/{n}.rich.json  ← hymnRich.blocks[].lines[] + phrases[]{lineRange,indent}
    │  loadHymnRichOverlay(n)   (rich-overlay.ts L217)
@@ -75,38 +76,34 @@ line4: ...зүйлийг / line5: сарниулаад   ← 동일 패턴 반�
 ## 2. GOAL #1 (X.897) — instance: 빌더 휴리스틱의 대문자 오분류
 
 ### 원인 (확정)
-`scripts/build-phrases-into-rich.mjs::regroupPhrasesByCapitalStart` (L194-223):
+> **정정(2026-07-01)**: 초판은 hymn 생성기를 `build-phrases-into-rich.mjs::regroupPhrasesByCapitalStart` 로 오귀속했다. 그 함수는 **psalter 전용**(`commons/psalter-texts.rich.json` 을 `regroup-phrases-by-capital.mjs` 가 호출)이고 hymn rich 는 건드리지 않는다. **실제 hymn 생성기는 `scripts/build-hymn-phrases-into-rich.mjs`** 다. 휴리스틱의 *개념*("대문자/비소문자=새 시행, 소문자=wrap 연속")은 두 빌더가 공유하지만 *구현·파일·데이터 도메인은 별개*다. 아래는 정정된 분석.
+
+`scripts/build-hymn-phrases-into-rich.mjs` 의 2-pass 후처리:
 ```js
-const CYRILLIC_CAPITAL_START_RE = /^[А-ЯЁӨҮ]/   // L172
-...
-for (let i = 1; i < lines.length; i++) {
-  const text = (lines[i].spans ?? []).map(sp => sp.text ?? '').join('').replace(/^\s+/, '')
-  const isCapital = CYRILLIC_CAPITAL_START_RE.test(text)
-  if (isCapital) {                  // ← 대문자로 시작하면 무조건 새 phrase(=새 시행)
-    pushPhrase(curStart, i - 1, curIndent)
-    curStart = i
-    ...
-  }
-  // 소문자/숫자/따옴표 = wrap 연속 → 직전 phrase 에 병합
-}
+// Pass 1 — splitMagtuuPhrasesOnCapitalBoundaries (L477):
+//   multi-line phrase 를 시행별 sub-phrase 로 분해. 첫 비공백 문자가
+//   "소문자 Mongolian-Cyrillic 이 아닌" 모든 행이 새 sub-phrase 를 연다.
+//   (startsWithLowercaseCyrillic L437 + MONGOLIAN_CYRILLIC_LOWERCASE L426)
+// Pass 2 — mergeLowercaseWraps (L586):
+//   phrase 경계를 넘어, 다음 phrase 첫 행이 "소문자로 시작"하면 직전 phrase 로 흡수.
 ```
 
-휴리스틱의 전제: **"PDF 에서 모든 시행은 대문자로 시작하고, 단 폭 wrap 연속행은 소문자로 시작한다."**
+휴리스틱의 전제: **"PDF 에서 모든 시행은 대문자(비소문자)로 시작하고, 단 폭 wrap 연속행은 소문자로 시작한다."** Pass 1 이 비소문자 행마다 시행을 끊고, Pass 2 가 소문자 연속행만 되붙인다.
 
 hymn 21 에 적용한 결과:
-| line | 텍스트 | 첫 글자 | 빌더 판정 | 실제 |
-|---|---|---|---|---|
-| 0 | Баярлан... сүр жавхлантай | Б(대) | 새 시행 ✓ | 시행 시작 |
-| **1** | **Их Эзэнийг** | **И(대)** | **새 시행 ✗** | **line0 의 wrap 연속** |
-| 2 | Бидний... цэцэг | Б(대) | 새 시행 ✓ | 시행 시작 |
-| 3 | мэт | м(소) | 병합 ✓ | line2 의 wrap 연속 |
+| line | 텍스트 | 첫 글자 | Pass1 split | Pass2 merge | 실제 |
+|---|---|---|---|---|---|
+| 0 | Баярлан... сүр жавхлантай | Б(대) | 새 시행 ✓ | — | 시행 시작 |
+| **1** | **Их Эзэнийг** | **И(대=비소문자)** | **새 시행 ✗** | **병합 안 됨(소문자 아님)** | **line0 의 wrap 연속** |
+| 2 | Бидний... цэцэг | Б(대) | 새 시행 ✓ | — | 시행 시작 |
+| 3 | мэт | м(소) | 새 시행 | **병합 ✓** | line2 의 wrap 연속 |
 
-→ `phrases[0]=[0,0]`, `phrases[1]=[1,1]` 로 분리되어 "Их Эзэнийг" 가 고립. 나머지 wrap 연속(мэт, сарниулаад, илэрхийлж, цуурайтна, горхи ч, магтагтун, учраас, бялхсан, болсон тул, байгаач)은 전부 소문자라 정상 병합됐다. **유일하게 대문자로 시작한 wrap 연속행 "Их Эзэн(ийг)"(전능하신 주님 — 신적 칭호라 대문자) 만 오분류.**
+→ `phrases[0]=[0,0]`, `phrases[1]=[1,1]` 로 분리되어 "Их Эзэнийг" 가 고립. 나머지 wrap 연속(мэт, сарниулаад, илэрхийлж, цуурайтна, горхи ч, магтагтун, учраас, бялхсан, болсон тул, байгаач)은 전부 **소문자**라 Pass 2 가 정상 병합. **유일하게 대문자(비소문자)로 시작한 wrap 연속행 "Их Эзэн(ийг)"(전능하신 주님 — 신적 칭호라 대문자) 만 Pass 2 의 소문자 게이트를 못 통과해 고립.**
 
-휴리스틱 주석(L125-160) 자체가 한계를 일부 인지하고 있다(라틴 대문자는 제외, Ө/Ү 추가). 그러나 **"문장 중간의 대문자 고유명사/신적 칭호가 wrap 연속행 머리에 올 수 있다"** 는 케이스는 고려되지 않았다.
+빌더 주석(L406-410)도 한계를 일부 인지한다(스탠자 첫 행이 소문자로 시작하는 cross-stanza wrap 의 prior-phrase 부재 edge case, `docs/handoff-fx8-magtuu-wrap-rule.md`). 그러나 **"대문자 고유명사/신적 칭호가 wrap 연속행 머리에 올 수 있다"** 는 정반대 케이스는 고려되지 않았다.
 
 ### provenance
-`f323f6f #499 Phase 1 Sweep — capital-start phrase rebuild 122 refs` 및 hymn 계열 `#279/#291 (F-X3 Phase B)` 에서 capital-start 규칙이 전 코퍼스에 일괄 적용됨.
+hymn phrase 주입은 `#279/#291 (F-X3 Phase B sweep-hymn-w1)` 에서 `build-hymn-phrases-into-rich.mjs` 의 split/merge 2-pass 로 전 hymn 코퍼스에 적용됨. (psalter 의 `f323f6f #499` capital-start sweep 은 별개 builder·별개 데이터 — X.897 과 무관.)
 
 ### 해결방안 (권고)
 "Их Эзэнийг" 한 건 수정은 `phrases[0]` 를 `[0,1]` 로 병합하면 끝나지만(데이터 1줄), **근본 해법은 빌더의 분절 판정을 휴리스틱 단독에서 벗어나게 하는 것**:
@@ -171,7 +168,7 @@ X.912(hymn 42)의 **데이터는 정상**이다(§0: 시행 12개 완결, orphan
 - *의심 규칙*: phrase 가 `[n,n]` 단일행이고, 그 행 텍스트가 짧으며(≤3어 등), **직전 phrase 가 문장종결 부호로 끝나지 않으면** → "orphan 의심" 으로 flag(exit 1 또는 manual-review 버킷). `rich-content.tsx` 의 `SENTENCE_END_RE`/`isSentenceBoundary` 를 SSOT 로 공유.
 - 본 리포트의 systemic 스캔(아래)이 그대로 프로토타입이 된다.
 
-**(B) 빌더를 SoT-결합으로 (DV2).** §2 권고대로 분절 판정을 "대문자" 단독이 아닌 "직전행 미종결 + 대문자" 결합 신호로. 빌더와 검출기가 **같은 경계 규칙(SSOT)** 을 쓰면 빌더 산출물이 가드를 자동 통과(드리프트 0).
+**(B) 빌더 휴리스틱 개선 — 보류(어려운 미해결 문제).** ⊳ **정정(2026-07-01)**: 초판이 권고한 "직전행 미종결 + 대문자 = 연속" 결합신호(rec-B)는 rev-cl #14 + codex peer 검증에서 **코퍼스 93%(1466 중 1363) over-merge** 로 확인됐다 — 정당한 시행 시작(특히 anaphora/두운, hymn 101 "Хайр…"·107)을 대량 오병합하는 X.897 정반대 회귀. **rec-B 적용 금지.** `build-hymn-phrases-into-rich.mjs` 의 split/merge 휴리스틱을 안전하게 개선하려면 텍스트만으로는 복원 불가능한 "PDF wrap vs 의도적 짧은 시행" 구분이 필요하므로(PDF geometry 부재), 별도 조사가 필요한 어려운 문제다. 당장의 X.897 은 휴리스틱을 건드리지 않고 **데이터 surgical 병합**(§2)으로 해결하고, 빌더 개선은 후속 GOAL 로 분리한다. (#18 fix 는 이 보류 결정을 따른다.)
 
 **(C) hymn 시각 회귀 테스트.** 단위 테스트(`hymn-section-red.test.ts`)는 메커니즘만 본다. 모바일 폭에서 "시행 시작 vs wrap 연속" 이 구분되는지(예: wrap 연속에 들여쓰기 class 부여 여부)를 **좁은 viewport 렌더로 assert** 하는 테스트 1개 추가(§3 해결안 채택 후). 이게 X.912 류 인지 회귀를 잡는 유일한 자동 신호.
 
@@ -191,8 +188,8 @@ X.912(hymn 42)의 **데이터는 정상**이다(§0: 시행 12개 완결, orphan
 |---|---|---|
 | 성격 | instance(특정 데이터 오판) | systemic(인지·코퍼스 차원) |
 | 데이터 버그? | **있음** — phrase `[0,1]` 미병합("Их Эзэнийг" 대문자 오분류) | **없음** — 시행 12개 정상 |
-| 근본층 | 빌더 휴리스틱(`regroupPhrasesByCapitalStart`) | 렌더 인지(F-X8 flush, wrap=시행 구분 불가) |
-| 공통 뿌리 | **PDF 단 줄바꿈을 하드 `\n` 으로 품은 데이터 + 휴리스틱 시행복원 + flush 렌더, 그리고 이를 검사하는 가드 부재** | (좌동) |
+| 근본층(root layer) | hymn 빌더 휴리스틱(`build-hymn-phrases-into-rich.mjs` split/merge) — 데이터 층 | 렌더 층(F-X8 flush, wrap=시행 구분 불가) — 빌더 무관 |
+| 공통 subsystem (≠동일 뿌리) | **PDF 단 줄바꿈을 하드 `\n` 으로 품은 데이터 + "대문자/비소문자=시행, 소문자=wrap" phrase 휴리스틱 family + 이를 검사하는 가드 부재.** 단, 두 증상의 root layer 는 별개(빌더 vs 렌더)이며 같은 코드가 아니다 — "enabling subsystem 은 공유, root layer 는 분리". | (좌동) |
 | 즉효 수정 | `21.rich.json` phrase[0]→[0,1] (데이터 1줄, surgical) | 후속 GOAL: wrap-only hanging indent 등 시각 결정 |
 | 재발 방지 | §4 (A)(B)(C) | §4 (A)(C) |
 
