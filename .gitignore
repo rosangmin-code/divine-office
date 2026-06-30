@@ -65,3 +65,10 @@ next-env.d.ts
 
 # personal operational checklists (not shared to repo)
 /docs/security-incident-*.md
+
+# external translation glossary datasets (125MB Bible/Mongolian dictionaries) —
+# reference data for Mongolian translation work, kept on disk, never deployed.
+/glossary/
+
+# mobile browser screenshots dropped in repo root (bug-report evidence)
+Screenshot_*.jpg
