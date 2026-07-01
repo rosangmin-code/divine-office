@@ -27,7 +27,16 @@ function indentClassFor(level: 0 | 1 | 2 | undefined): string {
 // spacing units); viewport-wrapped continuation lines indent +6 further
 // via `text-indent: -1.5rem` (-indent-6). User spec: "구문 wrap 시 들여쓰기".
 //
-// GOAL #4 (X.912) — F-X8 (#300) REVERTED. `flush=true` used to drop the
+// GOAL #4 / g-22 (X.912) — SUPERSEDES F-X8 (#300) "no indent" per USER
+// DECISION 2026-06-30. ⛔ DO NOT REVERT hymn wrap-continuations back to
+// column-flush (`return ''`): the no-indent rule caused verse-boundary
+// ambiguity that the user reported FIVE times (see docs/bug-reports/
+// 2026-06-30-magtuu-hymn-linebreak-phrase-heuristic.md). #300's original
+// "들여쓰기 없음" is preserved for the verse FIRST line (see below); only the
+// viewport-wrap continuation indents. A sweep that "restores #300" reopens
+// the recurrence — the newer g-22 decision wins.
+//
+// `flush=true` used to drop the
 // FR-161 R-13 hanging indent (`return ''`) so hymn (Магтуу) wrap
 // continuations rendered flush at column 0. RCA #9 showed that this made a
 // viewport-wrapped continuation visually indistinguishable from a real
@@ -50,6 +59,10 @@ function phraseHangingIndentClass(
 ): string {
   void flush
   const lv = level ?? 0
+  // ⛔ g-22 (supersedes #300) — the `-indent-6` hanging indent is REQUIRED:
+  // it is the verse/wrap distinction cue. Do NOT change these to bare `pl-*`
+  // / `''` to "restore #300 no-indent" — that reopens the 5×-reported
+  // recurrence (see header comment above).
   if (lv === 0) return 'pl-6 -indent-6'
   if (lv === 1) return 'pl-12 -indent-6'
   return 'pl-18 -indent-6'
