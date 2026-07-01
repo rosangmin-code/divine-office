@@ -638,7 +638,15 @@
 // + 'Их Эзэнийг' 고립)을 계속 받는 회귀 방지를 위해 v61 → v62. SW 로직 변경
 // 없음 — navigation 은 `network-only` 유지, caches.put(html) 미도입.
 // PRECACHE 대상(offline.html·icon.svg) 무변경.
-const CACHE_VERSION = 'divine-office-v62'
+// v63 — GOAL #28 deferred hymn orphan PDF-SoT 판정: hymn 93(X.943)
+// 'зөвхөн Тандаа' wrap 연속행이 orphan 으로 분할돼 있던 것을 PDF 원문 대조로
+// 확인 후 prayers/hymns/93.rich.json phrase 병합([2,2]+[3,3]→[2,3]) → 해당
+// hymn SSR HTML 본문 구조가 바뀐다. (hymn 48×3 / 69 는 PDF 대조 결과 정당한
+// 시행/refrain 으로 확인돼 미변경 — allowlist 근거 보강만.) stale-cache
+// 클라이언트가 cache-first 구 chunk 로 구 출력('Тандаа' 고립)을 계속 받는
+// 회귀 방지를 위해 v62 → v63. SW 로직 변경 없음 — navigation `network-only`
+// 유지, caches.put(html) 미도입. PRECACHE 대상 무변경.
+const CACHE_VERSION = 'divine-office-v63'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
