@@ -646,7 +646,14 @@
 // 클라이언트가 cache-first 구 chunk 로 구 출력('Тандаа' 고립)을 계속 받는
 // 회귀 방지를 위해 v62 → v63. SW 로직 변경 없음 — navigation `network-only`
 // 유지, caches.put(html) 미도입. PRECACHE 대상 무변경.
-const CACHE_VERSION = 'divine-office-v63'
+// v64 — GOAL #35 / g-25 (X.912): hymn 42 저녁기도 문단(연) 구분 미구현 수정.
+// prayers/hymns/42.rich.json block 에 paragraphBoundaries:[4,8] 추가 (PDF p912
+// 원문의 후렴 'Хамгийн нандин Түүний нэр Есүс' line 3·7·11 반복 = 4행×3연 근거,
+// 본문 글자·행수 불변). 해당 hymn SSR HTML 이 연 사이 mt-3 gap 을 새로 emit →
+// stale-cache 클라이언트가 cache-first 로 연-gap 없는 구 출력을 계속 받는 회귀
+// 방지를 위해 v63 → v64. SW 로직 변경 없음 — navigation `network-only` 유지,
+// caches.put(html) 미도입. PRECACHE 대상 무변경.
+const CACHE_VERSION = 'divine-office-v64'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
