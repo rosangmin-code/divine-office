@@ -1,30 +1,25 @@
 {
-  "_comment": "NFR-009m manual-review baseline for verify-hymn-phrase-merge.js. Each entry is an orphan-suspect (keyed by hymn file + verbatim text, normalized) that is TRIAGED OUT of the gate so the guard stays green on the known baseline and fails only on NEW regressions. X.897 (hymn 21, 'Их Эзэнийг') is DELIBERATELY ABSENT: the guard must flag it now (proving detection works) and go green once the GOAL #4 fix merges and the orphan disappears. The deferred entries below are NOT asserted-legitimate — they are queued for PDF-SoT manual review (GOAL #4 §4 follow-up) and are outside WI #19 (guard) fix scope. Auto-fixing them is forbidden (would destroy legitimate refrains/anaphora — see bug report §4).",
+  "_comment": "NFR-009m manual-review baseline for verify-hymn-phrase-merge.js. Each entry is an orphan-suspect (keyed by hymn file + verbatim text, normalized) that is TRIAGED OUT of the gate so the guard stays green on the known baseline and fails only on NEW regressions. X.897 (hymn 21, 'Их Эзэнийг') is DELIBERATELY ABSENT: the guard flagged it (proving detection works) and went green once the GOAL #4 fix merged and the orphan disappeared. GOAL #28 (task 32) adjudicated the 5 deferred suspects against the PDF SoT (parsed_data/full_pdf.txt): hymn 93 'Тандаа' was a CONFIRMED real orphan and was CORRECTED (93.rich.json phrase [2,2]+[3,3] merged to [2,3]) + REMOVED from this allowlist; the remaining entries below are CONFIRMED-LEGITIMATE keeps (each cites its PDF line evidence). Auto-fixing these is forbidden — they are real verse-line-starts / refrains, not wraps (merging them would corrupt the printed structure).",
   "entries": [
     {
       "hymn": "48.rich.json",
       "text": "Алгадуулан өшиглүүлэн",
-      "reason": "deferred — passion hymn, ambiguous wrap-vs-verse; pending PDF SoT manual review (GOAL #4 §4 follow-up)"
+      "reason": "KEEP — confirmed legitimate verse line (GOAL #28, PDF-SoT verified). parsed_data/full_pdf.txt L31293 is a standalone short printed line inside a consistent 4-line passion stanza (parallel stanzas L31299-302, L31307-310); it does NOT fill the column and the combined 'Алгадуулан өшиглүүлэн Доромжлогдон явжээ' would fit one line (cf. longer L31289), so the two-line split is an intentional verse break, not a PDF wrap."
     },
     {
       "hymn": "48.rich.json",
       "text": "Доромжлогдон явжээ",
-      "reason": "deferred — passion hymn, ambiguous wrap-vs-verse; pending PDF SoT manual review (GOAL #4 §4 follow-up)"
+      "reason": "KEEP — confirmed legitimate verse line (GOAL #28, PDF-SoT verified). parsed_data/full_pdf.txt L31294, 4th line of the 4-line passion stanza (verse pattern repeated across all 3 stanzas); a short complete printed line, not a wrap continuation of L31293."
     },
     {
       "hymn": "48.rich.json",
       "text": "Загалмайг харцгаа",
-      "reason": "deferred — passion hymn, ambiguous wrap-vs-verse; pending PDF SoT manual review (GOAL #4 §4 follow-up)"
+      "reason": "KEEP — confirmed legitimate verse line (GOAL #28, PDF-SoT verified). parsed_data/full_pdf.txt L31308, a standalone short printed line in the 4-line stanza (L31307-310); prev line 'Харцгаа ахан дүүс нараа' is complete and the pair fits one column, so the break is intentional."
     },
     {
       "hymn": "69.rich.json",
       "text": "Намайг өөрчлөөч",
-      "reason": "deferred — probable refrain ('Change me', repeats); pending PDF SoT manual review (GOAL #4 §4 follow-up)"
-    },
-    {
-      "hymn": "93.rich.json",
-      "text": "Тандаа",
-      "reason": "deferred — probable real orphan ('зөвхөн Тандаа' = 'only to You'); pending PDF SoT manual review + surgical fix (GOAL #4 §4 follow-up)"
+      "reason": "KEEP — confirmed legitimate refrain (GOAL #28, PDF-SoT verified). parsed_data/full_pdf.txt L31626 + L31629 print 'Намайг өөрчлөөч' ('Change me') as standalone refrain lines (also the hymn opening L31616); the preceding line L31625 'Төгс биелүүлж чадахын тулд' is a complete line, so the refrain is a real verse-start, not a wrap. Matches both detected occurrences (block[0] phrase[3] + phrase[5])."
     }
   ]
 }
