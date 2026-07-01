@@ -17,10 +17,20 @@
 # (~25s total here) and deterministic, and the flat config's own ignores
 # (scripts/**/*.js, public/**) still apply within the scoped paths.
 
-.PHONY: check-all-lints lint typecheck traceability phrase-coverage
+.PHONY: check-all-lints lint typecheck traceability phrase-coverage hymn-phrase-merge
 
 # Aggregate gate invoked by the pre-merge hook. Fail-fast: the first failing
 # sub-check stops the run and propagates its non-zero exit status.
+#
+# NFR-009m INTEGRATION NOTE: `hymn-phrase-merge` is intentionally NOT yet a
+# dependency of check-all-lints. The guard is currently RED by design — it
+# flags the X.897 orphan (hymn 21, "Их Эзэнийг") to prove detection works,
+# and goes green only once GOAL #4's X.897 fix (dvo-sol, WI #18) merges and
+# the orphan disappears. Adding it here now would red the shared pre-merge
+# gate and deadlock every worktree merge — including the X.897 fix itself.
+# The leader appends `hymn-phrase-merge` to the recipe below AT INTEGRATION,
+# after WI #18 lands on trunk. Until then, run it standalone:
+#   make hymn-phrase-merge   (or)   npm run verify:hymn-phrase-merge
 check-all-lints: lint typecheck traceability phrase-coverage
 	@echo "check-all-lints: ALL GREEN"
 
@@ -43,3 +53,9 @@ traceability:
 phrase-coverage:
 	@echo "==> phrase-coverage: npm run verify:phrase-coverage:check"
 	npm run verify:phrase-coverage:check
+
+# NFR-009m hymn phrase-merge correctness guard (МАГТУУ orphan detection).
+# Standalone until WI #18 (X.897 fix) merges — see check-all-lints note above.
+hymn-phrase-merge:
+	@echo "==> hymn-phrase-merge: npm run verify:hymn-phrase-merge"
+	npm run verify:hymn-phrase-merge
