@@ -380,8 +380,11 @@ const AREA_HASHES = {
   // — restored short doxology variant from full_pdf p.824 (L28034-36).
   // #2/g-20 (WI-16): 06-29 Peter & Paul lauds + vespers2 concludingPrayer
   // typo байсган→баясган (PDF-fidelity restore, full_pdf p.830 L28206).
+  // #27/g-23 (WI-31): same sentence 3 more PDF-fidelity restores —
+  // тэмдэглэлцэж→тэмдэглэснээр, бидний→биднийг, чигнүүлж→цэнгүүлж
+  // (full_pdf p.830 L28205-06).
   'src/data/loth/sanctoral/solemnities.json':
-    'fd5543f94d76eeaba6a39fd89f5e669479905c170b30f5d0dde2a88fe5a5ef8e',
+    'a36f29e130b9bba76b2bcc0eb35d323f8d16078678b1fd15a1f2f0344ffe9009',
 }
 
 function readJson(path) {
