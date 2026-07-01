@@ -378,8 +378,10 @@ const AREA_HASHES = {
   // truncation — restored Trinitarian doxology from full_pdf p.828 (L28144-47).
   // #203 (WI-215): 03-19 St Joseph lauds + vespers2 concludingPrayer truncation
   // — restored short doxology variant from full_pdf p.824 (L28034-36).
+  // #2/g-20 (WI-16): 06-29 Peter & Paul lauds + vespers2 concludingPrayer
+  // typo байсган→баясган (PDF-fidelity restore, full_pdf p.830 L28206).
   'src/data/loth/sanctoral/solemnities.json':
-    '735273be7d2003480cb37b3388d9aa855661fc902d213ea48f5b3344e00e80fd',
+    'fd5543f94d76eeaba6a39fd89f5e669479905c170b30f5d0dde2a88fe5a5ef8e',
 }
 
 function readJson(path) {
