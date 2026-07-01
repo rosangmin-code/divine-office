@@ -22,16 +22,15 @@
 # Aggregate gate invoked by the pre-merge hook. Fail-fast: the first failing
 # sub-check stops the run and propagates its non-zero exit status.
 #
-# NFR-009m INTEGRATION NOTE: `hymn-phrase-merge` is intentionally NOT yet a
-# dependency of check-all-lints. The guard is currently RED by design — it
-# flags the X.897 orphan (hymn 21, "Их Эзэнийг") to prove detection works,
-# and goes green only once GOAL #4's X.897 fix (dvo-sol, WI #18) merges and
-# the orphan disappears. Adding it here now would red the shared pre-merge
-# gate and deadlock every worktree merge — including the X.897 fix itself.
-# The leader appends `hymn-phrase-merge` to the recipe below AT INTEGRATION,
-# after WI #18 lands on trunk. Until then, run it standalone:
-#   make hymn-phrase-merge   (or)   npm run verify:hymn-phrase-merge
-check-all-lints: lint typecheck traceability phrase-coverage
+# NFR-009m INTEGRATION NOTE (GOAL #4 D3 — activated, WI #24): `hymn-phrase-merge`
+# is now a dependency of check-all-lints. It was intentionally held out earlier
+# because the guard was RED by design — it flagged the X.897 orphan (hymn 21,
+# "Их Эзэнийг") to prove detection works, so wiring it before the fix landed
+# would have deadlocked every worktree merge (the guard reds the shared
+# pre-merge gate). Now that GOAL #4's X.897 fix (dvo-sol, WI #18) has merged the
+# orphan is gone and the guard is GREEN on trunk, so it is wired here to
+# structurally block the 6th МАГТУУ orphan recurrence at pre-merge time.
+check-all-lints: lint typecheck traceability phrase-coverage hymn-phrase-merge
 	@echo "check-all-lints: ALL GREEN"
 
 # ESLint — scoped to first-party source (see header note).
@@ -55,7 +54,7 @@ phrase-coverage:
 	npm run verify:phrase-coverage:check
 
 # NFR-009m hymn phrase-merge correctness guard (МАГТУУ orphan detection).
-# Standalone until WI #18 (X.897 fix) merges — see check-all-lints note above.
+# Wired into check-all-lints as of WI #24 (see integration note above).
 hymn-phrase-merge:
 	@echo "==> hymn-phrase-merge: npm run verify:hymn-phrase-merge"
 	npm run verify:hymn-phrase-merge
