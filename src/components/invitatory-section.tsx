@@ -150,7 +150,11 @@ export function InvitatorySection({ section }: InvitatoryProps) {
             <div key={si}>
               <div className="mt-3 space-y-1 pl-2">
                 {stanza.map((line, li) => (
-                  <p key={li} className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
+                  // g-27 (#1-sub-2): hanging indent so viewport-wrapped
+                  // continuation lines align under the first line, matching
+                  // psalm-block / rich-content (`pl-6 -indent-6`, g-22). The
+                  // wrapper's `pl-2` keeps the first-line position unchanged.
+                  <p key={li} className="pl-6 -indent-6 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
                     {line}
                   </p>
                 ))}
