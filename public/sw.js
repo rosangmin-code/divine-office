@@ -653,7 +653,12 @@
 // stale-cache 클라이언트가 cache-first 로 연-gap 없는 구 출력을 계속 받는 회귀
 // 방지를 위해 v63 → v64. SW 로직 변경 없음 — navigation `network-only` 유지,
 // caches.put(html) 미도입. PRECACHE 대상 무변경.
-const CACHE_VERSION = 'divine-office-v64'
+// g-27 (#1-sub-2) v64 → v65: 초대송 Ps100/67/24 stanzas 를 PDF poetic 행
+// 경계로 재분할 + invitatory-section.tsx psalm 행에 `pl-6 -indent-6` hanging
+// indent 추가 → 초대송 SSR HTML 출력의 행구조/들여쓰기가 바뀜. stale-cache
+// 클라이언트가 구 병합-행 출력을 cache-first 로 계속 받는 회귀 방지.
+// SW 로직 변경 없음 — navigation `network-only` 유지, PRECACHE 무변경.
+const CACHE_VERSION = 'divine-office-v65'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
