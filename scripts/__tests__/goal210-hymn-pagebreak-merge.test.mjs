@@ -50,7 +50,7 @@ const MERGE_TARGETS = [
     expectedHeadLineCount: 8,
     expectedTailLineCount: 5,
     lineIdx: 8,
-    prevLine: 'Өө өө Бид Tаны хайраар амьдарьяа',
+    prevLine: 'Өө өө Бид Таны хайраар амьдарьяа',
     nextLine: 'Бидний итгэлийг аваач Есүс ээ',
   },
   {
@@ -384,7 +384,7 @@ const AREA_HASHES = {
   // тэмдэглэлцэж→тэмдэглэснээр, бидний→биднийг, чигнүүлж→цэнгүүлж
   // (full_pdf p.830 L28205-06).
   'src/data/loth/sanctoral/solemnities.json':
-    'a36f29e130b9bba76b2bcc0eb35d323f8d16078678b1fd15a1f2f0344ffe9009',
+    '2af2649729e6e0f36960ec404de2af63925855e78778252ebad095cbe6e82e7e',
 }
 
 function readJson(path) {
