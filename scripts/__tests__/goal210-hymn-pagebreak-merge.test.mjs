@@ -366,7 +366,7 @@ const AREA_HASHES = {
   'src/data/loth/propers/ordinary-time.json':
     '9581c3177314e1d9687ebc0a74b924d1715f6c5546b136441e1fac597871ef28',
   'src/data/loth/sanctoral/feasts.json':
-    'aed354d01103442536a502924f4e53c03cf040341fa14e079dded1869d8653e6',
+    '44840dc6c9514a44186058f548ad208ccaba54de76b765e4ad507b36ddd6e32f',
   // WI-76 intended memorials page 863->862.
   // #203 (WI-215): 11-02 All Souls + deceased lauds/vespers concludingPrayer
   // truncation — restored Trinitarian doxology from full_pdf p.852 (L28884-87).
