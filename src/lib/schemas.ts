@@ -343,8 +343,10 @@ export const PhraseGroupSchema = z
     lineRange: z.tuple([z.number().int().nonnegative(), z.number().int().nonnegative()]),
     // Phrase 자체의 visual indent (lines[].indent 와 별개 차원).
     indent: z.union([z.literal(0), z.literal(1), z.literal(2)]).optional(),
-    // line.role 와 정합 필요 시 phrase 로 격상.
-    role: z.enum(['refrain', 'doxology']).optional(),
+    // line.role 와 정합 필요 시 phrase 로 격상. 'continuation' (WI-28) 은
+    // line-content role 이 아니라 render 전용 role(완전 들여쓰기 표시)이라
+    // 백킹 line.role 이 없다.
+    role: z.enum(['refrain', 'doxology', 'continuation']).optional(),
   })
   .loose()
 
