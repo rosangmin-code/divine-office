@@ -87,7 +87,7 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
           {psalm.reference} <PageRef page={psalm.page} />
         </h4>
         {psalm.title && (
-          <p className="text-xs italic text-stone-500 dark:text-stone-500">{psalm.title}</p>
+          <p className="text-center text-xs italic text-stone-500 dark:text-stone-500">{psalm.title}</p>
         )}
         {/* FR-160-C: psalm-header preface (patristic Father / NT typological).
             F-X9 (#373) — defensive guard strips title-prefix and (attribution)-
@@ -104,7 +104,7 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
               <p
                 data-role="psalm-header-rich"
                 data-kind="uncited_caption"
-                className="mt-1 whitespace-pre-line text-xs italic text-stone-500 dark:text-stone-400"
+                className="mt-1 whitespace-pre-line text-center text-xs italic text-stone-500 dark:text-stone-400"
               >
                 {header.preface_text}
               </p>
@@ -119,7 +119,7 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
             <p
               data-role="psalm-header-rich"
               data-kind={header.kind}
-              className="mt-1 text-xs italic text-stone-500 dark:text-stone-400"
+              className="mt-1 text-center text-xs italic text-stone-500 dark:text-stone-400"
             >
               {prefaceBody}
               {prefaceBody ? ' (' : '('}
