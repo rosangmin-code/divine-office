@@ -65,7 +65,9 @@ const PhraseGroupSchema = z
       z.number().int().nonnegative(),
     ]),
     indent: z.union([z.literal(0), z.literal(1), z.literal(2)]).optional(),
-    role: z.enum(['refrain', 'doxology']).optional(),
+    // 'continuation' (WI-28) is a RENDER-only role (full-indent marker in
+    // psalm-block.tsx), NOT a line-content role like refrain/doxology.
+    role: z.enum(['refrain', 'doxology', 'continuation']).optional(),
   })
   .loose()
 
@@ -194,7 +196,12 @@ function checkStanzaPhrases(stanza) {
     const lines = stanza.lines
     for (let i = 0; i < phrases.length; i++) {
       const phrase = phrases[i]
-      if (phrase.role === undefined) continue
+      // 'continuation' (WI-28) is a RENDER-only role — a full-indent marker
+      // consumed by psalm-block.tsx, NOT a line-content role like
+      // refrain/doxology. It intentionally has NO backing lines[].role, so
+      // it is exempt from the line-role uniformity match (which only guards
+      // content roles against phrase-boundary bleed).
+      if (phrase.role === undefined || phrase.role === 'continuation') continue
       const [start, end] = phrase.lineRange
       // Bounds already checked above — defensive guard against schema-
       // skipped phrases (should not reach here since SCHEMA failure
