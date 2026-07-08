@@ -147,7 +147,11 @@ export type PrayerSpan =
 export type PhraseGroup = {
   lineRange: [number, number]
   indent?: 0 | 1 | 2
-  role?: 'refrain' | 'doxology'
+  // 'continuation' (WI-28) — a call/response continuation phrase (e.g. Psalm 81
+  // 'Хүмүүс ээ,' 뒤 'Намайг гэрчилж байхад') that must render FULLY indented
+  // under the flush call line, not with the default hanging indent. See the
+  // renderer's `isContinuation` branch in psalm-block.tsx.
+  role?: 'refrain' | 'doxology' | 'continuation'
 }
 
 export type PrayerBlock =
