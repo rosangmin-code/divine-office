@@ -204,6 +204,40 @@ describe('PsalmBlock — phrase render branch (FR-161 R-4)', () => {
     expect(html).toContain('Doxology line')
   })
 
+  // WI-28 — Psalm 81 'Хүмүүс ээ,' / 'Намайг гэрчилж байхад' regression.
+  // The capital-Cyrillic-start heuristic in build-phrases-into-rich.mjs
+  // mis-split the divine-capital continuation 'Намайг…' into its own
+  // phrase, so it rendered FLUSH (hanging `-indent-6` cancels the first
+  // visual line) instead of indented under the flush call line 'Хүмүүс
+  // ээ,'. The `continuation` role marks a phrase as a NOT-new-verse
+  // continuation → renderer drops the `-indent-6` hang so its first
+  // visual line is FULLY indented (`pl-6`). The preceding call phrase
+  // keeps the default hanging `pl-6 -indent-6` (flush first line).
+  it("phrase.role continuation renders full-indent (pl-6, no hanging) — WI-28", () => {
+    const psalm = makePsalm([
+      makeStanzaBlock(['Хүмүүс ээ,', 'Намайг гэрчилж байхад сонсогтун.'], {
+        phrases: [
+          { lineRange: [0, 0], indent: 1 },
+          { lineRange: [1, 1], indent: 1, role: 'continuation' },
+        ],
+      }),
+    ])
+    const html = render(createElement(PsalmBlock, { psalm }))
+    // Call line keeps hanging indent → its first visual line is flush.
+    expect(html).toMatch(/class="block pl-6 -indent-6"[^>]*>Хүмүүс ээ,</)
+    // Continuation line renders full-indent (pl-6, NO -indent-6) → its
+    // first visual line is indented under the call line.
+    expect(html).toMatch(
+      /class="block pl-6"[^>]*>Намайг гэрчилж байхад сонсогтун\.</,
+    )
+    // Distinct data-role for e2e selector stability (mirrors refrain/doxology).
+    expect(html).toContain('data-role="psalm-phrase-continuation"')
+    // Guard: the continuation span must NOT carry the hanging `-indent-6`.
+    expect(html).not.toMatch(
+      /data-role="psalm-phrase-continuation"[^>]+-indent-6/,
+    )
+  })
+
   it('falls back to legacy when phrases is an empty array (defensive)', () => {
     const psalm = makePsalm([
       makeStanzaBlock(['Empty phrases'], { phrases: [] }),

@@ -35866,7 +35866,8 @@
                 9,
                 9
               ],
-              "indent": 1
+              "indent": 1,
+              "role": "continuation"
             },
             {
               "lineRange": [

@@ -175,7 +175,18 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
                     // `phrase.indent` 데이터 자체는 rich.json 에 보존
                     // (PDF SoT) — renderer 단에서만 무시. 향후 PDF
                     // typography 재현 옵션 등에서 활용 가능.
-                    const indentClass = 'pl-6 -indent-6'
+                    // WI-28 — `continuation` role: a call/response continuation
+                    // line (e.g. Psalm 81 'Хүмүүс ээ,' 뒤 'Намайг гэрчилж
+                    // байхад') renders FULLY indented (drop the `-indent-6`
+                    // hanging cancel) so its first visual line sits under the
+                    // flush call line rather than flush itself. All other
+                    // phrases keep the hanging `pl-6 -indent-6` (WI #502
+                    // unified baseline). The capital-Cyrillic-start heuristic in
+                    // scripts/build-phrases-into-rich.mjs mis-split such
+                    // continuations into their own phrase; the `continuation`
+                    // role in the data marks the ones that are NOT new verses.
+                    const isContinuation = phrase.role === 'continuation'
+                    const indentClass = isContinuation ? 'pl-6' : 'pl-6 -indent-6'
                     const isRefrain = phrase.role === 'refrain'
                     const isDoxology = phrase.role === 'doxology'
                     // 사용자 directive (2026-05-14): 시편 본문은 refrain 포함
@@ -189,6 +200,8 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
                       ? 'psalm-phrase-refrain'
                       : isDoxology
                       ? 'psalm-phrase-doxology'
+                      : isContinuation
+                      ? 'psalm-phrase-continuation'
                       : 'psalm-phrase'
                     const isParagraphStart = paragraphBoundarySet.has(start)
                     const paragraphClass = isParagraphStart ? ' mt-3' : ''
