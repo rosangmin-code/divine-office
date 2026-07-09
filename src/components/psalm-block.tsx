@@ -79,7 +79,11 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
       {psalm.antiphon && <AntiphonBox text={psalm.antiphon} label={psalm.psalmType === 'canticle' ? 'canticle' : 'psalm'} number={antiphonNumber} page={psalm.page} className="mb-3" />}
 
       {/* Psalm title & reference */}
-      <div className="mb-2">
+      {/* WI-46 — 빨간 PSALM 헤더(라벨 span + h4 reference/page-ref) 가운데정렬.
+          래퍼에 text-center 를 주면 라벨·reference 가 center 되고, 설명문
+          (title/preface <p> — g-32 에서 이미 text-center)은 무변경. 본문
+          stanzas/verses/Gloria/antiphon 은 이 div 바깥 형제라 미영향. */}
+      <div className="mb-2 text-center">
         <span className="text-xs font-medium uppercase tracking-wider text-liturgical-red dark:text-liturgical-red-dark">
           {psalm.psalmType === 'canticle' ? 'Магтаал' : 'Дуулал'}
         </span>
