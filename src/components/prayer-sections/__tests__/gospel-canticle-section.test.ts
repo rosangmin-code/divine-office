@@ -520,7 +520,8 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
       const html = render(createElement(GospelCanticleSection, { section }))
       // 모든 verse 에 data-role anchor 부착 (회귀 가드).
       expect((html.match(/data-role="gospel-canticle-verse"/g) ?? []).length).toBe(3)
-      // 어떤 verse 에도 `mt-3` 없음 (균일 `space-y-1` 만 적용).
+      // 어떤 verse 에도 `mt-3` 없음 (경계 없으면 시편식 `pl-3 md:pl-2`
+      // wrapper baseline 만 적용, g-40).
       expect(html).not.toMatch(
         /<p[^>]*data-role="gospel-canticle-verse"[^>]*class="[^"]*mt-3[^"]*"/,
       )
@@ -528,8 +529,9 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
       expect(html).not.toMatch(
         /data-role="gospel-canticle-verse"[^>]*data-paragraph-boundary="true"/,
       )
-      // 외곽 `space-y-1` baseline 유지.
-      expect(html).toMatch(/<div[^>]*class="[^"]*space-y-1[^"]*"/)
+      // 외곽 시편식 `pl-3 md:pl-2` wrapper baseline 유지 (g-40: space-y-1
+      // 제거 → hanging-indent wrapper 로 의도 변경, gospel-canticle-section.tsx L417).
+      expect(html).toMatch(/<div[^>]*class="[^"]*pl-3[^"]*"/)
     })
 
     it('empty paragraphBoundaries array 도 부재와 동일 동작 (defensive)', () => {
