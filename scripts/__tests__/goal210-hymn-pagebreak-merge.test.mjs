@@ -365,13 +365,15 @@ const AREA_HASHES = {
   // space-split correction (owctononuudiig tailvshruulzh, ordinary-time x8).
   'src/data/loth/propers/ordinary-time.json':
     '9581c3177314e1d9687ebc0a74b924d1715f6c5546b136441e1fac597871ef28',
+  // g-36 (WI-50/51): sanctoral 추출오타 35건 PDF-fidelity 교정 (full_pdf.txt L28000+ 대조)
   'src/data/loth/sanctoral/feasts.json':
-    '44840dc6c9514a44186058f548ad208ccaba54de76b765e4ad507b36ddd6e32f',
+    'bd4eb80b5409921bb39a999c1316bfdc81d80b2b0ec340f75bee34e97510bcd3',
   // WI-76 intended memorials page 863->862.
   // #203 (WI-215): 11-02 All Souls + deceased lauds/vespers concludingPrayer
   // truncation — restored Trinitarian doxology from full_pdf p.852 (L28884-87).
+  // g-36 (WI-50/51): sanctoral 추출오타 35건 PDF-fidelity 교정 (full_pdf.txt L28000+ 대조)
   'src/data/loth/sanctoral/memorials.json':
-    'e999e4c6bcc1458a6dc9572fe1806b6d0845a81aba4868296c03dd58aabdb90b',
+    '7c8b9cf01f829511cc600a991c8864a2577a8c7a833d35a2d8acb5f7348dd032',
   'src/data/loth/sanctoral/optional-memorials.json':
     'ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356',
   // #203 (WI-212): 06-24 John Baptist lauds + vespers2 concludingPrayer
@@ -383,8 +385,9 @@ const AREA_HASHES = {
   // #27/g-23 (WI-31): same sentence 3 more PDF-fidelity restores —
   // тэмдэглэлцэж→тэмдэглэснээр, бидний→биднийг, чигнүүлж→цэнгүүлж
   // (full_pdf p.830 L28205-06).
+  // g-36 (WI-50/51): sanctoral 추출오타 35건 PDF-fidelity 교정 (full_pdf.txt L28000+ 대조)
   'src/data/loth/sanctoral/solemnities.json':
-    '2af2649729e6e0f36960ec404de2af63925855e78778252ebad095cbe6e82e7e',
+    '7da5d60cfe44721289ea3741f8204ab58b70f08fe1e5bc1cdbbe155890d2fefc',
 }
 
 function readJson(path) {
