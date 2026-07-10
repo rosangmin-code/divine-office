@@ -66,22 +66,14 @@ export default async function PrayPage({
 
   const { liturgicalDay } = assembled
 
-  // GOAL #24 WI-C — PrayerFooter Огноо link prop. The top return link's
-  // celebration 처리 (`celebration && celebration !== 'default'`) 와 정합
-  // — 'default' 는 query 미부착 컨벤션 유지.
-  const footerCelebration =
-    celebration && celebration !== 'default' ? celebration : undefined
-
   return (
-    // GOAL #24 WI-C — `pb-16` (= 4rem ≈ 64px) 으로 본문 하단 padding 부여
-    // 해 PrayerFooter strip (32px) 과 expanded panel (~150-200px) 이 마지막
-    // 본문을 가리지 않도록 안전 영역 확보. safe-area-inset-bottom 은
-    // PrayerFooter 컨테이너 안에 별도로 처리됨.
-    <div className="mx-auto max-w-2xl lg:max-w-3xl px-1 md:px-3 py-6 pb-16">
-      {/* GOAL #24 WI-C (D5=a) — 상단 ⚙ SettingsLink 제거. 진입점은 하단
-          PrayerFooter 의 [⚙ Тохиргоо] 메뉴로 단일화. 좌측 return link 만
-          유지 — 명시적 buy-out 진입로 (PrayerFooter Огноо 와 destination
-          동일하지만 사용자가 직관적으로 위쪽으로 회귀 시도하는 path 보존). */}
+    // GOAL #66 sub-2 (#68) — 상시 strip 제거로 하단 여백은 `pb-6` 로 축소.
+    // 설정 패널은 fixed overlay 라 본문 flow 를 차지하지 않는다.
+    <div className="mx-auto max-w-2xl lg:max-w-3xl px-1 md:px-3 py-6 pb-6">
+      {/* 상단 ⚙ SettingsLink 없음 — 설정 진입점은 하단 PrayerFooter(본문
+          탭 → Тохиргоо 패널)로 단일화. 좌측 return link 는 날짜 홈으로의
+          명시적 회귀 path 로 유지(#68 에서 Огноо 메뉴 제거 후 유일한 날짜
+          홈 진입로). */}
       <div className="mb-4 flex items-center">
         <Link
           href={`/?date=${date}${celebration && celebration !== 'default' ? `&celebration=${encodeURIComponent(celebration)}` : ''}`}
@@ -128,12 +120,10 @@ export default async function PrayPage({
           본문과 함께 위로 흘러감). FR-162 chevron toggle 동작 보존. */}
       <Footer />
 
-      {/* GOAL #24 WI-C (D1=B, D2=a, D3=icon+text) — PrayerFooter:
-          32px sticky strip + 탭 시 slide-up 패널 (Огноо / Тохиргоо).
-          props: date (현재 화면 날짜, Огноо 링크 anchor) + celebration
-          (default 가 아닌 경우만 query 부착). expanded state 는 컴포넌트
-          내부 useState 로 자기 관리 (uncontrolled mode). */}
-      <PrayerFooter date={date} celebration={footerCelebration} />
+      {/* GOAL #66 sub-2 (#68) — PrayerFooter: 상시 strip 없음. 본문 아무
+          곳을 탭하면 설정(Тохиргоо) 패널이 하단에서 슬라이드업. expanded
+          state 는 컴포넌트 내부 useState 로 자기 관리 (uncontrolled mode). */}
+      <PrayerFooter />
     </div>
   )
 }
