@@ -8,9 +8,10 @@ const ORDINARY_COMPLINE = '2026-08-12'
 const REGINA_CAELI_TITLE = 'Тэнгэрийн Хатан'
 const SALVE_REGINA_TITLE = 'Төгс жаргалт Цэвэр Охин Мариагийн хүндэтгэлийн дуу'
 
-async function openPrayerFooterDateLink(page: import('@playwright/test').Page) {
-  await page.locator('[data-role="prayer-footer-strip"]').click()
-  await page.locator('[data-role="prayer-footer-menu-date"]').click()
+// #68 (FR-164) — PrayerFooter 의 Огноо 메뉴가 제거되어(설정만 남음), 날짜
+// 홈으로의 회귀는 상단 back 링크로 수행한다. destination(`/?date=...`) 동일.
+async function navigateBackToDateHome(page: import('@playwright/test').Page) {
+  await page.locator('[aria-label="Бүх цагийн залбирлууд руу буцах"]').click()
 }
 
 test.describe('WI-83 multi-candidate section date navigation reset', () => {
@@ -29,7 +30,7 @@ test.describe('WI-83 multi-candidate section date navigation reset', () => {
     await expect(page.getByRole('heading', { name: 'Шөнийн даатгал залбирал' })).toBeVisible()
     await expect(page.getByText(REGINA_CAELI_TITLE).first()).toBeVisible()
 
-    await openPrayerFooterDateLink(page)
+    await navigateBackToDateHome(page)
     await expect(page).toHaveURL(new RegExp(`/\\?date=${EASTER_COMPLINE}`))
 
     await page.goto(`/?date=${ORDINARY_COMPLINE}`)

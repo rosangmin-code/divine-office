@@ -1,23 +1,17 @@
 import { test, expect } from '@playwright/test'
 import { DATES } from './fixtures/dates'
 
-// GOAL #24 (FR-164) — PrayerFooter strip + slide-up panel interaction
-// at /pray/[date]/[hour]. Covers the 7 D-scenarios across mobile
-// (375×667) + desktop (1280×800) viewports plus a reduced-motion
-// describe per viewport.
+// GOAL #66 sub-2 (#68, FR-164) — PrayerFooter 인터랙션 재설계 e2e.
+// 이전(GOAL #24): 상시 32px strip 탭 → Огноо/Тохиргоо 패널.
+// 현재: 상시 strip 없음. 본문 아무 곳 '가벼운 탭' → 설정(Тохиргоо) 패널 슬라이드업.
 //
 // Selector strategy (CLAUDE.md '테스트 selector 원칙' — 기능 검증은
-// data-role / data-testid 우선):
-//   strip          — [data-role="prayer-footer-strip"]   (always rendered)
-//   backdrop       — [data-role="prayer-footer-backdrop"]
-//   panel          — [data-role="prayer-footer-content"] (always mounted; inert when collapsed)
-//   Огноо link     — [data-role="prayer-footer-menu-date"]    → /?date=YYYY-MM-DD[&celebration=...]
-//   Тохиргоо link  — [data-role="prayer-footer-menu-settings"] → /settings
+// data-role 우선):
+//   backdrop      — [data-role="prayer-footer-backdrop"]
+//   panel         — [data-role="prayer-footer-content"] (always mounted; inert when collapsed)
+//   Тохиргоо link — [data-role="prayer-footer-menu-settings"] → /settings
 //
-// Regression guard for AC6 ("상단 ⚙ SettingsLink 제거"): the pray page
-// header MUST NOT mount a [data-role="settings-link"] anchor — that
-// surface was removed in WI-C (#31) when PrayerFooter became the only
-// Settings entry point on the prayer surface.
+// Regression guard: strip / Огноо 메뉴 surface 는 완전히 제거됨.
 
 const VIEWPORTS = {
   mobile: { width: 375, height: 667 },
@@ -28,54 +22,44 @@ type ViewportName = keyof typeof VIEWPORTS
 
 const PRAY_URL = `/pray/${DATES.ordinaryWeekday}/lauds`
 
-// Helper — open the panel (strip click → aria-expanded=true).
-async function openPanel(page: import('@playwright/test').Page) {
-  const strip = page.locator('[data-role="prayer-footer-strip"]')
-  await expect(strip).toBeVisible()
-  await expect(strip).toHaveAttribute('aria-expanded', 'false')
-  await strip.click()
-  await expect(strip).toHaveAttribute('aria-expanded', 'true')
+// Helper — 본문(제목 텍스트) 가벼운 탭으로 패널 오픈. h1(시간전례명)은
+// 비인터랙티브 텍스트라 document click 리스너가 패널을 연다.
+async function openPanelByBodyTap(page: import('@playwright/test').Page) {
+  const panel = page.locator('[data-role="prayer-footer-content"]')
+  await expect(panel).toHaveAttribute('data-expanded', 'false')
+  await page.getByRole('heading', { level: 1 }).click()
+  await expect(panel).toHaveAttribute('data-expanded', 'true')
 }
 
 for (const variant of Object.keys(VIEWPORTS) as ViewportName[]) {
-  test.describe(`GOAL #24 PrayerFooter — ${variant} (${VIEWPORTS[variant].width}×${VIEWPORTS[variant].height})`, () => {
+  test.describe(`GOAL #66 PrayerFooter — ${variant} (${VIEWPORTS[variant].width}×${VIEWPORTS[variant].height})`, () => {
     test.use({ viewport: VIEWPORTS[variant] })
 
     // @fr FR-164
-    test('D1 strip → panel slide-up — closed strip toggles aria-expanded=true on click', async ({ page }) => {
+    test('D1 body tap → panel slide-up — collapsed by default, opens on non-interactive tap', async ({ page }) => {
       await page.goto(PRAY_URL)
-      const strip = page.locator('[data-role="prayer-footer-strip"]')
       const panel = page.locator('[data-role="prayer-footer-content"]')
-      // Closed default
-      await expect(strip).toBeVisible()
-      await expect(strip).toHaveAttribute('aria-expanded', 'false')
+      // 로드 직후 collapsed — 상시 strip 없음.
       await expect(panel).toHaveAttribute('data-expanded', 'false')
-      // Strip click → expanded
-      await strip.click()
-      await expect(strip).toHaveAttribute('aria-expanded', 'true')
+      await expect(page.locator('[data-role="prayer-footer-strip"]')).toHaveCount(0)
+      // 본문 탭 → 오픈 + 첫 메뉴(설정 링크) auto-focus.
+      await page.getByRole('heading', { level: 1 }).click()
       await expect(panel).toHaveAttribute('data-expanded', 'true')
-      // Auto-focus is on first menu item (Огноо link); panel is reachable
-      // via Tab when not inert.
-      const dateLink = page.locator('[data-role="prayer-footer-menu-date"]')
-      await expect(dateLink).toBeFocused()
+      await expect(page.locator('[data-role="prayer-footer-menu-settings"]')).toBeFocused()
     })
 
     // @fr FR-164
-    test('D2 Огноо menu navigates to /?date=YYYY-MM-DD (preserves celebration query)', async ({ page }) => {
+    test('D2 interactive tap ignored — tapping the back link navigates, panel logic does not hijack', async ({ page }) => {
       await page.goto(PRAY_URL)
-      await openPanel(page)
-      const dateLink = page.locator('[data-role="prayer-footer-menu-date"]')
-      // href shape: /?date=2026-02-04 (no celebration param when none on the pray URL)
-      await expect(dateLink).toHaveAttribute('href', `/?date=${DATES.ordinaryWeekday}`)
-      await dateLink.click()
-      // After navigation, URL must include the date param.
+      // back 링크(인터랙티브)를 탭하면 패널을 열지 않고 정상 네비게이션.
+      await page.locator('[aria-label="Бүх цагийн залбирлууд руу буцах"]').click()
       await expect(page).toHaveURL(new RegExp(`/\\?date=${DATES.ordinaryWeekday}`))
     })
 
     // @fr FR-164
     test('D3 Тохиргоо menu navigates to /settings', async ({ page }) => {
       await page.goto(PRAY_URL)
-      await openPanel(page)
+      await openPanelByBodyTap(page)
       const settingsLink = page.locator('[data-role="prayer-footer-menu-settings"]')
       await expect(settingsLink).toHaveAttribute('href', '/settings')
       await expect(settingsLink).toHaveAttribute('aria-label', 'Тохиргоо')
@@ -86,117 +70,68 @@ for (const variant of Object.keys(VIEWPORTS) as ViewportName[]) {
     // @fr FR-164
     test('D4a panel dismiss — backdrop click closes the panel', async ({ page }) => {
       await page.goto(PRAY_URL)
-      await openPanel(page)
+      await openPanelByBodyTap(page)
       const backdrop = page.locator('[data-role="prayer-footer-backdrop"]')
-      const strip = page.locator('[data-role="prayer-footer-strip"]')
-      // Backdrop is interactive while expanded.
+      const panel = page.locator('[data-role="prayer-footer-content"]')
       await expect(backdrop).toHaveAttribute('data-expanded', 'true')
       await backdrop.click()
-      await expect(strip).toHaveAttribute('aria-expanded', 'false')
+      await expect(panel).toHaveAttribute('data-expanded', 'false')
       await expect(backdrop).toHaveAttribute('data-expanded', 'false')
     })
 
     // @fr FR-164
-    test('D4b panel dismiss — strip chevron click closes the panel', async ({ page }) => {
+    test('D4b panel dismiss — Escape key closes the panel', async ({ page }) => {
       await page.goto(PRAY_URL)
-      await openPanel(page)
-      // The strip itself is also the "down chevron" when expanded.
-      const strip = page.locator('[data-role="prayer-footer-strip"]')
-      await strip.click()
-      await expect(strip).toHaveAttribute('aria-expanded', 'false')
-    })
-
-    // @fr FR-164
-    test('D4c panel dismiss — Escape key closes the panel', async ({ page }) => {
-      await page.goto(PRAY_URL)
-      await openPanel(page)
-      const strip = page.locator('[data-role="prayer-footer-strip"]')
+      await openPanelByBodyTap(page)
+      const panel = page.locator('[data-role="prayer-footer-content"]')
       await page.keyboard.press('Escape')
-      await expect(strip).toHaveAttribute('aria-expanded', 'false')
+      await expect(panel).toHaveAttribute('data-expanded', 'false')
     })
 
     // @fr FR-164
-    // Focus assertion per WI-30 reviewer guidance: dismiss paths MUST
-    // restore focus to the strip (so keyboard-only users aren't dropped
-    // into <body>'s tab order when the panel collapses and its subtree
-    // becomes inert). Escape already restores focus explicitly; backdrop
-    // click was the asymmetric path that this WI's dispatch flags.
-    test('D4d focus restoration — backdrop click puts focus on the strip', async ({ page }) => {
+    // 닫힘 시 focus 가 inert 로 전환되는 패널 링크에 갇히지 않아야 한다
+    // (handleClose 가 activeElement 를 blur → body 로 내려감).
+    test('D4c focus not trapped — after Escape, focus leaves the panel subtree', async ({ page }) => {
       await page.goto(PRAY_URL)
-      await openPanel(page)
-      const backdrop = page.locator('[data-role="prayer-footer-backdrop"]')
-      await backdrop.click()
-      // After dismiss the panel subtree goes inert; the previously-
-      // focused menu item can no longer hold focus. Without the
-      // dispatch-suggested polish (move stripRef.current?.focus() into
-      // handleClose) focus drops to <body>. The assertion is on the
-      // data-role attribute of the currently-focused element — `null`
-      // means body, `prayer-footer-strip` means the strip.
-      const focusedRole = await page.evaluate(
-        () => document.activeElement?.getAttribute('data-role') ?? null,
-      )
-      expect(focusedRole).toBe('prayer-footer-strip')
-    })
-
-    // @fr FR-164
-    test('D4e focus restoration — Escape puts focus on the strip', async ({ page }) => {
-      await page.goto(PRAY_URL)
-      await openPanel(page)
+      await openPanelByBodyTap(page)
       await page.keyboard.press('Escape')
       const focusedRole = await page.evaluate(
         () => document.activeElement?.getAttribute('data-role') ?? null,
       )
-      expect(focusedRole).toBe('prayer-footer-strip')
+      // 설정 링크에 focus 가 남아있지 않음 (body 또는 null).
+      expect(focusedRole).not.toBe('prayer-footer-menu-settings')
     })
 
     // @fr FR-164
-    test('D5 body content not occluded — last paragraph clears the 32px strip (pb-16 wrapper)', async ({ page }) => {
+    test('D5 body content not occluded — no horizontal overflow, panel is a fixed overlay', async ({ page }) => {
       await page.goto(PRAY_URL)
-      // The pray page wraps its body in a container with pb-16 so the
-      // last content paragraph clears the fixed-bottom PrayerFooter
-      // strip. We probe by checking that the document's <main> (or
-      // equivalent body wrapper) does NOT have its last child obscured
-      // by the strip. The structural surface: scrollWidth - clientWidth
-      // ≤ 2 (no horizontal scrollbar) AND the document scrollHeight
-      // exceeds the strip's 32px reserved height by at least one screen.
       const overflow = await page.evaluate(
         () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
       )
       expect(overflow).toBeLessThanOrEqual(2)
-      // Sanity — the pray page renders a substantial body; the strip
-      // should not eat into the visible flow.
-      const strip = page.locator('[data-role="prayer-footer-strip"]')
-      const stripBox = await strip.boundingBox()
-      expect(stripBox).not.toBeNull()
-      // The strip is 32px tall per WI-A.
-      expect(stripBox!.height).toBeGreaterThan(20)
-      expect(stripBox!.height).toBeLessThan(60)
+      // 상시 strip skeleton 도 제거 — 로드 후 회색 바 요소 없음.
+      await expect(page.locator('[data-role="prayer-footer-strip-skeleton"]')).toHaveCount(0)
+      // 패널은 collapsed 기본값 (본문 flow 를 차지하지 않는 fixed overlay).
+      await expect(page.locator('[data-role="prayer-footer-content"]')).toHaveAttribute(
+        'data-expanded',
+        'false',
+      )
     })
 
     // @fr FR-164
-    test('D6 prayer page header does NOT mount a SettingsLink (WI-C scope regression guard)', async ({ page }) => {
+    test('D6 prayer page header does NOT mount a SettingsLink; Тохиргоо reachable via body tap', async ({ page }) => {
       await page.goto(PRAY_URL)
-      // wi-C (#31) removed the prayer-page-header SettingsLink. The
-      // single Settings entry point on this surface is PrayerFooter's
-      // [⚙ Тохиргоо] menu item. Negative assertion: zero
-      // [data-role="settings-link"] anchors mounted on this page.
-      const headerSettingsLink = page.locator('[data-role="settings-link"]')
-      await expect(headerSettingsLink).toHaveCount(0)
-      // Positive complement — PrayerFooter Тохиргоо menu IS reachable.
-      await openPanel(page)
-      await expect(
-        page.locator('[data-role="prayer-footer-menu-settings"]'),
-      ).toBeVisible()
+      await expect(page.locator('[data-role="settings-link"]')).toHaveCount(0)
+      await openPanelByBodyTap(page)
+      await expect(page.locator('[data-role="prayer-footer-menu-settings"]')).toBeVisible()
     })
   })
 
   // -----------------------------------------------------------------
-  // D7 — reduced-motion variant. Playwright 1.59's `test.use` typedef
-  // does not expose `reducedMotion` as a use option, so we emulate at
-  // runtime via `page.emulateMedia()` inside the test (functionally
-  // equivalent — the browser context honors the media query change).
+  // D7 — reduced-motion variant (runtime emulateMedia, test.use typedef
+  // 가 reducedMotion 미노출).
   // -----------------------------------------------------------------
-  test.describe(`GOAL #24 PrayerFooter — ${variant} reduced-motion`, () => {
+  test.describe(`GOAL #66 PrayerFooter — ${variant} reduced-motion`, () => {
     test.use({ viewport: VIEWPORTS[variant] })
 
     // @fr FR-164
@@ -204,24 +139,14 @@ for (const variant of Object.keys(VIEWPORTS) as ViewportName[]) {
       await page.emulateMedia({ reducedMotion: 'reduce' })
       await page.goto(PRAY_URL)
       const panel = page.locator('[data-role="prayer-footer-content"]')
-      // Probe the resolved transition-duration via getComputedStyle.
-      // motion-reduce:duration-0 Tailwind utility maps to
-      // `transition-duration: 0s` when the `prefers-reduced-motion`
-      // media query matches (Playwright's reducedMotion='reduce'
-      // emulates this for the chrome).
       const computedDuration = await panel.evaluate(
         (el) => window.getComputedStyle(el).transitionDuration,
       )
-      // Expected: "0s" (sometimes "0s, 0s" if multiple transition-
-      // properties stack). Negative assertion: not the 200ms default.
       expect(computedDuration).not.toMatch(/200ms|0\.2s/)
-      // Even with transitions disabled, the slide-up still works as a
-      // state change — open → close still flips aria-expanded.
-      await openPanel(page)
+      // transition 제거 상태에서도 상태 전환(오픈→Esc close)은 동작.
+      await openPanelByBodyTap(page)
       await page.keyboard.press('Escape')
-      await expect(
-        page.locator('[data-role="prayer-footer-strip"]'),
-      ).toHaveAttribute('aria-expanded', 'false')
+      await expect(panel).toHaveAttribute('data-expanded', 'false')
     })
   })
 }
