@@ -395,8 +395,10 @@ const AREA_HASHES = {
   // g-41 (WI-60): held-divergence restore — 06-24 John Baptist antiphon +агуу
   // (Matt 11:11), 06-29 Peter&Paul vespers concludingPrayer +petition/doxology,
   // 08-15 Assumption lauds +хуваалцах & vespers2=Morning body; full_pdf L28155/28181-85/28323-40.
+  // g-42 (WI-64): 08-15 Assumption lauds + vespers2 concludingPrayer +삼위일체 송영 tail
+  // (full_pdf L28330-33); 두 셀 동일 (vespers2=lauds body, GJ-4).
   'src/data/loth/sanctoral/solemnities.json':
-    'bbe15099c41c82e2dea68cdb8a0bbc94aa5ea064ce8624a4b7ee853dcf32dcf3',
+    '3fdaa6eea725f913d59341a688d4d0b2dcbca58fe701838a576932645533f137',
 }
 
 function readJson(path) {
