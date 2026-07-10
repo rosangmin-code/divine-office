@@ -366,14 +366,20 @@ const AREA_HASHES = {
   'src/data/loth/propers/ordinary-time.json':
     '9581c3177314e1d9687ebc0a74b924d1715f6c5546b136441e1fac597871ef28',
   // g-36 (WI-50/51): sanctoral 추출오타 35건 PDF-fidelity 교정 (full_pdf.txt L28000+ 대조)
+  // g-41 (WI-60): 08-06 Transfiguration held-divergence restore — vespers antiphon
+  // (минь ангижруулдаг…) + vespers/lauds/vespers2 concludingPrayer Эцгүүдийг +
+  // truncated petition/doxology, aligned to firstVespers/PDF (full_pdf L28234-69).
   'src/data/loth/sanctoral/feasts.json':
-    'bd4eb80b5409921bb39a999c1316bfdc81d80b2b0ec340f75bee34e97510bcd3',
+    '2effa0cf6606e017d832848ccda176eb65b65a9c0530e2d33d301430e617522d',
   // WI-76 intended memorials page 863->862.
   // #203 (WI-215): 11-02 All Souls + deceased lauds/vespers concludingPrayer
   // truncation — restored Trinitarian doxology from full_pdf p.852 (L28884-87).
   // g-36 (WI-50/51): sanctoral 추출오타 35건 PDF-fidelity 교정 (full_pdf.txt L28000+ 대조)
+  // g-41 (WI-60): held-divergence restore — 11-02/deceased/saturday-mary
+  // altConcludingPrayer Эцэг→Эзэн, болоод→зөв, гүйж→гуйж, эдлэхийг…, +Trinitarian
+  // doxology (5 truncations); full_pdf L28889-901/L28915-18/L29346-50.
   'src/data/loth/sanctoral/memorials.json':
-    '7c8b9cf01f829511cc600a991c8864a2577a8c7a833d35a2d8acb5f7348dd032',
+    'a07835ba274b154774b9bbe185ff4b21f576b6aabb3d240e28afd720bbfcced3',
   'src/data/loth/sanctoral/optional-memorials.json':
     'ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356',
   // #203 (WI-212): 06-24 John Baptist lauds + vespers2 concludingPrayer
@@ -386,8 +392,11 @@ const AREA_HASHES = {
   // тэмдэглэлцэж→тэмдэглэснээр, бидний→биднийг, чигнүүлж→цэнгүүлж
   // (full_pdf p.830 L28205-06).
   // g-36 (WI-50/51): sanctoral 추출오타 35건 PDF-fidelity 교정 (full_pdf.txt L28000+ 대조)
+  // g-41 (WI-60): held-divergence restore — 06-24 John Baptist antiphon +агуу
+  // (Matt 11:11), 06-29 Peter&Paul vespers concludingPrayer +petition/doxology,
+  // 08-15 Assumption lauds +хуваалцах & vespers2=Morning body; full_pdf L28155/28181-85/28323-40.
   'src/data/loth/sanctoral/solemnities.json':
-    '7da5d60cfe44721289ea3741f8204ab58b70f08fe1e5bc1cdbbe155890d2fefc',
+    'bbe15099c41c82e2dea68cdb8a0bbc94aa5ea064ce8624a4b7ee853dcf32dcf3',
 }
 
 function readJson(path) {
