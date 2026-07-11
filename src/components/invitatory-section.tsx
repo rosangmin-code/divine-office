@@ -83,8 +83,8 @@ export function InvitatorySection({ section }: InvitatoryProps) {
           )}
           {!hideBody && (
           <>
-          <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">{section.versicle}</p>
-          <p className="font-serif text-stone-800 dark:text-stone-200">
+          <p className="mt-2 font-reading text-stone-800 dark:text-stone-200">{section.versicle}</p>
+          <p className="font-reading text-stone-800 dark:text-stone-200">
             <span className="text-liturgical-gold dark:text-liturgical-gold-dark">- </span>
             {section.response}
           </p>
@@ -154,7 +154,7 @@ export function InvitatorySection({ section }: InvitatoryProps) {
                   // continuation lines align under the first line, matching
                   // psalm-block / rich-content (`pl-6 -indent-6`, g-22). The
                   // wrapper's `pl-2` keeps the first-line position unchanged.
-                  <p key={li} className="pl-6 -indent-6 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
+                  <p key={li} className="pl-6 -indent-6 font-reading text-base leading-relaxed text-stone-800 dark:text-stone-200">
                     {line}
                   </p>
                 ))}
@@ -164,7 +164,7 @@ export function InvitatorySection({ section }: InvitatoryProps) {
           ))}
 
           <div className="mt-3 space-y-1 pl-2">
-            <p className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">{section.gloryBe}</p>
+            <p className="font-reading text-base leading-relaxed text-stone-800 dark:text-stone-200">{section.gloryBe}</p>
           </div>
           <AntiphonBox text={section.antiphon} page={activePage} />
           </>

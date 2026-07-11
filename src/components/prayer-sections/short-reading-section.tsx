@@ -24,7 +24,7 @@ export function ShortReadingSection({
           {section.verses.map((v, i) => (
             <p
               key={i}
-              className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200"
+              className="font-reading text-base leading-relaxed text-stone-800 dark:text-stone-200"
             >
               {v.verse > 0 && (
                 <sup className="mr-1 text-xs text-stone-500 dark:text-stone-400">

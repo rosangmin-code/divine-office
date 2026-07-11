@@ -92,14 +92,14 @@ export function IntercessionsSection({
       {structured ? (
         <>
           {section.introduction && (
-            <p className="mt-3 font-serif text-stone-800 dark:text-stone-200">
+            <p className="mt-3 font-reading text-stone-800 dark:text-stone-200">
               {section.introduction}
             </p>
           )}
           {section.refrain && (
             <p
               data-role="intercessions-refrain"
-              className="mt-3 rounded-md bg-amber-50/60 px-3 py-2 font-serif italic text-stone-800 dark:bg-stone-800/50 dark:text-stone-200"
+              className="mt-3 rounded-md bg-amber-50/60 px-3 py-2 font-reading italic text-stone-800 dark:bg-stone-800/50 dark:text-stone-200"
             >
               {section.refrain}
             </p>
@@ -109,7 +109,7 @@ export function IntercessionsSection({
               <li
                 key={i}
                 data-role="intercessions-petition"
-                className="font-serif text-stone-800 dark:text-stone-200"
+                className="font-reading text-stone-800 dark:text-stone-200"
               >
                 <div>{p.versicle}</div>
                 {p.response && (
@@ -148,7 +148,7 @@ export function IntercessionsSection({
       ) : (
         <>
           {section.intro && (
-            <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">
+            <p className="mt-2 font-reading text-stone-800 dark:text-stone-200">
               {section.intro}
             </p>
           )}
@@ -177,7 +177,7 @@ export function IntercessionsSection({
                     data-role={
                       isRefrain ? 'intercessions-refrain' : undefined
                     }
-                    className={`font-serif text-stone-800 dark:text-stone-200${
+                    className={`font-reading text-stone-800 dark:text-stone-200${
                       isRefrain ? ' italic' : ''
                     }`}
                   >

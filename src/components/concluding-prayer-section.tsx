@@ -28,7 +28,7 @@ export function ConcludingPrayerSection({ section }: ConcludingPrayerSectionProp
         // 줄바꿈을 하면 돼".
         <RichContent content={activeRich} className="mt-2" flow="sentence" />
       ) : (
-        <p className="mt-2 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
+        <p className="mt-2 font-reading text-base leading-relaxed text-stone-800 dark:text-stone-200">
           {displayText}
         </p>
       )}

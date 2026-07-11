@@ -201,16 +201,17 @@ describe('MarianAntiphonSection — Аллэлуяа line-break render (#223 PDF
     expect(phraseEndings).toHaveLength(6)
   })
 
-  it("preserves font-serif + leading-relaxed + amber-stone styling on the wrapper (visual identity unchanged)", () => {
+  it("preserves font-reading + leading-relaxed + amber-stone styling on the wrapper (visual identity unchanged)", () => {
     const section = makeSection({
       title: 'Тэнгэрийн Хатан',
       text: REGINA_CAELI_TEXT,
     })
     const html = render(createElement(MarianAntiphonSection, { section }))
-    // Wrapper carries the original `<p>` styling so visual identity is
-    // preserved — only the inner block structure changed.
+    // Wrapper carries the reading-body styling so visual identity is
+    // preserved — only the inner block structure changed. g-46 안 A:
+    // 본문 읽기 서체는 `font-serif` 하드코딩 대신 `.font-reading`(설정 구동).
     expect(html).toMatch(
-      /data-role="marian-antiphon-text"[^>]*class="[^"]*mt-2[^"]*font-serif[^"]*leading-relaxed[^"]*"/,
+      /data-role="marian-antiphon-text"[^>]*class="[^"]*mt-2[^"]*font-reading[^"]*leading-relaxed[^"]*"/,
     )
   })
 })

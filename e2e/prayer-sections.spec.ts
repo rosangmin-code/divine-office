@@ -102,9 +102,10 @@ test.describe('Prayer section detail rendering', () => {
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
       const hymnSection = page.locator('[aria-label="Магтуу"]')
       // Hymn body now renders as multiple stanza paragraphs (RichContent
-      // path) — match the first font-serif element to capture the opening
-      // line. Strict-mode locator otherwise rejects multi-match.
-      const originalText = await hymnSection.locator('.font-serif').first().textContent()
+      // path) — match the first .font-reading element (g-46 안 A: 본문 읽기
+      // 서체 클래스, rich·fallback 두 경로 공통) to capture the opening line.
+      // Strict-mode locator otherwise rejects multi-match.
+      const originalText = await hymnSection.locator('.font-reading').first().textContent()
 
       // Open menu and select a different hymn
       await page.getByRole('button', { name: /Бусад магтуу/ }).click()
@@ -120,7 +121,7 @@ test.describe('Prayer section detail rendering', () => {
         }
       }
 
-      const newText = await hymnSection.locator('.font-serif').first().textContent()
+      const newText = await hymnSection.locator('.font-reading').first().textContent()
       expect(newText).not.toBe(originalText)
     })
 
@@ -275,10 +276,10 @@ test.describe('Prayer section detail rendering', () => {
     test('toggling shows alternate text', async ({ page }) => {
       await page.goto(`/pray/${DATES.ordinarySunday}/compline`)
       const section = page.locator('[aria-label="Төгсгөлийн даатгал залбирал"]')
-      const originalText = await section.locator('.font-serif').textContent()
+      const originalText = await section.locator('.font-reading').textContent()
 
       await page.getByRole('button', { name: /Сонголтот залбирал/ }).click()
-      const newText = await section.locator('.font-serif').textContent()
+      const newText = await section.locator('.font-reading').textContent()
       expect(newText).not.toBe(originalText)
     })
 

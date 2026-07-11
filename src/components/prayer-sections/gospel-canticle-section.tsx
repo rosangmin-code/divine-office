@@ -28,7 +28,7 @@ function clampCandidateIndex(idx: number | undefined, len: number): number {
 // text span); future seasonal propers may carry inline rubrics or emphasis.
 // We render flat inline spans so the parent's amber-italic styling
 // (text-sm italic text-amber-800) cascades — using <RichContent> directly
-// would inject BODY_CLASS (font-serif text-base text-stone-800) and
+// would inject BODY_CLASS (font-reading text-base text-stone-800) and
 // override the visual identity that distinguishes antiphons from body
 // prose. Rubric spans get an explicit red + `not-italic` (PDF rubric is
 // red and upright, not italic — the parent wrapper's `italic` would
@@ -422,14 +422,14 @@ export function GospelCanticleSection({
                     key={vi}
                     data-role="gospel-canticle-verse"
                     data-paragraph-boundary={isParagraphStart ? 'true' : undefined}
-                    className={`font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200 pl-6 -indent-6${isParagraphStart ? ' mt-3' : ''}`}
+                    className={`font-reading text-base leading-relaxed text-stone-800 dark:text-stone-200 pl-6 -indent-6${isParagraphStart ? ' mt-3' : ''}`}
                   >
                     {verse}
                   </p>
                 )
               })}
               {section.doxology && (
-                <p className="mt-2 font-serif text-sm italic text-stone-500 dark:text-stone-400">
+                <p className="mt-2 font-reading text-sm italic text-stone-500 dark:text-stone-400">
                   {section.doxology}
                 </p>
               )}
@@ -443,7 +443,7 @@ export function GospelCanticleSection({
           {section.text.split('\n').map((line, li) => (
             <p
               key={li}
-              className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200 pl-6 -indent-6"
+              className="font-reading text-base leading-relaxed text-stone-800 dark:text-stone-200 pl-6 -indent-6"
             >
               {line}
             </p>

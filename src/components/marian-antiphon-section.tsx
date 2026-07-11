@@ -84,7 +84,7 @@ export function MarianAntiphonSection({ section }: MarianAntiphonSectionProps) {
       </p>
       <div
         data-role="marian-antiphon-text"
-        className="mt-2 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200"
+        className="mt-2 font-reading text-base leading-relaxed text-stone-800 dark:text-stone-200"
       >
         {displayLines.map((line, i) => (
           // F-X1c (#225) — hanging indent matches the FR-161 R-13 psalm

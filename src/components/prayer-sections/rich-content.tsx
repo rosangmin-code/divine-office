@@ -13,7 +13,7 @@ import type { PrayerBlock, PrayerSpan, PrayerText } from '@/lib/types'
 const RUBRIC_CLASS = 'text-stone-500 dark:text-stone-400'
 const RESPONSE_MARKER_CLASS = 'text-liturgical-gold dark:text-liturgical-gold-dark'
 const BODY_CLASS =
-  'font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200'
+  'font-reading text-base leading-relaxed text-stone-800 dark:text-stone-200'
 
 // 2 스페이스 = 1 단계 indent — psalm-block.tsx 의 stanza 렌더와 일치시킨다.
 function indentClassFor(level: 0 | 1 | 2 | undefined): string {

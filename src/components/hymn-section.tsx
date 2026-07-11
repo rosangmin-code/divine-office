@@ -53,7 +53,7 @@ export function HymnSection({ section }: HymnSectionProps) {
         // prop-removal cleanup.
         <RichContent content={section.textRich!} className="mt-2" flush />
       ) : (
-        <div className="mt-2 whitespace-pre-line font-serif text-stone-800 dark:text-stone-200">
+        <div className="mt-2 whitespace-pre-line font-reading text-stone-800 dark:text-stone-200">
           {displayText}
         </div>
       )}

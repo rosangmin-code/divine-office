@@ -11,7 +11,7 @@ export function ExamenSection({
       <p className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark">
         Ухамсрын цэгнүүр <PageRef page={section.page} />
       </p>
-      <p className="mt-2 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
+      <p className="mt-2 font-reading text-base leading-relaxed text-stone-800 dark:text-stone-200">
         {section.text}
       </p>
     </section>

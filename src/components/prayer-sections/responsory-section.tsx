@@ -58,30 +58,30 @@ export function ResponsorySection({
       ))}
 
       {simplified ? (
-        <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">{versicle}</p>
+        <p className="mt-2 font-reading text-stone-800 dark:text-stone-200">{versicle}</p>
       ) : (
         <>
           {fullResponse && (
-            <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">{fullResponse}</p>
+            <p className="mt-2 font-reading text-stone-800 dark:text-stone-200">{fullResponse}</p>
           )}
           {fullResponse && (
-            <p className="font-serif text-stone-800 dark:text-stone-200">
+            <p className="font-reading text-stone-800 dark:text-stone-200">
               <span className="text-liturgical-gold dark:text-liturgical-gold-dark">- </span>
               {fullResponse}
             </p>
           )}
           {versicle && (
-            <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">{versicle}</p>
+            <p className="mt-2 font-reading text-stone-800 dark:text-stone-200">{versicle}</p>
           )}
           {shortResponse && (
-            <p className="font-serif text-stone-800 dark:text-stone-200">
+            <p className="font-reading text-stone-800 dark:text-stone-200">
               <span className="text-liturgical-gold dark:text-liturgical-gold-dark">- </span>
               {shortResponse}
             </p>
           )}
-          <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">{GLORY_BE}</p>
+          <p className="mt-2 font-reading text-stone-800 dark:text-stone-200">{GLORY_BE}</p>
           {fullResponse && (
-            <p className="font-serif text-stone-800 dark:text-stone-200">
+            <p className="font-reading text-stone-800 dark:text-stone-200">
               <span className="text-liturgical-gold dark:text-liturgical-gold-dark">- </span>
               {fullResponse}
             </p>
