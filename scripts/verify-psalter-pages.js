@@ -6,16 +6,17 @@
  * src/data/loth/psalter/week-{1..4}.json against parsed_data/full_pdf.txt.
  *
  * Triple-anchor evidence rule (see docs/PRD.md NFR-009c):
- *   - Anchor H (hard): psalm/canticle header tokens on a single page p_h
+ *   - Anchor S (hard): first-stanza fingerprint on one bodyStartPage.
+ *     The declared `page` MUST equal bodyStartPage (no +/-1 tolerance).
+ *   - Anchor H (position evidence): psalm/canticle header tokens on headerPage
  *     e.g. "Дуулал 11", "Даниел 3", "1Шастирын дээд 29"
- *   - Anchor S (hard): first-stanza token fingerprint on p_h OR p_h+1
- *     (2-up book layout: psalm may open right half and continue across spread)
- *   - Anchor A (soft): antiphon-position marker "Шад дуулал <i+1>" — attached
- *     to evidence for review; presence NOT required (book formatting varies).
+ *     and headerPage MUST be bodyStartPage or bodyStartPage - 1 (2-up spread).
+ *   - Anchor A (hard): the actual selected antiphon text fingerprint on one
+ *     antiphonStartPage. The generic "Шад дуулал <i+1>" marker is only a
+ *     block locator; it is never accepted as the antiphon fingerprint.
  *
- * Correction accepted only when, within {declared-1, declared, declared+1},
- * exactly one page p_h satisfies H ∧ (S on p_h or p_h+1), and p_h != declared.
- * Otherwise → manual-review.
+ * All three anchors must resolve uniquely. Ambiguous or missing evidence is
+ * sent to manual-review rather than guessed (NFR-009b).
  *
  * Read-only. Emits:
  *   scripts/out/psalter-page-corrections.json  (verified bucket — patch file)
@@ -167,6 +168,11 @@ function stanzaFingerprint(ref, psalmTexts, tokenCount = 6) {
   return null
 }
 
+function antiphonFingerprint(entry, tokenCount = 6) {
+  const toks = tokenize(entry.default_antiphon || '').slice(0, tokenCount)
+  return toks.length >= 4 ? toks : null
+}
+
 function pagesMatching(needleTokens, srcTokens, firstTokenIndex) {
   return new Set(findAllPagesForFingerprint(needleTokens, srcTokens, firstTokenIndex).filter(p => p !== null))
 }
@@ -184,6 +190,8 @@ function classify(entry, psalmIndex, ctx) {
     return { status: 'manual-review', reason: 'no-declared-page' }
   }
 
+  // Search locally to discover an adjacent correction, but never use this
+  // window as verdict tolerance: `agree` below requires declared === S.
   const window = [declared - 1, declared, declared + 1]
   const headerPages = new Set()
   for (const cand of parsed.headerCandidates) {
@@ -198,67 +206,111 @@ function classify(entry, psalmIndex, ctx) {
     }
   }
   const stanzaPages = pagesMatching(stanzaToks, ctx.srcTokens, ctx.firstTokenIndex)
-  const antiphonPages = pagesMatching(['шад', 'дуулал', String(psalmIndex + 1)], ctx.srcTokens, ctx.firstTokenIndex)
+  const bodyCandidates = window.filter(p => stanzaPages.has(p))
+  const antiphonToks = antiphonFingerprint(entry)
+  const locatorToks = ['шад', 'дуулал', String(psalmIndex + 1)]
+  const locatorPages = pagesMatching(locatorToks, ctx.srcTokens, ctx.firstTokenIndex)
 
-  // H ∧ (S on p_h or p_h+1): book layout may straddle spread.
-  const hCandidates = window.filter(p => headerPages.has(p))
-  const hsMatches = hCandidates.filter(p => stanzaPages.has(p) || stanzaPages.has(p + 1))
-
-  if (hsMatches.length === 0) {
+  if (bodyCandidates.length === 0) {
     return {
       status: 'manual-review',
-      reason: 'no-HS-in-window',
+      reason: 'no-unique-body-start-in-window',
       diag: {
         headerAll: [...headerPages].sort((a, b) => a - b),
         stanzaAll: [...stanzaPages].sort((a, b) => a - b),
-        antiphonAll: [...antiphonPages].sort((a, b) => a - b),
+        locatorAll: [...locatorPages].sort((a, b) => a - b),
         window,
       },
     }
   }
-  if (hsMatches.length > 1) {
-    // Multi-HS tiebreaker: when the declared page itself appears in
-    // hsMatches, the book's printing agrees with the declaration AND an
-    // adjacent page also matches (typical page-straddle of long psalms
-    // where header+body start on p_d and overflow to p_d+1). Promoting
-    // to `agree` is safe because `declared` is a valid (H∧S) anchor; the
-    // ambiguity is merely an artifact of the ±1 spread semantics, not a
-    // real drift. If declared is NOT in hsMatches, keep manual-review.
-    if (hsMatches.includes(declared)) {
-      const pStar = declared
-      const stanzaPageForStar = stanzaPages.has(pStar) ? pStar : pStar + 1
-      const evidence = {
-        header: { tokens: parsed.headerTokens, page: pStar },
-        stanza: { tokens: stanzaToks, page: stanzaPageForStar },
-        antiphon: { tokens: ['шад', 'дуулал', String(psalmIndex + 1)], foundAt: [...antiphonPages].sort((a, b) => a - b) },
-        multi_hs_tiebreaker: { hsMatches, chose: declared },
-      }
-      return { status: 'agree', pStar, evidence }
-    }
+  if (bodyCandidates.length > 1) {
     return {
       status: 'manual-review',
-      reason: 'multiple-HS-in-window',
-      diag: { hsMatches, antiphonAll: [...antiphonPages].sort((a, b) => a - b) },
+      reason: 'multiple-body-start-pages-in-window',
+      diag: {
+        bodyCandidates,
+        stanzaAll: [...stanzaPages].sort((a, b) => a - b),
+        window,
+      },
     }
   }
-  const pStar = hsMatches[0]
-  const stanzaPageForStar = stanzaPages.has(pStar) ? pStar : pStar + 1
+
+  const bodyStartPage = bodyCandidates[0]
+  const allowedHeaderPages = [bodyStartPage - 1, bodyStartPage]
+  const headerCandidates = allowedHeaderPages.filter(p => headerPages.has(p))
+  if (headerCandidates.length !== 1) {
+    return {
+      status: 'manual-review',
+      reason: headerCandidates.length === 0
+        ? 'header-not-on-body-or-previous-page'
+        : 'multiple-header-pages-for-body',
+      bodyStartPage,
+      diag: {
+        bodyStartPage,
+        allowedHeaderPages,
+        headerCandidates,
+        headerAll: [...headerPages].sort((a, b) => a - b),
+      },
+    }
+  }
+  const headerPage = headerCandidates[0]
+
+  if (!antiphonToks) {
+    return {
+      status: 'manual-review',
+      reason: 'no-antiphon-fingerprint',
+      bodyStartPage,
+      headerPage,
+      diag: { bodyStartPage, headerPage, locatorTokens: locatorToks },
+    }
+  }
+
+  // The generic marker only locates the occurrence block. Match the actual
+  // default antiphon text within the local body-adjacent block. The marker is
+  // retained as contextual evidence, but never substitutes for (or vetoes) a
+  // unique real-text fingerprint because book formatting varies.
+  const blockWindow = [bodyStartPage - 1, bodyStartPage, bodyStartPage + 1]
+  const locatorCandidates = blockWindow.filter(p => locatorPages.has(p))
+  const antiphonPages = pagesMatching(antiphonToks, ctx.srcTokens, ctx.firstTokenIndex)
+  const antiphonCandidates = blockWindow.filter(p => antiphonPages.has(p))
+  if (antiphonCandidates.length !== 1) {
+    return {
+      status: 'manual-review',
+      reason: antiphonCandidates.length === 0
+        ? 'no-antiphon-fingerprint-in-block'
+        : 'multiple-antiphon-pages-in-block',
+      bodyStartPage,
+      headerPage,
+      diag: {
+        bodyStartPage,
+        headerPage,
+        blockWindow,
+        locatorTokens: locatorToks,
+        locatorCandidates,
+        locatorAll: [...locatorPages].sort((a, b) => a - b),
+        antiphonTokens: antiphonToks,
+        antiphonCandidates,
+        antiphonAll: [...antiphonPages].sort((a, b) => a - b),
+      },
+    }
+  }
+  const antiphonStartPage = antiphonCandidates[0]
   const evidence = {
-    header: { tokens: parsed.headerTokens, page: pStar },
-    stanza: { tokens: stanzaToks, page: stanzaPageForStar },
-    antiphon: { tokens: ['шад', 'дуулал', String(psalmIndex + 1)], foundAt: [...antiphonPages].sort((a, b) => a - b) },
+    bodyStartPage,
+    headerPage,
+    antiphonStartPage,
+    body: { tokens: stanzaToks, foundAt: [...stanzaPages].sort((a, b) => a - b) },
+    header: { tokenCandidates: parsed.headerCandidates, foundAt: [...headerPages].sort((a, b) => a - b) },
+    antiphon: {
+      tokens: antiphonToks,
+      foundAt: [...antiphonPages].sort((a, b) => a - b),
+      locator: { tokens: locatorToks, foundAt: [...locatorPages].sort((a, b) => a - b) },
+    },
   }
-  // Accept declared if it matches either the header-anchor page (pStar)
-  // OR the body-start page (stanzaPageForStar). The Mongolian book's
-  // declaration convention is "page where the psalm body begins"; when
-  // the header prints on p_h-1 and body on p_h (common at page-break
-  // straddles), declared == stanzaPageForStar is also valid. Previously
-  // the verifier required declared == pStar, flagging legitimate
-  // body-start declarations as verified-corrections.
-  if (pStar === declared || stanzaPageForStar === declared) {
-    return { status: 'agree', pStar, evidence }
+  if (declared === bodyStartPage) {
+    return { status: 'agree', bodyStartPage, evidence }
   }
-  return { status: 'verified-correction', pStar, evidence }
+  return { status: 'verified-correction', bodyStartPage, evidence }
 }
 
 function monotonicityViolations(weekData) {
@@ -302,7 +354,7 @@ function main() {
   }
   const review = { version: 1, generated: corrections.generated, entries: [] }
 
-  const freq = { 'declared-1': 0, declared: 0, 'declared+1': 0, other: 0, 'no-HS': 0 }
+  const freq = { 'declared-1': 0, declared: 0, 'declared+1': 0, other: 0, 'no-body': 0 }
   const statusCounts = {
     agree: 0,
     'verified-correction': 0,
@@ -311,6 +363,7 @@ function main() {
     'part-II-skipped': 0,
   }
   const monoRows = []
+  const evidenceRows = []
 
   for (const w of [1, 2, 3, 4]) {
     const file = path.join(ROOT, `src/data/loth/psalter/week-${w}.json`)
@@ -351,14 +404,27 @@ function main() {
           }
           const result = classify(entry, i, { srcTokens, firstTokenIndex, psalmTexts })
 
-          // ±1 frequency (diagnostic only, based on p_star or header-only)
-          if (result.pStar != null) {
-            if (result.pStar === entry.page - 1) freq['declared-1']++
-            else if (result.pStar === entry.page) freq['declared']++
-            else if (result.pStar === entry.page + 1) freq['declared+1']++
+          evidenceRows.push({
+            file: relFile,
+            locator: `days.${day}.${hour}.psalms[${i}]`,
+            ref: entry.ref,
+            declared: entry.page,
+            status: result.status,
+            reason: result.reason,
+            bodyStartPage: result.bodyStartPage ?? result.evidence?.bodyStartPage ?? result.diag?.bodyStartPage ?? null,
+            headerPage: result.headerPage ?? result.evidence?.headerPage ?? result.diag?.headerPage ?? null,
+            antiphonStartPage: result.evidence?.antiphonStartPage ?? null,
+          })
+
+          // Diagnostic only. Unlike the old verifier, adjacent values do not
+          // pass: this reports distance while verdict uses exact equality.
+          if (result.bodyStartPage != null) {
+            if (result.bodyStartPage === entry.page - 1) freq['declared-1']++
+            else if (result.bodyStartPage === entry.page) freq['declared']++
+            else if (result.bodyStartPage === entry.page + 1) freq['declared+1']++
             else freq['other']++
           } else {
-            freq['no-HS']++
+            freq['no-body']++
           }
 
           if (result.status === 'agree') { statusCounts.agree++; continue }
@@ -369,10 +435,10 @@ function main() {
               ref: entry.ref,
               locator: `days.${day}.${hour}.psalms[${i}]`,
               from: entry.page,
-              to: result.pStar,
+              to: result.bodyStartPage,
               evidence: result.evidence,
             })
-            patchesForWeek.push({ day, hour, idx: i, to: result.pStar })
+            patchesForWeek.push({ day, hour, idx: i, to: result.bodyStartPage })
             continue
           }
           statusCounts['manual-review']++
@@ -382,6 +448,7 @@ function main() {
             ref: entry.ref,
             declared: entry.page,
             reason: result.reason,
+            evidence: result.evidence,
             diag: result.diag,
           })
         }
@@ -398,8 +465,21 @@ function main() {
   fs.writeFileSync(OUT_REVIEW, JSON.stringify(review, null, 2) + '\n')
 
   console.log('')
-  console.log('--- ±1 frequency (triple-anchor p_star relative to declared) ---')
+  console.log('--- Body-start frequency relative to declared (diagnostic only) ---')
   for (const [k, v] of Object.entries(freq)) console.log(`  ${k.padEnd(12)}: ${v}`)
+
+  console.log('')
+  console.log('--- Entry evidence (all rows, including agree) ---')
+  for (const row of evidenceRows) {
+    console.log(
+      `  ${row.status.padEnd(19)} ${row.file} ${row.locator} ${row.ref}` +
+      ` declared=${row.declared}` +
+      ` bodyStartPage=${row.bodyStartPage ?? 'review'}` +
+      ` headerPage=${row.headerPage ?? 'review'}` +
+      ` antiphonStartPage=${row.antiphonStartPage ?? 'review'}` +
+      `${row.reason ? ` reason=${row.reason}` : ''}`,
+    )
+  }
 
   console.log('')
   console.log('--- Monotonicity (psalms[i].page > psalms[i+1].page violations) ---')

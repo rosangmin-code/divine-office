@@ -235,7 +235,8 @@ export interface PsalmEntry {
   default_antiphon: string       // Default antiphon text (Mongolian)
   title?: string                 // Psalm title (Mongolian)
   gloria_patri: boolean          // Include Glory Be
-  page?: number                  // Source PDF page number
+  page?: number                  // Source PDF page where the psalm body starts
+  antiphonPage?: number          // Source PDF page where this occurrence's antiphon starts
   // F-X2 Phase 1 (#219): occurrence-specific psalmPrayer page override.
   // Same psalm `ref` reused at multiple (week, dayKey, hour) positions in
   // the 4-week LOTH cycle prints its prayer body on a different PDF page
@@ -883,7 +884,8 @@ export interface AssembledPsalm {
   psalmPrayer?: string           // Дууллыг төгсгөх залбирал — post-Gloria Patri oratio
   psalmPrayerRich?: PrayerText   // FR-153h: rich AST overlay for psalmPrayer (prose blocks + rubric spans)
   psalmPrayerPage?: number       // Source PDF page number of the psalmPrayer
-  page?: number                  // Source PDF page number
+  page?: number                  // Source PDF page where the psalm body starts
+  antiphonPage?: number          // Source PDF page where this occurrence's antiphon starts
 }
 
 export type HourSection =

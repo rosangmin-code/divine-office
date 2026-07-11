@@ -96,6 +96,7 @@ export async function resolvePsalm(
       // not been migrated yet.
       psalmPrayerPage: entry.psalmPrayerPage ?? psalmText.psalmPrayerPage,
       page: entry.page,
+      antiphonPage: entry.antiphonPage,
     }
   }
 
@@ -149,6 +150,7 @@ export async function resolvePsalm(
     // entry but retains its week-N.json mapping.
     psalmPrayerPage: entry.psalmPrayerPage ?? psalmText?.psalmPrayerPage,
     page: entry.page,
+    antiphonPage: entry.antiphonPage,
     headerRich: loadPsalterHeaderRich(entry.ref) ?? undefined,
   }
 }
