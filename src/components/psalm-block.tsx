@@ -161,7 +161,7 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
                   key={bi}
                   data-role="psalm-stanza"
                   data-render-mode="phrase"
-                  className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200"
+                  className="font-reading text-base leading-relaxed text-stone-800 dark:text-stone-200"
                 >
                   {block.phrases.map((phrase, pi) => {
                     const [start, end] = phrase.lineRange
@@ -238,7 +238,7 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
               <p
                 key={bi}
                 data-role="psalm-stanza"
-                className="whitespace-pre-line font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200"
+                className="whitespace-pre-line font-reading text-base leading-relaxed text-stone-800 dark:text-stone-200"
               >
                 {block.lines.map((line, li) => {
                   // WI #502 — 왼쪽 여백 통일. line.indent 무관하게 동일
@@ -274,7 +274,7 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
       ) : psalm.stanzas && psalm.stanzas.length > 0 ? (
         <div className="space-y-5 pl-3 md:space-y-4 md:pl-2">
           {psalm.stanzas.map((stanza, si) => (
-            <p key={si} data-role="psalm-stanza" className="whitespace-pre-line font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
+            <p key={si} data-role="psalm-stanza" className="whitespace-pre-line font-reading text-base leading-relaxed text-stone-800 dark:text-stone-200">
               {stanza.map((line, li) => {
                 // WI #502 — 왼쪽 여백 통일. Plain stanzas mode (legacy
                 // fallback) 도 phrase / legacy-line mode 와 같은 정책
@@ -294,7 +294,7 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
       ) : psalm.verses.length > 0 ? (
         <div className="space-y-1 pl-3 md:pl-2">
           {psalm.verses.map((v, i) => (
-            <p key={i} className="whitespace-pre-line font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
+            <p key={i} className="whitespace-pre-line font-reading text-base leading-relaxed text-stone-800 dark:text-stone-200">
               <sup className="mr-1 text-xs text-stone-500 dark:text-stone-500" aria-label={`Ишлэл ${v.verse}`}>{v.verse}</sup>
               {v.text}
             </p>
@@ -310,7 +310,7 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
 
       {/* Gloria Patri */}
       {psalm.gloriaPatri ? (
-        <p className="mt-2 font-serif text-sm italic text-stone-500 dark:text-stone-400">
+        <p className="mt-2 font-reading text-sm italic text-stone-500 dark:text-stone-400">
           Эцэг, Хүү, Ариун Сүнсэнд жавхланг Эхэн цагт байсан мэт аливаа цагт болготугай. Амэн.
         </p>
       ) : psalm.gloriaPatri === false && (
@@ -345,7 +345,7 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
               flow="natural"
             />
           ) : (
-            <p className="mt-1 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
+            <p className="mt-1 font-reading text-base leading-relaxed text-stone-800 dark:text-stone-200">
               {psalm.psalmPrayer}
             </p>
           )}

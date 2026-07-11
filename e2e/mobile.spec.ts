@@ -95,7 +95,7 @@ test.describe('Mobile layout', () => {
     // Find a psalm section that has at least 2 stanza paragraphs.
     const stanzas = page
       .locator('section[aria-label*="Psalm"], section[aria-label*="Daniel"], section[aria-label*="Isaiah"]')
-      .locator('p.font-serif')
+      .locator('p.font-reading')
     const count = await stanzas.count()
     if (count < 2) test.skip(true, 'Need at least 2 stanza paragraphs to measure spacing')
     const a = await stanzas.nth(0).boundingBox()

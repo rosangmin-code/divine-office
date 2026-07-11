@@ -27,13 +27,13 @@ export function OpeningVersicleSection({ section }: OpeningVersicleSectionProps)
         <DirectiveBlock directives={hasSubstitute ? substitutes : skips} />
       ) : (
         <>
-          <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">
+          <p className="mt-2 font-reading text-stone-800 dark:text-stone-200">
             {section.versicle}
           </p>
-          <p className="font-serif text-stone-800 dark:text-stone-200">
+          <p className="font-reading text-stone-800 dark:text-stone-200">
             <span className="text-liturgical-gold dark:text-liturgical-gold-dark">- </span>{section.response}
           </p>
-          <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">
+          <p className="mt-2 font-reading text-stone-800 dark:text-stone-200">
             {section.gloryBe}{section.alleluia ? ` ${section.alleluia}` : ''}
           </p>
         </>

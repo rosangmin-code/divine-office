@@ -11,10 +11,10 @@ export function BlessingSection({
       <p className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark">
         Адислал <PageRef page={section.page} />
       </p>
-      <p className="mt-2 font-serif text-stone-800 dark:text-stone-200">
+      <p className="mt-2 font-reading text-stone-800 dark:text-stone-200">
         {section.text}
       </p>
-      <p className="font-serif text-stone-800 dark:text-stone-200">
+      <p className="font-reading text-stone-800 dark:text-stone-200">
         <span className="text-liturgical-gold dark:text-liturgical-gold-dark">- </span>
         {section.response}
       </p>

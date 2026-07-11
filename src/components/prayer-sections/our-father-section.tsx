@@ -4,7 +4,7 @@ export function OurFatherSection() {
       <p className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark">
         Эзэний даатгал залбирал
       </p>
-      <p className="mt-2 font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200">
+      <p className="mt-2 font-reading text-base leading-relaxed text-stone-800 dark:text-stone-200">
         Тэнгэр дэх Эцэг минь ээ, Таны нэр алдар эрхэм дээд байх болтугай. Таны
         хаанчлал орших болтугай. Тэнгэр дэх таны дур таалал дэлхийд ч биелэх
         болтугай. Бидэнд өдөр тутмын талхыг өнөөдөр хайрлана уу. Бид бусдыг

@@ -63,9 +63,20 @@ html, body {
   overscroll-behavior-x: none;
 }
 
-html[data-font-family="serif"] body {
-  font-family: var(--font-serif), serif;
-}
+/* g-46 안 A — 읽기 서체(본문 전용) 단일 SoT.
+   서체 설정(data-font-family)은 '기도 본문 읽기 글꼴'만 현대(sans)/고전(serif)으로
+   전환한다. 본문 렌더 경로는 하드코딩 `font-serif` 대신 `.font-reading` 를 쓰고,
+   그 실체는 `--reading-font` 한 곳에서 구동된다(DV2 derive-from-SoT).
+   장식 serif(hero/제목)는 `font-serif` 유지, 라벨/루브릭/헤더/antiphon 은 클래스
+   없이 body(sans) 상속 → 항상 sans 고정.
+
+   ⚠️ `--reading-font` 는 반드시 `body` 스코프에서 선언한다: next/font 의
+   `--font-sans` / `--font-serif` 변수는 <body> className 으로 주입되므로 html
+   스코프에서 `var(--font-sans)` 를 참조하면 Tailwind 기본 ui-sans-serif 로 잡혀
+   Noto Sans 가 아니게 된다(회귀). */
+body { --reading-font: var(--font-sans), sans-serif; }        /* 현대(기본) */
+html[data-font-family="serif"] body { --reading-font: var(--font-serif), serif; } /* 고전 */
+.font-reading { font-family: var(--reading-font); }
 
 :focus-visible {
   outline: 2px solid var(--color-liturgical-gold);

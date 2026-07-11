@@ -59,7 +59,7 @@ describe('ResponsorySection — PDF 6-line emission (#5, WI 10)', () => {
     const html = renderSection(makeSection())
     // Strip the header `<p>` so we only inspect the body sequence.
     // Find the position of the first cantor refrain occurrence inside a body
-    // `<p>` (the header has different classes — body uses `font-serif`).
+    // `<p>` (the header has different classes — body uses `font-reading`).
     const fullIdx1 = html.indexOf(FULL)
     const fullIdx2 = html.indexOf(FULL, fullIdx1 + 1)
     const versicleIdx = html.indexOf(VERSICLE)

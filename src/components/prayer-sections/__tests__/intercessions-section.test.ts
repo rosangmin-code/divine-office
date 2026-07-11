@@ -134,15 +134,15 @@ describe('IntercessionsSection — legacy items[] refrain italic (#374)', () => 
     // Refrain item present with both data-role + italic class.
     expect(out).toContain('data-role="intercessions-refrain"')
     expect(out).toMatch(
-      /<li data-role="intercessions-refrain" class="font-serif text-stone-800 dark:text-stone-200 italic">— Эзэн, Та бол бидний амь болон аврал билээ\.<\/li>/,
+      /<li data-role="intercessions-refrain" class="font-reading text-stone-800 dark:text-stone-200 italic">— Эзэн, Та бол бидний амь болон аврал билээ\.<\/li>/,
     )
     // Versicles preceding/following stay plain (no italic class, no
     // refrain data-role).
     expect(out).toContain(
-      '<li class="font-serif text-stone-800 dark:text-stone-200">— Христ бол хэзээ ч жаргахгүй нар, хүн бүрийн</li>',
+      '<li class="font-reading text-stone-800 dark:text-stone-200">— Христ бол хэзээ ч жаргахгүй нар, хүн бүрийн</li>',
     )
     expect(out).toContain(
-      '<li class="font-serif text-stone-800 dark:text-stone-200">— Оддын бүтээгч ээ, Эзэн биднийг гэгээрүүлээч.</li>',
+      '<li class="font-reading text-stone-800 dark:text-stone-200">— Оддын бүтээгч ээ, Эзэн биднийг гэгээрүүлээч.</li>',
     )
     // Sanity — only one refrain in this fixture.
     expect(out.match(/data-role="intercessions-refrain"/g)?.length).toBe(1)
@@ -159,7 +159,7 @@ describe('IntercessionsSection — legacy items[] refrain italic (#374)', () => 
     const out = html(createElement(IntercessionsSection, { section }))
     // First item must NOT be flagged as refrain.
     expect(out).toMatch(
-      /<li class="font-serif text-stone-800 dark:text-stone-200">— хандан залбирцгаая:<\/li>/,
+      /<li class="font-reading text-stone-800 dark:text-stone-200">— хандан залбирцгаая:<\/li>/,
     )
     // Second item IS the refrain (preceded by trigger).
     expect(out).toContain('data-role="intercessions-refrain"')
@@ -242,7 +242,7 @@ describe('IntercessionsSection — structured petitions[].response italic (#425)
     // Lead refrain (separate <p>) keeps its existing italic class —
     // F-X12 Phase A.1 must not regress the lead refrain styling.
     expect(out).toContain('data-role="intercessions-refrain"')
-    expect(out).toMatch(/font-serif italic/)
+    expect(out).toMatch(/font-reading italic/)
     // Hyphen prefix span must NOT inherit italic (it's a gold response
     // marker, not part of the response text). `not-italic` reverses
     // the parent `italic` so the dash stays upright per PDF. WI-62 재스킨:
@@ -304,7 +304,7 @@ describe('IntercessionsSection — structured petitions[].response italic (#425)
     const out = html(createElement(IntercessionsSection, { section }))
     expect(out).toContain('data-role="intercessions-refrain"')
     expect(out).toMatch(
-      /<li data-role="intercessions-refrain" class="font-serif text-stone-800 dark:text-stone-200 italic">— Эзэн, Та бол бидний амь болон аврал билээ\.<\/li>/,
+      /<li data-role="intercessions-refrain" class="font-reading text-stone-800 dark:text-stone-200 italic">— Эзэн, Та бол бидний амь болон аврал билээ\.<\/li>/,
     )
     // The structured-path data-role MUST NOT leak into legacy markup
     // (legacy items[] uses <li>, not the <div data-role="intercessions-response">).

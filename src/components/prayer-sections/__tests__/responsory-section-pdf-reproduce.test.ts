@@ -52,7 +52,7 @@ describe('ResponsorySection — (a)-reproduce evidence with production data (#5,
     // Extract body paragraphs in order. The header `<p>` carries the rubric
     // header text (Хариу залбирал); body paragraphs follow.
     const bodyMatches = [
-      ...html.matchAll(/<p\b[^>]*class="[^"]*font-serif[^"]*"[^>]*>([\s\S]*?)<\/p>/g),
+      ...html.matchAll(/<p\b[^>]*class="[^"]*font-reading[^"]*"[^>]*>([\s\S]*?)<\/p>/g),
     ]
     const stripTags = (s: string): string => s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
     const lines = bodyMatches.map((m) => stripTags(m[1]))
