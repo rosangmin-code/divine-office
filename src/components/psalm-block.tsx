@@ -74,9 +74,17 @@ export function sanitizePsalmHeaderPreface(
 export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; antiphonNumber?: number }) {
   const { settings } = useSettings()
   return (
-    <section aria-label={psalm.reference} className="mb-6">
+    <section data-role="psalm-block" aria-label={psalm.reference} className="mb-6">
       {/* Antiphon (before) */}
-      {psalm.antiphon && <AntiphonBox text={psalm.antiphon} label={psalm.psalmType === 'canticle' ? 'canticle' : 'psalm'} number={antiphonNumber} page={psalm.page} className="mb-3" />}
+      {psalm.antiphon && (
+        <AntiphonBox
+          text={psalm.antiphon}
+          label={psalm.psalmType === 'canticle' ? 'canticle' : 'psalm'}
+          number={antiphonNumber}
+          page={psalm.antiphonPage}
+          className="mb-3"
+        />
+      )}
 
       {/* Psalm title & reference */}
       {/* WI-46 — 빨간 PSALM 헤더(라벨 span + h4 reference/page-ref) 가운데정렬.
@@ -87,7 +95,10 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
         <span className="text-xs font-medium uppercase tracking-wider text-liturgical-red dark:text-liturgical-red-dark">
           {psalm.psalmType === 'canticle' ? 'Магтаал' : 'Дуулал'}
         </span>
-        <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark">
+        <h4
+          data-role="psalm-header"
+          className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark"
+        >
           {psalm.reference} <PageRef page={psalm.page} />
         </h4>
         {psalm.title && (
@@ -353,7 +364,15 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
       )}
 
       {/* Antiphon (after) */}
-      {psalm.antiphon && <AntiphonBox text={psalm.antiphon} label={psalm.psalmType === 'canticle' ? 'canticle' : 'psalm'} number={antiphonNumber} page={psalm.page} className="mt-3" />}
+      {psalm.antiphon && (
+        <AntiphonBox
+          text={psalm.antiphon}
+          label={psalm.psalmType === 'canticle' ? 'canticle' : 'psalm'}
+          number={antiphonNumber}
+          page={psalm.antiphonPage}
+          className="mt-3"
+        />
+      )}
     </section>
   )
 }

@@ -3,8 +3,15 @@ import { test, expect, type Page } from '@playwright/test'
 // ordinarySunday (2026-02-08) maps to psalter week 1 Sunday,
 // which has page annotations in the sample data.
 const TEST_DATE = '2026-02-08'
-const LAUDS_URL = `/pray/${TEST_DATE}/lauds`
-const SETTINGS_URL = '/settings'
+const PAGE_REF_BASE_URL = process.env.PAGE_REF_BASE_URL
+const pageRefUrl = (pathname: string) =>
+  PAGE_REF_BASE_URL ? new URL(pathname, PAGE_REF_BASE_URL).toString() : pathname
+const LAUDS_URL = pageRefUrl(`/pray/${TEST_DATE}/lauds`)
+const PSALM_92_W2_URL = pageRefUrl('/pray/2026-07-11/lauds')
+const PSALM_92_W4_URL = pageRefUrl('/pray/2026-06-27/lauds')
+const PSALM_SPREAD_URL = pageRefUrl('/pray/2026-02-13/vespers')
+const UNVERIFIED_PSALM_URL = LAUDS_URL
+const SETTINGS_URL = pageRefUrl('/settings')
 
 async function presetPageRefs(page: Page, enabled: boolean) {
   // Only seed when storage is empty — so later in-app writes (e.g. switch click) are preserved
@@ -70,11 +77,16 @@ test.describe('PDF page references', () => {
     await page.goto(LAUDS_URL)
     await page.waitForSelector('article')
 
-    // Psalm 63:2-9 section has multiple (х. 58) markers now — one on the
-    // psalm reference header plus one on each surrounding antiphon (FR-017g).
-    // Assert visibility of at least the first.
-    const psalmSection = page.locator('section', { has: page.getByText('Psalm 63:2-9') })
-    await expect(psalmSection.getByText(/\(х\.\s*58\)/).first()).toBeVisible()
+    // Psalm 63:2-9 has an unverified antiphon page, so only its body/header
+    // page is shown. Use structural roles to avoid coupling the test to the
+    // Mongolian antiphon text.
+    const psalmSection = page.locator(
+      '[data-role="psalm-block"][aria-label="Psalm 63:2-9"]',
+    )
+    await expect(
+      psalmSection
+        .locator('[data-role="psalm-header"] [data-role="page-ref-link"]'),
+    ).toHaveText(/\(х\.\s*58\)/)
   })
 
   test('page references appear on multiple section types', async ({ page }) => {
@@ -168,15 +180,90 @@ test.describe('PDF page references', () => {
 
   // FR-017g: antiphon page markers at end of antiphon text.
   test.describe('antiphon page references', () => {
-    test('psalm antiphon shows page at end of text', async ({ page }) => {
+    // @fr FR-017g
+    test('W2 Psalm 92 renders antiphon page 278 and body header page 279', async ({ page }) => {
       await presetPageRefs(page, true)
-      await page.goto(LAUDS_URL)
+      await page.goto(PSALM_92_W2_URL)
       await page.waitForSelector('article')
-      // AntiphonBox sets data-role="antiphon"; first one is the opening antiphon
-      // for the first psalm of Lauds (Psalm 63:2-9, page 58).
-      const antiphon = page.locator('[data-role="antiphon"]').first()
-      await expect(antiphon).toBeVisible()
-      await expect(antiphon.getByText(/\(х\.\s*\d+\)/)).toBeVisible()
+
+      const psalm = page.locator(
+        '[data-role="psalm-block"][aria-label="Psalm 92:2-9"]',
+      )
+      const antiphonLinks = psalm.locator(
+        '[data-role="antiphon"] [data-role="page-ref-link"]',
+      )
+      await expect(antiphonLinks).toHaveCount(2)
+      await expect(antiphonLinks.nth(0)).toHaveText(/\(х\.\s*278\)/)
+      await expect(antiphonLinks.nth(1)).toHaveText(/\(х\.\s*278\)/)
+      await expect(
+        psalm.locator(
+          '[data-role="psalm-header"] [data-role="page-ref-link"]',
+        ),
+      ).toHaveText(/\(х\.\s*279\)/)
+    })
+
+    // @fr FR-017g
+    test('W4 Psalm 92 renders antiphon page 504 and body header page 505', async ({ page }) => {
+      await presetPageRefs(page, true)
+      await page.goto(PSALM_92_W4_URL)
+      await page.waitForSelector('article')
+
+      const psalm = page.locator(
+        '[data-role="psalm-block"][aria-label="Psalm 92:2-9"]',
+      )
+      const antiphonLinks = psalm.locator(
+        '[data-role="antiphon"] [data-role="page-ref-link"]',
+      )
+      await expect(antiphonLinks).toHaveCount(2)
+      await expect(antiphonLinks.nth(0)).toHaveText(/\(х\.\s*504\)/)
+      await expect(antiphonLinks.nth(1)).toHaveText(/\(х\.\s*504\)/)
+      await expect(
+        psalm.locator(
+          '[data-role="psalm-header"] [data-role="page-ref-link"]',
+        ),
+      ).toHaveText(/\(х\.\s*505\)/)
+    })
+
+    // @fr FR-017g
+    test('H=S-1 spread keeps Psalm 41 antiphon page 150 separate from body page 151', async ({ page }) => {
+      await presetPageRefs(page, true)
+      await page.goto(PSALM_SPREAD_URL)
+      await page.waitForSelector('article')
+
+      const psalm = page.locator(
+        '[data-role="psalm-block"][aria-label="Psalm 41:2-14"]',
+      )
+      const antiphonLinks = psalm.locator(
+        '[data-role="antiphon"] [data-role="page-ref-link"]',
+      )
+      await expect(antiphonLinks).toHaveCount(2)
+      await expect(antiphonLinks.nth(0)).toHaveText(/\(х\.\s*150\)/)
+      await expect(antiphonLinks.nth(1)).toHaveText(/\(х\.\s*150\)/)
+      await expect(
+        psalm.locator(
+          '[data-role="psalm-header"] [data-role="page-ref-link"]',
+        ),
+      ).toHaveText(/\(х\.\s*151\)/)
+    })
+
+    // @fr FR-017g
+    test('unverified Psalm 63 antiphon hides its page while body header keeps page 58', async ({ page }) => {
+      await presetPageRefs(page, true)
+      await page.goto(UNVERIFIED_PSALM_URL)
+      await page.waitForSelector('article')
+
+      const psalm = page.locator(
+        '[data-role="psalm-block"][aria-label="Psalm 63:2-9"]',
+      )
+      await expect(psalm.locator('[data-role="antiphon"]')).toHaveCount(2)
+      await expect(
+        psalm.locator('[data-role="antiphon"] [data-role="page-ref-link"]'),
+      ).toHaveCount(0)
+      await expect(
+        psalm.locator(
+          '[data-role="psalm-header"] [data-role="page-ref-link"]',
+        ),
+      ).toHaveText(/\(х\.\s*58\)/)
     })
 
     test('gospel canticle antiphon shows page', async ({ page }) => {
