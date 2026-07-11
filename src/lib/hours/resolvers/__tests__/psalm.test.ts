@@ -257,7 +257,7 @@ describe('resolvePsalm — seasonal antiphon selection chain', () => {
 // the catalog page unchanged.
 describe('resolvePsalm — F-X2 Phase 1 psalmPrayerPage occurrence override', () => {
   // @fr FR-NEW (F-X2 Phase 1)
-  it('W4-SAT-Lauds Psalm 92:2-9 override picks page 506 over catalog default 280', async () => {
+  it('W4-SAT-Lauds Psalm 92:2-9 picks prayer page 506 and passes through antiphonPage 504', async () => {
     const entry: PsalmEntry = {
       type: 'psalm',
       ref: 'Psalm 92:2-9',
@@ -265,10 +265,12 @@ describe('resolvePsalm — F-X2 Phase 1 psalmPrayerPage occurrence override', ()
       default_antiphon: '',
       gloria_patri: true,
       page: 505,
+      antiphonPage: 504,
       psalmPrayerPage: 506, // ← week-4.json occurrence override
     }
     const result = await resolvePsalm(entry, undefined)
     expect(result.psalmPrayerPage).toBe(506)
+    expect(result.antiphonPage).toBe(504)
   })
 
   // @fr FR-NEW (F-X2 Phase 1)
@@ -363,7 +365,7 @@ describe('resolvePsalm — F-X2 Phase 2 multi-occurrence overrides', () => {
   })
 
   // @fr FR-NEW (F-X2 Phase 2) — review I-1 follow-up
-  it('Bible-fallback path also honors per-occurrence psalmPrayerPage override', async () => {
+  it('Bible-fallback path honors psalmPrayerPage override and passes through antiphonPage', async () => {
     // When psalter-texts.json has the ref but stanzas[] is empty, resolvePsalm
     // skips the PDF-stanza branch and falls through to the Bible-fallback
     // return site (psalm.ts:109-125). The same nullish-coalesce on
@@ -376,11 +378,13 @@ describe('resolvePsalm — F-X2 Phase 2 multi-occurrence overrides', () => {
       gloria_patri: true,
       page: 9999,
       psalmPrayerPage: 1234, // override should win
+      antiphonPage: 1233,
     }
     const result = await resolvePsalm(entry, undefined)
     // verses[] populated from bible-loader mock → confirms fallback branch ran
     expect(result.verses?.length).toBeGreaterThan(0)
     expect(result.psalmPrayerPage).toBe(1234)
+    expect(result.antiphonPage).toBe(1233)
   })
 
   // @fr FR-NEW (F-X2 Phase 2) — review I-1 follow-up
