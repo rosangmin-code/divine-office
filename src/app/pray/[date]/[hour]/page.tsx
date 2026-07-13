@@ -87,7 +87,7 @@ export default async function PrayPage({
 
       {/* Hero — WI-62 재스킨 (#54): 승인 모습(public/_mockup/final-claude-gold.html)
           기준 editorial 헤더. 골드 kicker(절기/축일명, 대문자 letterspaced) +
-          세리프 ink 제목(시간전례명) + 메타 캡션(날짜·시편주간) + 하단 헤어라인.
+          설정 서체를 상속하는 ink 제목(시간전례명) + 메타 캡션(날짜·시편주간) + 하단 헤어라인.
           제목 앞 장식 아이콘 박스 없음(DESIGN.md — 장식 아이콘/빈 글리프 박스
           금지, 사용자 이전 지적). 절기 의미색은 좌측 얇은 accent rule 로만
           보존(DESIGN.md: 절기색은 hero·구분선에 제한적 — 악센트는 골드 통일,
@@ -96,7 +96,7 @@ export default async function PrayPage({
         <p className="text-[0.6875rem] font-bold uppercase tracking-[0.2em] text-liturgical-gold dark:text-liturgical-gold-dark">
           {liturgicalDay.nameMn}
         </p>
-        <h1 className="mt-2 font-serif text-3xl font-medium leading-tight tracking-tight text-stone-900 dark:text-stone-100">
+        <h1 className="mt-2 text-3xl font-semibold leading-tight tracking-tight text-stone-900 dark:text-stone-100">
           {assembled.hourNameMn}
         </h1>
         {(() => {
