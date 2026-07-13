@@ -100,7 +100,7 @@ function BlockRenderer({ block }: { block: Block }) {
   switch (block.type) {
     case 'paragraph':
       return (
-        <p className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200 text-justify">
+        <p className="font-reading text-base leading-relaxed text-stone-800 dark:text-stone-200 text-justify">
           {block.text}
         </p>
       )
@@ -108,7 +108,7 @@ function BlockRenderer({ block }: { block: Block }) {
       return (
         <p
           data-block="rubric"
-          className="font-serif text-sm leading-relaxed text-red-700/80 dark:text-red-400/80"
+          className="font-reading text-sm leading-relaxed text-red-700/80 dark:text-red-400/80"
         >
           {block.text}
         </p>
@@ -116,7 +116,7 @@ function BlockRenderer({ block }: { block: Block }) {
     case 'heading':
       return (
         <div className="mt-4">
-          <h4 className="font-serif text-base font-semibold text-stone-900 dark:text-stone-100">
+          <h4 className="font-reading text-base font-semibold text-stone-900 dark:text-stone-100">
             {block.text}
           </h4>
           {block.subtitle && (
@@ -129,10 +129,10 @@ function BlockRenderer({ block }: { block: Block }) {
     case 'versicle':
       return (
         <div className="rounded-lg bg-stone-100 dark:bg-stone-800 px-4 py-3 space-y-1">
-          <p className="font-serif text-base text-stone-800 dark:text-stone-200">
+          <p className="font-reading text-base text-stone-800 dark:text-stone-200">
             {block.v}
           </p>
-          <p className="font-serif text-base text-stone-800 dark:text-stone-200">
+          <p className="font-reading text-base text-stone-800 dark:text-stone-200">
             <abbr title="Хариу" className="font-medium text-red-700 dark:text-red-400 no-underline">
               R.{' '}
             </abbr>
@@ -142,7 +142,7 @@ function BlockRenderer({ block }: { block: Block }) {
       )
     case 'psalm-stanza':
       return (
-        <div className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200 space-y-0.5 pl-2 border-l-2 border-stone-200 dark:border-stone-700">
+        <div className="font-reading text-base leading-relaxed text-stone-800 dark:text-stone-200 space-y-0.5 pl-2 border-l-2 border-stone-200 dark:border-stone-700">
           {block.lines.map((line, i) => (
             <p key={i}>{line}</p>
           ))}
@@ -151,11 +151,11 @@ function BlockRenderer({ block }: { block: Block }) {
     case 'antiphon-group':
       return (
         <div className="mt-3">
-          <p className="font-serif text-sm font-semibold text-red-700/80 dark:text-red-400/80">
+          <p className="font-reading text-sm font-semibold text-red-700/80 dark:text-red-400/80">
             {block.season}
             <PageNum page={block.page} />
           </p>
-          <ul className="mt-1 space-y-1 font-serif text-base text-stone-800 dark:text-stone-200">
+          <ul className="mt-1 space-y-1 font-reading text-base text-stone-800 dark:text-stone-200">
             {block.items.map((item, i) => (
               <li key={i}>
                 <span className="font-medium text-stone-900 dark:text-stone-100">
