@@ -1,12 +1,12 @@
 # psalmPrayer Rich 확산 결과 (FR-153h)
 
-- 생성: 2026-04-24T14:38:25.929Z
-- 소요: 11.0s
-- refs total: 137
-- eligible (psalmPrayer + page): 92
-- 성공: 92
+- 생성: 2026-07-01T01:16:57.455Z
+- 소요: 14.0s
+- refs total: 130
+- eligible (psalmPrayer + page): 82
+- 성공: 82
 - 실패: 0
-- 스킵 (page/본문 없음): 45
+- 스킵 (page/본문 없음): 48
 - 커버리지(성공/eligible): 100.0%
 
 ## 스킵 엔트리
@@ -28,13 +28,11 @@
 - Psalm 117:1-2: no psalmPrayer
 - Philippians 2:6-11: no psalmPrayer
 - Daniel 3:52-57: no psalmPrayer
-- Psalm 31:1-17: no psalmPrayer
 - Sirach 36:1-7, 13-16: no psalmPrayer
 - Isaiah 38:10-14, 17-20: no psalmPrayer
 - 1 Samuel 2:1-10: no psalmPrayer
 - Isaiah 12:1-6: no psalmPrayer
 - Psalm 72:1-11: no psalmPrayer
-- Psalm 72:12-20: no psalmPrayer
 - Habakkuk 3:2-4, 13a, 15-19: no psalmPrayer
 - Psalm 116:1-9: no psalmPrayerPage
 - Psalm 136:1-9: no psalmPrayer
@@ -51,8 +49,13 @@
 - Psalm 139:1-18: no psalmPrayerPage
 - Isaiah 66:10-14a: no psalmPrayer
 - Psalm 88:2-10: no psalmPrayer
-- Psalm 88:11-19: no psalmPrayer
 - Ezekiel 36:24-28: no psalmPrayer
 - Tobit 13:8-11, 13-15: no psalmPrayer
 - Psalm 15:1-5: no psalmPrayer
 - Psalm 139:23-24: no psalmPrayerPage
+- Psalm 91:1-16: no psalmPrayer
+- Psalm 31:2-6: no psalmPrayer
+- Psalm 16:1-11: no psalmPrayer
+- Psalm 88:2-19: no psalmPrayer
+- Psalm 4: no psalmPrayer
+- Psalm 134: no psalmPrayer
