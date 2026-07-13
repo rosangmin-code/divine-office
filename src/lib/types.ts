@@ -298,7 +298,10 @@ export interface PsalmEntry {
 
 export interface HourPsalmody {
   psalms: PsalmEntry[]
-  shortReading?: ShortReading
+  // Week psalter entries always carry inline reading text (enforced by
+  // HourPsalmodyLooseSchema), unlike general proper ShortReading values where
+  // text may be omitted and resolved from Scripture later.
+  shortReading?: { ref: string; text: string; page?: number }
   responsory?: Responsory
   gospelCanticleAntiphon?: string
   gospelCanticleAntiphonPage?: number
