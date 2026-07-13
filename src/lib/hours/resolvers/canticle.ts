@@ -48,7 +48,7 @@ export function resolveGospelCanticle(
     }
   >,
   antiphon: string,
-  page?: number,
+  antiphonPage?: number,
   antiphonRich?: PrayerText,
   // FR-168 (GOAL #90) — optional multi-candidate Benedictus antiphon
   // (saturday-mary). Passed through verbatim to the HourSection; when
@@ -99,7 +99,8 @@ export function resolveGospelCanticle(
       text: canticleInfo.verses.join('\n'),
       verses: canticleInfo.verses,
       doxology: canticleInfo.doxology,
-      page,
+      page: antiphonPage,
+      antiphonPage,
       bodyPage,
       antiphonRich,
       // WI #35 — passthrough within-canticle paragraph boundaries. Absent
@@ -124,7 +125,8 @@ export function resolveGospelCanticle(
     canticle: canticleKey,
     antiphon: effectiveAntiphon || '',
     text,
-    page,
+    page: antiphonPage,
+    antiphonPage,
     bodyPage,
     antiphonRich,
     // FR-168 — multi-candidate dropdown fields (absent → {} spread).

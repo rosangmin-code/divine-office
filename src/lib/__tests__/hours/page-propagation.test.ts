@@ -91,11 +91,14 @@ describe('page number propagation', () => {
     // Task #11: split antiphon page (daily propers) from body page (fixed).
     // `page` = antiphon page, `bodyPage` = fixed Benedictus/Magnificat/Nunc
     // Dimittis body location in the ordinarium section of the book.
-    it('gospelCanticle.page carries ANTIPHON page (daily propers)', () => {
+    it('gospelCanticle.antiphonPage carries ANTIPHON page (daily propers)', () => {
       const sections = assembleLauds(makeContext())
       const canticle = sections.find(s => s.type === 'gospelCanticle')
       expect(canticle).toBeDefined()
-      if (canticle?.type === 'gospelCanticle') expect(canticle.page).toBe(70)
+      if (canticle?.type === 'gospelCanticle') {
+        expect(canticle.antiphonPage).toBe(70)
+        expect(canticle.page).toBe(70) // backward-compatible alias
+      }
     })
 
     it('gospelCanticle.bodyPage carries FIXED ordinarium body page', () => {

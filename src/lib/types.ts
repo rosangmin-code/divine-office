@@ -298,6 +298,20 @@ export interface PsalmEntry {
 
 export interface HourPsalmody {
   psalms: PsalmEntry[]
+  // Week psalter entries always carry inline reading text (enforced by
+  // HourPsalmodyLooseSchema), unlike general proper ShortReading values where
+  // text may be omitted and resolved from Scripture later.
+  shortReading?: { ref: string; text: string; page?: number }
+  responsory?: Responsory
+  gospelCanticleAntiphon?: string
+  gospelCanticleAntiphonPage?: number
+  gospelCanticleAntiphonCandidates?: GospelCanticleAntiphonCandidate[]
+  gospelCanticleAntiphonSelectedIndex?: number
+  gospelCanticleAntiphonRubric?: string
+  intercessions?: string[]
+  intercessionsPage?: number
+  concludingPrayer?: string
+  concludingPrayerPage?: number
 }
 
 export interface PsalterDay {
@@ -920,6 +934,10 @@ export type HourSection =
       // canticle heading to avoid implying the fixed Magnificat/Benedictus
       // body is printed on that page (it isn't — see bodyPage).
       page?: number
+      // Explicit g-47-style antiphon page. `page` remains populated as a
+      // compatibility alias, but renderers should use this named field so it
+      // cannot be confused with the fixed canticle body page.
+      antiphonPage?: number
       // `bodyPage` is the FIXED ORDINARIUM page where the canticle verses are
       // printed (Benedictus p34 / Magnificat p40 / Nunc Dimittis p515). Same
       // for every day of the year. Surfaced next to the heading so the reader

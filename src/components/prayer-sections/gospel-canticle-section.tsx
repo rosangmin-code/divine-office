@@ -216,8 +216,8 @@ export function GospelCanticleSection({
     ? candidates![safeIdx]?.text ?? section.antiphon
     : section.antiphon
   const shownAntiphonPage = hasCandidates
-    ? candidates![safeIdx]?.page ?? section.page
-    : section.page
+    ? candidates![safeIdx]?.page ?? section.antiphonPage
+    : section.antiphonPage
 
   // FR-161 wi-002 (revised #208): branch on antiphonRich presence. When
   // the rich AST is present + non-empty, render the inline rich path that
@@ -258,14 +258,14 @@ export function GospelCanticleSection({
     ) : hasRich && section.antiphonRich ? (
       <AntiphonRichBox
         content={section.antiphonRich}
-        page={section.page}
+        page={section.antiphonPage}
         className={className}
       />
     ) : (
       <AntiphonBox
         text={section.antiphon}
         label="canticle"
-        page={section.page}
+        page={section.antiphonPage}
         className={className}
       />
     )
