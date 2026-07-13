@@ -3,15 +3,35 @@ import fs from 'fs'
 import path from 'path'
 
 const ROOT = path.resolve(__dirname, '../../../..')
-const WEEK3 = 'src/data/loth/psalter/week-3.json'
+const PSALTER = 'src/data/loth/psalter'
 
-function readWeek3() {
-  return JSON.parse(fs.readFileSync(path.join(ROOT, WEEK3), 'utf8'))
+function readWeek(week: number) {
+  return JSON.parse(
+    fs.readFileSync(path.join(ROOT, `${PSALTER}/week-${week}.json`), 'utf8'),
+  )
 }
 
-describe('Week 3 Monday Lauds gospel canticle antiphon', () => {
-  it('matches the PDF text and page', () => {
-    const lauds = readWeek3().days.MON.lauds
+describe('Psalter gospel canticle antiphon PDF regressions', () => {
+  it('keeps the complete Week 1 Monday Lauds antiphon', () => {
+    const lauds = readWeek(1).days.MON.lauds
+
+    expect(lauds.gospelCanticleAntiphon).toBe(
+      'Эзэн бидний Тэнгэрбурхан магтагдах болтугай.',
+    )
+    expect(lauds.gospelCanticleAntiphonPage).toBe(82)
+  })
+
+  it('keeps the complete Week 2 Saturday Lauds antiphon', () => {
+    const lauds = readWeek(2).days.SAT.lauds
+
+    expect(lauds.gospelCanticleAntiphon).toBe(
+      'Эзэн, бидний хөлийг амар амгалангийн зам мөрөөр хөтөлнө үү.',
+    )
+    expect(lauds.gospelCanticleAntiphonPage).toBe(285)
+  })
+
+  it('keeps the complete Week 3 Monday Lauds antiphon', () => {
+    const lauds = readWeek(3).days.MON.lauds
 
     expect(lauds.gospelCanticleAntiphon).toBe(
       'Бидний Тэнгэрбурхан Эзэн ерөөлтэй еэ!',
