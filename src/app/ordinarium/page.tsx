@@ -108,7 +108,7 @@ function BlockRenderer({ block }: { block: Block }) {
       return (
         <p
           data-block="rubric"
-          className="text-sm leading-relaxed text-red-700/80 dark:text-red-400/80"
+          className="font-reading text-sm leading-relaxed text-red-700/80 dark:text-red-400/80"
         >
           {block.text}
         </p>
@@ -116,7 +116,7 @@ function BlockRenderer({ block }: { block: Block }) {
     case 'heading':
       return (
         <div className="mt-4">
-          <h4 className="font-serif text-base font-semibold text-stone-900 dark:text-stone-100">
+          <h4 className="font-reading text-base font-semibold text-stone-900 dark:text-stone-100">
             {block.text}
           </h4>
           {block.subtitle && (
@@ -151,7 +151,7 @@ function BlockRenderer({ block }: { block: Block }) {
     case 'antiphon-group':
       return (
         <div className="mt-3">
-          <p className="text-sm font-semibold text-red-700/80 dark:text-red-400/80">
+          <p className="font-reading text-sm font-semibold text-red-700/80 dark:text-red-400/80">
             {block.season}
             <PageNum page={block.page} />
           </p>

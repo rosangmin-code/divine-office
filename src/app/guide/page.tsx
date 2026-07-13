@@ -177,7 +177,7 @@ function SubsectionContent({ sub, isRubric }: { sub: Subsection; isRubric: boole
             return (
               <p
                 key={i}
-                className="text-sm font-semibold text-stone-600 dark:text-stone-400"
+                className="font-reading text-sm font-semibold text-stone-600 dark:text-stone-400"
               >
                 {p}
               </p>
