@@ -13,7 +13,7 @@ const notoSans = Noto_Sans({
 
 const notoSerif = Noto_Serif({
   subsets: ['cyrillic', 'latin'],
-  weight: ['400', '700'],
+  weight: ['400', '600', '700'],
   display: 'swap',
   variable: '--font-serif',
 })
@@ -73,7 +73,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${notoSans.variable} ${notoSerif.variable} font-sans`}>
+      <body className={`${notoSans.variable} ${notoSerif.variable}`}>
         <div className="flex min-h-screen flex-col bg-stone-50 text-stone-800 dark:bg-neutral-950 dark:text-stone-200 transition-colors">
           <SettingsProvider>
             <main className="flex-1">{children}</main>
