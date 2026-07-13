@@ -61,6 +61,39 @@ export interface PsalterCommons {
   concludingPrayerPage?: number
 }
 
+/**
+ * Copy common prayer fields from a typed psalter-hour entry.
+ *
+ * Kept separate from file loading so resolver wiring can be exercised with a
+ * fixture. This also prevents newly-added psalter fields from being hidden
+ * behind the previous `Record<string, unknown>` cast.
+ */
+export function extractPsalterCommons(
+  hourEntry: HourPsalmody,
+): PsalterCommons {
+  const result: PsalterCommons = {}
+  if (hourEntry.shortReading) result.shortReading = hourEntry.shortReading
+  if (hourEntry.responsory) result.responsory = hourEntry.responsory
+  if (hourEntry.gospelCanticleAntiphon) {
+    result.gospelCanticleAntiphon = hourEntry.gospelCanticleAntiphon
+  }
+  if (typeof hourEntry.gospelCanticleAntiphonPage === 'number') {
+    result.gospelCanticleAntiphonPage =
+      hourEntry.gospelCanticleAntiphonPage
+  }
+  if (hourEntry.intercessions) result.intercessions = hourEntry.intercessions
+  if (typeof hourEntry.intercessionsPage === 'number') {
+    result.intercessionsPage = hourEntry.intercessionsPage
+  }
+  if (hourEntry.concludingPrayer) {
+    result.concludingPrayer = hourEntry.concludingPrayer
+  }
+  if (typeof hourEntry.concludingPrayerPage === 'number') {
+    result.concludingPrayerPage = hourEntry.concludingPrayerPage
+  }
+  return result
+}
+
 export function getPsalterCommons(
   week: 1 | 2 | 3 | 4,
   day: DayOfWeek,
@@ -72,18 +105,10 @@ export function getPsalterCommons(
   const dayData = weekData.days[day]
   if (!dayData) return null
 
-  const hourEntry = dayData[hour as keyof typeof dayData] as unknown as Record<string, unknown> | undefined
+  const hourEntry = dayData[hour as keyof typeof dayData]
   if (!hourEntry) return null
 
-  const result: PsalterCommons = {}
-  if (hourEntry.shortReading) result.shortReading = hourEntry.shortReading as PsalterCommons['shortReading']
-  if (hourEntry.responsory) result.responsory = hourEntry.responsory as PsalterCommons['responsory']
-  if (hourEntry.gospelCanticleAntiphon) result.gospelCanticleAntiphon = hourEntry.gospelCanticleAntiphon as string
-  if (typeof hourEntry.gospelCanticleAntiphonPage === 'number') result.gospelCanticleAntiphonPage = hourEntry.gospelCanticleAntiphonPage
-  if (hourEntry.intercessions) result.intercessions = hourEntry.intercessions as string[]
-  if (typeof hourEntry.intercessionsPage === 'number') result.intercessionsPage = hourEntry.intercessionsPage
-  if (hourEntry.concludingPrayer) result.concludingPrayer = hourEntry.concludingPrayer as string
-  if (typeof hourEntry.concludingPrayerPage === 'number') result.concludingPrayerPage = hourEntry.concludingPrayerPage
+  const result = extractPsalterCommons(hourEntry)
 
   return Object.keys(result).length > 0 ? result : null
 }
