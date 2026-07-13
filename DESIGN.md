@@ -31,49 +31,49 @@ colors:
   error: "#c1121f"
 typography:
   display:
-    fontFamily: Noto Serif
+    fontFamily: "--reading-font (user-selected app-wide family)"
     fontSize: 30px
     fontWeight: 600
     lineHeight: 1.2
     letterSpacing: -0.01em
   headline-lg:
-    fontFamily: Noto Serif
+    fontFamily: "--reading-font (user-selected app-wide family)"
     fontSize: 24px
     fontWeight: 600
     lineHeight: 1.22
   headline-md:
-    fontFamily: Noto Serif
+    fontFamily: "--reading-font (user-selected app-wide family)"
     fontSize: 20px
     fontWeight: 600
     lineHeight: 1.3
   title:
-    fontFamily: Noto Sans
+    fontFamily: "--reading-font (user-selected app-wide family)"
     fontSize: 16px
     fontWeight: 600
     lineHeight: 1.35
   body-reading:
-    fontFamily: "--reading-font (Noto Sans default / Noto Serif user option)"
+    fontFamily: "--reading-font (user-selected app-wide family)"
     fontSize: 18px
     fontWeight: 400
     lineHeight: 1.62
   body-md:
-    fontFamily: Noto Sans
+    fontFamily: "--reading-font (user-selected app-wide family)"
     fontSize: 16px
     fontWeight: 400
     lineHeight: 1.55
   body-sm:
-    fontFamily: Noto Sans
+    fontFamily: "--reading-font (user-selected app-wide family)"
     fontSize: 14px
     fontWeight: 400
     lineHeight: 1.5
   label:
-    fontFamily: Noto Sans
+    fontFamily: "--reading-font (user-selected app-wide family)"
     fontSize: 12px
     fontWeight: 700
     lineHeight: 1.1
     letterSpacing: 0.12em
   caption:
-    fontFamily: Noto Sans
+    fontFamily: "--reading-font (user-selected app-wide family)"
     fontSize: 11px
     fontWeight: 400
     lineHeight: 1.4
@@ -167,32 +167,26 @@ components:
 
 ## Typography
 
-서체는 태그나 페이지가 아니라 **텍스트 역할**로 결정한다. **Noto Serif = 신성/콘텐츠 제목**, **Noto Sans = UI chrome**, **reading font = 사용자가 읽는 본문**이다. 사용자가 설정에서 reading font(Sans↔Serif)와 글자 크기(9단계, 87.5%~200%)를 바꿀 수 있으므로 모든 크기는 `rem` 기반으로 스케일된다.
+사용자의 설정(Sans↔Serif)이 화면의 **모든 일반 텍스트**에 적용되는 하나의 앱 전역 서체를 결정한다. 기도 제목, 섹션 라벨, 안티폰, 시편 헤더, 본문, 메타, 버튼과 탐색까지 같은 화면에서 **한 family**만 쓴다. 기본은 Noto Sans, 사용자가 고전 서체를 선택하면 Noto Serif로 화면 전체가 함께 바뀐다.
 
-- **Display / Headline (Noto Serif 600)**: 기도 제목·시간전례 제목. 경전다운 격조.
-- **Body-reading (사용자 설정, 기본 Noto Sans, 18px / 1.62)**: 기도 본문·시편과 긴 콘텐츠 본문. 긴 독서에 최적, 줄간 넉넉히.
-- **Body-md (Noto Sans 16px)**: UI 텍스트·컨트롤 설명·탐색 목록.
-- **Label (Noto Sans 12px 700, 대문자, 자간 0.12em)**: 섹션 라벨·메타 캡션. 한 화면에 폰트 두께 3종 이상 쓰지 않는다.
+`html[data-font-family]` 설정이 `body`의 `--reading-font`를 `--font-sans` 또는 `--font-serif`에서 파생하고, 앱 최상위에 `font-reading`(`font-family: var(--reading-font)`)을 적용한다. 모든 일반 컴포넌트는 이 family를 상속한다. 글자 크기는 설정의 9단계(87.5%~200%)와 함께 스케일되도록 `rem` 기반을 유지한다.
 
 ### 역할 → 서체 계약
 
-| 역할 | 서체 원천 | 유틸리티 / 변수 | 예시 컴포넌트 |
+| 역할 | family 원천 | 위계 표현 | 예시 |
 |---|---|---|---|
-| 신성·콘텐츠 제목 | 항상 Noto Serif | `font-serif` / `var(--font-serif)` | 기도 hero의 시간전례명, guide/ordinarium의 문서·장·절 제목 |
-| 읽기 본문 | 사용자 설정: 기본 Noto Sans, 선택 시 Noto Serif | `font-reading` → `var(--reading-font)`; `body`의 `--font-sans` / `--font-serif`에서 파생 | 기도·시편·찬가·응답 본문, guide 설명문, ordinarium 기도문·시편·안티폰 내용, settings reading-font 미리보기 |
-| UI chrome | 항상 Noto Sans | `font-sans` 또는 `body` 상속 / `var(--font-sans)` | 헤더·푸터·탐색·버튼·폼·설정 설명·목차·PDF viewer 오버레이 |
-| 라벨·루브릭·메타 | 항상 Noto Sans | `font-sans` 또는 `body` 상속 / `var(--font-sans)` | 섹션 라벨, 안티폰 표지(`Шад дуулал`), 절기명·날짜·페이지 번호, guide/ordinarium의 짧은 지시문 |
-| 서체 선택 샘플 | 샘플이 나타내는 서체를 명시 | `font-sans` 또는 `font-serif` | settings의 `Орчин үеийн` / `Сонгодог` 선택지 |
-| PDF 원문 페이지 | PDF에 내장된 서체(앱 설정 대상 아님) | canvas 렌더; DOM font utility 없음 | `PdfViewer`의 PDF canvas |
+| 모든 일반 텍스트 | 사용자 설정 → `font-reading` / `var(--reading-font)` 상속 | 크기·두께·색·자간으로만 구분 | 기도·문서 제목, 섹션 라벨·루브릭, 안티폰, 시편 헤더·본문, guide/ordinarium/settings, 앱 chrome |
+| 서체 선택 샘플 버튼 | 샘플이 나타내는 family를 명시 | 버튼 내 서체 모양이 선택지를 직접 미리보기 | settings의 `Орчин үеийн`=`font-sans`, `Сонгодог`=`font-serif` |
+| PDF 원문 | PDF에 내장된 family | 인쇄 원문 자체의 위계를 보존 | `PdfViewer` canvas의 픽셀 |
+| 진단 출력 | monospace | 공백·오류 세부 정렬 | 오류 세부의 `<pre>` |
 
-**Drift 판정 규칙:** 사용자가 읽는 기도·전례·설명 본문은 페이지 종류와 관계없이 **반드시** `font-reading` / `--reading-font` 메커니즘을 사용한다. 본문에 `font-serif` 또는 `font-sans`를 직접 지정하면 drift다. 반대로 제목·UI·라벨 역할에 `font-reading`을 적용하는 것도 drift다.
+**위계 규칙:** 제목·본문·라벨의 차이는 글자 크기, 두께, 색, 자간으로 표현한다. 위계를 만들기 위해 Sans와 Serif를 섞지 않는다.
 
-비기도 페이지도 같은 역할 계약을 따른다.
+**예외는 다음 세 가지뿐이다:** (1) settings 서체 선택 샘플 버튼의 `font-sans` / `font-serif`, (2) 원본 인쇄 서체를 보존하는 PDF canvas, (3) 진단 정렬을 위한 `<pre>` monospace. 예외 영역 밖의 라벨·로딩·오류·PDF viewer 오버레이는 전부 앱 전역 family를 따른다.
 
-- **Guide**: 문서·장·절 제목은 serif, 설명 본문은 reading font, 목차·링크·페이지 번호·짧은 루브릭은 sans.
-- **Ordinarium**: 문서·장·절 제목은 serif, 기도문·시편·응답·안티폰 내용은 reading font, 탐색·페이지 번호·루브릭·절기 라벨은 sans.
-- **Settings**: 페이지 전체 UI는 sans. 두 서체 선택지의 글자 모양 샘플만 각각 `font-sans` / `font-serif`이고, 실제 reading-font 미리보기 문장은 `font-reading`을 쓴다.
-- **PDF viewer**: canvas의 원문 서체는 PDF 자체를 보존하고 설정으로 바꾸지 않는다. 페이지 표시·로딩·오류·탐색 등 앱 chrome은 sans다.
+**Drift 판정 규칙:** 위 세 예외가 아닌 곳의 `font-serif`, `font-sans`, 별도 `font-family` 하드코딩은 모두 drift다. 일반 텍스트는 앱 최상위의 `font-reading` / `--reading-font`를 상속해야 하며, 컴포넌트에서 family를 재선택하지 않는다.
+
+이 계약은 [앱 전체 서체 census](docs/research/49-font-unification-census/report.md)에서 확인한 “항상-serif 기도 제목 + 설정형 본문 + 항상-sans 안티폰·라벨” 복수 경로를 폐기하고, 2026-07-13 사용자 판정을 최종 기준으로 삼는다.
 
 ## Layout
 
@@ -249,7 +243,8 @@ components:
 - **Don't** 이모지/유니코드 아이콘 사용 — **Lucide 단일 패밀리만**.
 - **Do** WCAG AA 대비(본문 4.5:1) 유지 — 어르신 가독성 직결.
 - **Don't** 한 화면에 폰트 두께 3종 이상.
-- **Do** 신성·콘텐츠 제목은 Noto Serif, UI 텍스트는 Noto Sans, 읽기 본문은 `font-reading`으로 역할을 분리.
+- **Do** 제목·라벨·안티폰·시편 헤더·본문·UI 전체를 사용자 선택 `font-reading`으로 통일.
+- **Don't** 위계 표현에 Sans/Serif 혼용 사용 — 서체 대신 크기·두께·색·자간을 사용.
 - **Do** 섹션 제목(heading)은 전례 빨강(`--color-liturgical-red`)으로 통일 — 미사경본 루브릭 전통(절기 의미색 용도와는 별개의 제목 통일색).
 - **Don't** 둥근/각진 모서리 혼용.
 - **Do** 모든 크기 `rem` 기반 — 9단계 글자 크기(최대 200%)에서 레이아웃 안 깨지게.
