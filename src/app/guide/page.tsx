@@ -144,7 +144,7 @@ function SectionContent({ section }: { section: Section }) {
           {section.paragraphs.map((p, i) => (
             <p
               key={i}
-              className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200"
+              className="font-reading text-base leading-relaxed text-stone-800 dark:text-stone-200"
             >
               {renderTextWithFootnotes(p)}
             </p>
@@ -177,7 +177,7 @@ function SubsectionContent({ sub, isRubric }: { sub: Subsection; isRubric: boole
             return (
               <p
                 key={i}
-                className="font-serif text-sm font-semibold text-stone-600 dark:text-stone-400"
+                className="text-sm font-semibold text-stone-600 dark:text-stone-400"
               >
                 {p}
               </p>
@@ -188,7 +188,7 @@ function SubsectionContent({ sub, isRubric }: { sub: Subsection; isRubric: boole
             return (
               <div key={i} className="rounded-lg bg-stone-100 dark:bg-stone-800 px-4 py-3 space-y-1">
                 {p.split('\n').map((line, j) => (
-                  <p key={j} className="font-serif text-base text-stone-800 dark:text-stone-200">
+                  <p key={j} className="font-reading text-base text-stone-800 dark:text-stone-200">
                     {line.startsWith('—') ? (
                       <>
                         <abbr title="Хариу" className="font-medium text-red-700 dark:text-red-400 no-underline">R. </abbr>
@@ -205,7 +205,7 @@ function SubsectionContent({ sub, isRubric }: { sub: Subsection; isRubric: boole
           return (
             <p
               key={i}
-              className="font-serif text-base leading-relaxed text-stone-800 dark:text-stone-200"
+              className="font-reading text-base leading-relaxed text-stone-800 dark:text-stone-200"
             >
               {renderTextWithFootnotes(p)}
             </p>
