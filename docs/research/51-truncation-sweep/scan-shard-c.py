@@ -112,6 +112,19 @@ GCA = re.compile(r"^gospelCanticleAntiphon(?:Rich|Candidates|Rubric)?$")
 WS = re.compile(r"\s+")
 TOP_EPS = 1.5
 COLUMN_BOUNDARY = 297.0
+TYPOGRAPHY_TRANSLATION = str.maketrans(
+    {
+        "“": '"',
+        "”": '"',
+        "„": '"',
+        "‘": "'",
+        "’": "'",
+        "—": "-",
+        "–": "-",
+        "−": "-",
+        "…": "...",
+    }
+)
 
 ANCHOR_KEYS = {
     "ref",
@@ -166,12 +179,20 @@ class BookPage:
         return collapse_ws(" ".join(self.comparison_lines))
 
     @cached_property
+    def typography_view(self) -> tuple[str, tuple[int, ...]]:
+        return normalize_with_map(self.visual, strip_whitespace=False)
+
+    @cached_property
     def normalized(self) -> str:
-        return normalize_typography(self.visual)
+        return self.typography_view[0]
+
+    @cached_property
+    def whitespace_view(self) -> tuple[str, tuple[int, ...]]:
+        return normalize_with_map(self.visual, strip_whitespace=True)
 
     @cached_property
     def whitespace_key(self) -> str:
-        return strip_ws(self.normalized)
+        return self.whitespace_view[0]
 
 
 def sha_bytes(path: Path) -> str:
@@ -194,23 +215,32 @@ def collapse_ws(value: str) -> str:
     return WS.sub(" ", value.strip())
 
 
+def normalize_with_map(
+    value: str,
+    *,
+    strip_whitespace: bool,
+) -> tuple[str, tuple[int, ...]]:
+    """Return the tier comparison string plus output->original offsets."""
+    output: list[str] = []
+    offsets: list[int] = []
+    for original_index, original_char in enumerate(value):
+        transformed = unicodedata.normalize("NFKC", original_char).translate(
+            TYPOGRAPHY_TRANSLATION
+        )
+        for char in transformed:
+            if strip_whitespace and char.isspace():
+                continue
+            output.append(char)
+            offsets.append(original_index)
+    return "".join(output), tuple(offsets)
+
+
+def normalize_typography_only(value: str) -> str:
+    return normalize_with_map(value, strip_whitespace=False)[0]
+
+
 def normalize_typography(value: str) -> str:
-    value = unicodedata.normalize("NFKC", value)
-    value = collapse_ws(value)
-    translation = str.maketrans(
-        {
-            "“": '"',
-            "”": '"',
-            "„": '"',
-            "‘": "'",
-            "’": "'",
-            "—": "-",
-            "–": "-",
-            "−": "-",
-            "…": "...",
-        }
-    )
-    return value.translate(translation)
+    return collapse_ws(normalize_typography_only(value))
 
 
 def strip_ws(value: str) -> str:
@@ -431,27 +461,35 @@ def find_match(
     pages: dict[int, BookPage],
     token_pages: dict[str, set[int]],
 ) -> dict[str, Any] | None:
-    literal = collapse_ws(row.value)
-    normalized = normalize_typography(row.value)
-    whitespace = strip_ws(normalized)
+    literal = row.value
+    normalized = normalize_typography_only(row.value)
+    whitespace = normalize_with_map(row.value, strip_whitespace=True)[0]
     hints = page_hints(row)
     hinted = [page for hint in hints for page in (hint, hint - 1, hint + 1) if page in pages]
     tokens = search_tokens(normalized)
     global_candidates = sorted(token_pages.get(tokens[0], set(pages))) if tokens else sorted(pages)
     order = list(dict.fromkeys(hinted + global_candidates))
 
-    tiers = (
-        ("literal", literal, lambda page: page.visual),
-        ("typography", normalized, lambda page: page.normalized),
-        ("whitespace", whitespace, lambda page: page.whitespace_key),
-    )
+    tiers = ("literal", "typography", "whitespace")
     for book_page in order:
-        for tier, needle, haystack_for in tiers:
+        page = pages[book_page]
+        for tier in tiers:
+            if tier == "literal":
+                needle, haystack, offsets = literal, page.visual, None
+            elif tier == "typography":
+                needle, haystack, offsets = normalized, page.typography_view[0], page.typography_view[1]
+            else:
+                needle, haystack, offsets = whitespace, page.whitespace_view[0], page.whitespace_view[1]
             if not needle:
                 continue
-            haystack = haystack_for(pages[book_page])
             index = haystack.find(needle)
             if index >= 0:
+                if offsets is None:
+                    visual_start = index
+                    visual_end = index + len(needle)
+                else:
+                    visual_start = offsets[index]
+                    visual_end = offsets[index + len(needle) - 1] + 1
                 return {
                     "tier": tier,
                     "book_page": book_page,
@@ -459,6 +497,8 @@ def find_match(
                     "needle": needle,
                     "haystack": haystack,
                     "hinted": book_page in hinted,
+                    "visual_match": page.visual[visual_start:visual_end],
+                    "visual_context": excerpt(page.visual, visual_start, visual_end - visual_start, 60),
                 }
     return None
 
@@ -672,6 +712,7 @@ def make_row(
     comparison_tier = "none"
     book_page: int | None = hints[0] if hints else None
     pdf_visual = ""
+    pdf_visual_context = ""
     pdf_raw = ""
     omitted_tail = ""
     rationale = ""
@@ -679,6 +720,10 @@ def make_row(
     if keep_entry:
         disposition = "KEEP_RULED"
         comparison_tier = match["tier"] if match else "whitelist"
+        if match:
+            book_page = match["book_page"]
+            pdf_visual = match["visual_match"]
+            pdf_visual_context = match["visual_context"]
         rationale = (
             f"Exact coordinator ruling {keep_entry['reason_code']} applied by address and value hash; "
             "no phrase-global suppression."
@@ -691,14 +736,14 @@ def make_row(
         comparison_tier = "manual-geometry"
         book_page = manual_divergence["page"]
         pdf_visual = manual_divergence["pdf_visual"]
+        pdf_visual_context = pdf_visual
         rationale = manual_divergence["rationale"]
     elif match:
         disposition = "MATCH_LITERAL" if match["tier"] == "literal" else "MATCH_NORMALIZED"
         comparison_tier = match["tier"]
         book_page = match["book_page"]
-        page = pages[book_page]
-        pdf_visual = excerpt(match["haystack"], match["index"], len(match["needle"]), 60)
-        pdf_raw = page.raw
+        pdf_visual = match["visual_match"]
+        pdf_visual_context = match["visual_context"]
         rationale = (
             "Value occurs in geometry-reconstructed book-page reading order"
             + (" at a supplied page hint." if match["hinted"] else ".")
@@ -709,6 +754,7 @@ def make_row(
         if candidate:
             book_page = candidate["book_page"]
             pdf_visual = excerpt(candidate["haystack"], candidate["index"], 120, 80)
+            pdf_visual_context = pdf_visual
         rationale = (
             "The wording is exact in the raw text SoT, but styled/baseline glyph ordering prevents "
             "a geometry-reconstructed equality proof; raw substring evidence was not promoted to MATCH."
@@ -718,6 +764,7 @@ def make_row(
         book_page = candidate["book_page"]
         comparison_tier = "anchored"
         pdf_visual = excerpt(candidate["haystack"], candidate["index"], 120, 80)
+        pdf_visual_context = pdf_visual
         pdf_raw = pages[book_page].raw
         rationale = (
             "At least two independent target-derived anchors localize a geometry page, but strict "
@@ -737,6 +784,23 @@ def make_row(
         pdf_raw = raw_source["excerpt"]
     if not pdf_visual and book_page in pages and disposition != "NOT_APPLICABLE_METADATA":
         pdf_visual = collapse_ws(pages[book_page].visual[:260])
+        pdf_visual_context = pdf_visual
+
+    if disposition == "MATCH_LITERAL" and row.value != pdf_visual:
+        raise RuntimeError(f"untruthful literal tier: {row.address}")
+    if disposition == "MATCH_NORMALIZED":
+        if row.value == pdf_visual:
+            raise RuntimeError(f"byte-equal normalized tier: {row.address}")
+        if comparison_tier == "typography":
+            if normalize_typography_only(row.value) != normalize_typography_only(pdf_visual):
+                raise RuntimeError(f"untruthful typography tier: {row.address}")
+        elif comparison_tier == "whitespace":
+            left = normalize_with_map(row.value, strip_whitespace=True)[0]
+            right = normalize_with_map(pdf_visual, strip_whitespace=True)[0]
+            if left != right:
+                raise RuntimeError(f"untruthful whitespace tier: {row.address}")
+        else:
+            raise RuntimeError(f"unknown normalized tier: {row.address}")
 
     human_note = (
         "Strict prefix loss and a bounded omitted tail were not established."
@@ -758,6 +822,7 @@ def make_row(
             "data": row.value,
             "pdf_raw": pdf_raw,
             "pdf_visual": pdf_visual,
+            "pdf_visual_context": pdf_visual_context,
             "omitted_tail": omitted_tail,
             "rationale": rationale,
         },

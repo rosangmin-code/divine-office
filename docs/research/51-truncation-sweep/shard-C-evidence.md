@@ -22,7 +22,7 @@
 | Raw text SHA-256 | `f12f6135556f77df75593d2627ec2642ec6113c2a56f52b26102653580c1b330` |
 | Geometry source | `public/psalter.pdf` |
 | Geometry SHA-256 | `fa0397e9674745f2dc740094eb53f4a367740f6b55d50e1edcf8970972fc3fcd` |
-| Result-ledger SHA-256 | `9805961ba343b87af317985b6acfce09b566f42ad895051f13dea139bf32b0d6` |
+| Result-ledger SHA-256 | `dce2fa91eb13724330479011502088ea199bf920ccf4781fb8a61521b438c41e` |
 
 The scanner aborts on HEAD, source-hash, area-count, total-count, or duplicate-address drift. It reads the coordinator ledger from the main worktree and applies a KEEP only when both exact address and current value SHA-256 match.
 
@@ -48,6 +48,19 @@ The detector implements the committed plan's stages without changing data:
 | **Total** | **4,526** | **3,400** | **748** | **13** | **298** | **32** | **35** | **1,018** |
 
 There are zero `SOURCE_NOT_FOUND` rows and zero `CLEAR_TRUNCATION` rows. The terminal sum is `3,400 + 748 + 13 + 298 + 32 + 35 = 4,526`.
+
+### Tier-truthfulness self-audit
+
+`evidence.pdf_visual` is the exact original geometry slice used for the verdict; surrounding text is retained separately as `evidence.pdf_visual_context`. A full-ledger audit returned:
+
+```text
+MATCH_LITERAL rows=3400 byte_mismatches=0
+MATCH_NORMALIZED rows=748 byte_equal_violations=0 tier_truth_violations=0
+SOURCE_NOT_FOUND rows=0 raw_occurrence_violations=0
+SELF_AUDIT=PASS
+```
+
+For a normalized row, `comparison_tier=typography` requires equality after only NFKC plus quote/dash/ellipsis normalization while preserving whitespace. `comparison_tier=whitespace` requires equality after that typography normalization plus whitespace removal. The reproducer raises instead of writing a row when either invariant is false.
 
 ## Exact KEEP application
 
