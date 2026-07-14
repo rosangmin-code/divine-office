@@ -22,7 +22,7 @@
 | Text SoT SHA-256 | `f12f6135556f77df75593d2627ec2642ec6113c2a56f52b26102653580c1b330` |
 | Geometry source | `public/psalter.pdf` |
 | Geometry SHA-256 | `fa0397e9674745f2dc740094eb53f4a367740f6b55d50e1edcf8970972fc3fcd` |
-| Result ledger SHA-256 | `e509e2d44149c910429573c37ef444f7d91301a2480c71eb59766dccf66a2b10` |
+| Result ledger SHA-256 | `a9bb0f2c51a3efcbe59e11e739517e5b20b283f7bb2f4d9ac98745c36713a131` |
 
 The frozen values agree with the coordinator's main-tree
 `coordinator-manifest.md`. The three source files were unchanged from the
@@ -42,15 +42,20 @@ frozen HEAD while this scan ran.
 | `SOURCE_NOT_FOUND` | 0 |
 | **Total** | **4,319** |
 
-Comparison tiers among all rows are 4,291 literal, 13 typography-normalized,
-12 whitespace-normalized, and 3 not compared (the two exact KEEP rulings and
+Comparison tiers among all rows are 4,291 literal, 10 typography-normalized,
+15 whitespace-normalized, and 3 not compared (the two exact KEEP rulings and
 one catalog `_doc` metadata row).
 
-Review iteration 1 recomputed tiers directly from retained row evidence. It
+Review iteration 2 recomputed tiers directly from retained row evidence. It
 promoted 184 former `MATCH_NORMALIZED/typography` rows whose complete data
 value occurs byte-for-byte in `evidence.pdf_raw` to
 `MATCH_LITERAL/literal`. A second all-row check found zero remaining normalized
 rows with a verbatim raw-evidence hit.
+
+Review iteration 3 restored literal U+201C/U+201D PDF glyphs in three retained
+raw excerpts (Psalm 16, Psalm 42, and Psalm 96). Their typography matches the
+data; only physical-line or page-column wrap differs, so their tier is now
+`whitespace`, not `typography`.
 
 The two `KEEP_RULED` rows are exact address+value-hash hits in the coordinator
 ledger, never phrase-wide suppressions:
