@@ -34,6 +34,14 @@ The scan followed `plan.md` stages 0–5 in order:
    adjacent lines, reconstructed book page, raw text line range, and plain
    twin. Every address then received one terminal disposition.
 
+Review iteration 1 tightened the literal/normalized boundary against the
+retained evidence itself. For every row initially marked `MATCH_NORMALIZED`,
+the complete `evidence.data` value was tested as a byte substring of
+`evidence.pdf_raw`. The 184 positive rows were reclassified as
+`MATCH_LITERAL/literal`; 25 rows still require normalization (13 typography,
+12 whitespace), and none of those 25 contains its data value verbatim in the
+retained raw evidence.
+
 Source stamps:
 
 - `/home/min/myproject/divineoffice/parsed_data/full_pdf.txt`:
