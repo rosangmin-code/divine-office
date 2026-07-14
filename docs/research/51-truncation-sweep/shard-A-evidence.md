@@ -12,7 +12,8 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - 39 values occurring only inside a larger geometry unit: fail strict-prefix identity (gate 3).
 - 49 anchored-prefix/whole-alignment failures: fail strict-prefix/no-contrary-content gates (3 and 6).
 - 148 mixed complete/prefix occurrences: fail unique identity and visual-order localization gates (1 and 2).
-- 43 source-not-found rows: fail identity gate (1); no source unit is invented.
+- 6 text-SoT hits without coordinate-backed geometry localization: retained as `REVIEW_GEOMETRY`; absence is not claimed.
+- 37 source-not-found rows: fail identity gate (1); no source unit is invented.
 
 ## REVIEW and SOURCE_NOT_FOUND items
 
@@ -160,8 +161,8 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `17`
-- Data: `Харьцуул. Лук 10:21, "Тэр мөчид Есүс Ариун Сүнс дотор хөөрөн баясаж, Аав Тандаа талархъя, тэнгэр газрын Эзэн минь!....".`
-- Geometry visual: `Харьцуул. Лук 10:21, "Тэр мөчид Есүс Ариун Сүнс дотор хөөрөн баясаж, Аав Тандаа талархъя, тэнгэр газрын Эзэн минь!....".`
+- Data: `Харьцуул. Лук 10:21, \"Тэр мөчид Есүс Ариун Сүнс дотор хөөрөн баясаж, Аав Тандаа талархъя, тэнгэр газрын Эзэн минь!....\".`
+- Geometry visual: `Харьцуул. Лук 10:21, \"Тэр мөчид Есүс Ариун Сүнс дотор хөөрөн баясаж, Аав Тандаа талархъя, тэнгэр газрын Эзэн минь!....\".`
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: value occurs only inside a larger geometry unit; start/end unit identity is not proven
@@ -300,7 +301,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `8`
-- Data: `Ариун Сүнсний дотор Христ Эзэн Католик шашнаар дамжуулан "хүн төрөлхтнийг цагаатгах болон Тэнгэрбурханыг төгс алдаршуулах их үйлс"-ийг хэрэгжүүлсээр байдаг. Үүнийг Тэрээр Талархал-магтаалын мөргөлийг ёслон тэмдэглэх цагт мөн үндсэн ёслолыг хүртээх үед төдийгүй өөр бусад арга замаар ялангуяа "Залбиралт цагийн ёслол"-ыг хийн гүйцэтгэх үед биелүүлдэг. "Залбиралт цагийн ёслол"-ын дунд Христ Эзэн цугларсан сүсэгтнүүдийн бүлгээр, Тэнгэрбурханы Үгийн тунхаглалаар болон "Католик шашны залбирал ба магтаал"-аар дамжуулан Өөрөө байдаг.`
+- Data: `Ариун Сүнсний дотор Христ Эзэн Католик шашнаар дамжуулан \"хүн төрөлхтнийг цагаатгах болон Тэнгэрбурханыг төгс алдаршуулах их үйлс\"-ийг хэрэгжүүлсээр байдаг. Үүнийг Тэрээр Талархал-магтаалын мөргөлийг ёслон тэмдэглэх цагт мөн үндсэн ёслолыг хүртээх үед төдийгүй өөр бусад арга замаар ялангуяа \"Залбиралт цагийн ёслол\"-ыг хийн гүйцэтгэх үед биелүүлдэг. \"Залбиралт цагийн ёслол\"-ын дунд Христ Эзэн цугларсан сүсэгтнүүдийн бүлгээр, Тэнгэрбурханы Үгийн тунхаглалаар болон \"Католик шашны залбирал ба магтаал\"-аар дамжуулан Өөрөө байдаг.`
 - Geometry visual: `Ариун Сүнсний дотор Христ Эзэн Католик`
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `Өмнөтгөл үг ба магтуунуудыг нь Ариун Бичээсний хэл | яриагаар зохиосон ажээ. | Ариун Сүнсний дотор Христ Эзэн Католик | шашнаар дамжуулан “хүн төрөлхтнийг цагаатгах “Залбиралт цагийн ёслол” бол бүхэл | болон Тэнгэрбурханыг төгс алдаршуулах Шашны даатгал залбирал мөн. Түүний бүтцийг | их үйлс”-ийг хэрэгжүүлсээр байдаг. Үүнийг хялбаршуулснаараа Ватиканы хоёрдугаар`
@@ -310,8 +311,8 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `8`
-- Data: `"Залбиралт цагийн ёслол"-д оролцогчид тус ёслолоор их л чухалчилсан амь хайрлагч Тэнгэрбурханы Үгээр дамжуулан туйлын дээд ариун байдалд хүрдэг. Учир нь уншлагууд нь Ариун Бичээснээс гардаг, Дууллуудын доторх Тэнгэрбурханы үгсийг оршихуйд нь дуулдаг бөгөөд гуйлтын залбирлууд, даатгал залбирлууд ба магтуунуудыг нь Ариун Бичээсний хэл яриагаар зохиосон ажээ.`
-- Geometry visual: `"Залбиралт цагийн ёслол"-ыг хийн гүйцэтгэх`
+- Data: `\"Залбиралт цагийн ёслол\"-д оролцогчид тус ёслолоор их л чухалчилсан амь хайрлагч Тэнгэрбурханы Үгээр дамжуулан туйлын дээд ариун байдалд хүрдэг. Учир нь уншлагууд нь Ариун Бичээснээс гардаг, Дууллуудын доторх Тэнгэрбурханы үгсийг оршихуйд нь дуулдаг бөгөөд гуйлтын залбирлууд, даатгал залбирлууд ба магтуунуудыг нь Ариун Бичээсний хэл яриагаар зохиосон ажээ.`
+- Geometry visual: `\"Залбиралт цагийн ёслол\"-ыг хийн гүйцэтгэх`
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `яриагаар зохиосон ажээ. | Ариун Сүнсний дотор Христ Эзэн Католик | шашнаар дамжуулан “хүн төрөлхтнийг цагаатгах “Залбиралт цагийн ёслол” бол бүхэл | болон Тэнгэрбурханыг төгс алдаршуулах Шашны даатгал залбирал мөн. Түүний бүтцийг | их үйлс”-ийг хэрэгжүүлсээр байдаг. Үүнийг хялбаршуулснаараа Ватиканы хоёрдугаар | Тэрээр Талархал-магтаалын мөргөлийг ёслон Дээд Хуралдааны Шашны ёслолын өөрчлөн`
 - Reason: anchored prefix found but whole-value alignment fails (substitution, reorder, contamination, or wrap ambiguity)
@@ -320,8 +321,8 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `8`
-- Data: `"Залбиралт цагийн ёслол"-ыг нэг л ботид багтаан нийтлүүлсэн энэхүү "Христийн шашны залбирлын хураангуй судар" дээр дурдсан зорилгыг биелүүлэхийг зорьж байна. Тус судар Өглөөний болон Оройн даатгал залбиралд зориулсан сонгодог эх бичвэрүүдийг харуулдаг бөгөөд хэмжээ нь эгэл сүсэгтнүүдийн хувьд "Залбиралт цагийн ёслол"-ыг дөрвөн ботиор бүтээсэн "Христийн шашны залбирлын дэлгэрэнгүй судар"-аас хэрэглэхэд илүү хялбархан.`
-- Geometry visual: `"Залбиралт цагийн ёслол"-ыг хийн гүйцэтгэх`
+- Data: `\"Залбиралт цагийн ёслол\"-ыг нэг л ботид багтаан нийтлүүлсэн энэхүү \"Христийн шашны залбирлын хураангуй судар\" дээр дурдсан зорилгыг биелүүлэхийг зорьж байна. Тус судар Өглөөний болон Оройн даатгал залбиралд зориулсан сонгодог эх бичвэрүүдийг харуулдаг бөгөөд хэмжээ нь эгэл сүсэгтнүүдийн хувьд \"Залбиралт цагийн ёслол\"-ыг дөрвөн ботиор бүтээсэн \"Христийн шашны залбирлын дэлгэрэнгүй судар\"-аас хэрэглэхэд илүү хялбархан.`
+- Geometry visual: `\"Залбиралт цагийн ёслол\"-ыг хийн гүйцэтгэх`
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `яриагаар зохиосон ажээ. | Ариун Сүнсний дотор Христ Эзэн Католик | шашнаар дамжуулан “хүн төрөлхтнийг цагаатгах “Залбиралт цагийн ёслол” бол бүхэл | болон Тэнгэрбурханыг төгс алдаршуулах Шашны даатгал залбирал мөн. Түүний бүтцийг | их үйлс”-ийг хэрэгжүүлсээр байдаг. Үүнийг хялбаршуулснаараа Ватиканы хоёрдугаар | Тэрээр Талархал-магтаалын мөргөлийг ёслон Дээд Хуралдааны Шашны ёслолын өөрчлөн`
 - Reason: anchored prefix found but whole-value alignment fails (substitution, reorder, contamination, or wrap ambiguity)
@@ -340,8 +341,8 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `11`
-- Data: `Тэнгэрбурханы ард түмний нийтийн болон хамтын залбирал нь Католик шашны үндсэн үүргүүдийн дотор зөвөөр байдаг гэж үздэг. Бүр анхнаасаа Ариун угаалыг хүртэгчид "элч нарын сургаал, нөхөрлөл, талх хуваалт, залбиралд өөрсдийгөө зориулдаг байлаа." (Үйлс 2:42). Христэд итгэгчдийн анхны бүлгэм санаа нэгтэйгээр залбирч байсан гэсэн бодит зүйлийн талаар Үйлс ном нэг бус удаа гэрчилж байна. [1]`
-- Geometry visual: `Тэнгэрбурханы ард түмний нийтийн болон хамтын залбирал нь Католик шашны үндсэн үүргүүдийн дотор зөвөөр байдаг гэж үздэг. Бүр анхнаасаа Ариун угаалыг хүртэгчид "элч нарын сургаал, нөхөрлөл, талх хуваалт, залбиралд өөрсдийгөө зориулдаг байлаа." (Үйлс 2:42). Христэд итгэгчдийн анхны бүлгэм санаа нэгтэйгээр залбирч байсан гэсэн бодит зүйлийн талаар Үйлс ном нэг бус удаа гэрчилж байна. [1]`
+- Data: `Тэнгэрбурханы ард түмний нийтийн болон хамтын залбирал нь Католик шашны үндсэн үүргүүдийн дотор зөвөөр байдаг гэж үздэг. Бүр анхнаасаа Ариун угаалыг хүртэгчид \"элч нарын сургаал, нөхөрлөл, талх хуваалт, залбиралд өөрсдийгөө зориулдаг байлаа.\" (Үйлс 2:42). Христэд итгэгчдийн анхны бүлгэм санаа нэгтэйгээр залбирч байсан гэсэн бодит зүйлийн талаар Үйлс ном нэг бус удаа гэрчилж байна. [1]`
+- Geometry visual: `Тэнгэрбурханы ард түмний нийтийн болон хамтын залбирал нь Католик шашны үндсэн үүргүүдийн дотор зөвөөр байдаг гэж үздэг. Бүр анхнаасаа Ариун угаалыг хүртэгчид \"элч нарын сургаал, нөхөрлөл, талх хуваалт, залбиралд өөрсдийгөө зориулдаг байлаа.\" (Үйлс 2:42). Христэд итгэгчдийн анхны бүлгэм санаа нэгтэйгээр залбирч байсан гэсэн бодит зүйлийн талаар Үйлс ном нэг бус удаа гэрчилж байна. [1]`
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: value occurs only inside a larger geometry unit; start/end unit identity is not proven
@@ -350,7 +351,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `11`
-- Data: `Түүхийн явцад, өөр бусад цагуудыг нийтийн болон хамтын залбирлаар дамжуулан ариусгаж байсан. Эдгээрийг Үйлс ном зөгнөсөн гэж Шашны анхны багш нар үзэж байсан. Энд Есүсийн шавь нар нь өдрийн гуравдугаар цагт хамтдаа цугларч байсан гэдгийг бид уншиж байна. [2] Элч нарын "ван" болсон Петр "зургаадугаар цагийн орчимд тэднийг хотод дөхөж очих үед залбирахаар байшингийн дээвэр дээр гарав." (10:9); "Петр, Иохан нар залбирал болдог есдүгээр цагт сүм рүү явж байв." (3:1); "Шөнө дундын үед Паул, Силас хоёр залбирч, Тэнгэрбурханд магтуу дуулж байгааг хоригдлууд сонсоцгоож байлаа." (16:25).`
+- Data: `Түүхийн явцад, өөр бусад цагуудыг нийтийн болон хамтын залбирлаар дамжуулан ариусгаж байсан. Эдгээрийг Үйлс ном зөгнөсөн гэж Шашны анхны багш нар үзэж байсан. Энд Есүсийн шавь нар нь өдрийн гуравдугаар цагт хамтдаа цугларч байсан гэдгийг бид уншиж байна. [2] Элч нарын \"ван\" болсон Петр \"зургаадугаар цагийн орчимд тэднийг хотод дөхөж очих үед залбирахаар байшингийн дээвэр дээр гарав.\" (10:9); \"Петр, Иохан нар залбирал болдог есдүгээр цагт сүм рүү явж байв.\" (3:1); \"Шөнө дундын үед Паул, Силас хоёр залбирч, Тэнгэрбурханд магтуу дуулж байгааг хоригдлууд сонсоцгоож байлаа.\" (16:25).`
 - Geometry visual: `Түүхийн явцад, өөр бусад цагуудыг нийтийн`
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `дуусаж, нар мандах үед анхны цаг болох гэх мэт. | шалтгаанаар “Христийн шашны залбирлын | Түүхийн явцад, өөр бусад цагуудыг нийтийн | дэлгэрэнгүй судар”-ыг уншиж чадахгүйд хүрэх | болон хамтын залбирлаар дамжуулан ариусгаж | үед лам санваартнуудад ч ач тустай бас байх`
@@ -370,8 +371,8 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `12`
-- Data: `Ийм хамтын даатгал залбирал нь аяндаа цагийн горимын хэлбэртэйгээр бий болжээ. Сүнслэг уншлагуудаар баяжуулсан энэхүү "Залбиралт цагийн ёслол" буюу "Тэнгэрлэг хурал" бол голдуу магтаал ба гуйлтын даатгал залбирал юм. Үнэндээ энэ нь Шашны Христтэй хамт байх ба Христэд хандсан даатгал залбирал мөн.`
-- Geometry visual: `Ийм хамтын даатгал залбирал нь аяндаа цагийн горимын хэлбэртэйгээр бий болжээ. Сүнслэг уншлагуудаар баяжуулсан энэхүү "Залбиралт цагийн ёслол" буюу "Тэнгэрлэг хурал" бол голдуу магтаал ба гуйлтын даатгал залбирал юм. Үнэндээ энэ нь Шашны Христтэй хамт байх ба Христэд хандсан даатгал залбирал мөн.`
+- Data: `Ийм хамтын даатгал залбирал нь аяндаа цагийн горимын хэлбэртэйгээр бий болжээ. Сүнслэг уншлагуудаар баяжуулсан энэхүү \"Залбиралт цагийн ёслол\" буюу \"Тэнгэрлэг хурал\" бол голдуу магтаал ба гуйлтын даатгал залбирал юм. Үнэндээ энэ нь Шашны Христтэй хамт байх ба Христэд хандсан даатгал залбирал мөн.`
+- Geometry visual: `Ийм хамтын даатгал залбирал нь аяндаа цагийн горимын хэлбэртэйгээр бий болжээ. Сүнслэг уншлагуудаар баяжуулсан энэхүү \"Залбиралт цагийн ёслол\" буюу \"Тэнгэрлэг хурал\" бол голдуу магтаал ба гуйлтын даатгал залбирал юм. Үнэндээ энэ нь Шашны Христтэй хамт байх ба Христэд хандсан даатгал залбирал мөн.`
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: value occurs only inside a larger geometry unit; start/end unit identity is not proven
@@ -391,8 +392,8 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `12`
-- Data: `Есүс өөрийн үйлдэж байсантай адил үйлд гэж бидэнд заан тушаасан. Ихэнх тохиолдолд Тэр: "Залбир", "Гуй", "Хай" [30], "Миний нэрээр" [31] гэж айлдсан. "Эзэний даатгал залбирал" [32] гэсэн нэрийн доор танигдсан хэлбэрээр хэрхэн залбирахыг бидэнд зааж өгсөн. Залбирал гэдэг нь хэрэгтэй [33] бөгөөд тэр нь даруу [34], сэрэмжтэй [35], тууштай, Эцэгийн сайнд итгэлтэй [36], хоёргүй сэтгэлтэй, мөн Тэнгэрбурханы мөн чанарт нийцтэй [37] байх ёстой гэж заан сургасан.`
-- Geometry visual: `Есүс өөрийн үйлдэж байсантай адил үйлд гэж бидэнд заан тушаасан. Ихэнх тохиолдолд Тэр: "Залбир", "Гуй", "Хай" [30], "Миний нэрээр" [31] гэж айлдсан. "Эзэний даатгал залбирал" [32] гэсэн нэрийн доор танигдсан хэлбэрээр хэрхэн залбирахыг бидэнд зааж өгсөн. Залбирал гэдэг нь хэрэгтэй [33] бөгөөд тэр нь даруу [34], сэрэмжтэй [35], тууштай, Эцэгийн сайнд итгэлтэй [36], хоёргүй сэтгэлтэй, мөн Тэнгэрбурханы мөн чанарт нийцтэй [37] байх ёстой гэж заан сургасан.`
+- Data: `Есүс өөрийн үйлдэж байсантай адил үйлд гэж бидэнд заан тушаасан. Ихэнх тохиолдолд Тэр: \"Залбир\", \"Гуй\", \"Хай\" [30], \"Миний нэрээр\" [31] гэж айлдсан. \"Эзэний даатгал залбирал\" [32] гэсэн нэрийн доор танигдсан хэлбэрээр хэрхэн залбирахыг бидэнд зааж өгсөн. Залбирал гэдэг нь хэрэгтэй [33] бөгөөд тэр нь даруу [34], сэрэмжтэй [35], тууштай, Эцэгийн сайнд итгэлтэй [36], хоёргүй сэтгэлтэй, мөн Тэнгэрбурханы мөн чанарт нийцтэй [37] байх ёстой гэж заан сургасан.`
+- Geometry visual: `Есүс өөрийн үйлдэж байсантай адил үйлд гэж бидэнд заан тушаасан. Ихэнх тохиолдолд Тэр: \"Залбир\", \"Гуй\", \"Хай\" [30], \"Миний нэрээр\" [31] гэж айлдсан. \"Эзэний даатгал залбирал\" [32] гэсэн нэрийн доор танигдсан хэлбэрээр хэрхэн залбирахыг бидэнд зааж өгсөн. Залбирал гэдэг нь хэрэгтэй [33] бөгөөд тэр нь даруу [34], сэрэмжтэй [35], тууштай, Эцэгийн сайнд итгэлтэй [36], хоёргүй сэтгэлтэй, мөн Тэнгэрбурханы мөн чанарт нийцтэй [37] байх ёстой гэж заан сургасан.`
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: value occurs only inside a larger geometry unit; start/end unit identity is not proven
@@ -421,7 +422,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `13`
-- Data: `Залбирал дахь Шашны эв нэгдэл Ариун Сүнсээр дамжуулан бий болдог бөгөөд Тэрээр Христ дотор, [52] бүхэл Шашны дунд болон Ариун угаалыг хүртэгч бүрийн дотор нэгэн адил байдаг. Түүнчлэн Ариун Сүнс бас "бидний сул дорой байдалд тусалдаг" бөгөөд "Өөрөө үгээр илэрхийлшгүйгээр ёолон бидний төлөө зуучлан гуйдаг". (Ром 8:26). Хүүгийн Сүнс болохын хувьд Тэрээр "үрчлэлийн Сүнсийг" бидэнд соёрхдог бөгөөд "Түүгээр бид "Ааба аа! Аав минь!" гэж дууддаг." (Ром 8:15; харьцуул. Галат 4:6; 1 Коринт 12:3; Ефес 5:18; Иуда 20). Тиймээс бүхэл Шашныг нэг болгодог хийгээд түүнийг Хүүгээр нь дамжуулан Эцэг рүү нь удирдаж буй Ариун Сүнсний үйлсгүйгээр хийх Христийн даатгал залбирал гэж байдаггүй.`
+- Data: `Залбирал дахь Шашны эв нэгдэл Ариун Сүнсээр дамжуулан бий болдог бөгөөд Тэрээр Христ дотор, [52] бүхэл Шашны дунд болон Ариун угаалыг хүртэгч бүрийн дотор нэгэн адил байдаг. Түүнчлэн Ариун Сүнс бас \"бидний сул дорой байдалд тусалдаг\" бөгөөд \"Өөрөө үгээр илэрхийлшгүйгээр ёолон бидний төлөө зуучлан гуйдаг\". (Ром 8:26). Хүүгийн Сүнс болохын хувьд Тэрээр \"үрчлэлийн Сүнсийг\" бидэнд соёрхдог бөгөөд \"Түүгээр бид \"Ааба аа! Аав минь!\" гэж дууддаг.\" (Ром 8:15; харьцуул. Галат 4:6; 1 Коринт 12:3; Ефес 5:18; Иуда 20). Тиймээс бүхэл Шашныг нэг болгодог хийгээд түүнийг Хүүгээр нь дамжуулан Эцэг рүү нь удирдаж буй Ариун Сүнсний үйлсгүйгээр хийх Христийн даатгал залбирал гэж байдаггүй.`
 - Geometry visual: `8. Залбирал дахь Шашны эв нэгдэл Ариун`
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `бидэнд уламжилсан. Ариун Сүнсний дотор [38] | Есүс Христээр дамжуулан [39] Тэнгэрбурхандаа Ариун Сүнсний үйлс | залбирахдаа [40] сонор сэрэмжтэй, тууштай 8. Залбирал дахь Шашны эв нэгдэл Ариун | сэтгэлтэй [41] байх ёстой гэдгийг тэд бидэнд Сүнсээр дамжуулан бий болдог бөгөөд Тэрээр`
@@ -431,7 +432,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `14`
-- Data: `Дээр дурдсан зүйлсээс үзэхэд тасралтгүй бөгөөд тууштай залбирлын талаарх бидний Эзэн болон Түүний элч нарын үлгэр дуурайл ба номлол сургаал бол зөвхөн нэг л номын дэг журам биш гэж дүгнэж болно. Учир нь тэдгээр нь итгэгчдийн бүлгэм болсон Шашны үнэн мөн чанарт хамрагддаг бөгөөд тэр нь бүлгэмийн хувьд өөрийн мөн чанарыг даатгал залбирлаар дамжуулан илэрхийлэх ёстой. Үнэндээ Үйлс номыг итгэгчдийн бүлгэмийг анх удаа дурдахад тэр нь "Есүсийн эх Мариа болон Түүний дүү нартай нэг санаагаар байнга өөрсдийгөө залбиралд зориулж байсан нь" (Үйлс 1:14) нэгэн бүлгэм мэт харагддаг. "Итгэсэн олон нэг зүрх, сэтгэлтэй байсан." (Үйлс 4:32) бөгөөд тэдний зүрх, сэтгэл нэгтэй гэсэн сүнслэг хандлага нь Тэнгэрбурханы үг, хайр энэрлийн нөхөрлөл мөн Талархал-магтаалын мөргөлд үндэслэгдэн суурилсан байжээ. [53]`
+- Data: `Дээр дурдсан зүйлсээс үзэхэд тасралтгүй бөгөөд тууштай залбирлын талаарх бидний Эзэн болон Түүний элч нарын үлгэр дуурайл ба номлол сургаал бол зөвхөн нэг л номын дэг журам биш гэж дүгнэж болно. Учир нь тэдгээр нь итгэгчдийн бүлгэм болсон Шашны үнэн мөн чанарт хамрагддаг бөгөөд тэр нь бүлгэмийн хувьд өөрийн мөн чанарыг даатгал залбирлаар дамжуулан илэрхийлэх ёстой. Үнэндээ Үйлс номыг итгэгчдийн бүлгэмийг анх удаа дурдахад тэр нь \"Есүсийн эх Мариа болон Түүний дүү нартай нэг санаагаар байнга өөрсдийгөө залбиралд зориулж байсан нь\" (Үйлс 1:14) нэгэн бүлгэм мэт харагддаг. \"Итгэсэн олон нэг зүрх, сэтгэлтэй байсан.\" (Үйлс 4:32) бөгөөд тэдний зүрх, сэтгэл нэгтэй гэсэн сүнслэг хандлага нь Тэнгэрбурханы үг, хайр энэрлийн нөхөрлөл мөн Талархал-магтаалын мөргөлд үндэслэгдэн суурилсан байжээ. [53]`
 - Geometry visual: `9. Дээр дурдсан зүйлсээс үзэхэд тасралтгүй`
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `залбирал гэж байдаггүй. 18:20). | Бүлгэмийн даатгал залбирлын тухай Цаг хугацааг ариусгах нь | 9. Дээр дурдсан зүйлсээс үзэхэд тасралтгүй 10. Христ бидэнд ийн зааж өгсөн: “Сэтгэл | бөгөөд тууштай залбирлын талаарх бидний алдрахгүйгээр байнга залбирах ёстой.” (Лук | Эзэн болон Түүний элч нарын үлгэр дуурайл 18:1). Энэхүү номлол сургаалд Шашин үнэнч | ба номлол сургаал бол зөвхөн нэг л номын дэг бөгөөд дуулгавартай байсаар байдаг. Тэр нь`
@@ -441,8 +442,8 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `15`
-- Data: `Христ бидэнд ийн зааж өгсөн: "Сэтгэл алдрахгүйгээр байнга залбирах ёстой." (Лук 18:1). Энэхүү номлол сургаалд Шашин үнэнч бөгөөд дуулгавартай байсаар байдаг. Тэр нь тасралтгүй залбирч өгдөг бөгөөд "Түүгээр (Есүсээр) дамжуулан Тэнгэрбурханд магтаалын тахилыг үргэлж өргөцгөөе." (Еврей 13:15) гэсэн үг сургамжийг өөрийнх нь болгосон. Энэхүү сургамжийг Шашин зөвхөн Талархал-магтаалын мөргөлийг ёслон тэмдэглэхээр бус харин элдэв олон арга замаар ялангуяа "Залбиралт цагийн ёслол"-оор уламжлан биелүүлдэг. Христийн нэн эртний уламжлалын дагуу "Залбиралт цагийн ёслол"-ын бусад хурлаас ялгарах онцлог шинж бол түүгээр нь дамжуулан өдөр шөнийн бүхэл мөчлөгийг Тэнгэрбурханд зориулах үйл хэрэг мөн. [56]`
-- Geometry visual: `10. Христ бидэнд ийн зааж өгсөн: "Сэтгэл`
+- Data: `Христ бидэнд ийн зааж өгсөн: \"Сэтгэл алдрахгүйгээр байнга залбирах ёстой.\" (Лук 18:1). Энэхүү номлол сургаалд Шашин үнэнч бөгөөд дуулгавартай байсаар байдаг. Тэр нь тасралтгүй залбирч өгдөг бөгөөд \"Түүгээр (Есүсээр) дамжуулан Тэнгэрбурханд магтаалын тахилыг үргэлж өргөцгөөе.\" (Еврей 13:15) гэсэн үг сургамжийг өөрийнх нь болгосон. Энэхүү сургамжийг Шашин зөвхөн Талархал-магтаалын мөргөлийг ёслон тэмдэглэхээр бус харин элдэв олон арга замаар ялангуяа \"Залбиралт цагийн ёслол\"-оор уламжлан биелүүлдэг. Христийн нэн эртний уламжлалын дагуу \"Залбиралт цагийн ёслол\"-ын бусад хурлаас ялгарах онцлог шинж бол түүгээр нь дамжуулан өдөр шөнийн бүхэл мөчлөгийг Тэнгэрбурханд зориулах үйл хэрэг мөн. [56]`
+- Geometry visual: `10. Христ бидэнд ийн зааж өгсөн: \"Сэтгэл`
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `залбирал гэж байдаггүй. 18:20). | Бүлгэмийн даатгал залбирлын тухай Цаг хугацааг ариусгах нь | 9. Дээр дурдсан зүйлсээс үзэхэд тасралтгүй 10. Христ бидэнд ийн зааж өгсөн: “Сэтгэл | бөгөөд тууштай залбирлын талаарх бидний алдрахгүйгээр байнга залбирах ёстой.” (Лук | Эзэн болон Түүний элч нарын үлгэр дуурайл 18:1). Энэхүү номлол сургаалд Шашин үнэнч | ба номлол сургаал бол зөвхөн нэг л номын дэг бөгөөд дуулгавартай байсаар байдаг. Тэр нь`
 - Reason: anchored prefix found but whole-value alignment fails (substitution, reorder, contamination, or wrap ambiguity)
@@ -451,8 +452,8 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `16`
-- Data: `"Залбиралт цагийн ёслол"-ын зорилго бол өдөр шөнийг болон хүмүүний үйл ажиллагааны бүхэл хүрээг ариун нандин болгох үйл хэрэг мөн. Тиймээс залбирлын цаг болгоныг аль болохоор байгалийн цагтай холбогдуулах хийгээд одоогийн амьдралын нөхцөл байдлыг харгалзан үзэхийн тулд "Залбиралт цагийн ёслол"-ын бүтэц шинэчлэгдэж байв. [57]`
-- Geometry visual: `"Залбиралт цагийн ёслол"-ын зорилго бол өдөр шөнийг болон хүмүүний үйл ажиллагааны бүхэл хүрээг ариун нандин болгох үйл хэрэг мөн. Тиймээс залбирлын цаг болгоныг аль болохоор байгалийн цагтай холбогдуулах хийгээд одоогийн амьдралын нөхцөл байдлыг харгалзан үзэхийн тулд "Залбиралт цагийн ёслол"-ын бүтэц шинэчлэгдэж байв. [57]`
+- Data: `\"Залбиралт цагийн ёслол\"-ын зорилго бол өдөр шөнийг болон хүмүүний үйл ажиллагааны бүхэл хүрээг ариун нандин болгох үйл хэрэг мөн. Тиймээс залбирлын цаг болгоныг аль болохоор байгалийн цагтай холбогдуулах хийгээд одоогийн амьдралын нөхцөл байдлыг харгалзан үзэхийн тулд \"Залбиралт цагийн ёслол\"-ын бүтэц шинэчлэгдэж байв. [57]`
+- Geometry visual: `\"Залбиралт цагийн ёслол\"-ын зорилго бол өдөр шөнийг болон хүмүүний үйл ажиллагааны бүхэл хүрээг ариун нандин болгох үйл хэрэг мөн. Тиймээс залбирлын цаг болгоныг аль болохоор байгалийн цагтай холбогдуулах хийгээд одоогийн амьдралын нөхцөл байдлыг харгалзан үзэхийн тулд \"Залбиралт цагийн ёслол\"-ын бүтэц шинэчлэгдэж байв. [57]`
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: value occurs only inside a larger geometry unit; start/end unit identity is not proven
@@ -461,8 +462,8 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `16`
-- Data: `"Залбиралт цагийн ёслол"-ын зорилго`
-- Geometry visual: `"Залбиралт цагийн ёслол"-ын зорилго`
+- Data: `\"Залбиралт цагийн ёслол\"-ын зорилго`
+- Geometry visual: `\"Залбиралт цагийн ёслол\"-ын зорилго`
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: value occurs only inside a larger geometry unit; start/end unit identity is not proven
@@ -482,9 +483,8 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `18`
-- Data: `"Эзэн, уруулыг минь нээгээч."
-— "Тэгвэл ам минь Таны магтаалыг тунхаглана."`
-- Geometry visual: `"Эзэн, уруулыг минь нээгээч."`
+- Data: `\"Эзэн, уруулыг минь нээгээч.\"\n— \"Тэгвэл ам минь Таны магтаалыг тунхаглана.\"`
+- Geometry visual: `\"Эзэн, уруулыг минь нээгээч.\"`
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `дуудлагаар эхэлдэг: | дуулалтай хамт дуулал, шинэ гэрээний магтаал | “Эзэн, уруулыг минь нээгээч.” | ба дуулал | -“ Тэгвэл ам минь Таны магтаалыг | Уншлага`
 - Reason: anchored prefix found but whole-value alignment fails (substitution, reorder, contamination, or wrap ambiguity)
@@ -493,7 +493,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 
 - Disposition: `SOURCE_NOT_FOUND`
 - Book page: `None`
-- Data: `Уншлагыг "Алдаршуулал" ("Эцэг, Хүү, Ариун Сүнсэнд жавхланг…") хэмээн залбирлаар төгсгөнө.`
+- Data: `Уншлагыг \"Алдаршуулал\" (\"Эцэг, Хүү, Ариун Сүнсэнд жавхланг…\") хэмээн залбирлаар төгсгөнө.`
 - Geometry visual: `None`
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
@@ -503,8 +503,8 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `20`
-- Data: `"Төгс Хүчит Эзэн биднийг адисалж […]." — "Амэн."`
-- Geometry visual: `"Төгс Хүчит Эзэн биднийг адисалж [...]."-`
+- Data: `\"Төгс Хүчит Эзэн биднийг адисалж […].\" — \"Амэн.\"`
+- Geometry visual: `\"Төгс Хүчит Эзэн биднийг адисалж [...].\"-`
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `шад дуулалтай хамт Симеоны магтаал) | Төгсгөлийн даатгал залбирал | “Төгс Хүчит Эзэн биднийг адисалж […].”- | “Амэн.” | Төгс жаргалт Цэвэр Охин Мариагийн | хүндэтгэлийн дуу`
 - Reason: anchored prefix found but whole-value alignment fails (substitution, reorder, contamination, or wrap ambiguity)
@@ -514,7 +514,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `19`
 - Data: `Залбиралт цагийг ёслон тэмдэглэх заавар`
-- Geometry visual: `Залбиралт цагийг ёслон тэмдэглэх заавар 19`
+- Geometry visual: `Залбиралт цагийг ёслон тэмдэглэх заавар     19`
 - Omitted-tail signal: `19`
 - Raw interleaved fragment: `Залбиралт цагийг ёслон тэмдэглэх заавар 19 | ЗАЛБИРАЛТ ЦАГИЙГ ЁСЛОН Магтуу | ТЭМДЭГЛЭХ ЗААВАР Өглөөний даатгал залбирал: өөрийн гэсэн шад | дуулалтай хамт дуулал, хуучин гэрээний магтаал`
 - Reason: stored value is a strict prefix ending inside a geometry-reconstructed physical line; nine-gate human adjudication required
@@ -635,7 +635,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `29`
 - Data: `Эхэн цагт байсан мэт аливаа цагт болготугай. Амэн.`
-- Geometry visual: `Эхэн цагт байсан мэт аливаа цагт болготугай. Амэн.`
+- Geometry visual: `Эхэн цагт байсан мэт аливаа цагт болготугай. \nАмэн.`
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -665,7 +665,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `33`
 - Data: `Дууллын залбирал`
-- Geometry visual: `Дууллын залбирал нь магтуу дуулсны дараа`
+- Geometry visual: `Дууллын залбирал нь магтуу дуулсны дараа `
 - Omitted-tail signal: `нь магтуу дуулсны дараа`
 - Raw interleaved fragment: `32 Дэг жаяг Өглөөний даатгал залбирал 33 | Гол мөрнүүд дээр түүнийг байгуулжээ. Дууллын залбирал | Дууллын залбирал нь магтуу дуулсны дараа | ЭЗЭНий уул өөд хэн авирч болох вэ? | явагдах бөгөөд тохиромжтой шад дуулал | Ариун газарт нь хэн зогсож болох вэ?`
 - Reason: stored value is a strict prefix ending inside a geometry-reconstructed physical line; nine-gate human adjudication required
@@ -686,7 +686,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `33`
 - Data: `Уншлага`
-- Geometry visual: `Уншлага эсвэл номлолын дараа аниргүй богино`
+- Geometry visual: `Уншлага эсвэл номлолын дараа аниргүй богино `
 - Omitted-tail signal: `эсвэл номлолын дараа аниргүй богино`
 - Raw interleaved fragment: `Тэнгэрбурханы Үгийн хариу залбирал | Мөнхийн үүднүүд ээ, өргөгдөгтүн! | Уншлага эсвэл номлолын дараа аниргүй богино | Сүр жавхлангийн энэ Хаан хэн бэ? цаг мөчийг сахиж болно. | Түг түмдийн ЭЗЭН, Хожим нь хариу дуу эсвэл уншлагын дараа | Тэрээр сүр жавхлангийн Хаан болой. бичигдсэн хариу залбирлыг уншина.`
 - Reason: stored value is a strict prefix ending inside a geometry-reconstructed physical line; nine-gate human adjudication required
@@ -694,13 +694,13 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 
 ### `src/data/loth/ordinarium.json#/sections/0/subsections/3/blocks/3/text`
 
-- Disposition: `SOURCE_NOT_FOUND`
+- Disposition: `REVIEW_GEOMETRY`
 - Book page: `None`
 - Data: `Тэнгэрбурханы Үгийн хариу залбирал`
 - Geometry visual: `None`
 - Omitted-tail signal: `None`
-- Raw interleaved fragment: `None`
-- Reason: no 24-character geometry-stream anchor found; no PDF unit can be claimed without inventing identity
+- Raw interleaved fragment: `Тэнгэрбурханы Үгийн хариу залбирал`
+- Reason: text SoT hit exists, but the geometry stream did not establish a coordinate-backed unit; retained as REVIEW_GEOMETRY rather than falsely claiming SOURCE_NOT_FOUND
 
 ### `src/data/loth/ordinarium.json#/sections/0/subsections/3/title`
 
@@ -737,7 +737,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `29`
 - Data: `Эхэн цагт байсан мэт аливаа цагт болготугай. Амэн.`
-- Geometry visual: `Эхэн цагт байсан мэт аливаа цагт болготугай. Амэн.`
+- Geometry visual: `Эхэн цагт байсан мэт аливаа цагт болготугай. \nАмэн.`
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -807,7 +807,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `38`
 - Data: `Төгсгөл`
-- Geometry visual: `Төгсгөлийн залбирлыг Долоо хоногийн`
+- Geometry visual: `Төгсгөлийн залбирлыг Долоо хоногийн `
 - Omitted-tail signal: `ийн залбирлыг Долоо хоногийн`
 - Raw interleaved fragment: `38 Дэг жаяг Оройн даатгал залбирал 39 | Төгсгөлийн залбирлыг Долоо хоногийн ОРОЙН ДААТГАЛ ЗАЛБИРАЛ | өдрүүдийн хурлын үед энэ номын “Дөрвөн долоо | Тэнгэрбурхан минь, | хоног” гэсэн хэсгийн зөв долоо хоногоос, бусад`
 - Reason: stored value is a strict prefix ending inside a geometry-reconstructed physical line; nine-gate human adjudication required
@@ -848,7 +848,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `18`
 - Data: `Өглөөний даатгал залбирал`
-- Geometry visual: `Өглөөний даатгал залбирал доор дурдсан урих`
+- Geometry visual: `Өглөөний даатгал залбирал доор дурдсан урих `
 - Omitted-tail signal: `доор дурдсан урих`
 - Raw interleaved fragment: `Залбиралт цагийг ёслон тэмдэглэх заавар 19 | ЗАЛБИРАЛТ ЦАГИЙГ ЁСЛОН Магтуу | ТЭМДЭГЛЭХ ЗААВАР Өглөөний даатгал залбирал: өөрийн гэсэн шад | дуулалтай хамт дуулал, хуучин гэрээний магтаал | Залбиралт цагийн ёслолын удиртгал | ба дуулал`
 - Reason: stored value is a strict prefix ending inside a geometry-reconstructed physical line; nine-gate human adjudication required
@@ -889,7 +889,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `29`
 - Data: `Эцэг, Хүү, Ариун Сүнсэнд жавхланг Эхэн цагт байсан мэт аливаа цагт болготугай. Амэн.`
-- Geometry visual: `Эцэг, Хүү, Ариун Сүнсэнд жавхланг Эхэн цагт байсан мэт аливаа цагт болготугай. Амэн.`
+- Geometry visual: `Эцэг, Хүү, Ариун Сүнсэнд жавхланг\nЭхэн цагт байсан мэт аливаа цагт болготугай. \nАмэн.`
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -919,7 +919,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `33`
 - Data: `Дууллын залбирал`
-- Geometry visual: `Дууллын залбирал нь магтуу дуулсны дараа`
+- Geometry visual: `Дууллын залбирал нь магтуу дуулсны дараа `
 - Omitted-tail signal: `нь магтуу дуулсны дараа`
 - Raw interleaved fragment: `32 Дэг жаяг Өглөөний даатгал залбирал 33 | Гол мөрнүүд дээр түүнийг байгуулжээ. Дууллын залбирал | Дууллын залбирал нь магтуу дуулсны дараа | ЭЗЭНий уул өөд хэн авирч болох вэ? | явагдах бөгөөд тохиромжтой шад дуулал | Ариун газарт нь хэн зогсож болох вэ?`
 - Reason: stored value is a strict prefix ending inside a geometry-reconstructed physical line; nine-gate human adjudication required
@@ -940,7 +940,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `33`
 - Data: `Уншлага`
-- Geometry visual: `Уншлага эсвэл номлолын дараа аниргүй богино`
+- Geometry visual: `Уншлага эсвэл номлолын дараа аниргүй богино `
 - Omitted-tail signal: `эсвэл номлолын дараа аниргүй богино`
 - Raw interleaved fragment: `Тэнгэрбурханы Үгийн хариу залбирал | Мөнхийн үүднүүд ээ, өргөгдөгтүн! | Уншлага эсвэл номлолын дараа аниргүй богино | Сүр жавхлангийн энэ Хаан хэн бэ? цаг мөчийг сахиж болно. | Түг түмдийн ЭЗЭН, Хожим нь хариу дуу эсвэл уншлагын дараа | Тэрээр сүр жавхлангийн Хаан болой. бичигдсэн хариу залбирлыг уншина.`
 - Reason: stored value is a strict prefix ending inside a geometry-reconstructed physical line; nine-gate human adjudication required
@@ -948,13 +948,13 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 
 ### `src/data/loth/ordinarium.json#/sections/1/subsections/2/blocks/3/text`
 
-- Disposition: `SOURCE_NOT_FOUND`
+- Disposition: `REVIEW_GEOMETRY`
 - Book page: `None`
 - Data: `Тэнгэрбурханы Үгийн хариу залбирал`
 - Geometry visual: `None`
 - Omitted-tail signal: `None`
-- Raw interleaved fragment: `None`
-- Reason: no 24-character geometry-stream anchor found; no PDF unit can be claimed without inventing identity
+- Raw interleaved fragment: `Тэнгэрбурханы Үгийн хариу залбирал`
+- Reason: text SoT hit exists, but the geometry stream did not establish a coordinate-backed unit; retained as REVIEW_GEOMETRY rather than falsely claiming SOURCE_NOT_FOUND
 
 ### `src/data/loth/ordinarium.json#/sections/1/subsections/2/title`
 
@@ -991,7 +991,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `29`
 - Data: `Эхэн цагт байсан мэт аливаа цагт болготугай. Амэн.`
-- Geometry visual: `Эхэн цагт байсан мэт аливаа цагт болготугай. Амэн.`
+- Geometry visual: `Эхэн цагт байсан мэт аливаа цагт болготугай. \nАмэн.`
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -1051,7 +1051,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `38`
 - Data: `Төгсгөл`
-- Geometry visual: `Төгсгөлийн залбирлыг Долоо хоногийн`
+- Geometry visual: `Төгсгөлийн залбирлыг Долоо хоногийн `
 - Omitted-tail signal: `ийн залбирлыг Долоо хоногийн`
 - Raw interleaved fragment: `38 Дэг жаяг Оройн даатгал залбирал 39 | Төгсгөлийн залбирлыг Долоо хоногийн ОРОЙН ДААТГАЛ ЗАЛБИРАЛ | өдрүүдийн хурлын үед энэ номын “Дөрвөн долоо | Тэнгэрбурхан минь, | хоног” гэсэн хэсгийн зөв долоо хоногоос, бусад`
 - Reason: stored value is a strict prefix ending inside a geometry-reconstructed physical line; nine-gate human adjudication required
@@ -1092,7 +1092,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `39`
 - Data: `Оройн даатгал залбирал`
-- Geometry visual: `Оройн даатгал залбирал 39`
+- Geometry visual: `Оройн даатгал залбирал                  39`
 - Omitted-tail signal: `39`
 - Raw interleaved fragment: `38 Дэг жаяг Оройн даатгал залбирал 39 | Төгсгөлийн залбирлыг Долоо хоногийн ОРОЙН ДААТГАЛ ЗАЛБИРАЛ | өдрүүдийн хурлын үед энэ номын “Дөрвөн долоо | Тэнгэрбурхан минь,`
 - Reason: stored value is a strict prefix ending inside a geometry-reconstructed physical line; nine-gate human adjudication required
@@ -1103,7 +1103,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `79`
 - Data: `Өө, ЭЗЭН минь,`
-- Geometry visual: `Өө, ЭЗЭН минь,`
+- Geometry visual: `Өө, ЭЗЭН минь, `
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -1173,7 +1173,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `121`
 - Data: `Түүгээр дамжуулан`
-- Geometry visual: `Түүгээр дамжуулан`
+- Geometry visual: `Түүгээр дамжуулан `
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -1213,7 +1213,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `179`
 - Data: `Тэнгэрбурхан Эзэн,`
-- Geometry visual: `Тэнгэрбурхан Эзэн,`
+- Geometry visual: `Тэнгэрбурхан Эзэн, `
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -1303,7 +1303,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `62`
 - Data: `Израил аа,`
-- Geometry visual: `Израил аа,`
+- Geometry visual: `Израил аа, `
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -1333,7 +1333,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `62`
 - Data: `Эзэний зардас нар аа,`
-- Geometry visual: `Эзэний зардас нар аа,`
+- Geometry visual: `Эзэний зардас нар аа, `
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -1373,7 +1373,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `63`
 - Data: `Таныг магтаж,`
-- Geometry visual: `Таныг магтаж,`
+- Geometry visual: `Таныг магтаж, `
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -1583,7 +1583,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `62`
 - Data: `Хамаг эх булаг аа,`
-- Geometry visual: `Хамаг эх булаг аа,`
+- Geometry visual: `Хамаг эх булаг аа, `
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -1703,7 +1703,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `161`
 - Data: `Аяа, ЭЗЭН,`
-- Geometry visual: `Аяа, ЭЗЭН,`
+- Geometry visual: `Аяа, ЭЗЭН, `
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -1803,7 +1803,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `214`
 - Data: `ЭЗЭНий өргөөнд`
-- Geometry visual: `ЭЗЭНий өргөөнд`
+- Geometry visual: `ЭЗЭНий өргөөнд `
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -1873,7 +1873,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `111`
 - Data: `Таны өмнө`
-- Geometry visual: `Таны өмнө`
+- Geometry visual: `Таны өмнө `
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -1923,7 +1923,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `163`
 - Data: `ЭЗЭНий үнэн үүрд мөнх,`
-- Geometry visual: `ЭЗЭНий үнэн үүрд мөнх,`
+- Geometry visual: `ЭЗЭНий үнэн үүрд мөнх, `
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -1963,7 +1963,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `324`
 - Data: `Эзэн Есүс, Та шавь нартаа “Миний нэрээс болж бүгд та нарыг үзэн ядах болно. Гэсэн хэдий ч та нарын толгой дахь ширхэг үс чинь ч устахгүй” гэж зөгнөсөн билээ. Хавчлага шахалтын үед, Та Ариун Сүнсний тайтгарал болон хүч чадлаар биднийг хамгаалж, сэргээнэ үү. Тиймийн тул бид дайснуудаасаа чөлөөлөгдөж, Таны авралын тусламжийг магтах болно.`
-- Geometry visual: `Эзэн Есүс, Та шавь нартаа "Миний нэрээс`
+- Geometry visual: `Эзэн Есүс, Та шавь нартаа \"Миний нэрээс`
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `Тэрээр ертөнцийн сууриас урьд | Дууллыг төгсгөх залбирал Христ дотор биднийг сонгосон ажээ. | Эзэн Есүс, Та шавь нартаа “Миний нэрээс | Тэрээр бидэнд Есүс Христээр дамжуулан | болж бүгд та нарыг үзэн ядах болно. Гэсэн хэдий ч | Өөрийн төлөөнөө`
 - Reason: anchored prefix found but whole-value alignment fails (substitution, reorder, contamination, or wrap ambiguity)
@@ -2033,7 +2033,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `385`
 - Data: `Учир нь ЭЗЭН`
-- Geometry visual: `Учир нь ЭЗЭН`
+- Geometry visual: `Учир нь ЭЗЭН `
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -2073,7 +2073,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `536`
 - Data: `Учир нь Та миний сэтгэлийг Үхэгсдийн`
-- Geometry visual: `Учир нь Та миний сэтгэлийг Үхэгсдийн`
+- Geometry visual: `Учир нь Та миний сэтгэлийг Үхэгсдийн `
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -2083,7 +2083,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `536`
 - Data: `Та Өөрийн Ариун Нэгэнд ч ялзрахыг`
-- Geometry visual: `Та Өөрийн Ариун Нэгэнд ч ялзрахыг`
+- Geometry visual: `Та Өөрийн Ариун Нэгэнд ч ялзрахыг `
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -2163,7 +2163,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `110`
 - Data: `Та тэднийг`
-- Geometry visual: `Та тэднийг`
+- Geometry visual: `Та тэднийг `
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -2173,7 +2173,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `513`
 - Data: `Харин ЭЗЭН`
-- Geometry visual: `Харин ЭЗЭН`
+- Geometry visual: `Харин ЭЗЭН `
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -2193,7 +2193,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `143`
 - Data: `Йерусалимын хэрмийг барьж босгооч.`
-- Geometry visual: `Йерусалимын хэрмийг барьж босгооч. -`
+- Geometry visual: `Йерусалимын хэрмийг барьж босгооч. –`
 - Omitted-tail signal: `-`
 - Raw interleaved fragment: `Өөрийн тааллаар Сионд сайныг үйлдээч. | Би цаснаас цагаан болно. | Йерусалимын хэрмийг барьж босгооч. –`
 - Reason: stored value is a strict prefix ending inside a geometry-reconstructed physical line; nine-gate human adjudication required
@@ -2224,7 +2224,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `126`
 - Data: `Аяа Тэнгэрбурхан,`
-- Geometry visual: `Аяа Тэнгэрбурхан,`
+- Geometry visual: `Аяа Тэнгэрбурхан, `
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -2241,33 +2241,33 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 
 ### `src/data/loth/psalter-texts.json#/Psalm 5:2-10, 12-13/stanzas/1/10`
 
-- Disposition: `SOURCE_NOT_FOUND`
+- Disposition: `REVIEW_GEOMETRY`
 - Book page: `None`
 - Data: `  Таны нэрийг хайрлагчид Танд баясна.`
 - Geometry visual: `None`
 - Omitted-tail signal: `None`
-- Raw interleaved fragment: `None`
-- Reason: no 24-character geometry-stream anchor found; no PDF unit can be claimed without inventing identity
+- Raw interleaved fragment: `Таны нэрийг хайрлагчид Танд баясна.`
+- Reason: text SoT hit exists, but the geometry stream did not establish a coordinate-backed unit; retained as REVIEW_GEOMETRY rather than falsely claiming SOURCE_NOT_FOUND
 
 ### `src/data/loth/psalter-texts.json#/Psalm 5:2-10, 12-13/stanzas/1/9`
 
-- Disposition: `SOURCE_NOT_FOUND`
+- Disposition: `REVIEW_GEOMETRY`
 - Book page: `None`
 - Data: `  Та хамгаалсан учир мөнхөд баярлан дуулаг.`
 - Geometry visual: `None`
 - Omitted-tail signal: `None`
-- Raw interleaved fragment: `None`
-- Reason: no 24-character geometry-stream anchor found; no PDF unit can be claimed without inventing identity
+- Raw interleaved fragment: `Та хамгаалсан учир мөнхөд баярлан дуулаг.`
+- Reason: text SoT hit exists, but the geometry stream did not establish a coordinate-backed unit; retained as REVIEW_GEOMETRY rather than falsely claiming SOURCE_NOT_FOUND
 
 ### `src/data/loth/psalter-texts.json#/Psalm 63:2-9/stanzas/1/0`
 
-- Disposition: `SOURCE_NOT_FOUND`
+- Disposition: `REVIEW_GEOMETRY`
 - Book page: `None`
 - Data: `Ийнхүү би амьддаа Таныг магтана.`
 - Geometry visual: `None`
 - Omitted-tail signal: `None`
-- Raw interleaved fragment: `None`
-- Reason: no 24-character geometry-stream anchor found; no PDF unit can be claimed without inventing identity
+- Raw interleaved fragment: `Ийнхүү би амьддаа Таныг магтана.`
+- Reason: text SoT hit exists, but the geometry stream did not establish a coordinate-backed unit; retained as REVIEW_GEOMETRY rather than falsely claiming SOURCE_NOT_FOUND
 
 ### `src/data/loth/psalter-texts.json#/Psalm 72:1-11/stanzas/0/24`
 
@@ -2304,7 +2304,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_DIVERGENCE`
 - Book page: `251`
 - Data: `Хаднаас гарсан балаар Би хангах байсан”.`
-- Geometry visual: `Хаднаас гарсан балаар Би хангах байсан.".`
+- Geometry visual: `Хаднаас гарсан балаар Би хангах байсан.\".`
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `Тэрээр Египет нутаг даяар явахдаа Тэдний цаг мөнхөд үргэлжлэх байсан. | Иосефын дотор зарчмыг тогтоосон. Дээд зэргийн буудайгаар тэднийг хооллож, | Хаднаас гарсан балаар Би хангах байсан.”. | Би мэдэхгүй хэлээ сонсов. | “Би мөрнөөс нь ачааг буулгаж, Эцэг, Хүү, Ариун Сүнсэнд жавхланг… | Гарыг нь сагснаас чөлөөлөв.`
 - Reason: anchored prefix found but whole-value alignment fails (substitution, reorder, contamination, or wrap ambiguity)
@@ -2394,7 +2394,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `71`
 - Data: `Түүний шүүлт шулуун шударга ба үнэн зөв`
-- Geometry visual: `Түүний шүүлт шулуун шударга ба үнэн зөв`
+- Geometry visual: `Түүний шүүлт шулуун шударга ба үнэн зөв `
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -2474,7 +2474,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `95`
 - Data: `Бүх хүмүүс`
-- Geometry visual: `Бүх хүмүүс`
+- Geometry visual: `Бүх хүмүүс `
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -2614,7 +2614,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `62`
 - Data: `  Хамаг эх булаг аа,`
-- Geometry visual: `Хамаг эх булаг аа,`
+- Geometry visual: `Хамаг эх булаг аа, `
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -2664,7 +2664,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `62`
 - Data: `  Израил аа,`
-- Geometry visual: `Израил аа,`
+- Geometry visual: `Израил аа, `
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -2694,7 +2694,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `62`
 - Data: `  Эзэний зардас нар аа,`
-- Geometry visual: `Эзэний зардас нар аа,`
+- Geometry visual: `Эзэний зардас нар аа, `
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -2734,7 +2734,7 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 - Disposition: `REVIEW_GEOMETRY`
 - Book page: `63`
 - Data: `   Таныг магтаж,`
-- Geometry visual: `Таныг магтаж,`
+- Geometry visual: `Таныг магтаж, `
 - Omitted-tail signal: `None`
 - Raw interleaved fragment: `None`
 - Reason: same value has both complete-unit and strict-prefix PDF occurrences; address identity is not proven by the available page/structural hints
@@ -2931,11 +2931,11 @@ No row passed all nine gates, so there are no CLEAR_TRUNCATION fix packets. The 
 
 ### `src/data/loth/psalter-texts.pilot.json#/Psalm 63:2-9/stanzas/4/0`
 
-- Disposition: `SOURCE_NOT_FOUND`
+- Disposition: `REVIEW_GEOMETRY`
 - Book page: `None`
 - Data: `   Ийнхүү би амьддаа Таныг магтана.`
 - Geometry visual: `None`
 - Omitted-tail signal: `None`
-- Raw interleaved fragment: `None`
-- Reason: no 24-character geometry-stream anchor found; no PDF unit can be claimed without inventing identity
+- Raw interleaved fragment: `Ийнхүү би амьддаа Таныг магтана.`
+- Reason: text SoT hit exists, but the geometry stream did not establish a coordinate-backed unit; retained as REVIEW_GEOMETRY rather than falsely claiming SOURCE_NOT_FOUND
 

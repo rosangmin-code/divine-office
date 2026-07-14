@@ -18,13 +18,13 @@ The result JSONL is the immutable shard manifest enriched with the value hash, g
 
 | Disposition | Count |
 |---|---:|
-| `MATCH_LITERAL` | 3,569 |
-| `MATCH_NORMALIZED` | 479 |
+| `MATCH_LITERAL` | 2,583 |
+| `MATCH_NORMALIZED` | 1,465 |
 | `KEEP_RULED` | 0 |
 | `CLEAR_TRUNCATION` | 0 |
 | `REVIEW_DIVERGENCE` | 100 |
-| `REVIEW_GEOMETRY` | 148 |
-| `SOURCE_NOT_FOUND` | 43 |
+| `REVIEW_GEOMETRY` | 154 |
+| `SOURCE_NOT_FOUND` | 37 |
 | `NOT_APPLICABLE_METADATA` | 28 |
 | **Total** | **4,367** |
 
