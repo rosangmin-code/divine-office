@@ -1,59 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="96" fill="#2b1f14"/>
-  <ellipse cx="256" cy="438" rx="158" ry="10" fill="#000" opacity="0.4"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Divine Office book with a gold cross</title>
 
-  <rect x="160" y="80" width="240" height="6" fill="#c9a961"/>
-  <rect x="160" y="80" width="240" height="2" fill="#a8893c"/>
+  <!-- The cover is the tile: full-bleed, opaque, and safe for launcher masks. -->
+  <rect width="512" height="512" fill="#5c4a33"/>
 
-  <rect x="104" y="84" width="56" height="344" fill="#3e3122"/>
-  <rect x="160" y="84" width="240" height="344" fill="#5c4a33"/>
-  <rect x="158" y="84" width="3" height="344" fill="#14100a"/>
+  <!-- Minimal spine shading and a gold page edge keep the book silhouette legible. -->
+  <rect width="52" height="512" fill="#493a28"/>
+  <rect x="52" width="8" height="512" fill="#4f3e2b"/>
+  <rect x="488" width="24" height="512" fill="#c9a961"/>
+  <rect x="488" width="5" height="512" fill="#a8893c"/>
 
-  <g fill="#1f1610">
-    <rect x="104" y="132" width="56" height="5"/>
-    <rect x="104" y="200" width="56" height="5"/>
-    <rect x="104" y="268" width="56" height="5"/>
-    <rect x="104" y="336" width="56" height="5"/>
-  </g>
-
-  <rect x="112" y="150" width="40" height="44" fill="none"
-        stroke="#a8893c" stroke-width="1.5" rx="2"/>
-  <rect x="124" y="165" width="16" height="2" fill="#c9a961" rx="0.5"/>
-  <rect x="122" y="173" width="20" height="2" fill="#c9a961" rx="0.5"/>
-  <rect x="126" y="181" width="12" height="2" fill="#c9a961" rx="0.5"/>
-
-  <rect x="400" y="84" width="10" height="344" fill="#c9a961"/>
-  <g stroke="#a8893c" stroke-width="0.7" opacity="0.6">
-    <line x1="400" y1="148" x2="410" y2="148"/>
-    <line x1="400" y1="200" x2="410" y2="200"/>
-    <line x1="400" y1="252" x2="410" y2="252"/>
-    <line x1="400" y1="304" x2="410" y2="304"/>
-    <line x1="400" y1="356" x2="410" y2="356"/>
-  </g>
-
-  <rect x="184" y="104" width="192" height="304" fill="none"
-        stroke="#a8893c" stroke-width="3" rx="4"/>
-  <rect x="192" y="112" width="176" height="288" fill="none"
-        stroke="#a8893c" stroke-width="1" rx="2" opacity="0.55"/>
-
-  <g fill="#c9a961">
-    <path d="M 200 120 l 7 7 l -7 7 l -7 -7 z"/>
-    <path d="M 360 120 l 7 7 l -7 7 l -7 -7 z"/>
-    <path d="M 200 392 l 7 7 l -7 7 l -7 -7 z"/>
-    <path d="M 360 392 l 7 7 l -7 7 l -7 -7 z"/>
-  </g>
-
-  <g fill="#c9a961">
-    <rect x="272" y="152" width="16" height="208" rx="2"/>
-    <rect x="226" y="216" width="108" height="16" rx="2"/>
-  </g>
-  <g fill="#a8893c" opacity="0.6">
-    <rect x="273" y="153" width="14" height="2" rx="1"/>
-    <rect x="227" y="217" width="106" height="2" rx="1"/>
-  </g>
-
-  <rect x="273" y="72" width="14" height="14" fill="#7b2d8b"/>
-  <rect x="273" y="72" width="2" height="14" fill="#4a1f5c"/>
-  <path d="M 273 428 L 287 428 L 287 472 L 280 462 L 273 472 Z" fill="#7b2d8b"/>
-  <rect x="285" y="428" width="2" height="38" fill="#4a1f5c"/>
+  <!-- Both cross layers remain inside the central r=205 px maskable safe circle. -->
+  <path d="M228 104h56v98h64v56h-64v150h-56V258h-64v-56h64z"
+        fill="#a8893c" transform="translate(6 6)"/>
+  <path d="M228 104h56v98h64v56h-64v150h-56V258h-64v-56h64z"
+        fill="#c9a961"/>
 </svg>

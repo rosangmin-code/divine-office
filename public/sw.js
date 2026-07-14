@@ -1,3 +1,7 @@
+// v78 — GOAL #115: full-bleed book icon redesign. `/icon.svg` is a
+// PRECACHE_URLS entry, so its content change requires v77 → v78 to prevent the
+// prior framed icon from remaining cache-first. SW behavior and asset paths are
+// unchanged.
 // v50 — GOAL #210: hymn page-break stanza-drift correction deploy prep. 본
 // bump 는 `scripts/fix-hymn-pagebreak-stanza-drift.mjs` 의 20개 hymn 대상
 // 병합과 `src/data/loth/prayers/hymns/*.rich.json` + `src/data/loth/
@@ -658,7 +662,7 @@
 // indent 추가 → 초대송 SSR HTML 출력의 행구조/들여쓰기가 바뀜. stale-cache
 // 클라이언트가 구 병합-행 출력을 cache-first 로 계속 받는 회귀 방지.
 // SW 로직 변경 없음 — navigation `network-only` 유지, PRECACHE 무변경.
-const CACHE_VERSION = 'divine-office-v77'
+const CACHE_VERSION = 'divine-office-v78'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
