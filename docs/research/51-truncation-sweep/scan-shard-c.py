@@ -456,22 +456,20 @@ def search_tokens(value: str) -> list[str]:
     return [token for token in re.findall(r"[\w\u0400-\u052f]+", value.lower()) if len(token) >= 2]
 
 
-def find_match(
+def find_match_on_pages(
     row: Scalar,
     pages: dict[int, BookPage],
-    token_pages: dict[str, set[int]],
+    page_order: Iterable[int],
 ) -> dict[str, Any] | None:
+    """Find the best allowed comparison-tier match in an explicit page order."""
     literal = row.value
     normalized = normalize_typography_only(row.value)
     whitespace = normalize_with_map(row.value, strip_whitespace=True)[0]
-    hints = page_hints(row)
-    hinted = [page for hint in hints for page in (hint, hint - 1, hint + 1) if page in pages]
-    tokens = search_tokens(normalized)
-    global_candidates = sorted(token_pages.get(tokens[0], set(pages))) if tokens else sorted(pages)
-    order = list(dict.fromkeys(hinted + global_candidates))
 
     tiers = ("literal", "typography", "whitespace")
-    for book_page in order:
+    for book_page in dict.fromkeys(page_order):
+        if book_page not in pages:
+            continue
         page = pages[book_page]
         for tier in tiers:
             if tier == "literal":
@@ -496,11 +494,46 @@ def find_match(
                     "index": index,
                     "needle": needle,
                     "haystack": haystack,
-                    "hinted": book_page in hinted,
                     "visual_match": page.visual[visual_start:visual_end],
                     "visual_context": excerpt(page.visual, visual_start, visual_end - visual_start, 60),
                 }
     return None
+
+
+def find_match(
+    row: Scalar,
+    pages: dict[int, BookPage],
+) -> dict[str, Any] | None:
+    """Return a terminal match only when a supplied page hint proves identity.
+
+    A global text occurrence is not address identity: common rubrics and prayers
+    recur throughout the book.  The terminal boundary is therefore the exact
+    supplied book page plus its two spread-adjacent pages.
+    """
+    hinted_pages = [
+        page
+        for hint in page_hints(row)
+        for page in (hint, hint - 1, hint + 1)
+        if page in pages
+    ]
+    match = find_match_on_pages(row, pages, hinted_pages)
+    if match:
+        match["identity_basis"] = "page-hint-plus-or-minus-1"
+    return match
+
+
+def find_unproven_global_match(
+    row: Scalar,
+    pages: dict[int, BookPage],
+    token_pages: dict[str, set[int]],
+) -> dict[str, Any] | None:
+    """Retain exact/normalized wording evidence without promoting identity."""
+    tokens = search_tokens(normalize_typography_only(row.value))
+    candidates = sorted(token_pages.get(tokens[0], set(pages))) if tokens else sorted(pages)
+    match = find_match_on_pages(row, pages, candidates)
+    if match:
+        match["identity_basis"] = "unproven-global-text-occurrence"
+    return match
 
 
 def anchor_candidate(
@@ -671,11 +704,17 @@ def overlay_container_twin(row: Scalar) -> list[str]:
     return links
 
 
-def gate_packet(disposition: str, matched: bool, twin_addresses: list[str], human_note: str) -> dict[str, Any]:
+def gate_packet(
+    disposition: str,
+    identity_proven: bool,
+    visual_order_proven: bool,
+    twin_addresses: list[str],
+    human_note: str,
+) -> dict[str, Any]:
     clear = disposition == "CLEAR_TRUNCATION"
     return {
-        "identity": clear,
-        "visual_order": matched,
+        "identity": identity_proven,
+        "visual_order": visual_order_proven,
         "strict_prefix_loss": clear,
         "positive_tail": clear,
         "boundary_proof": clear,
@@ -704,8 +743,11 @@ def make_row(
     )
     keep_entry = keep.get((row.address, row.value_sha256))
     manual_divergence = ADJUDICATED_DIVERGENCES.get(row.address)
-    match = find_match(row, pages, token_pages)
-    candidate = None if match else anchor_candidate(row, pages, token_pages)
+    match = find_match(row, pages)
+    unproven_match = (
+        None if match else find_unproven_global_match(row, pages, token_pages)
+    )
+    candidate = None if match or unproven_match else anchor_candidate(row, pages, token_pages)
     raw_source = raw_source_evidence(source_collapsed, source_normalized, row.value)
     raw_exact = raw_source["exact"]
 
@@ -716,20 +758,24 @@ def make_row(
     pdf_raw = ""
     omitted_tail = ""
     rationale = ""
+    identity_basis = "unproven"
 
     if keep_entry:
         disposition = "KEEP_RULED"
-        comparison_tier = match["tier"] if match else "whitelist"
-        if match:
-            book_page = match["book_page"]
-            pdf_visual = match["visual_match"]
-            pdf_visual_context = match["visual_context"]
+        evidence_match = match or unproven_match
+        comparison_tier = evidence_match["tier"] if evidence_match else "whitelist"
+        if evidence_match:
+            book_page = evidence_match["book_page"]
+            pdf_visual = evidence_match["visual_match"]
+            pdf_visual_context = evidence_match["visual_context"]
+        identity_basis = "exact-address-and-value-sha256-ruling"
         rationale = (
             f"Exact coordinator ruling {keep_entry['reason_code']} applied by address and value hash; "
             "no phrase-global suppression."
         )
     elif is_metadata(row):
         disposition = "NOT_APPLICABLE_METADATA"
+        identity_basis = "not-applicable-metadata"
         rationale = "Curator/runtime provenance prose, not a PDF-authored content claim."
     elif manual_divergence:
         disposition = "REVIEW_DIVERGENCE"
@@ -737,6 +783,7 @@ def make_row(
         book_page = manual_divergence["page"]
         pdf_visual = manual_divergence["pdf_visual"]
         pdf_visual_context = pdf_visual
+        identity_basis = "manual-page-adjudication"
         rationale = manual_divergence["rationale"]
     elif match:
         disposition = "MATCH_LITERAL" if match["tier"] == "literal" else "MATCH_NORMALIZED"
@@ -744,9 +791,22 @@ def make_row(
         book_page = match["book_page"]
         pdf_visual = match["visual_match"]
         pdf_visual_context = match["visual_context"]
+        identity_basis = match["identity_basis"]
         rationale = (
-            "Value occurs in geometry-reconstructed book-page reading order"
-            + (" at a supplied page hint." if match["hinted"] else ".")
+            "Value occurs in geometry-reconstructed reading order on the supplied book-page "
+            "hint or an immediately adjacent spread page."
+        )
+    elif unproven_match:
+        disposition = "REVIEW_GEOMETRY"
+        comparison_tier = f"identity-unproven-{unproven_match['tier']}"
+        book_page = unproven_match["book_page"]
+        pdf_visual = unproven_match["visual_match"]
+        pdf_visual_context = unproven_match["visual_context"]
+        identity_basis = unproven_match["identity_basis"]
+        rationale = (
+            "The wording occurs in geometry-reconstructed reading order, but only outside the "
+            "supplied page hint plus-or-minus one (or without any page hint). Repeated liturgical "
+            "text does not prove this address identity, so the occurrence is not terminal MATCH evidence."
         )
     elif raw_exact:
         disposition = "REVIEW_GEOMETRY"
@@ -766,12 +826,14 @@ def make_row(
         pdf_visual = excerpt(candidate["haystack"], candidate["index"], 120, 80)
         pdf_visual_context = pdf_visual
         pdf_raw = pages[book_page].raw
+        identity_basis = "target-derived-anchor-only"
         rationale = (
             "At least two independent target-derived anchors localize a geometry page, but strict "
             "equality fails; substitution/reorder/translation review is required."
         )
     elif hints and not any(hint in pages for hint in hints):
         disposition = "REVIEW_GEOMETRY"
+        identity_basis = "page-hint-outside-geometry-corpus"
         rationale = "Supplied book-page identity lies outside the tracked geometry corpus."
     else:
         disposition = "SOURCE_NOT_FOUND"
@@ -801,6 +863,15 @@ def make_row(
                 raise RuntimeError(f"untruthful whitespace tier: {row.address}")
         else:
             raise RuntimeError(f"unknown normalized tier: {row.address}")
+    if disposition in {"MATCH_LITERAL", "MATCH_NORMALIZED"}:
+        hinted_pages = {
+            page
+            for hint in hints
+            for page in (hint, hint - 1, hint + 1)
+            if page in pages
+        }
+        if book_page not in hinted_pages or identity_basis != "page-hint-plus-or-minus-1":
+            raise RuntimeError(f"terminal match lacks hinted address identity: {row.address}")
 
     human_note = (
         "Strict prefix loss and a bounded omitted tail were not established."
@@ -816,6 +887,7 @@ def make_row(
         "page": book_page,
         "page_hints": hints,
         "anchors": anchors,
+        "identity_basis": identity_basis,
         "comparison_tier": comparison_tier,
         "disposition": disposition,
         "evidence": {
@@ -829,6 +901,7 @@ def make_row(
         "twin_addresses": twins,
         "clear_truncation_gates": gate_packet(
             disposition,
+            bool(match) or bool(manual_divergence),
             bool(match) or bool(manual_divergence),
             twins,
             human_note,

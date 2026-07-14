@@ -22,7 +22,7 @@
 | Raw text SHA-256 | `f12f6135556f77df75593d2627ec2642ec6113c2a56f52b26102653580c1b330` |
 | Geometry source | `public/psalter.pdf` |
 | Geometry SHA-256 | `fa0397e9674745f2dc740094eb53f4a367740f6b55d50e1edcf8970972fc3fcd` |
-| Result-ledger SHA-256 | `dce2fa91eb13724330479011502088ea199bf920ccf4781fb8a61521b438c41e` |
+| Result-ledger SHA-256 | `8ff9ed7708e7f6fbef6fa785f17057a7242b7327b1922826b76007686e567840` |
 
 The scanner aborts on HEAD, source-hash, area-count, total-count, or duplicate-address drift. It reads the coordinator ledger from the main worktree and applies a KEEP only when both exact address and current value SHA-256 match.
 
@@ -33,7 +33,7 @@ The detector implements the committed plan's stages without changing data:
 1. It walks every JSON scalar containing Cyrillic in the four assigned areas and excludes only the mandated `gospelCanticleAntiphon*` ancestors.
 2. It attaches the nearest field-specific page hint, structural anchors, literal value hash, field family, and cross-area plain/rich links.
 3. It opens the tracked PDF with `pdfplumber`, clusters glyphs by y within ±1.5 pt, splits spreads at x=297, sorts each book-page column independently, and removes only proven running page headers/numbers. The 485-file-page PDF yields 968 independently ordered book-page streams (front/back singles plus the intervening spreads).
-4. It tests literal reconstructed order, then NFKC/typography, then whitespace-stripped equality. Raw-text substring presence is retained only as evidence and never promoted to a geometry match.
+4. It tests literal reconstructed order, then NFKC/typography, then whitespace-stripped equality. A terminal match must occur on the supplied book-page hint or an immediately adjacent page; an identical occurrence elsewhere is retained as evidence and routed to `REVIEW_GEOMETRY`, because repeated text does not prove address identity. Raw-text substring presence is likewise evidence only.
 5. It applies the exact coordinator KEEP ledger, classifies authored/runtime metadata explicitly, and sends every remaining localized mismatch to divergence or geometry review.
 6. Every output row carries the nine `clear_truncation_gates`, literal data, raw-text fragment, reconstructed visual fragment, twin addresses, and a terminal disposition.
 
@@ -41,26 +41,37 @@ The detector implements the committed plan's stages without changing data:
 
 | Area | Units | `MATCH_LITERAL` | `MATCH_NORMALIZED` | `KEEP_RULED` | `REVIEW_DIVERGENCE` | `REVIEW_GEOMETRY` | `NOT_APPLICABLE_METADATA` | Twin-linked rows |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| `propers` | 2,265 | 1,334 | 664 | 12 | 192 | 32 | 31 | 759 |
-| `psalter` | 2,051 | 1,940 | 45 | 1 | 65 | 0 | 0 | 224 |
-| `sanctoral` | 168 | 85 | 38 | 0 | 41 | 0 | 4 | 0 |
+| `propers` | 2,265 | 1,304 | 638 | 12 | 192 | 88 | 31 | 759 |
+| `psalter` | 2,051 | 1,921 | 45 | 1 | 65 | 19 | 0 | 224 |
+| `sanctoral` | 168 | 48 | 38 | 0 | 41 | 37 | 4 | 0 |
 | `prayers/commons/compline` | 42 | 41 | 1 | 0 | 0 | 0 | 0 | 35 |
-| **Total** | **4,526** | **3,400** | **748** | **13** | **298** | **32** | **35** | **1,018** |
+| **Total** | **4,526** | **3,314** | **722** | **13** | **298** | **144** | **35** | **1,018** |
 
-There are zero `SOURCE_NOT_FOUND` rows and zero `CLEAR_TRUNCATION` rows. The terminal sum is `3,400 + 748 + 13 + 298 + 32 + 35 = 4,526`.
+There are zero `SOURCE_NOT_FOUND` rows and zero `CLEAR_TRUNCATION` rows. The terminal sum is `3,314 + 722 + 13 + 298 + 144 + 35 = 4,526`.
 
 ### Tier-truthfulness self-audit
 
 `evidence.pdf_visual` is the exact original geometry slice used for the verdict; surrounding text is retained separately as `evidence.pdf_visual_context`. A full-ledger audit returned:
 
 ```text
-MATCH_LITERAL rows=3400 byte_mismatches=0
-MATCH_NORMALIZED rows=748 byte_equal_violations=0 tier_truth_violations=0
+MATCH_LITERAL rows=3314 byte_mismatches=0
+MATCH_NORMALIZED rows=722 byte_equal_violations=0 tier_truth_violations=0
 SOURCE_NOT_FOUND rows=0 raw_occurrence_violations=0
 SELF_AUDIT=PASS
 ```
 
 For a normalized row, `comparison_tier=typography` requires equality after only NFKC plus quote/dash/ellipsis normalization while preserving whitespace. `comparison_tier=whitespace` requires equality after that typography normalization plus whitespace removal. The reproducer raises instead of writing a row when either invariant is false.
+
+### Address-identity self-audit
+
+Terminal `MATCH_LITERAL` and `MATCH_NORMALIZED` require page identity as well as text equality. A full-ledger audit returned:
+
+```text
+MATCH rows=4036 outside_hint_plusminus1=0 unhinted=0 identity_gate_failures=0
+identity_unproven_routed_to_REVIEW_GEOMETRY=112
+```
+
+All 4,036 terminal matches carry `identity_basis=page-hint-plus-or-minus-1`, and both their identity and visual-order gates are true. The reproducer raises before writing if a terminal match falls outside that boundary.
 
 ## Exact KEEP application
 
@@ -137,7 +148,12 @@ These five cases are useful controls because a raw-substring detector would misc
 
 ## Geometry review queue
 
-The 32 `REVIEW_GEOMETRY` rows are paired `pageRedirects` label/evidence values for styled `Магтуу` page references. The wording is exact in `full_pdf.txt`, but the PDF renders the heading with separately styled glyph runs whose baselines exceed the ±1.5 pt clustering tolerance (for example, geometry emits `М: . 874-875. агТуух`). Because reconstructed equality is not proven, these rows remain geometry review instead of being called matches. None has positive omitted-tail evidence.
+The 144 `REVIEW_GEOMETRY` rows have two explicit evidence classes:
+
+- 112 rows have a literal or allowed-normalized geometry occurrence only outside their page hint ±1, or have no page hint. These are marked `unproven-global-text-occurrence`; 86 are literal occurrences, 15 typography-normalized, and 11 whitespace-normalized. They are not matches because common liturgical text can recur in unrelated units.
+- 32 rows are paired `pageRedirects` label/evidence values for styled `Магтуу` page references. The wording is exact in `full_pdf.txt`, but the PDF renders the heading with separately styled glyph runs whose baselines exceed the ±1.5 pt clustering tolerance (for example, geometry emits `М: . 874-875. агТуух`).
+
+None has positive omitted-tail evidence.
 
 ## Metadata closure
 
