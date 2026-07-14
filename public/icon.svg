@@ -1,19 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <rect width="512" height="512" rx="96" fill="#211711"/>
-  <rect x="160" y="80" width="240" height="6" fill="#c9a961"/>
-  <rect x="160" y="80" width="240" height="2" fill="#9a7b2e"/>
-  <rect x="104" y="84" width="56" height="344" fill="#3a2c1e"/>
-  <rect x="160" y="84" width="240" height="344" fill="#54422d"/>
-  <rect x="158" y="84" width="3" height="344" fill="#14100a"/>
-  <rect x="400" y="84" width="10" height="344" fill="#c9a961"/>
-  <g stroke="#9a7b2e" stroke-width="0.7" opacity="0.7"><line x1="400" y1="148" x2="410" y2="148"/><line x1="400" y1="200" x2="410" y2="200"/><line x1="400" y1="252" x2="410" y2="252"/><line x1="400" y1="304" x2="410" y2="304"/><line x1="400" y1="356" x2="410" y2="356"/></g>
-  <rect x="184" y="104" width="192" height="304" fill="none" stroke="#9a7b2e" stroke-width="3" rx="4"/>
-  <rect x="192" y="112" width="176" height="288" fill="none" stroke="#c9a961" stroke-width="1" rx="2" opacity="0.5"/>
-  <g fill="#c9a961"><path d="M 200 120 l 7 7 l -7 7 l -7 -7 z"/><path d="M 360 120 l 7 7 l -7 7 l -7 -7 z"/><path d="M 200 392 l 7 7 l -7 7 l -7 -7 z"/><path d="M 360 392 l 7 7 l -7 7 l -7 -7 z"/></g>
-  <g fill="#c9a961"><rect x="272" y="152" width="16" height="208" rx="2"/><rect x="226" y="216" width="108" height="16" rx="2"/></g>
-  <g fill="#9a7b2e" opacity="0.55"><rect x="273" y="153" width="14" height="2" rx="1"/><rect x="227" y="217" width="106" height="2" rx="1"/></g>
-  <rect x="273" y="72" width="14" height="14" fill="#c9a961"/>
-  <rect x="273" y="72" width="2" height="14" fill="#9a7b2e"/>
-  <path d="M 273 428 L 287 428 L 287 472 L 280 462 L 273 472 Z" fill="#c9a961"/>
-  <rect x="285" y="428" width="2" height="38" fill="#9a7b2e"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Divine Office book with a gold cross</title>
+
+  <!-- The cover is the tile: full-bleed, opaque, and safe for launcher masks. -->
+  <rect width="512" height="512" fill="#5c4a33"/>
+
+  <!-- Minimal spine shading and a gold page edge keep the book silhouette legible. -->
+  <rect width="52" height="512" fill="#493a28"/>
+  <rect x="52" width="8" height="512" fill="#4f3e2b"/>
+  <rect x="488" width="24" height="512" fill="#c9a961"/>
+  <rect x="488" width="5" height="512" fill="#a8893c"/>
+
+  <!-- Both cross layers remain inside the central r=205 px maskable safe circle. -->
+  <path d="M228 104h56v98h64v56h-64v150h-56V258h-64v-56h64z"
+        fill="#a8893c" transform="translate(6 6)"/>
+  <path d="M228 104h56v98h64v56h-64v150h-56V258h-64v-56h64z"
+        fill="#c9a961"/>
 </svg>
