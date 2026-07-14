@@ -17,7 +17,9 @@ The scan enumerated every Cyrillic scalar under the eight shard-D areas with the
 
 `pdftotext -layout` was run across physical pages 1–482. The tracked column splitter reconstructed left/right book-page streams using the empirically verified book-page mapping. Physical pages 483–485 are blank; the extracted range still covers book pages through 963, beyond every shard-D page hint. Comparisons never use raw interleaved order.
 
-Comparison tiers are literal, whitespace-only (including visual wraps), typography (NFKC plus quote/dash variants), and whitespace-stripped. No letters, inflections, word order, punctuation presence, or vocabulary are rewritten. A literal occurrence is not automatically accepted when geometry shows a same-line positive tail; it remains `REVIEW_DIVERGENCE` unless the tail is proved to be a stored neighbor/structural anchor. Lowercase continuation is recorded only as a triage signal, never a verdict. Multi-span rich lines are compared as a complete semantic unit before an individual leaf can match.
+Comparison tiers are literal, whitespace-only (including visual wraps), typography-only (NFKC plus quote/dash variants while preserving whitespace), cumulative `typography+whitespace`, whitespace-stripped, and cumulative `typography+whitespace_stripped`. No letters, inflections, word order, punctuation presence, or vocabulary are rewritten. A literal occurrence is not automatically accepted when geometry shows a same-line positive tail; it remains `REVIEW_DIVERGENCE` unless the tail is proved to be a stored neighbor/structural anchor. Lowercase continuation is recorded only as a triage signal, never a verdict. Multi-span rich lines are compared as a complete semantic unit before an individual leaf can match.
+
+For every row unresolved by the legacy splitter, both halves of its recorded physical spread were independently re-extracted at 72 dpi with the fixed plan boundary `x=297`. A complete match in the recorded book-page column closes as `MATCH_*`; a complete match only in the opposite column closes as `REVIEW_GEOMETRY`, never `SOURCE_NOT_FOUND`.
 
 The coordinator KEEP ledger at `/home/min/myproject/divineoffice/docs/research/51-truncation-sweep/intentional-divergences.jsonl` was loaded at scan time. Only exact address + current value-SHA matches became `KEEP_RULED`; no phrase-global suppression was applied. Exact shard-D KEEP hits: 2.
 
@@ -27,17 +29,18 @@ The coordinator KEEP ledger at `/home/min/myproject/divineoffice/docs/research/5
 - `MATCH_NORMALIZED` rows with byte-equal evidence: `0`.
 - `MATCH_NORMALIZED` rows failing their recorded whitespace/typography normalization equality: `0`.
 - `SOURCE_NOT_FOUND` rows whose literal data occurs in `/home/min/myproject/divineoffice/parsed_data/full_pdf.txt`: `0`.
+- `SOURCE_NOT_FOUND` rows with a normalized hit in either column of their recorded physical spread: `0`.
 
 ## Terminal reconciliation
 
 | Disposition | Count |
 |---|---:|
 | `KEEP_RULED` | 2 |
-| `MATCH_LITERAL` | 3,026 |
-| `MATCH_NORMALIZED` | 1,243 |
-| `REVIEW_DIVERGENCE` | 39 |
+| `MATCH_LITERAL` | 3,034 |
+| `MATCH_NORMALIZED` | 1,252 |
+| `REVIEW_DIVERGENCE` | 33 |
 | `REVIEW_GEOMETRY` | 115 |
-| `SOURCE_NOT_FOUND` | 106 |
+| `SOURCE_NOT_FOUND` | 95 |
 | **Total** | **4,531** |
 
 ## Candidate packets
@@ -196,63 +199,7 @@ Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) ar
 
 Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=269 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
 
-### D-012 — `src/data/loth/prayers/commons/psalter/w4-SUN-lauds.rich.json#/responsoryRich/blocks/0/spans/0/text`
-
-- Disposition: `REVIEW_DIVERGENCE`
-- Page: book 413; physical 207 right
-- Comparison tier: `prefix_alignment`
-- Candidate reason: unique localized prefix; LCP=19
-- Data: "Тэнгэрбурхан минь, бид Таны нэрээр дуудан Танд талархал өргөж байна."
-- Raw reconstructed fragment: "Тэнгэрбурхан минь, Та бидний төлөө өршөөл\n\nнигүүлслийн хаалгыг нээсэн тул\n\n- Амьдралын замаасаа хэзээ ч хазайхгүй\n\nамьдарцгаая.\nБиднийг Таны хайртай Хүүгийн тань амилалтыг\nтэмдэглэхдээ\n- Энэ өдрийг баярлан өнгөрүүлэхэд Та тусална\nу"
-- Omitted-tail signal: ""
-- Next visual line: ""
-- Twin addresses: none identified
-
-Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=19 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
-
-### D-013 — `src/data/loth/prayers/commons/psalter/w4-SUN-lauds.rich.json#/responsoryRich/blocks/4/spans/0/text`
-
-- Disposition: `REVIEW_DIVERGENCE`
-- Page: book 413; physical 207 right
-- Comparison tier: `prefix_alignment`
-- Candidate reason: unique localized prefix; LCP=19
-- Data: "Тэнгэрбурхан минь, бид Таны нэрээр дуудан Танд талархал өргөж байна."
-- Raw reconstructed fragment: "Тэнгэрбурхан минь, Та бидний төлөө өршөөл\n\nнигүүлслийн хаалгыг нээсэн тул\n\n- Амьдралын замаасаа хэзээ ч хазайхгүй\n\nамьдарцгаая.\nБиднийг Таны хайртай Хүүгийн тань амилалтыг\nтэмдэглэхдээ\n- Энэ өдрийг баярлан өнгөрүүлэхэд Та тусална\nу"
-- Omitted-tail signal: ""
-- Next visual line: ""
-- Twin addresses: none identified
-
-Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=19 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
-
-### D-014 — `src/data/loth/prayers/commons/psalter/w4-SUN-lauds.rich.json#/shortReadingRich/blocks/0/spans/0/text`
-
-- Disposition: `REVIEW_DIVERGENCE`
-- Page: book 412; physical 207 left
-- Comparison tier: `prefix_alignment`
-- Candidate reason: unique localized prefix; LCP=166
-- Data: "Сайнмэдээний дагуу, Давидын үр сад болох үхэгсдээс амилуулагдсан Есүс Христийг сана. Энэ бол итгэмжит үг. Хэрэв бид Түүнтэй хамт үхсэн бол Түүнтэй хамт мөн амьдарна. Хэрэв бид тэвчвэл Түүнтэй хамт мөн хаанчилна. Хэрэв бид Түүнийг үгүйсгэвэл Тэр ч бас биднийг үгүйсгэнэ. Бид итгэмжгүй байлаа ч, Тэр итгэмжит хэвээр байна. Учир нь Тэр Өөрийгөө үгүйсгэж үл чадна."
-- Raw reconstructed fragment: "Сайнмэдээний дагуу, Давидын үр сад болох\n\nүхэгсдээс амилуулагдсан Есүс Христийг сана.\n\nЭнэ бол итгэмжит үг.\n\nХэрэв бид Түүнтэй хамт үхсэн бол\n\n   Түүнтэй хамт мөн амьдарна.\n                                                  Та\nХэрэв бид тэвчвэл\n\n   Түүнтэй хамт мөн хаанчилна.\n\nХэрэв бид Түүнийг үгүйсгэвэл\n\n   Тэр ч бас биднийг үгүйсгэнэ.\n\nБид итгэмжгүй байлаа ч,\n\n   Тэр итгэмжит хэвээр байна.\n\n       Учир нь Тэр Өөрийгөө үгүйсгэж үл чадна.\n\nХариу залбирал\nТэнгэрбурхан минь, бид Таны нэрээр дуудан\nТанд талархал өргө…"
-- Omitted-tail signal: ""
-- Next visual line: ""
-- Twin addresses: none identified
-
-Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=166 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
-
-### D-015 — `src/data/loth/prayers/commons/psalter/w4-THU-lauds.rich.json#/responsoryRich/blocks/3/spans/0/text`
-
-- Disposition: `REVIEW_DIVERGENCE`
-- Page: book 479; physical 240 right
-- Comparison tier: `prefix_alignment`
-- Candidate reason: unique localized prefix; LCP=21
-- Data: "Эцэг, Хүү, Ариун Сүнсийг магтан дуулъя."
-- Raw reconstructed fragment: "Эцэг, Хүү, Ариун Сүнсэнд жавхланг\nЭхэн цагт байсан мэт аливаа цагт болготугай.\nАмэн. Аллэлуяа!\nДөчин хоногийн цаг улиралд “Аллэлуяа” хэмээн\nхэлэхгүй."
-- Omitted-tail signal: ""
-- Next visual line: ""
-- Twin addresses: none identified
-
-Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=21 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
-
-### D-016 — `src/data/loth/prayers/commons/psalter/w4-THU-vespers.rich.json#/responsoryRich/blocks/3/spans/0/text`
+### D-012 — `src/data/loth/prayers/commons/psalter/w4-THU-vespers.rich.json#/responsoryRich/blocks/3/spans/0/text`
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Page: book 486; physical 244 left
@@ -266,7 +213,7 @@ Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) ar
 
 Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=21 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
 
-### D-017 — `src/data/loth/prayers/hymns/121.rich.json#/hymnRich/blocks/0/lines/2/spans/0/text`
+### D-013 — `src/data/loth/prayers/hymns/121.rich.json#/hymnRich/blocks/0/lines/2/spans/0/text`
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Page: book 961; physical 481 right
@@ -280,7 +227,7 @@ Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) ar
 
 Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=16 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
 
-### D-018 — `src/data/loth/prayers/hymns/51.rich.json#/hymnRich/blocks/0/lines/1/spans/0/text`
+### D-014 — `src/data/loth/prayers/hymns/51.rich.json#/hymnRich/blocks/0/lines/1/spans/0/text`
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Page: book 922; physical 462 left
@@ -294,7 +241,7 @@ Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) ar
 
 Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=22 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
 
-### D-019 — `src/data/loth/prayers/hymns/51.rich.json#/hymnRich/blocks/0/lines/11/spans/0/text`
+### D-015 — `src/data/loth/prayers/hymns/51.rich.json#/hymnRich/blocks/0/lines/11/spans/0/text`
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Page: book 922; physical 462 left
@@ -308,7 +255,7 @@ Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) ar
 
 Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=19 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
 
-### D-020 — `src/data/loth/prayers/hymns/51.rich.json#/hymnRich/blocks/0/lines/2/spans/0/text`
+### D-016 — `src/data/loth/prayers/hymns/51.rich.json#/hymnRich/blocks/0/lines/2/spans/0/text`
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Page: book 922; physical 462 left
@@ -322,7 +269,7 @@ Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) ar
 
 Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=13 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
 
-### D-021 — `src/data/loth/prayers/hymns/51.rich.json#/hymnRich/blocks/0/lines/4/spans/0/text`
+### D-017 — `src/data/loth/prayers/hymns/51.rich.json#/hymnRich/blocks/0/lines/4/spans/0/text`
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Page: book 922; physical 462 left
@@ -336,7 +283,7 @@ Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) ar
 
 Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=14 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
 
-### D-022 — `src/data/loth/prayers/hymns/67.rich.json#/hymnRich/blocks/2/lines/0/spans/0/text`
+### D-018 — `src/data/loth/prayers/hymns/67.rich.json#/hymnRich/blocks/2/lines/0/spans/0/text`
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Page: book 929; physical 465 right
@@ -350,7 +297,7 @@ Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) ar
 
 Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=39 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
 
-### D-023 — `src/data/loth/prayers/seasonal/advent/w1-SUN-lauds.rich.json#/intercessionsRich/blocks/5/lines/0/spans/0/text`
+### D-019 — `src/data/loth/prayers/seasonal/advent/w1-SUN-lauds.rich.json#/intercessionsRich/blocks/5/lines/0/spans/0/text`
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Page: book 552; physical 277 left
@@ -364,21 +311,7 @@ Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) ar
 
 Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=53 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
 
-### D-024 — `src/data/loth/prayers/seasonal/advent/wdec24-SUN-lauds.rich.json#/concludingPrayerRich/blocks/0/spans/0/text`
-
-- Disposition: `REVIEW_DIVERGENCE`
-- Page: book 582; physical 292 left
-- Comparison tier: `prefix_alignment`
-- Candidate reason: unique localized prefix; LCP=84
-- Data: "Аяа, Эзэн Есүс ээ, хоцролгүй ирэгтүн. Таны хайранд итгэдэг хүмүүст шинэ эр зоригийг хайрлана уу. Та Өөрийн ирэлтээрээ биднийг хаанчлалынхаа баяр баясгаланд хүргэнэ үү. Тэнд Та Тэнгэр Эцэгтэй болон Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан билээ."
-- Raw reconstructed fragment: "Аяа, Эзэн Есүс ээ, хоцролгүй ирэгтүн. Таны\nхайранд итгэдэг хүмүүст шинэ эр зоригийг     Дууллын залбирал\nхайрлана уу. Та Өөрийн ирэлтээрээ биднийг\nхаанчлалынхаа баяр баясгаланд хүргэнэ үү.\nТэнд Та Тэнгэр Эцэгтэй болон Ариун Сүнсний\nнэгдэлтэй, үүрд мөнх оршин хаанчилдаг\nТэнгэрбурхан билээ.\n                                                ЭЗЭНий нэрийг\n                                                Эдүгээгээс өнө\n                                                ЭЗЭНий нэр маг\n                                         …"
-- Omitted-tail signal: ""
-- Next visual line: ""
-- Twin addresses: none identified
-
-Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=84 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
-
-### D-025 — `src/data/loth/prayers/seasonal/christmas/wbaptism-SUN-lauds.rich.json#/alternativeConcludingPrayerRich/blocks/0/spans/0/text`
+### D-020 — `src/data/loth/prayers/seasonal/christmas/wbaptism-SUN-lauds.rich.json#/alternativeConcludingPrayerRich/blocks/0/spans/0/text`
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Page: book 617; physical 309 right
@@ -392,7 +325,7 @@ Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) ar
 
 Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=211 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
 
-### D-026 — `src/data/loth/prayers/seasonal/easter/w1-SUN-lauds.rich.json#/intercessionsRich/blocks/7/lines/1/spans/1/text`
+### D-021 — `src/data/loth/prayers/seasonal/easter/w1-SUN-lauds.rich.json#/intercessionsRich/blocks/7/lines/1/spans/1/text`
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Page: book 704; physical 353 left
@@ -406,21 +339,7 @@ Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) ar
 
 Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=73 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
 
-### D-027 — `src/data/loth/prayers/seasonal/easter/wpentecost-SUN-vespers.rich.json#/shortReadingRich/blocks/0/spans/0/text`
-
-- Disposition: `REVIEW_DIVERGENCE`
-- Page: book 736; physical 369 left
-- Comparison tier: `prefix_alignment`
-- Candidate reason: unique localized prefix; LCP=433
-- Data: "Хэрэв Тэнгэрбурханы Сүнс үнэхээр та нарын дотор оршиж байвал, та нар махбод дотор бус, харин Сүнс дотор байна. Хэрэв хэн нэгэнд Христийн Сүнс байхгүй бол тэр Түүнийх биш. Хэрэв Христ та нарын дотор байгаа бол, нүглээс болж бие чинь үхмэл хэдий ч, зөвт байдлын улмаас Сүнс амь чинь болжээ. Мөн үхэгсдээс Есүсийг амилуулсан Нэгэний Сүнс та нарын дотор оршвоос, Христийг үхэгсдээс амилуулсан Тэрээр та нарын дотор оршдог Өөрийн Сүнсээр дамжуулан үхлийн биест чинь амь өгнө."
-- Raw reconstructed fragment: "Хэрэв Тэнгэрбурханы Сүнс үнэхээр та нарын\n\nдотор оршиж байвал, та нар махбод дотор бус,\n\nхарин Сүнс дотор байна. Хэрэв хэн нэгэнд\n\nХристийн Сүнс байхгүй бол тэр Түүнийх биш.\n\nХэрэв Христ та нарын дотор байгаа бол, нүглээс\n\nболж бие чинь үхмэл хэдий ч, зөвт байдлын\n\nулмаас Сүнс амь чинь болжээ. Мөн үхэгсдээс\n\nЕсүсийг амилуулсан Нэгэний Сүнс та нарын\n\nдотор оршвоос, Христийг үхэгсдээс амилуулсан\n\nТэрээр та нарын дотор оршдог Өөрийн Сүнсээр\n                                                  шинэчлэх\nдамжуулан үхлийн б…"
-- Omitted-tail signal: ""
-- Next visual line: ""
-- Twin addresses: none identified
-
-Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=433 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
-
-### D-028 — `src/data/loth/prayers/seasonal/lent/w1-SUN-lauds.rich.json#/alternativeConcludingPrayerRich/blocks/2/spans/0/text`
+### D-022 — `src/data/loth/prayers/seasonal/lent/w1-SUN-lauds.rich.json#/alternativeConcludingPrayerRich/blocks/2/spans/0/text`
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Page: book 620; physical 311 left
@@ -434,7 +353,7 @@ Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) ar
 
 Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=30 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
 
-### D-029 — `src/data/loth/prayers/seasonal/lent/w1-SUN-vespers.rich.json#/alternativeConcludingPrayerRich/blocks/2/spans/0/text`
+### D-023 — `src/data/loth/prayers/seasonal/lent/w1-SUN-vespers.rich.json#/alternativeConcludingPrayerRich/blocks/2/spans/0/text`
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Page: book 620; physical 311 left
@@ -448,7 +367,7 @@ Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) ar
 
 Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=30 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
 
-### D-030 — `src/data/loth/prayers/seasonal/lent/w1-THU-lauds.rich.json#/intercessionsRich/blocks/0/spans/0/text`
+### D-024 — `src/data/loth/prayers/seasonal/lent/w1-THU-lauds.rich.json#/intercessionsRich/blocks/0/spans/0/text`
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Page: book 640; physical 321 left
@@ -462,7 +381,7 @@ Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) ar
 
 Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=166 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
 
-### D-031 — `src/data/loth/prayers/seasonal/lent/w1-THU-lauds.rich.json#/shortReadingRich/blocks/0/spans/0/text`
+### D-025 — `src/data/loth/prayers/seasonal/lent/w1-THU-lauds.rich.json#/shortReadingRich/blocks/0/spans/0/text`
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Page: book 639; physical 320 right
@@ -476,7 +395,7 @@ Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) ar
 
 Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=81 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
 
-### D-032 — `src/data/loth/prayers/seasonal/lent/w1-TUE-lauds.rich.json#/shortReadingRich/blocks/0/spans/0/text`
+### D-026 — `src/data/loth/prayers/seasonal/lent/w1-TUE-lauds.rich.json#/shortReadingRich/blocks/0/spans/0/text`
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Page: book 630; physical 316 left
@@ -490,7 +409,7 @@ Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) ar
 
 Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=137 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
 
-### D-033 — `src/data/loth/prayers/seasonal/lent/w1-WED-lauds.rich.json#/intercessionsRich/blocks/0/spans/0/text`
+### D-027 — `src/data/loth/prayers/seasonal/lent/w1-WED-lauds.rich.json#/intercessionsRich/blocks/0/spans/0/text`
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Page: book 636; physical 319 left
@@ -504,7 +423,7 @@ Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) ar
 
 Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=175 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
 
-### D-034 — `src/data/loth/prayers/seasonal/lent/w1-WED-vespers.rich.json#/intercessionsRich/blocks/0/spans/0/text`
+### D-028 — `src/data/loth/prayers/seasonal/lent/w1-WED-vespers.rich.json#/intercessionsRich/blocks/0/spans/0/text`
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Page: book 638; physical 320 left
@@ -518,7 +437,7 @@ Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) ar
 
 Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=249 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
 
-### D-035 — `src/data/loth/prayers/seasonal/ordinary-time/w13-SUN-vespers.rich.json#/alternativeConcludingPrayerRich/blocks/0/spans/0/text`
+### D-029 — `src/data/loth/prayers/seasonal/ordinary-time/w13-SUN-vespers.rich.json#/alternativeConcludingPrayerRich/blocks/0/spans/0/text`
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Page: book 775; physical 388 right
@@ -532,7 +451,7 @@ Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) ar
 
 Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=145 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
 
-### D-036 — `src/data/loth/prayers/seasonal/ordinary-time/w23-SUN-lauds.rich.json#/concludingPrayerRich/blocks/2/spans/0/text`
+### D-030 — `src/data/loth/prayers/seasonal/ordinary-time/w23-SUN-lauds.rich.json#/concludingPrayerRich/blocks/2/spans/0/text`
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Page: book 795; physical 398 right
@@ -546,7 +465,7 @@ Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) ar
 
 Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=115 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
 
-### D-037 — `src/data/loth/prayers/seasonal/ordinary-time/w23-SUN-vespers.rich.json#/concludingPrayerRich/blocks/2/spans/0/text`
+### D-031 — `src/data/loth/prayers/seasonal/ordinary-time/w23-SUN-vespers.rich.json#/concludingPrayerRich/blocks/2/spans/0/text`
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Page: book 795; physical 398 right
@@ -560,7 +479,7 @@ Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) ar
 
 Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=115 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
 
-### D-038 — `src/data/loth/prayers/seasonal/ordinary-time/w7-SUN-lauds.rich.json#/concludingPrayerRich/blocks/0/spans/0/text`
+### D-032 — `src/data/loth/prayers/seasonal/ordinary-time/w7-SUN-lauds.rich.json#/concludingPrayerRich/blocks/0/spans/0/text`
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Page: book 763; physical 382 right
@@ -574,7 +493,7 @@ Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) ar
 
 Nine-gate adjudication: gates 1–2 (identity and reconstructed visual order) are evidenced above. Gates 3 and 6 FAIL: unique localized prefix; LCP=90 ends before the stored value ends, so contrary source content appears before any possible cut. Gate 7 exact address+hash KEEP lookup missed. The row is therefore terminal `REVIEW_DIVERGENCE`, not `CLEAR_TRUNCATION`; twin/fix gates are inapplicable and no fix is authorized.
 
-### D-039 — `src/data/loth/prayers/seasonal/ordinary-time/w7-SUN-vespers.rich.json#/concludingPrayerRich/blocks/0/spans/0/text`
+### D-033 — `src/data/loth/prayers/seasonal/ordinary-time/w7-SUN-vespers.rich.json#/concludingPrayerRich/blocks/0/spans/0/text`
 
 - Disposition: `REVIEW_DIVERGENCE`
 - Page: book 763; physical 382 right
@@ -658,36 +577,44 @@ These rows did not reach the truncation-signature gates because unique source-un
 | `src/data/loth/ordinarium/invitatory.json#/openingVersicle/response` | — | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/ordinarium/invitatory.json#/openingVersicle/versicle` | — | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/ordinarium/invitatory.json#/rubric` | — | no page hint and no unique value-plus-second-anchor location |
-| `src/data/loth/prayers/commons/psalter/w2-MON-lauds.rich.json#/responsoryRich/blocks/1/spans/0/text` | 201 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w2-MON-lauds.rich.json#/responsoryRich/blocks/1/spans/0/text` | 201 | complete literal match occurs on book page 200, the opposite column of physical page 101; recorded page identity conflicts |
 | `src/data/loth/prayers/commons/psalter/w2-SAT-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 172 | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/prayers/commons/psalter/w2-SAT-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 172 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/commons/psalter/w2-WED-lauds.rich.json#/responsoryRich/blocks/0/spans/0/text` | 235 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/commons/psalter/w2-WED-lauds.rich.json#/responsoryRich/blocks/1/spans/0/text` | 235 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/commons/psalter/w2-WED-lauds.rich.json#/responsoryRich/blocks/3/spans/0/text` | 235 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/commons/psalter/w2-WED-lauds.rich.json#/responsoryRich/blocks/4/spans/0/text` | 235 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/commons/psalter/w2-WED-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 243 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/commons/psalter/w2-WED-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 243 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/commons/psalter/w2-WED-vespers.rich.json#/responsoryRich/blocks/3/spans/0/text` | 243 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w2-WED-lauds.rich.json#/responsoryRich/blocks/0/spans/0/text` | 235 | complete literal match occurs on book page 234, the opposite column of physical page 118; recorded page identity conflicts |
+| `src/data/loth/prayers/commons/psalter/w2-WED-lauds.rich.json#/responsoryRich/blocks/1/spans/0/text` | 235 | complete literal match occurs on book page 234, the opposite column of physical page 118; recorded page identity conflicts |
+| `src/data/loth/prayers/commons/psalter/w2-WED-lauds.rich.json#/responsoryRich/blocks/2/spans/0/text` | 235 | complete whitespace match occurs on book page 234, the opposite column of physical page 118; recorded page identity conflicts |
+| `src/data/loth/prayers/commons/psalter/w2-WED-lauds.rich.json#/responsoryRich/blocks/3/spans/0/text` | 235 | complete literal match occurs on book page 234, the opposite column of physical page 118; recorded page identity conflicts |
+| `src/data/loth/prayers/commons/psalter/w2-WED-lauds.rich.json#/responsoryRich/blocks/4/spans/0/text` | 235 | complete literal match occurs on book page 234, the opposite column of physical page 118; recorded page identity conflicts |
+| `src/data/loth/prayers/commons/psalter/w2-WED-vespers.rich.json#/responsoryRich/blocks/0/spans/0/text` | 243 | complete whitespace match occurs on book page 242, the opposite column of physical page 122; recorded page identity conflicts |
+| `src/data/loth/prayers/commons/psalter/w2-WED-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 243 | complete literal match occurs on book page 242, the opposite column of physical page 122; recorded page identity conflicts |
+| `src/data/loth/prayers/commons/psalter/w2-WED-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 243 | complete literal match occurs on book page 242, the opposite column of physical page 122; recorded page identity conflicts |
+| `src/data/loth/prayers/commons/psalter/w2-WED-vespers.rich.json#/responsoryRich/blocks/3/spans/0/text` | 243 | complete literal match occurs on book page 242, the opposite column of physical page 122; recorded page identity conflicts |
+| `src/data/loth/prayers/commons/psalter/w2-WED-vespers.rich.json#/responsoryRich/blocks/4/spans/0/text` | 243 | complete whitespace match occurs on book page 242, the opposite column of physical page 122; recorded page identity conflicts |
 | `src/data/loth/prayers/commons/psalter/w3-FRI-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 388 | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/prayers/commons/psalter/w3-FRI-vespers.rich.json#/responsoryRich/blocks/3/spans/0/text` | 388 | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/prayers/commons/psalter/w4-FRI-lauds.rich.json#/responsoryRich/blocks/3/spans/0/text` | 498 | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/prayers/commons/psalter/w4-FRI-vespers.rich.json#/responsoryRich/blocks/3/spans/0/text` | 505 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/commons/psalter/w4-MON-lauds.rich.json#/responsoryRich/blocks/1/spans/0/text` | 431 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/commons/psalter/w4-MON-lauds.rich.json#/responsoryRich/blocks/2/spans/0/text` | 431 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/commons/psalter/w4-MON-lauds.rich.json#/responsoryRich/blocks/3/spans/0/text` | 431 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-MON-lauds.rich.json#/responsoryRich/blocks/0/spans/0/text` | 431 | complete whitespace match occurs on book page 430, the opposite column of physical page 216; recorded page identity conflicts |
+| `src/data/loth/prayers/commons/psalter/w4-MON-lauds.rich.json#/responsoryRich/blocks/1/spans/0/text` | 431 | complete literal match occurs on book page 430, the opposite column of physical page 216; recorded page identity conflicts |
+| `src/data/loth/prayers/commons/psalter/w4-MON-lauds.rich.json#/responsoryRich/blocks/2/spans/0/text` | 431 | complete literal match occurs on book page 430, the opposite column of physical page 216; recorded page identity conflicts |
+| `src/data/loth/prayers/commons/psalter/w4-MON-lauds.rich.json#/responsoryRich/blocks/3/spans/0/text` | 431 | complete literal match occurs on book page 430, the opposite column of physical page 216; recorded page identity conflicts |
+| `src/data/loth/prayers/commons/psalter/w4-MON-lauds.rich.json#/responsoryRich/blocks/4/spans/0/text` | 431 | complete whitespace match occurs on book page 430, the opposite column of physical page 216; recorded page identity conflicts |
 | `src/data/loth/prayers/commons/psalter/w4-SAT-lauds.rich.json#/responsoryRich/blocks/2/spans/0/text` | 519 | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/prayers/commons/psalter/w4-SAT-vespers.rich.json#/responsoryRich/blocks/0/spans/0/text` | 404 | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/prayers/commons/psalter/w4-SAT-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 404 | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/prayers/commons/psalter/w4-SAT-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 404 | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/prayers/commons/psalter/w4-SAT-vespers.rich.json#/responsoryRich/blocks/3/spans/0/text` | 404 | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/prayers/commons/psalter/w4-SAT-vespers.rich.json#/responsoryRich/blocks/4/spans/0/text` | 404 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/commons/psalter/w4-SUN-lauds.rich.json#/responsoryRich/blocks/1/spans/0/text` | 413 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/commons/psalter/w4-SUN-lauds.rich.json#/responsoryRich/blocks/2/spans/0/text` | 413 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/commons/psalter/w4-SUN-lauds.rich.json#/responsoryRich/blocks/3/spans/0/text` | 413 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/commons/psalter/w4-THU-lauds.rich.json#/responsoryRich/blocks/0/spans/0/text` | 479 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/commons/psalter/w4-THU-lauds.rich.json#/responsoryRich/blocks/1/spans/0/text` | 479 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/commons/psalter/w4-THU-lauds.rich.json#/responsoryRich/blocks/2/spans/0/text` | 479 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/commons/psalter/w4-THU-lauds.rich.json#/responsoryRich/blocks/4/spans/0/text` | 479 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-SUN-lauds.rich.json#/responsoryRich/blocks/0/spans/0/text` | 413 | complete whitespace match occurs on book page 412, the opposite column of physical page 207; recorded page identity conflicts |
+| `src/data/loth/prayers/commons/psalter/w4-SUN-lauds.rich.json#/responsoryRich/blocks/1/spans/0/text` | 413 | complete literal match occurs on book page 412, the opposite column of physical page 207; recorded page identity conflicts |
+| `src/data/loth/prayers/commons/psalter/w4-SUN-lauds.rich.json#/responsoryRich/blocks/2/spans/0/text` | 413 | complete literal match occurs on book page 412, the opposite column of physical page 207; recorded page identity conflicts |
+| `src/data/loth/prayers/commons/psalter/w4-SUN-lauds.rich.json#/responsoryRich/blocks/3/spans/0/text` | 413 | complete literal match occurs on book page 412, the opposite column of physical page 207; recorded page identity conflicts |
+| `src/data/loth/prayers/commons/psalter/w4-SUN-lauds.rich.json#/responsoryRich/blocks/4/spans/0/text` | 413 | complete whitespace match occurs on book page 412, the opposite column of physical page 207; recorded page identity conflicts |
+| `src/data/loth/prayers/commons/psalter/w4-THU-lauds.rich.json#/responsoryRich/blocks/0/spans/0/text` | 479 | complete literal match occurs on book page 478, the opposite column of physical page 240; recorded page identity conflicts |
+| `src/data/loth/prayers/commons/psalter/w4-THU-lauds.rich.json#/responsoryRich/blocks/1/spans/0/text` | 479 | complete literal match occurs on book page 478, the opposite column of physical page 240; recorded page identity conflicts |
+| `src/data/loth/prayers/commons/psalter/w4-THU-lauds.rich.json#/responsoryRich/blocks/2/spans/0/text` | 479 | complete literal match occurs on book page 478, the opposite column of physical page 240; recorded page identity conflicts |
+| `src/data/loth/prayers/commons/psalter/w4-THU-lauds.rich.json#/responsoryRich/blocks/3/spans/0/text` | 479 | complete literal match occurs on book page 478, the opposite column of physical page 240; recorded page identity conflicts |
+| `src/data/loth/prayers/commons/psalter/w4-THU-lauds.rich.json#/responsoryRich/blocks/4/spans/0/text` | 479 | complete literal match occurs on book page 478, the opposite column of physical page 240; recorded page identity conflicts |
 | `src/data/loth/prayers/commons/psalter/w4-THU-vespers.rich.json#/responsoryRich/blocks/0/spans/0/text` | 486 | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/prayers/commons/psalter/w4-THU-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 486 | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/prayers/commons/psalter/w4-THU-vespers.rich.json#/responsoryRich/blocks/4/spans/0/text` | 486 | literal occurs in raw text SoT; geometry identity remains unresolved |
@@ -703,14 +630,6 @@ These rows did not reach the truncation-signature gates because unique source-un
 | `src/data/loth/prayers/seasonal/advent/w1-TUE-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 557 | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/prayers/seasonal/advent/w1-WED-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 557 | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/prayers/seasonal/lent/w6-SAT-vespers.rich.json#/intercessionsRich/blocks/7/lines/1/spans/1/text` | 669 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/seasonal/ordinary-time/w12-SUN-lauds.rich.json#/concludingPrayerRich/blocks/0/spans/0/text` | 773 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/seasonal/ordinary-time/w12-SUN-lauds.rich.json#/concludingPrayerRich/blocks/2/spans/0/text` | 773 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/seasonal/ordinary-time/w12-SUN-vespers.rich.json#/concludingPrayerRich/blocks/0/spans/0/text` | 773 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/seasonal/ordinary-time/w12-SUN-vespers.rich.json#/concludingPrayerRich/blocks/2/spans/0/text` | 773 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/seasonal/ordinary-time/w32-SUN-lauds.rich.json#/concludingPrayerRich/blocks/0/spans/0/text` | 813 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/seasonal/ordinary-time/w32-SUN-lauds.rich.json#/concludingPrayerRich/blocks/2/spans/0/text` | 813 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/seasonal/ordinary-time/w32-SUN-vespers.rich.json#/concludingPrayerRich/blocks/0/spans/0/text` | 813 | literal occurs in raw text SoT; geometry identity remains unresolved |
-| `src/data/loth/prayers/seasonal/ordinary-time/w32-SUN-vespers.rich.json#/concludingPrayerRich/blocks/2/spans/0/text` | 813 | literal occurs in raw text SoT; geometry identity remains unresolved |
 
 ### `SOURCE_NOT_FOUND`
 
@@ -726,9 +645,6 @@ These rows did not reach the truncation-signature gates because unique source-un
 | `src/data/loth/ordinarium/hymns.json#/67/text` | 929 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w2-SAT-vespers.rich.json#/responsoryRich/blocks/0/spans/0/text` | 172 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w2-SAT-vespers.rich.json#/responsoryRich/blocks/4/spans/0/text` | 172 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w2-WED-lauds.rich.json#/responsoryRich/blocks/2/spans/0/text` | 235 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w2-WED-vespers.rich.json#/responsoryRich/blocks/0/spans/0/text` | 243 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w2-WED-vespers.rich.json#/responsoryRich/blocks/4/spans/0/text` | 243 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w3-FRI-vespers.rich.json#/responsoryRich/blocks/0/spans/0/text` | 388 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w3-FRI-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 388 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w3-FRI-vespers.rich.json#/responsoryRich/blocks/4/spans/0/text` | 388 | hinted page/continued section searched; no strict or normalized source unit located |
@@ -740,8 +656,6 @@ These rows did not reach the truncation-signature gates because unique source-un
 | `src/data/loth/prayers/commons/psalter/w4-FRI-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 505 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-FRI-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 505 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-FRI-vespers.rich.json#/responsoryRich/blocks/4/spans/0/text` | 505 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-MON-lauds.rich.json#/responsoryRich/blocks/0/spans/0/text` | 431 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-MON-lauds.rich.json#/responsoryRich/blocks/4/spans/0/text` | 431 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-SAT-lauds.rich.json#/responsoryRich/blocks/0/spans/0/text` | 519 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-SAT-lauds.rich.json#/responsoryRich/blocks/1/spans/0/text` | 519 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-SAT-lauds.rich.json#/responsoryRich/blocks/4/spans/0/text` | 519 | hinted page/continued section searched; no strict or normalized source unit located |
@@ -813,13 +727,7 @@ These rows did not reach the truncation-signature gates because unique source-un
 | `src/data/loth/prayers/seasonal/lent/w6-THU-vespers.rich.json#/intercessionsRich/blocks/9/lines/0/spans/0/text` | 660 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/lent/w6-THU-vespers.rich.json#/intercessionsRich/blocks/9/lines/1/spans/1/text` | 660 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/ordinary-time/w11-SUN-vespers.rich.json#/alternativeConcludingPrayerRich/blocks/2/spans/0/text` | 771 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/seasonal/ordinary-time/w12-SUN-lauds.rich.json#/concludingPrayerRich/blocks/4/spans/0/text` | 773 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/seasonal/ordinary-time/w12-SUN-vespers.rich.json#/alternativeConcludingPrayerRich/blocks/0/spans/0/text` | 773 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/seasonal/ordinary-time/w12-SUN-vespers.rich.json#/concludingPrayerRich/blocks/4/spans/0/text` | 773 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/ordinary-time/w3-SUN-vespers.rich.json#/alternativeConcludingPrayerRich/blocks/2/spans/0/text` | 755 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/ordinary-time/w31-SUN-vespers.rich.json#/alternativeConcludingPrayerRich/blocks/2/spans/0/text` | 811 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/seasonal/ordinary-time/w32-SUN-lauds.rich.json#/concludingPrayerRich/blocks/4/spans/0/text` | 813 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/seasonal/ordinary-time/w32-SUN-vespers.rich.json#/alternativeConcludingPrayerRich/blocks/0/spans/0/text` | 813 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/seasonal/ordinary-time/w32-SUN-vespers.rich.json#/concludingPrayerRich/blocks/4/spans/0/text` | 813 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/ordinary-time/w7-SUN-vespers.rich.json#/alternativeConcludingPrayerRich/blocks/2/spans/0/text` | 763 | hinted page/continued section searched; no strict or normalized source unit located |
 
