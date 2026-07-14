@@ -21,6 +21,13 @@ Comparison tiers are literal, whitespace-only (including visual wraps), typograp
 
 The coordinator KEEP ledger at `/home/min/myproject/divineoffice/docs/research/51-truncation-sweep/intentional-divergences.jsonl` was loaded at scan time. Only exact address + current value-SHA matches became `KEEP_RULED`; no phrase-global suppression was applied. Exact shard-D KEEP hits: 2.
 
+## Tier-truthfulness self-audit
+
+- `MATCH_LITERAL` rows with `evidence.data !== evidence.pdf_visual`: `0`.
+- `MATCH_NORMALIZED` rows with byte-equal evidence: `0`.
+- `MATCH_NORMALIZED` rows failing their recorded whitespace/typography normalization equality: `0`.
+- `SOURCE_NOT_FOUND` rows whose literal data occurs in `/home/min/myproject/divineoffice/parsed_data/full_pdf.txt`: `0`.
+
 ## Terminal reconciliation
 
 | Disposition | Count |
@@ -29,8 +36,8 @@ The coordinator KEEP ledger at `/home/min/myproject/divineoffice/docs/research/5
 | `MATCH_LITERAL` | 3,026 |
 | `MATCH_NORMALIZED` | 1,243 |
 | `REVIEW_DIVERGENCE` | 39 |
-| `REVIEW_GEOMETRY` | 60 |
-| `SOURCE_NOT_FOUND` | 161 |
+| `REVIEW_GEOMETRY` | 115 |
+| `SOURCE_NOT_FOUND` | 106 |
 | **Total** | **4,531** |
 
 ## Candidate packets
@@ -591,17 +598,19 @@ These rows did not reach the truncation-signature gates because unique source-un
 |---|---:|---|
 | `src/data/loth/ordinarium/common-prayers.json#/dismissal/individual/versicle` | — | no page hint and no unique value-plus-second-anchor location |
 | `src/data/loth/ordinarium/common-prayers.json#/dismissal/priest/blessing/text` | — | no page hint and no unique value-plus-second-anchor location |
-| `src/data/loth/ordinarium/common-prayers.json#/dismissal/priest/dismissalVersicle/response` | — | no page hint and no unique value-plus-second-anchor location |
+| `src/data/loth/ordinarium/common-prayers.json#/dismissal/priest/dismissalVersicle/response` | — | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/ordinarium/common-prayers.json#/dismissal/priest/dismissalVersicle/versicle` | — | no page hint and no unique value-plus-second-anchor location |
-| `src/data/loth/ordinarium/common-prayers.json#/dismissal/priest/greeting/response` | — | no page hint and no unique value-plus-second-anchor location |
-| `src/data/loth/ordinarium/common-prayers.json#/dismissal/priest/greeting/versicle` | — | no page hint and no unique value-plus-second-anchor location |
+| `src/data/loth/ordinarium/common-prayers.json#/dismissal/priest/greeting/response` | — | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/ordinarium/common-prayers.json#/dismissal/priest/greeting/versicle` | — | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/ordinarium/common-prayers.json#/openingVersicle/gloryBe` | — | no page hint and no unique value-plus-second-anchor location |
-| `src/data/loth/ordinarium/common-prayers.json#/openingVersicle/response` | — | no page hint and no unique value-plus-second-anchor location |
+| `src/data/loth/ordinarium/common-prayers.json#/openingVersicle/response` | — | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/ordinarium/common-prayers.json#/openingVersicle/versicle` | — | no page hint and no unique value-plus-second-anchor location |
 | `src/data/loth/ordinarium/common-prayers.json#/ourFather/text` | — | no page hint and no unique value-plus-second-anchor location |
+| `src/data/loth/ordinarium/hymns-index.json#/hymns/118/title` | 960 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/ordinarium/hymns.json#/119/title` | 960 | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/advent/dec17_23` | — | no page hint and no unique value-plus-second-anchor location |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/advent/dec24` | — | no page hint and no unique value-plus-second-anchor location |
-| `src/data/loth/ordinarium/invitatory-antiphons.json#/advent/default` | — | no page hint and no unique value-plus-second-anchor location |
+| `src/data/loth/ordinarium/invitatory-antiphons.json#/advent/default` | — | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/christmas/afterEpiphany` | — | no page hint and no unique value-plus-second-anchor location |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/christmas/baptismOfTheLord` | — | no page hint and no unique value-plus-second-anchor location |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/christmas/default` | — | no page hint and no unique value-plus-second-anchor location |
@@ -609,7 +618,7 @@ These rows did not reach the truncation-signature gates because unique source-un
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/christmas/jan1` | — | no page hint and no unique value-plus-second-anchor location |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/easter/ascension` | — | no page hint and no unique value-plus-second-anchor location |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/easter/beforePentecost` | — | no page hint and no unique value-plus-second-anchor location |
-| `src/data/loth/ordinarium/invitatory-antiphons.json#/easter/default` | — | no page hint and no unique value-plus-second-anchor location |
+| `src/data/loth/ordinarium/invitatory-antiphons.json#/easter/default` | — | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/easter/pentecost` | — | no page hint and no unique value-plus-second-anchor location |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/feasts/allSaints` | — | no page hint and no unique value-plus-second-anchor location |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/feasts/allSouls` | — | no page hint and no unique value-plus-second-anchor location |
@@ -619,10 +628,10 @@ These rows did not reach the truncation-signature gates because unique source-un
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/feasts/corpusChristi` | — | no page hint and no unique value-plus-second-anchor location |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/feasts/exaltationOfCross` | — | no page hint and no unique value-plus-second-anchor location |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/feasts/immaculateConception` | — | no page hint and no unique value-plus-second-anchor location |
-| `src/data/loth/ordinarium/invitatory-antiphons.json#/feasts/peterAndPaul` | — | no page hint and no unique value-plus-second-anchor location |
+| `src/data/loth/ordinarium/invitatory-antiphons.json#/feasts/peterAndPaul` | — | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/feasts/presentation` | — | no page hint and no unique value-plus-second-anchor location |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/feasts/sacredHeart` | — | no page hint and no unique value-plus-second-anchor location |
-| `src/data/loth/ordinarium/invitatory-antiphons.json#/feasts/saturdayBVM` | — | no page hint and no unique value-plus-second-anchor location |
+| `src/data/loth/ordinarium/invitatory-antiphons.json#/feasts/saturdayBVM` | — | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/feasts/stJoseph` | — | no page hint and no unique value-plus-second-anchor location |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/feasts/transfiguration` | — | no page hint and no unique value-plus-second-anchor location |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/lent/default` | — | no page hint and no unique value-plus-second-anchor location |
@@ -630,25 +639,78 @@ These rows did not reach the truncation-signature gates because unique source-un
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/lent/holySaturday` | — | no page hint and no unique value-plus-second-anchor location |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/lent/holyWeek` | — | no page hint and no unique value-plus-second-anchor location |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/ordinaryTime/even/FRI` | — | no page hint and no unique value-plus-second-anchor location |
-| `src/data/loth/ordinarium/invitatory-antiphons.json#/ordinaryTime/even/MON` | — | no page hint and no unique value-plus-second-anchor location |
+| `src/data/loth/ordinarium/invitatory-antiphons.json#/ordinaryTime/even/MON` | — | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/ordinaryTime/even/SAT` | — | no page hint and no unique value-plus-second-anchor location |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/ordinaryTime/even/SUN` | — | no page hint and no unique value-plus-second-anchor location |
-| `src/data/loth/ordinarium/invitatory-antiphons.json#/ordinaryTime/even/THU` | — | no page hint and no unique value-plus-second-anchor location |
+| `src/data/loth/ordinarium/invitatory-antiphons.json#/ordinaryTime/even/THU` | — | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/ordinaryTime/even/TUE` | — | no page hint and no unique value-plus-second-anchor location |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/ordinaryTime/even/WED` | — | no page hint and no unique value-plus-second-anchor location |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/ordinaryTime/odd/FRI` | — | no page hint and no unique value-plus-second-anchor location |
-| `src/data/loth/ordinarium/invitatory-antiphons.json#/ordinaryTime/odd/MON` | — | no page hint and no unique value-plus-second-anchor location |
+| `src/data/loth/ordinarium/invitatory-antiphons.json#/ordinaryTime/odd/MON` | — | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/ordinaryTime/odd/SAT` | — | no page hint and no unique value-plus-second-anchor location |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/ordinaryTime/odd/SUN` | — | no page hint and no unique value-plus-second-anchor location |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/ordinaryTime/odd/THU` | — | no page hint and no unique value-plus-second-anchor location |
-| `src/data/loth/ordinarium/invitatory-antiphons.json#/ordinaryTime/odd/TUE` | — | no page hint and no unique value-plus-second-anchor location |
+| `src/data/loth/ordinarium/invitatory-antiphons.json#/ordinaryTime/odd/TUE` | — | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/ordinarium/invitatory-antiphons.json#/ordinaryTime/odd/WED` | — | no page hint and no unique value-plus-second-anchor location |
 | `src/data/loth/ordinarium/invitatory.json#/doxology` | — | no page hint and no unique value-plus-second-anchor location |
-| `src/data/loth/ordinarium/invitatory.json#/gloryBe/shortText` | — | no page hint and no unique value-plus-second-anchor location |
+| `src/data/loth/ordinarium/invitatory.json#/gloryBe/shortText` | — | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/ordinarium/invitatory.json#/gloryBe/text` | — | no page hint and no unique value-plus-second-anchor location |
-| `src/data/loth/ordinarium/invitatory.json#/openingVersicle/response` | — | no page hint and no unique value-plus-second-anchor location |
-| `src/data/loth/ordinarium/invitatory.json#/openingVersicle/versicle` | — | no page hint and no unique value-plus-second-anchor location |
+| `src/data/loth/ordinarium/invitatory.json#/openingVersicle/response` | — | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/ordinarium/invitatory.json#/openingVersicle/versicle` | — | literal occurs in raw text SoT; geometry identity remains unresolved |
 | `src/data/loth/ordinarium/invitatory.json#/rubric` | — | no page hint and no unique value-plus-second-anchor location |
+| `src/data/loth/prayers/commons/psalter/w2-MON-lauds.rich.json#/responsoryRich/blocks/1/spans/0/text` | 201 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w2-SAT-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 172 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w2-SAT-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 172 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w2-WED-lauds.rich.json#/responsoryRich/blocks/0/spans/0/text` | 235 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w2-WED-lauds.rich.json#/responsoryRich/blocks/1/spans/0/text` | 235 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w2-WED-lauds.rich.json#/responsoryRich/blocks/3/spans/0/text` | 235 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w2-WED-lauds.rich.json#/responsoryRich/blocks/4/spans/0/text` | 235 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w2-WED-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 243 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w2-WED-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 243 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w2-WED-vespers.rich.json#/responsoryRich/blocks/3/spans/0/text` | 243 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w3-FRI-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 388 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w3-FRI-vespers.rich.json#/responsoryRich/blocks/3/spans/0/text` | 388 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-FRI-lauds.rich.json#/responsoryRich/blocks/3/spans/0/text` | 498 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-FRI-vespers.rich.json#/responsoryRich/blocks/3/spans/0/text` | 505 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-MON-lauds.rich.json#/responsoryRich/blocks/1/spans/0/text` | 431 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-MON-lauds.rich.json#/responsoryRich/blocks/2/spans/0/text` | 431 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-MON-lauds.rich.json#/responsoryRich/blocks/3/spans/0/text` | 431 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-SAT-lauds.rich.json#/responsoryRich/blocks/2/spans/0/text` | 519 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-SAT-vespers.rich.json#/responsoryRich/blocks/0/spans/0/text` | 404 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-SAT-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 404 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-SAT-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 404 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-SAT-vespers.rich.json#/responsoryRich/blocks/3/spans/0/text` | 404 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-SAT-vespers.rich.json#/responsoryRich/blocks/4/spans/0/text` | 404 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-SUN-lauds.rich.json#/responsoryRich/blocks/1/spans/0/text` | 413 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-SUN-lauds.rich.json#/responsoryRich/blocks/2/spans/0/text` | 413 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-SUN-lauds.rich.json#/responsoryRich/blocks/3/spans/0/text` | 413 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-THU-lauds.rich.json#/responsoryRich/blocks/0/spans/0/text` | 479 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-THU-lauds.rich.json#/responsoryRich/blocks/1/spans/0/text` | 479 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-THU-lauds.rich.json#/responsoryRich/blocks/2/spans/0/text` | 479 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-THU-lauds.rich.json#/responsoryRich/blocks/4/spans/0/text` | 479 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-THU-vespers.rich.json#/responsoryRich/blocks/0/spans/0/text` | 486 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-THU-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 486 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-THU-vespers.rich.json#/responsoryRich/blocks/4/spans/0/text` | 486 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-TUE-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 454 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-TUE-vespers.rich.json#/responsoryRich/blocks/3/spans/0/text` | 454 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-WED-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 470 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-WED-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 470 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/commons/psalter/w4-WED-vespers.rich.json#/responsoryRich/blocks/3/spans/0/text` | 470 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/hymns/51.rich.json#/hymnRich/blocks/0/lines/3/spans/0/text` | 922 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/seasonal/advent/w1-FRI-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 557 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/seasonal/advent/w1-MON-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 557 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/seasonal/advent/w1-THU-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 557 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/seasonal/advent/w1-TUE-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 557 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/seasonal/advent/w1-WED-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 557 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/seasonal/lent/w6-SAT-vespers.rich.json#/intercessionsRich/blocks/7/lines/1/spans/1/text` | 669 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/seasonal/ordinary-time/w12-SUN-lauds.rich.json#/concludingPrayerRich/blocks/0/spans/0/text` | 773 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/seasonal/ordinary-time/w12-SUN-lauds.rich.json#/concludingPrayerRich/blocks/2/spans/0/text` | 773 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/seasonal/ordinary-time/w12-SUN-vespers.rich.json#/concludingPrayerRich/blocks/0/spans/0/text` | 773 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/seasonal/ordinary-time/w12-SUN-vespers.rich.json#/concludingPrayerRich/blocks/2/spans/0/text` | 773 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/seasonal/ordinary-time/w32-SUN-lauds.rich.json#/concludingPrayerRich/blocks/0/spans/0/text` | 813 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/seasonal/ordinary-time/w32-SUN-lauds.rich.json#/concludingPrayerRich/blocks/2/spans/0/text` | 813 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/seasonal/ordinary-time/w32-SUN-vespers.rich.json#/concludingPrayerRich/blocks/0/spans/0/text` | 813 | literal occurs in raw text SoT; geometry identity remains unresolved |
+| `src/data/loth/prayers/seasonal/ordinary-time/w32-SUN-vespers.rich.json#/concludingPrayerRich/blocks/2/spans/0/text` | 813 | literal occurs in raw text SoT; geometry identity remains unresolved |
 
 ### `SOURCE_NOT_FOUND`
 
@@ -661,73 +723,33 @@ These rows did not reach the truncation-signature gates because unique source-un
 | `src/data/loth/ordinarium/compline.json#/anteMarian/alternatives/1/lines/0` | 545 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/ordinarium/compline.json#/anteMarian/alternatives/1/text` | 545 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/ordinarium/compline.json#/anteMarian/alternatives/1/title` | 545 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/ordinarium/hymns-index.json#/hymns/118/title` | 960 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/ordinarium/hymns.json#/119/title` | 960 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/ordinarium/hymns.json#/67/text` | 929 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w2-MON-lauds.rich.json#/responsoryRich/blocks/1/spans/0/text` | 201 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w2-SAT-vespers.rich.json#/responsoryRich/blocks/0/spans/0/text` | 172 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w2-SAT-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 172 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w2-SAT-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 172 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w2-SAT-vespers.rich.json#/responsoryRich/blocks/4/spans/0/text` | 172 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w2-WED-lauds.rich.json#/responsoryRich/blocks/0/spans/0/text` | 235 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w2-WED-lauds.rich.json#/responsoryRich/blocks/1/spans/0/text` | 235 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w2-WED-lauds.rich.json#/responsoryRich/blocks/2/spans/0/text` | 235 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w2-WED-lauds.rich.json#/responsoryRich/blocks/3/spans/0/text` | 235 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w2-WED-lauds.rich.json#/responsoryRich/blocks/4/spans/0/text` | 235 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w2-WED-vespers.rich.json#/responsoryRich/blocks/0/spans/0/text` | 243 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w2-WED-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 243 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w2-WED-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 243 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w2-WED-vespers.rich.json#/responsoryRich/blocks/3/spans/0/text` | 243 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w2-WED-vespers.rich.json#/responsoryRich/blocks/4/spans/0/text` | 243 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w3-FRI-vespers.rich.json#/responsoryRich/blocks/0/spans/0/text` | 388 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w3-FRI-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 388 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w3-FRI-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 388 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w3-FRI-vespers.rich.json#/responsoryRich/blocks/3/spans/0/text` | 388 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w3-FRI-vespers.rich.json#/responsoryRich/blocks/4/spans/0/text` | 388 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-FRI-lauds.rich.json#/responsoryRich/blocks/0/spans/0/text` | 498 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-FRI-lauds.rich.json#/responsoryRich/blocks/1/spans/0/text` | 498 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-FRI-lauds.rich.json#/responsoryRich/blocks/2/spans/0/text` | 498 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-FRI-lauds.rich.json#/responsoryRich/blocks/3/spans/0/text` | 498 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-FRI-lauds.rich.json#/responsoryRich/blocks/4/spans/0/text` | 498 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-FRI-vespers.rich.json#/responsoryRich/blocks/0/spans/0/text` | 505 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-FRI-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 505 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-FRI-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 505 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-FRI-vespers.rich.json#/responsoryRich/blocks/3/spans/0/text` | 505 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-FRI-vespers.rich.json#/responsoryRich/blocks/4/spans/0/text` | 505 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-MON-lauds.rich.json#/responsoryRich/blocks/0/spans/0/text` | 431 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-MON-lauds.rich.json#/responsoryRich/blocks/1/spans/0/text` | 431 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-MON-lauds.rich.json#/responsoryRich/blocks/2/spans/0/text` | 431 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-MON-lauds.rich.json#/responsoryRich/blocks/3/spans/0/text` | 431 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-MON-lauds.rich.json#/responsoryRich/blocks/4/spans/0/text` | 431 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-SAT-lauds.rich.json#/responsoryRich/blocks/0/spans/0/text` | 519 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-SAT-lauds.rich.json#/responsoryRich/blocks/1/spans/0/text` | 519 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-SAT-lauds.rich.json#/responsoryRich/blocks/2/spans/0/text` | 519 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-SAT-lauds.rich.json#/responsoryRich/blocks/4/spans/0/text` | 519 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-SAT-vespers.rich.json#/responsoryRich/blocks/0/spans/0/text` | 404 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-SAT-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 404 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-SAT-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 404 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-SAT-vespers.rich.json#/responsoryRich/blocks/3/spans/0/text` | 404 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-SAT-vespers.rich.json#/responsoryRich/blocks/4/spans/0/text` | 404 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-SUN-lauds.rich.json#/responsoryRich/blocks/1/spans/0/text` | 413 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-SUN-lauds.rich.json#/responsoryRich/blocks/2/spans/0/text` | 413 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-SUN-lauds.rich.json#/responsoryRich/blocks/3/spans/0/text` | 413 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-THU-lauds.rich.json#/responsoryRich/blocks/0/spans/0/text` | 479 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-THU-lauds.rich.json#/responsoryRich/blocks/1/spans/0/text` | 479 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-THU-lauds.rich.json#/responsoryRich/blocks/2/spans/0/text` | 479 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-THU-lauds.rich.json#/responsoryRich/blocks/4/spans/0/text` | 479 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-THU-vespers.rich.json#/responsoryRich/blocks/0/spans/0/text` | 486 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-THU-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 486 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-THU-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 486 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-THU-vespers.rich.json#/responsoryRich/blocks/4/spans/0/text` | 486 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-TUE-vespers.rich.json#/responsoryRich/blocks/0/spans/0/text` | 454 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-TUE-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 454 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-TUE-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 454 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-TUE-vespers.rich.json#/responsoryRich/blocks/3/spans/0/text` | 454 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-TUE-vespers.rich.json#/responsoryRich/blocks/4/spans/0/text` | 454 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-WED-vespers.rich.json#/responsoryRich/blocks/0/spans/0/text` | 470 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-WED-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 470 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-WED-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 470 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/commons/psalter/w4-WED-vespers.rich.json#/responsoryRich/blocks/3/spans/0/text` | 470 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/commons/psalter/w4-WED-vespers.rich.json#/responsoryRich/blocks/4/spans/0/text` | 470 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/hymns/23.rich.json#/hymnRich/blocks/0/lines/10/spans/0/text` | 898 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/hymns/23.rich.json#/hymnRich/blocks/0/lines/11/spans/0/text` | 898 | hinted page/continued section searched; no strict or normalized source unit located |
@@ -735,19 +757,13 @@ These rows did not reach the truncation-signature gates because unique source-un
 | `src/data/loth/prayers/hymns/23.rich.json#/hymnRich/blocks/0/lines/5/spans/0/text` | 898 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/hymns/23.rich.json#/hymnRich/blocks/0/lines/6/spans/0/text` | 898 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/hymns/23.rich.json#/hymnRich/blocks/0/lines/7/spans/0/text` | 898 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/hymns/51.rich.json#/hymnRich/blocks/0/lines/3/spans/0/text` | 922 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/hymns/51.rich.json#/hymnRich/blocks/0/lines/5/spans/0/text` | 922 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/hymns/86.rich.json#/hymnRich/blocks/0/lines/11/spans/0/text` | 939 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/advent/w1-FRI-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 557 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/seasonal/advent/w1-FRI-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 557 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/advent/w1-MON-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 557 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/seasonal/advent/w1-MON-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 557 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/advent/w1-THU-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 557 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/seasonal/advent/w1-THU-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 557 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/advent/w1-TUE-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 557 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/seasonal/advent/w1-TUE-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 557 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/advent/w1-WED-vespers.rich.json#/responsoryRich/blocks/1/spans/0/text` | 557 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/seasonal/advent/w1-WED-vespers.rich.json#/responsoryRich/blocks/2/spans/0/text` | 557 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/advent/wdec24-SUN-lauds.rich.json#/intercessionsRich/blocks/7/lines/1/spans/1/text` | 581 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/advent/wdec24-SUN-lauds.rich.json#/intercessionsRich/blocks/9/lines/0/spans/0/text` | 581 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/christmas/wdec25-SUN-lauds.rich.json#/intercessionsRich/blocks/0/spans/0/text` | 589 | hinted page/continued section searched; no strict or normalized source unit located |
@@ -782,7 +798,6 @@ These rows did not reach the truncation-signature gates because unique source-un
 | `src/data/loth/prayers/seasonal/lent/w6-SAT-vespers.rich.json#/intercessionsRich/blocks/5/lines/0/spans/0/text` | 669 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/lent/w6-SAT-vespers.rich.json#/intercessionsRich/blocks/5/lines/1/spans/1/text` | 669 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/lent/w6-SAT-vespers.rich.json#/intercessionsRich/blocks/7/lines/0/spans/0/text` | 669 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/seasonal/lent/w6-SAT-vespers.rich.json#/intercessionsRich/blocks/7/lines/1/spans/1/text` | 669 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/lent/w6-SAT-vespers.rich.json#/intercessionsRich/blocks/9/lines/0/spans/0/text` | 669 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/lent/w6-SAT-vespers.rich.json#/intercessionsRich/blocks/9/lines/1/spans/1/text` | 669 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/lent/w6-THU-vespers.rich.json#/intercessionsRich/blocks/0/spans/0/text` | 660 | hinted page/continued section searched; no strict or normalized source unit located |
@@ -798,21 +813,13 @@ These rows did not reach the truncation-signature gates because unique source-un
 | `src/data/loth/prayers/seasonal/lent/w6-THU-vespers.rich.json#/intercessionsRich/blocks/9/lines/0/spans/0/text` | 660 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/lent/w6-THU-vespers.rich.json#/intercessionsRich/blocks/9/lines/1/spans/1/text` | 660 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/ordinary-time/w11-SUN-vespers.rich.json#/alternativeConcludingPrayerRich/blocks/2/spans/0/text` | 771 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/seasonal/ordinary-time/w12-SUN-lauds.rich.json#/concludingPrayerRich/blocks/0/spans/0/text` | 773 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/seasonal/ordinary-time/w12-SUN-lauds.rich.json#/concludingPrayerRich/blocks/2/spans/0/text` | 773 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/ordinary-time/w12-SUN-lauds.rich.json#/concludingPrayerRich/blocks/4/spans/0/text` | 773 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/ordinary-time/w12-SUN-vespers.rich.json#/alternativeConcludingPrayerRich/blocks/0/spans/0/text` | 773 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/seasonal/ordinary-time/w12-SUN-vespers.rich.json#/concludingPrayerRich/blocks/0/spans/0/text` | 773 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/seasonal/ordinary-time/w12-SUN-vespers.rich.json#/concludingPrayerRich/blocks/2/spans/0/text` | 773 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/ordinary-time/w12-SUN-vespers.rich.json#/concludingPrayerRich/blocks/4/spans/0/text` | 773 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/ordinary-time/w3-SUN-vespers.rich.json#/alternativeConcludingPrayerRich/blocks/2/spans/0/text` | 755 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/ordinary-time/w31-SUN-vespers.rich.json#/alternativeConcludingPrayerRich/blocks/2/spans/0/text` | 811 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/seasonal/ordinary-time/w32-SUN-lauds.rich.json#/concludingPrayerRich/blocks/0/spans/0/text` | 813 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/seasonal/ordinary-time/w32-SUN-lauds.rich.json#/concludingPrayerRich/blocks/2/spans/0/text` | 813 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/ordinary-time/w32-SUN-lauds.rich.json#/concludingPrayerRich/blocks/4/spans/0/text` | 813 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/ordinary-time/w32-SUN-vespers.rich.json#/alternativeConcludingPrayerRich/blocks/0/spans/0/text` | 813 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/seasonal/ordinary-time/w32-SUN-vespers.rich.json#/concludingPrayerRich/blocks/0/spans/0/text` | 813 | hinted page/continued section searched; no strict or normalized source unit located |
-| `src/data/loth/prayers/seasonal/ordinary-time/w32-SUN-vespers.rich.json#/concludingPrayerRich/blocks/2/spans/0/text` | 813 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/ordinary-time/w32-SUN-vespers.rich.json#/concludingPrayerRich/blocks/4/spans/0/text` | 813 | hinted page/continued section searched; no strict or normalized source unit located |
 | `src/data/loth/prayers/seasonal/ordinary-time/w7-SUN-vespers.rich.json#/alternativeConcludingPrayerRich/blocks/2/spans/0/text` | 763 | hinted page/continued section searched; no strict or normalized source unit located |
 
