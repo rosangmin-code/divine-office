@@ -22,7 +22,7 @@
 | Text SoT SHA-256 | `f12f6135556f77df75593d2627ec2642ec6113c2a56f52b26102653580c1b330` |
 | Geometry source | `public/psalter.pdf` |
 | Geometry SHA-256 | `fa0397e9674745f2dc740094eb53f4a367740f6b55d50e1edcf8970972fc3fcd` |
-| Result ledger SHA-256 | `a9bb0f2c51a3efcbe59e11e739517e5b20b283f7bb2f4d9ac98745c36713a131` |
+| Result ledger SHA-256 | `8cb26612eff183af593647c786a146b53e6488027c9355b75578b3a5858aec04` |
 
 The frozen values agree with the coordinator's main-tree
 `coordinator-manifest.md`. The three source files were unchanged from the
@@ -56,6 +56,13 @@ Review iteration 3 restored literal U+201C/U+201D PDF glyphs in three retained
 raw excerpts (Psalm 16, Psalm 42, and Psalm 96). Their typography matches the
 data; only physical-line or page-column wrap differs, so their tier is now
 `whitespace`, not `typography`.
+
+Leader-authorized review iteration 4 replaced ten fallback page-start excerpts
+with the exact compact-match coordinate spans that established their
+`whitespace` disposition. Across the full ledger, all 4,276 literal matches,
+15 whitespace matches, and 10 typography matches now independently satisfy
+their declared tier against retained evidence; no normalized row has a
+verbatim raw-evidence hit.
 
 The two `KEEP_RULED` rows are exact address+value-hash hits in the coordinator
 ledger, never phrase-wide suppressions:

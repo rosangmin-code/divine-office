@@ -49,6 +49,17 @@ the literal U+201C/U+201D glyphs and physical newlines from pdfplumber. Their
 data/PDF typography is identical; collapsing only physical-line/page-column
 whitespace yields equality, so all three are `MATCH_NORMALIZED/whitespace`.
 
+Leader-authorized review iteration 4 corrected the remaining ten whitespace
+rows whose match was valid in compacted coordinate geometry but whose retained
+excerpt had fallen back to the start of the page. Each row now retains the
+minimal literal pdfplumber glyph span from its assigned book-page column. In
+these spans the PDF has no whitespace glyph at one visual word gap; removing
+whitespace from the stored value yields a byte-identical substring. An
+exhaustive recheck now proves that all 15 `whitespace` rows satisfy that exact
+tier, all 10 `typography` rows satisfy only the declared typography
+normalization, all 4,276 `MATCH_LITERAL` rows contain their complete stored
+value byte-for-byte, and no normalized row is already a literal match.
+
 Source stamps:
 
 - `/home/min/myproject/divineoffice/parsed_data/full_pdf.txt`:
