@@ -386,8 +386,8 @@ PrayerSpan / PrayerBlock 의 rubric 계열 노드는 두 축의 메타데이터�
 
 | ID | 요구사항 | 모듈 | 우선순위 | 상태 |
 |----|----------|------|----------|------|
-| FR-110 | **Web App Manifest**: Next.js App Router `manifest.ts` 컨벤션으로 `/manifest.webmanifest`를 자동 서빙한다. 몽골어 `name`/`short_name`/`description`, `lang: "mn"`, `display: "standalone"`, `start_url: "/"`, `theme_color: "#2d6a4f"`, `background_color: "#fafaf9"` 포함. | PWA | P3 | 완료 |
-| FR-111 | **앱 아이콘**: `public/icon.svg`(전례 녹색 배경의 십자가)를 매니페스트 `any` + `maskable` 목적으로 제공. Next.js `icon.tsx`/`apple-icon.tsx`로 favicon(32px)과 Apple touch icon(180px)을 `ImageResponse`로 자동생성한다. | PWA | P3 | 완료 |
+| FR-110 | **Web App Manifest**: Next.js App Router `manifest.ts` 컨벤션으로 `/manifest.webmanifest`를 자동 서빙한다. 몽골어 `name`/`short_name`/`description`, `lang: "mn"`, `display: "standalone"`, `start_url: "/"`, `theme_color: "#faf9f5"`, `background_color: "#faf9f5"` 포함. | PWA | P3 | 완료 |
+| FR-111 | **앱 아이콘**: full-bleed 책 표지 디자인(갈색 `#5c4a33` 표지 + 중앙 금색 십자가 + 금색 책배 스트립, GOAL #115)의 **정적 자산**을 제공한다. `public/icon.svg` 는 매니페스트 `any` + `maskable` 레퍼런스, `src/app/icon.svg` 는 App Router 규약 favicon, `apple-icon.png` 는 180×180 Apple touch icon(알파 채널 없는 RGB — iOS 투명 픽셀 검정 채움 방지). 십자가는 maskable 안전 영역(중앙 r=205px) 안에 배치한다. `ImageResponse` 런타임 생성은 사용하지 않는다. | PWA | P3 | 완료 |
 | FR-112 | **Service Worker 등록**: `SwRegistrar` client component가 프로덕션 환경에서 `load` 이벤트 이후 `/sw.js`를 scope `/`로 등록한다. localhost/개발 환경에서는 등록하지 않아 HMR 충돌을 방지한다. | PWA | P3 | 완료 |
 | FR-113 | **오프라인 폴백**: 네트워크 불가 시 내비게이션 요청에 대해 `/offline.html`(몽골어 "Интернэт холболтгүй байна" + 재시도 버튼)을 제공한다. 자체 완결적(외부 리소스 없음), 다크모드 대응. | PWA | P3 | 완료 |
 | FR-114 | **캐싱 전략**: Service Worker 는 내비게이션 요청을 **network-only** (네트워크 실패 시에만 `/offline.html` 폴백) 로 처리해 구버전 HTML 이 캐시되는 문제를 원천 차단한다. 정적 자산(script/style/font/image)은 cache-first. 활성화 시 구버전 캐시를 정리한다. `CACHE_VERSION` 을 bump 하면 이전 캐시 전체가 `activate` 훅에서 제거된다. | PWA | P3 | 완료 |
@@ -398,15 +398,15 @@ PrayerSpan / PrayerBlock 의 rubric 계열 노드는 두 축의 메타데이터�
 |----|----------|------|
 | NFR-010 | **PWA 설치 가능성**: 유효한 매니페스트 + 등록된 SW + HTTPS(Vercel) 조건을 만족해 브라우저 A2HS 프롬프트 기준을 통과한다. | 완료 |
 | NFR-011 | **SW 업데이트**: `next.config.ts`에서 `/sw.js`에 `Cache-Control: no-cache, no-store, must-revalidate` + `Service-Worker-Allowed: /` 헤더를 강제하여 Vercel CDN이 SW를 캐시하지 않도록 한다. | 완료 |
-| NFR-012 | **오프라인 페이지 UX**: `public/offline.html`은 외부 의존성 없이 인라인 CSS로 렌더링되며, 앱 디자인(stone-50/neutral-950, 전례 녹색 CTA)과 일치한다. | 완료 |
+| NFR-012 | **오프라인 페이지 UX**: `public/offline.html`은 외부 의존성 없이 인라인 CSS로 렌더링되며, 앱 디자인(양피지 `#faf9f5` / 다크 `#1a1510`, 금색 `#9a7b2e` CTA)과 일치한다. | 완료 |
 
 ### 8.3 구현 상세
 
 - **매니페스트**: `src/app/manifest.ts` — `MetadataRoute.Manifest` 타입, `/manifest.webmanifest`로 서빙. Next.js가 `<link rel="manifest">`를 `<head>`에 자동 삽입.
-- **아이콘**: `public/icon.svg` (매니페스트 레퍼런스), `src/app/icon.tsx` (32x32 favicon), `src/app/apple-icon.tsx` (180x180 apple-touch-icon). `next/og`의 `ImageResponse`로 PNG 런타임 생성.
-- **Service Worker**: `public/sw.js` — `divine-office-v3` 캐시, `install` 에서 `/offline.html` + `/icon.svg` 프리캐시 및 `skipWaiting()`, `activate` 에서 구버전 캐시 전체 삭제 및 `clients.claim()`, `fetch` 에서 navigation(network-only, 실패 시 `/offline.html`) / static-asset(cache-first) 분기. navigation 을 network-only 로 전환한 이유는 이전 network-first 구현이 구버전 HTML(구 PageRef 외부 링크)을 캐시해 모바일에서 PDF 가 다운로드로 처리되는 버그를 유발했기 때문. `v3` bump 는 `public/pdf.worker.min.mjs` 를 legacy 빌드로 교체한 데 따른 구 캐시 무효화.
+- **아이콘**: 정적 자산 4개 — `public/icon.svg` + `src/app/icon.svg` (동일 내용), `public/apple-icon.png` + `src/app/apple-icon.png` (동일 내용, 180×180 RGB). `src/app/` 사본은 App Router 규약으로 `<link rel="icon">` / `<link rel="apple-touch-icon">` 에 해시 쿼리(`/icon.svg?icon.<hash>.svg`)로 삽입되고, `public/` 사본은 매니페스트와 SW 프리캐시가 참조하는 쿼리 없는 `/icon.svg` · `/apple-icon.png` 를 서빙한다. **두 사본은 항상 동기화**해야 한다 (표면별 제약은 `docs/design/mental-models/goal115-app-icon-platform-surfaces.md`). `next/og` `ImageResponse` 는 사용하지 않는다.
+- **Service Worker**: `public/sw.js` — `divine-office-v78` 캐시(현행), `install` 에서 `/offline.html` + `/icon.svg` 프리캐시 및 `skipWaiting()`, `activate` 에서 구버전 캐시 전체 삭제 및 `clients.claim()`, `fetch` 에서 navigation(network-only, 실패 시 `/offline.html`) / static-asset(cache-first) 분기. navigation 을 network-only 로 전환한 이유는 이전 network-first 구현이 구버전 HTML(구 PageRef 외부 링크)을 캐시해 모바일에서 PDF 가 다운로드로 처리되는 버그를 유발했기 때문. `CACHE_VERSION` 은 정적 자산 경로/내용 변경, 프리캐시 대상 변경, SW 로직 변경 시 bump 하며 bump 사유는 `sw.js` 파일 상단 주석에 누적 기록한다 (기준은 `CLAUDE.md` "Service Worker 캐시" 참조).
 - **등록**: `src/components/sw-registrar.tsx` — `'use client'`, `useEffect`에서 `navigator.serviceWorker.register('/sw.js', { scope: '/', updateViaCache: 'none' })`. `NODE_ENV !== 'production'`에서는 건너뜀.
-- **레이아웃**: `src/app/layout.tsx` — `<SwRegistrar />` 렌더링, `viewport.themeColor: '#2d6a4f'`, `metadata.appleWebApp` 추가.
+- **레이아웃**: `src/app/layout.tsx` — `<SwRegistrar />` 렌더링, `viewport.themeColor` 는 스킴별 2개 항목(light `#faf9f5` / dark `#1a1510`), `metadata.appleWebApp` 추가.
 - **헤더**: `next.config.ts`의 `async headers()`에서 `/sw.js` 라우트에 no-cache + Service-Worker-Allowed 헤더 주입.
 
 ---
