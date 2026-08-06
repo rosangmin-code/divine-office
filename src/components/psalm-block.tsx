@@ -71,6 +71,26 @@ export function sanitizePsalmHeaderPreface(
   return pt
 }
 
+/**
+ * GOAL #106 후속 (사용자 ruling 2026-08-06) — PDF 조판의 행-계속 표시가
+ * 시편 본문 행 끝에 en-dash 로 남아 화면에 노출되는 문제.
+ *
+ * `src/data/loth` 전수 스캔 결과 68건이며 전부 psalter-texts 계열이다
+ * (plain 33 / rich 33 / pilot 2). 초대송·찬미가·propers 에는 없다.
+ * 데이터는 PDF SoT 재현으로 **보존**하고 렌더 단계에서만 제거한다.
+ *
+ * U+2013 으로 한정한다 — 실측 68건이 전부 U+2013 이고, em-dash(U+2014)와
+ * hyphen-minus 는 본문에서 정당하게 쓰이므로 건드리지 않는다.
+ *
+ * phrase 경로는 행들을 공백으로 이어 붙이므로 **join 전에 행별로** 적용해야
+ * 한다. 그렇지 않으면 dash 가 문장 중간에 남는다:
+ *   ["…гэмшсэн зүрхийг –", "Тэнгэрбурхан Та жигшихгүй."]
+ *     → join 후 "…гэмшсэн зүрхийг – Тэнгэрбурхан Та жигшихгүй."
+ */
+export function stripTrailingLineDash(line: string): string {
+  return line.replace(/\s*–\s*$/u, '')
+}
+
 export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; antiphonNumber?: number }) {
   const { settings } = useSettings()
   return (
@@ -176,9 +196,15 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
                 >
                   {block.phrases.map((phrase, pi) => {
                     const [start, end] = phrase.lineRange
+                    // 행말 en-dash 는 join 전에 행별로 제거한다 (그렇지
+                    // 않으면 문장 중간에 남는다 — stripTrailingLineDash 주석).
                     const phraseText = block.lines
                       .slice(start, end + 1)
-                      .map((l) => l.spans.map((sp) => sp.text ?? '').join(''))
+                      .map((l) =>
+                        stripTrailingLineDash(
+                          l.spans.map((sp) => sp.text ?? '').join(''),
+                        ),
+                      )
                       .join(' ')
                     // WI #502 — 왼쪽 여백 통일 (사용자 SoT, dispatch 502).
                     // 이전 (R-13): phrase.indent 0/1/2 → pl-6 / pl-12 /
@@ -264,7 +290,9 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
                   // dark:text-red-400` 트리거 제거. data-role 메타데이터
                   // (`psalm-stanza-refrain`) 는 회중 응답 식별 + e2e selector
                   // 안정성을 위해 보존.
-                  const text = line.spans.map((sp) => sp.text ?? '').join('')
+                  const text = stripTrailingLineDash(
+                    line.spans.map((sp) => sp.text ?? '').join(''),
+                  )
                   const isParagraphStart = legacyParagraphBoundarySet.has(li)
                   const paragraphClass = isParagraphStart ? ' mt-3' : ''
                   return (
@@ -294,7 +322,7 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
                 // (leading spaces) 는 JSON 보존, renderer 단에서만
                 // strip. 자세한 rationale 은 phrase mode 코멘트 참고.
                 const leading = line.match(/^ */)![0].length
-                const trimmed = line.slice(leading)
+                const trimmed = stripTrailingLineDash(line.slice(leading))
                 return (
                   <span key={li} className="block">{trimmed}</span>
                 )

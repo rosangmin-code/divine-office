@@ -1,3 +1,11 @@
+// v79 — GOAL #106 후속: 시편 본문 행말 en-dash 렌더 제거. PDF 조판의
+// 행-계속 표시가 psalter-texts 68행(plain 33 / rich 33 / pilot 2)의 행 끝에
+// 남아 화면에 노출되던 것을 `psalm-block.tsx` 의 세 렌더 경로(phrase /
+// legacy-line / plain-stanzas)에서 제거한다. 데이터는 PDF SoT 재현으로
+// 무변경 — 렌더 출력만 바뀐다. 시편이 포함된 시간경의 SSR HTML 과 컴포넌트
+// chunk 가 바뀌므로, stale-cache 클라이언트가 cache-first 로 구 chunk 를
+// 계속 받아 dash 가 남아 보이는 회귀를 막기 위해 v78 → v79.
+// SW 로직 변경 없음 — navigation `network-only` 유지, PRECACHE 무변경.
 // v78 — GOAL #115: full-bleed book icon redesign. `/icon.svg` is a
 // PRECACHE_URLS entry, so its content change requires v77 → v78 to prevent the
 // prior framed icon from remaining cache-first. SW behavior and asset paths are
@@ -662,7 +670,7 @@
 // indent 추가 → 초대송 SSR HTML 출력의 행구조/들여쓰기가 바뀜. stale-cache
 // 클라이언트가 구 병합-행 출력을 cache-first 로 계속 받는 회귀 방지.
 // SW 로직 변경 없음 — navigation `network-only` 유지, PRECACHE 무변경.
-const CACHE_VERSION = 'divine-office-v78'
+const CACHE_VERSION = 'divine-office-v79'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
