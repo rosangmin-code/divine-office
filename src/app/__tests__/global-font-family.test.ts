@@ -71,7 +71,7 @@ describe('app-wide font-family setting', () => {
     await page.locator('html').evaluate((element, fontFamily) => {
       if (fontFamily) element.setAttribute('data-font-family', fontFamily)
     }, setting)
-    await page.locator('body').evaluate((element, classes) => {
+    await page.locator('body').evaluate<void, string, HTMLElement>((element, classes) => {
       element.className = classes
       element.style.setProperty('--font-sans', '"Test Sans"')
       element.style.setProperty('--font-serif', '"Test Serif"')
