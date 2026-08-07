@@ -207,7 +207,7 @@ PDF 글리프 매핑 아티팩트이므로 **데이터가 옳다**.
 |---|---:|---|---|
 | `indel` | 29 (고유 22종) | `indel-candidates.md` | 전부 미교정 — 어형 판단 필요. PDF 추출이 깨진 건(#9·12·21)이 섞여 있다 |
 | `letter-sub` | 30 (고유 15종) | `sub-candidates.md` | **대부분 PDF 쪽 문제**. 교정완료 2 · PDF오류 3 · 정렬 5 · 대소문자 4 · 검토 1 |
-| `punct` | 58 | — | 미검토 (의미 무영향) |
+| `punct` | 58 | `punct-candidates.md` | **교정 대상 0건**. 규약(pageRedirects 라벨 콜론·청원 도입부) / PDF 추출 아티팩트 / 정렬 어긋남 |
 | `homoglyph` | 20 | — | PDF 글리프 매핑 아티팩트 — **데이터가 옳다** |
 
 `letter-sub` 의 결정적 증거: `week-3.json` 시편 제목에서 PDF 가 `хоньчnн` —
