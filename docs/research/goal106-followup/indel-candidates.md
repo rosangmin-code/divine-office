@@ -11,28 +11,28 @@
 
 | # | 파일 | 위치 | 차이 (데이터 → PDF) | 관찰 |
 |---|---|---|---|---|
-| 1 | `psalter-texts.json` ×2 | `/Deuteronomy 32:1-12/stanzas/2/4` | `йх`→`рьж`; −`?` | PDF 쪽 뒤 문맥(Оёо)이 붙어 보이나 차이는 урс**а**хаа. `урсах`(흐르다) 활용형. |
-| 2 | `psalter-texts.json` ×2 | `/Exodus 15:1-4a, 8-13, 17-18/stanzas/4/1` | +`а`; −`,` | **교정 완료** (2026-08-06 승인). |
-| 3 | `psalter-texts.json` ×2 | `/Ezekiel 36:24-28/stanzas/0/2` | +`аа`; `ра`→`и`; −`.` | `Эзэний`(속격) ↔ `Эзэнийг`(대격). 문맥은 "내 영혼아 …를 찬미하라". |
-| 4 | `psalter-texts.json` ×2 | `/Ezekiel 36:24-28/stanzas/1/2` | `ү`→`у`; `э`→`аа`; −`,` | `хариу байх` ↔ `хариу барьж`. |
-| 5 | `psalter-texts.json` ×2 | `/Jeremiah 14:17-21/stanzas/0/3` | +`т`; −`д` | `бүртгэс` ↔ `буртгаас`. 모음 ү/у + э/аа 동시 차이. |
-| 6 | `psalter-texts.json` ×2 | `/Jeremiah 14:17-21/stanzas/3/2` | −`үүл`; +`ш`; +`Ам` | `авчрах` ↔ `аваачих`. |
-| 7 | `psalter-texts.json` ×2 | `/Tobit 13:8-11, 13-15/stanzas/8/0` | +`г`; −`г` | `эдгүүлэгүйгээр` ↔ `эдгэшгүйгээр`. |
-| 8 | `gilh.json` | `/footnotes/3/text` | −`,`; +`3` | 마침표 유무 + `й`. 앞 문맥이 어긋나 정렬 의심. |
-| 9 | `prayers/seasonal/easter/w1-THU-vespers.rich.json` | `/intercessionsRich/blocks/10/lines/1/spans/1/text` | +`сүр`; −`уу.` | 데이터 `даяар` ↔ PDF `даяр`. **`даяар`가 표준 표기** — 데이터가 맞을 수 있음. |
-| 10 | `prayers/seasonal/ordinary-time/w13-SUN-vespers.rich.json` | `/alternativeConcludingPrayerRich/blocks/0/spans/0/text` | +`.`; −`й` | PDF 쪽 앞에 `л`이 붙음 → 정렬 어긋남 의심. `үйлсийг` ↔ `үйлийг`. |
-| 11 | `prayers/seasonal/ordinary-time/w3-SUN-vespers.rich.json` | `/alternativeConcludingPrayerRich/blocks/2/spans/0/text` | −`ийг`; +`Үүн` | `хааллгаар` ↔ `ухаалгаар`. |
-| 12 | `propers/advent.json` | `/weeks/1/SUN/vespers2/intercessions/2` | −`а`; +`А` | PDF 에 쉼표가 없음(`14:1315:16`) → **PDF 추출 누락**으로 보임, 데이터가 맞을 수 있음. |
-| 13 | `propers/easter.json` | `/weeks/1/THU/vespers/intercessions/5` | +`сүр`; −`уу.` | PDF 쪽 첫 글자 `М` 누락 → 정렬/추출 문제 의심. |
-| 14 | `propers/ordinary-time.json` | `/weeks/3/SUN/vespers/alternativeConcludingPrayer` | −`ийг`; +`2ду` | `Таны` ↔ `Таныг`. PDF 쪽 첫 글자 누락 → 정렬 의심. |
-| 15 | `psalter-texts.json` | `/1 Samuel 2:1-10/stanzas/2/3` | +`л`; −`с` | `хаяг нь` ↔ `хаягч нь`. |
-| 16 | `psalter-texts.json` | `/1 Samuel 2:1-10/stanzas/5/1` | `мж`→`х`; +`Ө` | `өргөмждөө` ↔ `өргөхдөө`. |
-| 17 | `psalter-texts.json` | `/Exodus 15:1-4a, 8-13, 17-18/stanzas/2/3` | +`ч`; −`.` | `түшмэдэд` ↔ `түшмэддээр`. |
-| 18 | `psalter-texts.json` | `/Isaiah 33:13-16/stanzas/2/5` | −`М`; +`г` | `хэсүүлсээр` ↔ `хэсүүчлэхээр`. |
-| 19 | `psalter-texts.json` | `/Jeremiah 14:17-21/stanzas/2/3` | +`ч`; `с`→`эх`; −`э.` | `жавхлангийг` ↔ `жавхланг`. PDF 쪽에 `2ду`(쪽번호?) 혼입 → 판정 주의. |
-| 20 | `psalter-texts.json` | `/Psalm 135:1-12/stanzas/5/6` | +`д`; `д`→`эр`; −`м.` | 19번의 rich 대응. |
-| 21 | `psalter-texts.json` | `/Wisdom 9:1-6, 9-11/stanzas/3/2` | −`Т`; +`г` | PDF 에 `сүр` 이 **중복**(`Та сүр сүр жавхлангийн`) → PDF 추출 중복 의심, 데이터가 맞을 수 있음. |
-| 22 | `psalter-texts.json` | `/Wisdom 9:1-6, 9-11/stanzas/5/2` | +`у`; −`л` | 21번의 rich 대응. |
+| 1 | `psalter-texts.json` ×2 | `/Deuteronomy 32:1-12/stanzas/2/4` | `йх`→`рьж`; −`?` | `хариу байх` ↔ `хариу барьж`. 어형 판단 필요. |
+| 2 | `psalter-texts.json` ×2 | `/Exodus 15:1-4a, 8-13, 17-18/stanzas/4/1` | +`а`; −`,` | `урсхаа` ↔ `урсахаа`. `урсах`(흐르다) 활용형 — PDF 쪽이 규칙적. |
+| 3 | `psalter-texts.json` ×2 | `/Ezekiel 36:24-28/stanzas/0/2` | +`аа`; `ра`→`и`; −`.` | `авчрах` ↔ `аваачих`. 어형 판단 필요. |
+| 4 | `psalter-texts.json` ×2 | `/Ezekiel 36:24-28/stanzas/1/2` | `ү`→`у`; `э`→`аа`; −`,` | `бүртгэс` ↔ `буртгаас`. 모음 ү/у + э/аа 동시 차이. |
+| 5 | `psalter-texts.json` ×2 | `/Jeremiah 14:17-21/stanzas/0/3` | +`т`; −`д` | **교정 완료** — `халдвар`→`халдварт` (2026-08-06 승인). |
+| 6 | `psalter-texts.json` ×2 | `/Jeremiah 14:17-21/stanzas/3/2` | −`үүл`; +`ш`; +`Ам` | `эдгүүлэгүйгээр` ↔ `эдгэшгүйгээр`. 어형 판단 필요. |
+| 7 | `psalter-texts.json` ×2 | `/Tobit 13:8-11, 13-15/stanzas/8/0` | +`г`; −`г` | `Эзэний,`(속격) ↔ `Эзэнийг,`(대격). 문맥은 "내 영혼아 …를 찬미하라" — 대격이 자연스럽다. |
+| 8 | `gilh.json` | `/footnotes/3/text` | −`,`; +`3` | 성경 인용 `14:13,15:16` ↔ PDF `14:1315:16`. **PDF 에 쉼표 누락** — 데이터가 맞다. |
+| 9 | `prayers/seasonal/easter/w1-THU-vespers.rich.json` | `/intercessionsRich/blocks/10/lines/1/spans/1/text` | +`сүр`; −`уу.` | PDF 가 `Та сүр сүр жавхлангийн` 으로 **`сүр` 중복** 출력 — 추출 아티팩트, 데이터가 맞다. (13번과 plain/rich 쌍) |
+| 10 | `prayers/seasonal/ordinary-time/w13-SUN-vespers.rich.json` | `/alternativeConcludingPrayerRich/blocks/0/spans/0/text` | +`.`; −`й` | 데이터에 마침표가 없고 PDF 에 있음 + `й`. 앞 문맥이 어긋나 **정렬 의심**. |
+| 11 | `prayers/seasonal/ordinary-time/w3-SUN-vespers.rich.json` | `/alternativeConcludingPrayerRich/blocks/2/spans/0/text` | −`ийг`; +`Үүн` | `жавхлангийг` ↔ `жавхланг`. PDF 쪽에 `Үүн` 이 붙어 다음 문장 혼입 — 정렬 주의. (14번과 쌍) |
+| 12 | `propers/advent.json` | `/weeks/1/SUN/vespers2/intercessions/2` | −`а`; +`А` | 데이터 `даяар` ↔ PDF `даяр`. **`даяар`(전역에)가 표준 표기** — 데이터가 맞을 가능성이 높다. |
+| 13 | `propers/easter.json` | `/weeks/1/THU/vespers/intercessions/5` | +`сүр`; −`уу.` | 9번의 plain 대응 — PDF `сүр` 중복. |
+| 14 | `propers/ordinary-time.json` | `/weeks/3/SUN/vespers/alternativeConcludingPrayer` | −`ийг`; +`2ду` | 11번의 plain 대응. PDF 쪽에 `2ду`(쪽번호 조각?) 혼입 — 판정 주의. |
+| 15 | `psalter-texts.json` | `/1 Samuel 2:1-10/stanzas/2/3` | +`л`; −`с` | `үйлсийг` ↔ `үйлийг`. PDF 쪽 앞에 `л` 이 붙어 **정렬 어긋남 의심**. |
+| 16 | `psalter-texts.json` | `/1 Samuel 2:1-10/stanzas/5/1` | `мж`→`х`; +`Ө` | `өргөмждөө` ↔ `өргөхдөө`. 어형 판단 필요. |
+| 17 | `psalter-texts.json` | `/Exodus 15:1-4a, 8-13, 17-18/stanzas/2/3` | +`ч`; −`.` | `хаяг нь` ↔ `хаягч нь`. `хаягч`(던지는 이)면 "바다에 던지신 분" 으로 문맥이 통한다. |
+| 18 | `psalter-texts.json` | `/Isaiah 33:13-16/stanzas/2/5` | −`М`; +`г` | `Муу` ↔ PDF `уу`+`г`. **PDF 쪽 첫 글자 `М` 누락** — 정렬/추출 문제 의심. |
+| 19 | `psalter-texts.json` | `/Jeremiah 14:17-21/stanzas/2/3` | +`ч`; `с`→`эх`; −`э.` | `хэсүүлсээр` ↔ `хэсүүчлэхээр`. 어형 판단 필요. |
+| 20 | `psalter-texts.json` | `/Psalm 135:1-12/stanzas/5/6` | +`д`; `д`→`эр`; −`м.` | `түшмэдэд` ↔ `түшмэддээр`. 어형 판단 필요. |
+| 21 | `psalter-texts.json` | `/Wisdom 9:1-6, 9-11/stanzas/3/2` | −`Т`; +`г` | `Таны` ↔ `Таныг`. **PDF 쪽 첫 글자 누락** — 정렬 의심. |
+| 22 | `psalter-texts.json` | `/Wisdom 9:1-6, 9-11/stanzas/5/2` | +`у`; −`л` | `хааллгаар` ↔ `ухаалгаар`. `хааллгаар` 는 몽골어에 없는 형태로 보인다 — PDF 쪽이 유력. |
 
 ## 문맥 원문
 
