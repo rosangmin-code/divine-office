@@ -76,3 +76,4 @@ Screenshot_*.jpg
 # GOAL 106 후속 검출기(coverage-gap.py) 실행 부산물
 __pycache__/
 .goal106-pages.pkl
+docs/research/goal106-followup/pages.pkl
