@@ -1,3 +1,9 @@
+// v80 — GOAL #106 후속: 인쇄면 확정 오탈자 16종 교정 (24곳).
+// psalter-texts.json + psalter-texts.rich.json 의 시편·찬가 본문 글자가
+// 바뀌므로 해당 시간경의 SSR HTML 이 달라진다. stale-cache 클라이언트가
+// cache-first 로 구 chunk 를 받아 옛 본문을 계속 보는 회귀를 막기 위해
+// v79 → v80. 근거는 PDF 인쇄면 렌더(docs/research/goal106-followup/crops).
+// SW 로직 변경 없음 — navigation `network-only` 유지, PRECACHE 무변경.
 // v79 — GOAL #106 후속: 시편 본문 행말 en-dash 렌더 제거. PDF 조판의
 // 행-계속 표시가 psalter-texts 68행(plain 33 / rich 33 / pilot 2)의 행 끝에
 // 남아 화면에 노출되던 것을 `psalm-block.tsx` 의 세 렌더 경로(phrase /
@@ -670,7 +676,7 @@
 // indent 추가 → 초대송 SSR HTML 출력의 행구조/들여쓰기가 바뀜. stale-cache
 // 클라이언트가 구 병합-행 출력을 cache-first 로 계속 받는 회귀 방지.
 // SW 로직 변경 없음 — navigation `network-only` 유지, PRECACHE 무변경.
-const CACHE_VERSION = 'divine-office-v79'
+const CACHE_VERSION = 'divine-office-v80'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 
