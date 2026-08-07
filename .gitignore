@@ -72,3 +72,7 @@ next-env.d.ts
 
 # mobile browser screenshots dropped in repo root (bug-report evidence)
 Screenshot_*.jpg
+
+# GOAL 106 후속 검출기(coverage-gap.py) 실행 부산물
+__pycache__/
+.goal106-pages.pkl
