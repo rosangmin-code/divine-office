@@ -3,7 +3,7 @@
 - 발견일: 2026-08-08
 - 발견 경위: GOAL 106 후속 `responsoryRich.page` 정합 작업 중 `verify-psalter-pages.js` 의
   `verified-correction` 버킷이 0 이 아닌 것을 확인(NFR-009c 위반)하고 원인을 추적하다 드러남
-- 상태: **미수정** — 전례 본문 신규 입력이 필요하므로 사용자 승인 대기
+- 상태: **수정 완료** (2026-08-08, 사용자 승인 후) — 아래 §해결 참조
 - 영향: 저녁기도 5개 (시편 제2주간 월·화·목, 제3주간 목, 제4주간 금) — 4주마다 반복
 
 ---
@@ -146,3 +146,71 @@ verifier 는 그 뒤 2026-07-11(`91a0171` "strengthen psalter page anchors")에 
 5. `CACHE_VERSION` bump (SSR 본문이 바뀜)
 
 본문 신규 입력은 전례 텍스트이므로 사용자 승인 후 진행한다.
+
+---
+
+## 해결 (2026-08-08)
+
+위 1~5 를 그대로 수행했다. 방법과 검증은 `docs/research/split-psalm-part2/` 참조.
+
+**본문 확보** — 인쇄면 기하(`emit-lines.py`, pdfplumber)로 II부 구간의 행과
+세로 간격을 뽑았다. 검출기는 **이미 데이터에 있는 I부로 먼저 캘리브레이션**했다:
+ps45·ps72·ps145 는 행 수와 `paragraphBoundaries` 가 저장본과 완전 일치, ps49·ps132 는
+저장본이 두 쪽을 한 블록으로 합쳐 둔 차이만 있었다. `phrases` 는 프로젝트 기존
+체인(`regroupPhrasesByCapitalStart`)을 그대로 썼고, 이 함수가 I부 5건 전 블록의
+저장된 `phrases` 를 정확히 재현하는 것을 확인한 뒤 II부에 적용했다.
+
+**교정 내역**
+
+| ref | 행 | phrases | 연 경계 | page |
+|---|---|---|---|---|
+| `Psalm 45:11-18` | 21 | 21 | [5,9,15] | 203 → 204 |
+| `Psalm 49:14-21` | 24 | 24 | [13,17,22] | 219 → 220 |
+| `Psalm 72:12-19` | 32 | 32 | [6,14,19,25] | 256 (유지) |
+| `Psalm 132:11-18` | 24 | 22 | [5,10,14,19] | 367 → 369 |
+| `Psalm 145:14-21` | 22 | 20 | [9,13,19] | 497 → 498 |
+
+`psalter-texts.json` / `psalter-texts.rich.json` 은 **순수 추가**다 — 기존 130개 키의
+값과 순서가 한 글자도 바뀌지 않은 것을 파싱 대조로 확인했다.
+
+**Ps 72 의 절 범위**: `verify-psalter-pages.js` 의 `PART_II_SKIPS` 와 2026-04-21
+산출물 `scripts/out/psalter-partII-corrections.json` 은 `Psalm 72:12-20` 을 기대하고
+있었으나, 인쇄면 x.256-257 의 II부는 `Амэн, Амэн.`(19절)로 끝나고 20절(다윗의 기도
+종결 콜로폰)은 인쇄돼 있지 않다. 절 단위로 세어도 12~19 의 8절이라 `12-19` 로 넣고
+allowlist 를 정정했다. 나머지 4건의 ref 와 page 는 그 2026-04 산출물이 독립적으로
+제안한 값과 일치한다 (ps132 만 368→369 차이 — 그쪽은 후렴 쪽, 이쪽은 본문 시작 쪽).
+
+**검증**
+
+```
+verify-psalter-pages       verified-correction 0 (교정 전 1) / manual-review 28 / part-II-skipped 11
+verify-psalter-body-pages  verified-correction 0
+audit-psalter-ref-consistency  suspects 0
+verify-phrase-coverage     330 stanza / 0 violations
+tsc 0, lint 0, vitest 112 files 1847 tests OVERALL: PASS
+```
+
+렌더 실측 (dev + Playwright, 5개 날짜 전부):
+
+```
+2026-08-31  Psalm 45:2-10 (x.203) sha 88dffcde7a / Psalm 45:11-18 (x.204) sha a6aaf5bc35
+2026-09-01  Psalm 49:1-13 (x.219) sha 6aefb91685 / Psalm 49:14-21 (x.220) sha fdbe67af87
+2026-09-03  Psalm 72:1-11 (x.255) sha 8450e4ea6a / Psalm 72:12-19 (x.256) sha 89033f66ea
+2026-09-10  Psalm 132:1-10 (x.367) sha df6d2e53d0 / Psalm 132:11-18 (x.369) sha 79b9f1abfc
+2026-09-18  Psalm 145:1-13 (x.497) sha c742c954e7 / Psalm 145:14-21 (x.498) sha 8e6f8934cc
+```
+
+SHA 가 전부 갈렸다 — 중복 렌더 해소. 콘솔 에러 없음. `CACHE_VERSION` v81 → v82.
+
+## 파생 발견 (미수정)
+
+`psalter-texts.rich.json` 전수 스캔 결과, **여는 따옴표 + 대문자로 시작하는 행이
+앞 phrase 에 병합된 곳이 37건** 있다 (`^[А-ЯЁӨҮ]` 정규식이 따옴표를 못 넘긴다).
+예: `Psalm 132:1-10` I부가 `…андгайлсан билээ дээ! “Үнэхээр би гэртээ ч орохгүй,`
+를 한 줄로 렌더한다 (plain 저장본은 두 줄로 나뉘어 있어 rich 쪽만 어긋난 상태).
+
+**전부 결함은 아니다.** `Psalm 110:1-5, 7` 의 `ЭЗЭН миний Эзэнд айлдсан нь:` +
+`“Би чиний дайснуудыг` 처럼 인용이 같은 절의 연속인 경우도 섞여 있어 건별 판정이
+필요하다. 이번 II부 5건에서는 ps132 의 2곳에만 규칙이 발동했고, 두 곳 모두 선행
+행이 짧고(=줄바꿈 지점이 아님) 문장이 끝나 있어 분리가 옳음을 인쇄면으로 확인했다.
+나머지 37건은 별도 판정 작업으로 남긴다.

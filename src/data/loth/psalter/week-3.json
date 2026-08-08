@@ -795,12 +795,12 @@
           },
           {
             "type": "psalm",
-            "ref": "Psalm 132:1-10",
+            "ref": "Psalm 132:11-18",
             "antiphon_key": "w3-thu-vesp-ps2",
             "default_antiphon": "Эзэн Сионыг Өөрийн шүтээний газраа болгохоор сонгосон юм.",
             "title": "Тэнгэрбурханы Давидын гэрт амласан амлалтууд",
             "gloria_patri": true,
-            "page": 367,
+            "page": 369,
             "antiphonPage": 368,
             "seasonal_antiphons": {
               "easter": "Есүс Христ бол Өөрийн хүч чадалдаа аугаа их Тэр бол хаадын Хаан, эздийн Эзэн. Аллэлуяа!",

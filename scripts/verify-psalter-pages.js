@@ -74,7 +74,11 @@ const PART_II_SKIPS = new Set([
   'week-1|WED|vespers|Psalm 27:7-14',
   'week-2|MON|vespers|Psalm 45:11-18',
   'week-2|TUE|vespers|Psalm 49:14-21',
-  'week-2|THU|vespers|Psalm 72:12-20',
+  // 2026-08-08: 데이터 신설 시 `72:12-20` → `72:12-19` 로 정정. 인쇄면 x.256-257
+  // 의 II부는 `Амэн, Амэн.`(19절)로 끝나고 20절(다윗의 기도 종결 콜로폰)은
+  // 인쇄돼 있지 않다. 절 단위로 세어도 12~19 의 8절. 종전 값은 데이터가 없던
+  // 시절 추정으로 들어가 아무것도 매칭하지 않는 dead entry 였다.
+  'week-2|THU|vespers|Psalm 72:12-19',
   'week-3|THU|vespers|Psalm 132:11-18',
   'week-3|FRI|vespers|Psalm 135:13-21',
   'week-4|FRI|vespers|Psalm 145:14-21',

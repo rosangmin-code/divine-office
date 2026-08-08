@@ -686,7 +686,14 @@
 // 본문 글자·행수 불변. stale-cache 클라이언트가 cache-first 구 chunk 로 옛 쪽
 // 참조를 계속 받는 회귀 방지를 위해 bump. SW 로직 변경 없음 — navigation
 // `network-only` 유지, caches.put(html) 미도입. PRECACHE 대상 무변경.
-const CACHE_VERSION = 'divine-office-v81'
+// v81 → v82 — 분할 시편 II부 5건 신규 수록. 시편 45·49·72·132·145 의 저녁기도
+// 둘째 슬롯이 I부 ref 를 그대로 들고 있어 I부 본문이 두 번 렌더되고 II부가
+// 한 번도 나오지 않았다. psalter-texts(.rich) 에 II부 키 5개를 신설하고
+// week-{2,3,4}.json 의 ref·page 를 교정 → 해당 5개 저녁기도의 시편 본문
+// SSR HTML 이 통째로 바뀐다. stale-cache 클라이언트가 cache-first 구 chunk 로
+// 중복 본문을 계속 받는 회귀 방지. SW 로직 변경 없음 — navigation
+// `network-only` 유지, caches.put(html) 미도입. PRECACHE 대상 무변경.
+const CACHE_VERSION = 'divine-office-v82'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 

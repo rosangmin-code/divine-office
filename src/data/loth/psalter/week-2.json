@@ -295,12 +295,12 @@
           },
           {
             "type": "psalm",
-            "ref": "Psalm 45:2-10",
+            "ref": "Psalm 45:11-18",
             "antiphon_key": "w2-mon-vesp-ps2",
             "default_antiphon": "Сүйт залуу энд байна. Гараад түүнийг угтаж авцгаа.",
             "title": "Хааны хуримын магтаал",
             "gloria_patri": true,
-            "page": 203,
+            "page": 204,
             "antiphonPage": 204,
             "seasonal_antiphons": {
               "easter": "Хурганы хуримын зоогт уригдсан хүмүүс жаргалтай яа! Аллэлуяа!"
@@ -456,12 +456,12 @@
           },
           {
             "type": "psalm",
-            "ref": "Psalm 49:1-13",
+            "ref": "Psalm 49:14-21",
             "antiphon_key": "w2-tue-vesp-ps2",
             "default_antiphon": "\"Тэнгэрт эд баялгийг өөрсдөдөө хураа\" хэмээн Эзэн айлдаж байна.",
             "title": "Эд баялгийн хоосон чанар",
             "gloria_patri": true,
-            "page": 219,
+            "page": 220,
             "antiphonPage": 220,
             "seasonal_antiphons": {
               "easter": "Эзэн амийг минь үхэгсдийн орны гараас золино. Аллэлуяа!"
@@ -775,7 +775,7 @@
           },
           {
             "type": "psalm",
-            "ref": "Psalm 72:1-11",
+            "ref": "Psalm 72:12-19",
             "antiphon_key": "w2-thu-vesp-ps2",
             "default_antiphon": "Эзэн ядуусын хүүхдүүдийг аварч, боолчлолоос чөлөөлөх болно.",
             "title": "Мессиагийн хааны эрх мэдэл",
