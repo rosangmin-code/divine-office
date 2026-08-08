@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-05-27T09:41:23.073Z",
+  "generated": "2026-08-08T00:20:33.276Z",
   "entries": [
     {
       "file": "src/data/loth/propers/advent.json",
@@ -123,6 +123,24 @@
       "file": "src/data/loth/propers/ordinary-time.json",
       "kind": "concludingPrayerPage",
       "locator": "weeks.trinitySunday.SUN.firstVespers.concludingPrayerPage",
+      "declared": 745,
+      "matched": 747,
+      "delta": 2,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/ordinary-time.json",
+      "kind": "concludingPrayerPage",
+      "locator": "weeks.trinitySunday.SUN.lauds.concludingPrayerPage",
+      "declared": 745,
+      "matched": 747,
+      "delta": 2,
+      "reason": "out-of-window"
+    },
+    {
+      "file": "src/data/loth/propers/ordinary-time.json",
+      "kind": "concludingPrayerPage",
+      "locator": "weeks.trinitySunday.SUN.vespers2.concludingPrayerPage",
       "declared": 745,
       "matched": 747,
       "delta": 2,
