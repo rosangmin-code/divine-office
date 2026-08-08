@@ -693,7 +693,14 @@
 // SSR HTML 이 통째로 바뀐다. stale-cache 클라이언트가 cache-first 구 chunk 로
 // 중복 본문을 계속 받는 회귀 방지. SW 로직 변경 없음 — navigation
 // `network-only` 유지, caches.put(html) 미도입. PRECACHE 대상 무변경.
-const CACHE_VERSION = 'divine-office-v82'
+// v82 → v83 — 따옴표-대문자 phrase 병합 37건 분리. `regroupPhrasesByCapitalStart`
+// 의 `^[А-ЯЁӨҮ]` 가 여는 따옴표를 못 넘겨 `“Энэ хүн…` 류가 앞 시행에 붙어 한 줄로
+// 렌더되고 있었다. 인쇄면 규약(접힘 = 들여쓰기 + 소문자)과 plain 저장본 교차검증
+// 으로 37건 전부 분리가 옳음을 확인 (docs/research/quote-phrase-merge/).
+// psalter-texts.rich.json 의 `phrases` 만 변경 — lines·paragraphBoundaries·source
+// 불변. 29개 블록에서 시편 본문 줄나눔이 바뀌므로 stale-cache 회귀 방지 bump.
+// SW 로직 변경 없음 — navigation `network-only` 유지, PRECACHE 대상 무변경.
+const CACHE_VERSION = 'divine-office-v83'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 

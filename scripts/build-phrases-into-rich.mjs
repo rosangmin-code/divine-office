@@ -169,7 +169,14 @@ function normalizeQuotes(s) {
 // CONSERVATIVE — partial-role phrases are NOT marked, preventing rubric
 // mistag bleed across phrase boundaries (NFR-009e/NFR-009f data integrity).
 
-const CYRILLIC_CAPITAL_START_RE = /^[А-ЯЁӨҮ]/
+// 2026-08-08 — 여는 따옴표를 넘어 대문자를 본다. 종전 `/^[А-ЯЁӨҮ]/` 는
+// `“Энэ хүн ба тэр хүн…` 같은 시행을 대문자로 인식하지 못해 앞 phrase 에
+// 병합했고, 그 결과 두 시행이 한 줄로 렌더됐다 (전수 37건).
+// 인쇄면 규약은 **접힘 = 들여쓰기 + 소문자 시작**이라 따옴표 뒤 대문자는 새
+// 시행이다. 별도 큐레이트된 plain `stanzas[]` 도 37건 중 32건에서 그 행을
+// 독립 항목으로 갖고 있고 병합해 둔 건은 0건이었다.
+// 근거·검증: docs/research/quote-phrase-merge/
+const CYRILLIC_CAPITAL_START_RE = /^[“”"„«»']?\s*[А-ЯЁӨҮ]/
 
 /**
  * Helper — compute the uniform `role` over `lines[start..end]` (inclusive).

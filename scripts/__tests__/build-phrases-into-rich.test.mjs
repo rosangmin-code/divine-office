@@ -2201,15 +2201,35 @@ describe('regroupPhrasesByCapitalStart — #498 capital-start rule', () => {
     ])
   })
 
-  it('treats smart-quote prefix (“) as wrap continuation (quoted speech absorbed into prior phrase)', () => {
-    // Production-shape: Psalm 42 b0 L8-L9 — 'Хүмүүс надад' +
-    // '"Чиний Тэнгэрбурхан хаана байна?…'. The quote prefix means the
-    // first letter is U+201C, not a Cyrillic capital, so the line is a
-    // continuation that absorbs the speech fragment into the prior
-    // speech-verb phrase.
+  it('treats a capital behind a smart quote (“) as a phrase START, not a wrap', () => {
+    // 2026-08-08 정정. 종전 이 테스트는 같은 입력에 대해 `[0,1]` 병합을
+    // 기대하며 "따옴표 접두사 = 첫 글자가 대문자가 아니므로 접힘" 이라고
+    // 적어 두었다. 그러나 그것은 정규식의 동작을 근거로 결론을 되쓴 것이고,
+    // 인용한 바로 그 자리의 인쇄면이 반대를 보인다 (x.195, 근거 이미지
+    // docs/research/quote-phrase-merge/crops/Psalm42_2-6-l9-TESTCASE.png):
+    //
+    //   x+17  Хүмүүс надад                             ← 기준 들여쓰기
+    //   x+17  “Чиний Тэнгэрбурхан хаана байна?” гэж     ← 기준 = 별개 시행
+    //   x+34       өдөржин хэлэхэд                      ← 들여쓰기 = 접힘
+    //
+    // 이 책의 접힘 신호는 **들여쓰기 + 소문자 시작**이다. 따옴표 뒤 대문자는
+    // 새 시행이며, 별도 큐레이트된 plain `stanzas[]` 도 전수 37건 중 32건에서
+    // 이 행을 독립 항목으로 갖고 병합해 둔 건은 0건이었다.
     const lines = [
       richLine('Хүмүүс надад'),
       richLine('“Чиний Тэнгэрбурхан хаана байна?” гэж өдөржин хэлэхэд'),
+    ]
+    expect(regroupPhrasesByCapitalStart(lines)).toEqual([
+      { lineRange: [0, 0], indent: 0 },
+      { lineRange: [1, 1], indent: 0 },
+    ])
+  })
+
+  it('still treats a lowercase line behind a quote as a wrap continuation', () => {
+    // 대문자만 시행 시작으로 승격한다 — 따옴표 뒤가 소문자면 종전대로 접힘.
+    const lines = [
+      richLine('Тэрээр надад хандан'),
+      richLine('“гэж хэлсэн юм.'),
     ]
     expect(regroupPhrasesByCapitalStart(lines)).toEqual([
       { lineRange: [0, 1], indent: 0 },
@@ -2377,11 +2397,12 @@ describe('regroupPhrasesByCapitalStart — #498 pilot snapshots', () => {
     ])
   })
 
-  it('Psalm 42:2-6 b0 — 19 → 18 phrases via L8-L9 smart-quote merge', () => {
-    // L9 = '“Чиний Тэнгэрбурхан хаана байна?” …' starts with the
-    // U+201C smart quote, not a Cyrillic capital → wrap continuation
-    // of L8 'Хүмүүс надад'. All other lines start with Cyrillic
-    // capitals (including Ө at L11 → must NOT be merged).
+  it('Psalm 42:2-6 b0 — 19 lines → 19 phrases (따옴표 뒤 대문자도 시행 시작)', () => {
+    // 2026-08-08 정정 — 종전 기대값은 L8-L9 를 병합한 18 phrases 였다.
+    // 인쇄면 x.195 는 L9 '“Чиний Тэнгэрбурхан хаана байна?” гэж' 을 기준
+    // 들여쓰기에 앉히고 그 접힘분 'өдөржин хэлэхэд' 만 들여쓴다 (데이터의
+    // L9 는 그 둘을 이미 이어 붙인 상태). 따라서 L8-L9 는 별개 시행이다.
+    // 근거: docs/research/quote-phrase-merge/
     const lines = [
       richLine('Буга урсгал усыг', 0),
       richLine('Хүсэхийн адил', 0),
@@ -2404,21 +2425,18 @@ describe('regroupPhrasesByCapitalStart — #498 pilot snapshots', () => {
       richLine('Сэтгэлдээ шаналан өвдөж байна.', 0),
     ]
     const phrases = regroupPhrasesByCapitalStart(lines)
-    expect(phrases).toHaveLength(18)
+    expect(phrases).toHaveLength(19)
     expect(phrases.map((p) => p.lineRange)).toEqual([
       [0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6],
-      [7, 7], [8, 9], [10, 10], [11, 11], [12, 12], [13, 13],
-      [14, 14], [15, 15], [16, 16], [17, 17], [18, 18],
+      [7, 7], [8, 8], [9, 9], [10, 10], [11, 11], [12, 12],
+      [13, 13], [14, 14], [15, 15], [16, 16], [17, 17], [18, 18],
     ])
   })
 
-  it('Psalm 42:2-6 b3 — 20 → 18 phrases via TWO smart-quote merges (L11-L12 and L17-L18)', () => {
-    // Two quote-prefixed dialog fragments collapse into their
-    // respective speech-verb heads:
-    //   L11 'Өөрийн минь хад болсон…' (cap Ө starts) → L12
-    //   '“Юунд Та намайг мартсан бэ?' (quote → continuation)
-    //   L17 'Тэд өдөржин надад' (cap Т starts) → L18
-    //   '“Тэнгэрбурхан чинь хаана байна?”…' (quote → continuation)
+  it('Psalm 42:2-6 b3 — 20 lines → 20 phrases (인용 두 곳 모두 별개 시행)', () => {
+    // 2026-08-08 정정 — 종전 기대값은 L11-L12 / L17-L18 을 병합한 18 이었다.
+    // plain 저장본이 두 자리 모두 인용을 독립 항목으로 갖고 있고, 인쇄면도
+    // 인용을 기준 들여쓰기에 앉힌다. 근거: docs/research/quote-phrase-merge/
     const lines = [
       richLine('Сэтгэл минь миний дотор цөхөрсөн байна', 0),
       richLine('Тиймээс би Таныг Иордан нутаг,', 0),
@@ -2442,11 +2460,12 @@ describe('regroupPhrasesByCapitalStart — #498 pilot snapshots', () => {
       richLine('Сэтгэл минь ээ, чи юунд цөхөрнө вэ?', 0),
     ]
     const phrases = regroupPhrasesByCapitalStart(lines)
-    expect(phrases).toHaveLength(18)
+    expect(phrases).toHaveLength(20)
     expect(phrases.map((p) => p.lineRange)).toEqual([
       [0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6],
-      [7, 7], [8, 8], [9, 9], [10, 10], [11, 12], [13, 13],
-      [14, 14], [15, 15], [16, 16], [17, 18], [19, 19],
+      [7, 7], [8, 8], [9, 9], [10, 10], [11, 11], [12, 12],
+      [13, 13], [14, 14], [15, 15], [16, 16], [17, 17],
+      [18, 18], [19, 19],
     ])
   })
 })
