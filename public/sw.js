@@ -676,7 +676,17 @@
 // indent 추가 → 초대송 SSR HTML 출력의 행구조/들여쓰기가 바뀜. stale-cache
 // 클라이언트가 구 병합-행 출력을 cache-first 로 계속 받는 회귀 방지.
 // SW 로직 변경 없음 — navigation `network-only` 유지, PRECACHE 무변경.
-const CACHE_VERSION = 'divine-office-v80'
+// v80 → v81 — GOAL 106 후속: 인쇄면 대조로 확정된 쪽 포인터 14건 교정.
+// (a) sanctoral/solemnities.json `08-15` vespers2 concludingPrayerPage 833→834
+//     — 2저녁 마침기도는 책이 "조과와 동일" 이라 조과 기도문(x. 834)을 가리켜야
+//     하는데 1저녁(x. 833)을 가리키고 있었다. F-2 swap 을 거쳐 alternatePage 로
+//     렌더되므로 사용자에게 보이는 값이다.
+// (b) prayers/commons/psalter/*.rich.json responsoryRich.page 13건 → 대응
+//     week-*.json plain 값에 정합 (인쇄면의 `Хариу залбирал` 헤딩 쪽과 일치).
+// 본문 글자·행수 불변. stale-cache 클라이언트가 cache-first 구 chunk 로 옛 쪽
+// 참조를 계속 받는 회귀 방지를 위해 bump. SW 로직 변경 없음 — navigation
+// `network-only` 유지, caches.put(html) 미도입. PRECACHE 대상 무변경.
+const CACHE_VERSION = 'divine-office-v81'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 

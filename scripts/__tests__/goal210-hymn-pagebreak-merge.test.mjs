@@ -397,8 +397,12 @@ const AREA_HASHES = {
   // 08-15 Assumption lauds +хуваалцах & vespers2=Morning body; full_pdf L28155/28181-85/28323-40.
   // g-42 (WI-64): 08-15 Assumption lauds + vespers2 concludingPrayer +삼위일체 송영 tail
   // (full_pdf L28330-33); 두 셀 동일 (vespers2=lauds body, GJ-4).
+  // GOAL 106 후속 (2026-08-08): 08-15 vespers2 concludingPrayerPage 833 → 834.
+  // 본문은 위 g-42 대로 조과와 동일한데 쪽만 1저녁(833)을 가리키고 있었다.
+  // 인쇄면 x. 834 는 "2 дугаар Оройн даатгал залбирал ... Төгсгөлийн даатгал
+  // залбирал: Өглөөний ...тай адил" 로 조과 기도문(같은 면)을 지시한다. 본문 불변.
   'src/data/loth/sanctoral/solemnities.json':
-    '3fdaa6eea725f913d59341a688d4d0b2dcbca58fe701838a576932645533f137',
+    '4400a416fed4e9fd892b1373ab359eb5fbe8fe24af7b8067bcc5d5002f70d6a6',
 }
 
 function readJson(path) {
