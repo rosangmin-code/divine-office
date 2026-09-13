@@ -228,7 +228,7 @@ describe('privileged Sunday keeps its Evening Prayer II over a Monday solemnity 
 })
 
 describe('resolveSanctoralForDay (unit)', () => {
-  const base = { date: '2028-03-19', rank: 'SOLEMNITY' as const }
+  const base = { date: '2028-03-19', season: 'LENT' as const, rank: 'SOLEMNITY' as const }
 
   // @fr FR-040
   it('legacy callers without romcal metadata keep the MM-DD lookup', () => {
@@ -236,19 +236,21 @@ describe('resolveSanctoralForDay (unit)', () => {
     expect(resolveSanctoralForDay({ ...base, rank: 'WEEKDAY' })).toBeNull()
   })
 
-  // @fr FR-040
-  it('temporale types block the MM-DD entry; All Souls is the only Sunday exception', () => {
+  // @fr FR-009
+  it('temporale types block the MM-DD entry; All Souls on an ORDINARY_TIME Sunday is the only exception', () => {
     expect(resolveSanctoralForDay({ ...base, romcalType: 'SUNDAY', romcalKey: '3rdSundayOfLent' })).toBeNull()
-    expect(resolveSanctoralForDay({ date: '2027-03-25', rank: 'SOLEMNITY', romcalType: 'TRIDUUM', romcalKey: 'holyThursday' })).toBeNull()
-    expect(resolveSanctoralForDay({ date: '2025-11-02', rank: 'SOLEMNITY', romcalType: 'SUNDAY', romcalKey: '31stSundayOfOrdinaryTime' })?.key).toBe('11-02')
+    expect(resolveSanctoralForDay({ date: '2027-03-25', season: 'LENT', rank: 'SOLEMNITY', romcalType: 'TRIDUUM', romcalKey: 'holyThursday' })).toBeNull()
+    expect(resolveSanctoralForDay({ date: '2025-11-02', season: 'ORDINARY_TIME', rank: 'SOLEMNITY', romcalType: 'SUNDAY', romcalKey: '31stSundayOfOrdinaryTime' })?.key).toBe('11-02')
+    // The exception is scoped to Ordinary Time: a privileged Sunday is never displaced.
+    expect(resolveSanctoralForDay({ date: '2025-11-02', season: 'ADVENT', rank: 'SOLEMNITY', romcalType: 'SUNDAY', romcalKey: '1stSundayOfAdvent' })).toBeNull()
   })
 
   // @fr FR-040
   it('a sanctoral romcal type resolves by matching key on the MM-DD, or by key on the transferred date', () => {
     expect(resolveSanctoralForDay({ ...base, romcalType: 'SOLEMNITY', romcalKey: 'josephHusbandOfMary' })?.key).toBe('03-19')
     // Same MM-DD, but romcal celebrates something else (e.g. an Easter-octave day on 03-25).
-    expect(resolveSanctoralForDay({ date: '2008-03-25', rank: 'SOLEMNITY', romcalType: 'SOLEMNITY', romcalKey: 'easterTuesday' })).toBeNull()
-    const transferred = resolveSanctoralForDay({ date: '2028-03-20', rank: 'SOLEMNITY', romcalType: 'SOLEMNITY', romcalKey: 'josephHusbandOfMary' })
+    expect(resolveSanctoralForDay({ date: '2008-03-25', season: 'EASTER', rank: 'SOLEMNITY', romcalType: 'SOLEMNITY', romcalKey: 'easterTuesday' })).toBeNull()
+    const transferred = resolveSanctoralForDay({ date: '2028-03-20', season: 'LENT', rank: 'SOLEMNITY', romcalType: 'SOLEMNITY', romcalKey: 'josephHusbandOfMary' })
     expect(transferred?.key).toBe('03-19')
     expect(transferred?.entry.name).toBe(SOL['03-19'].name)
   })

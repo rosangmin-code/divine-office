@@ -57,6 +57,7 @@ function mapEntry(entry: RomcalEntry, weekOfSeason: number, year: number): Litur
   // plain Sunday / Triduum day that merely shares the MM-DD.
   const sanctoralName = resolveSanctoralForDay({
     date: dateStr,
+    season,
     rank,
     romcalType: entry.type,
     romcalKey: entry.key,

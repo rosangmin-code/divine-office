@@ -1,4 +1,4 @@
-import type { CelebrationRank, SanctoralEntry } from './types'
+import type { CelebrationRank, LiturgicalSeason, SanctoralEntry } from './types'
 import { getSanctoralPropers, getSanctoralKeyForRomcalKey } from './propers-loader'
 
 /**
@@ -21,9 +21,11 @@ import { getSanctoralPropers, getSanctoralKeyForRomcalKey } from './propers-load
  *      → legacy MM-DD lookup (unchanged behaviour).
  *   3. romcal chose a temporale office (SUNDAY / FERIA / HOLY_WEEK /
  *      TRIDUUM) → no sanctoral. Exception: an entry flagged
- *      `outranksSunday` on an OT SUNDAY (All Souls 11-02 — Table of
- *      Liturgical Days I.3 outranks an Ordinary-Time Sunday II.6, but
- *      romcal 1.3 drops it on Sundays).
+ *      `outranksSunday` on a SUNDAY of ORDINARY_TIME (All Souls 11-02 —
+ *      Table of Liturgical Days I.3 outranks an Ordinary-Time Sunday
+ *      II.6, but romcal 1.3 drops it on Sundays). Sundays of Advent /
+ *      Lent / Easter (I.2) are never displaced, so the exception is
+ *      restricted to ORDINARY_TIME in code as well.
  *   4. Otherwise (SOLEMNITY / FEAST / MEMORIAL / OPT_MEMORIAL …): the MM-DD
  *      entry applies when it declares no `romcalKey`, or its key matches
  *      romcal's key for the day. If the MM-DD entry was transferred away
@@ -37,6 +39,7 @@ import { getSanctoralPropers, getSanctoralKeyForRomcalKey } from './propers-load
 
 export interface SanctoralDayLike {
   date: string
+  season: LiturgicalSeason
   rank: CelebrationRank
   romcalType?: string
   romcalKey?: string
@@ -69,10 +72,14 @@ export function resolveSanctoralForDay(day: SanctoralDayLike): ResolvedSanctoral
     return entry ? { key: mmdd, entry } : null
   }
 
-  // 3. Temporale office chosen by romcal.
+  // 3. Temporale office chosen by romcal. Only an ORDINARY_TIME Sunday can
+  //    be displaced by an `outranksSunday` entry (All Souls); privileged
+  //    Sundays (Advent / Lent / Easter) never are.
   if (ROMCAL_TEMPORALE_TYPES.has(romcalType)) {
-    const entry = getSanctoralPropers(mmdd)
-    if (entry?.outranksSunday && romcalType === 'SUNDAY') return { key: mmdd, entry }
+    if (romcalType === 'SUNDAY' && day.season === 'ORDINARY_TIME') {
+      const entry = getSanctoralPropers(mmdd)
+      if (entry?.outranksSunday) return { key: mmdd, entry }
+    }
     return null
   }
 

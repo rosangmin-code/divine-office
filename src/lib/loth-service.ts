@@ -280,8 +280,9 @@ export async function assembleHour(
   //   1. Fixed-date solemnities + 4 feast entries whose PDFs author
   //      1st Vespers (02-02 Presentation, 08-06 Transfiguration,
   //      09-14 Exaltation of the Cross, 11-09 Lateran Basilica) —
-  //      `getSanctoralPropers(MM-DD)` returns a SanctoralEntry whose
-  //      `firstVespers` is populated by Phase 3b (task #22).
+  //      `resolveSanctoralForDay(tomorrow)` (P0-3, romcal-gated and
+  //      transfer-aware) returns the SanctoralEntry whose `firstVespers`
+  //      is populated by Phase 3b (task #22).
   //   2. Movable solemnities (Ascension, Pentecost, Trinity Sunday,
   //      Corpus Christi, Sacred Heart, Christ the King) — no MM-DD
   //      sanctoral entry; instead, `getSeasonFirstVespers` resolves
