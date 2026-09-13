@@ -505,8 +505,24 @@ export async function assembleHour(
     // Next day is Sunday. FR-156: prefer the Sunday's dedicated
     // firstVespers propers when authored (Phase 2, task #20). Falls
     // back to the upcoming Sunday's regular vespers propers otherwise.
-    const nextWeek = day.weekOfSeason + 1
-    const firstVespers = getSeasonFirstVespers(day.season, nextWeek, dateStr, day.name)
+    //
+    // Season/week come from the SUNDAY's own liturgical day (falling
+    // back to Saturday's season + 1 when the calendar has no entry, e.g.
+    // mocked tests): within a season `sunday.weekOfSeason === saturday
+    // .weekOfSeason + 1`, but across the OT → Advent boundary (Saturday
+    // of OT week 34, 2026-11-28) Saturday's `weeks['35']` does not exist
+    // and fell back to OT `weeks['1'].SUN` — an empty Magnificat
+    // antiphon. The First Vespers sung that evening is Advent Sunday I
+    // (`advent.json weeks['1'].SUN`).
+    const sundayDate = new Date(dateStr + 'T00:00:00Z')
+    sundayDate.setUTCDate(sundayDate.getUTCDate() + 1)
+    const sMM = String(sundayDate.getUTCMonth() + 1).padStart(2, '0')
+    const sDD = String(sundayDate.getUTCDate()).padStart(2, '0')
+    const sundayStr = `${sundayDate.getUTCFullYear()}-${sMM}-${sDD}`
+    const sundayDay = getLiturgicalDay(sundayStr)
+    const sundaySeason = sundayDay?.season ?? day.season
+    const nextWeek = sundayDay?.weekOfSeason ?? day.weekOfSeason + 1
+    const firstVespers = getSeasonFirstVespers(sundaySeason, nextWeek, dateStr, day.name)
       ?? getSeasonFirstVespers(day.season, day.weekOfSeason, dateStr, day.name)
     // Always compute the upcoming Sunday's regular vespers propers —
     // used as standalone fallback when firstVespers is absent, AND as a
@@ -517,7 +533,7 @@ export async function assembleHour(
     // гэсэн хэсгээс татаж авна"). Rather than duplicate those fields
     // in firstVespers, the extractor omits them and the resolver
     // composes the final HourPropers as firstVespers ⟩ SundayRegular.
-    const sundayRegular = getSeasonHourPropers(day.season, nextWeek, 'SUN', 'vespers', dateStr, day.name)
+    const sundayRegular = getSeasonHourPropers(sundaySeason, nextWeek, 'SUN', 'vespers', dateStr, day.name)
       ?? getSeasonHourPropers(day.season, day.weekOfSeason, 'SUN', 'vespers', dateStr, day.name)
     if (firstVespers) {
       seasonPropers = {
@@ -535,11 +551,6 @@ export async function assembleHour(
       // so pickSeasonalVariant fires the per-Sunday branches
       // (lentSunday, easterSunday, lentPassionSunday). IDENTICAL
       // semantic to the solemnity branch above.
-      const sundayDate = new Date(dateStr + 'T00:00:00Z')
-      sundayDate.setUTCDate(sundayDate.getUTCDate() + 1)
-      const sMM = String(sundayDate.getUTCMonth() + 1).padStart(2, '0')
-      const sDD = String(sundayDate.getUTCDate()).padStart(2, '0')
-      const sundayStr = `${sundayDate.getUTCFullYear()}-${sMM}-${sDD}`
       ;({ effectiveDayOfWeek, effectiveWeekOfSeason } =
         promoteToFirstVespersIdentity(sundayStr, 'SUN', nextWeek))
       // #216 F-2c integration: also promote liturgical day so downstream
@@ -547,7 +558,6 @@ export async function assembleHour(
       // plain-Sunday Saturday→Sunday this is usually a no-op for F-2
       // (rank stays non-SOLEMNITY for plain Sundays), but it keeps the
       // semantic explicit and parallels the Solemnity branch above.
-      const sundayDay = getLiturgicalDay(sundayStr)
       if (sundayDay) effectiveLiturgicalDay = sundayDay
     } else {
       // Pre-Phase-2 path: reuse the upcoming Sunday's regular (2nd) Vespers propers.

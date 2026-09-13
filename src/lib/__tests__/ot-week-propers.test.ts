@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import { getCalendarForYear, getLiturgicalDay } from '../calendar'
 import { assembleHour } from '../loth-service'
-import { resolveSpecialKey } from '../propers-loader'
+import { getSeasonHourPropers, resolveSpecialKey } from '../propers-loader'
 import ordinaryTime from '../../data/loth/propers/ordinary-time.json'
+import advent from '../../data/loth/propers/advent.json'
 import type { AssembledHour, HourSection } from '../types'
 
 // P0-1 (docs/bug-reports/2026-09-13-ot-sunday-propers-weekofseason.md).
@@ -164,5 +165,46 @@ describe('Ordinary Time Sunday propers follow the liturgical week (P0-1)', () =>
 
     const trinityFirstVespers = await assembleHour('2026-05-31', 'firstVespers')
     expect(section(trinityFirstVespers, 'gospelCanticle')?.antiphon).toContain(expected)
+  })
+})
+
+// Season boundary surfaced by P0-1: on the Saturday of OT week 34 the old
+// `nextWeek = weekOfSeason + 1 = 35` fell through `weeks['35']` → OT
+// `weeks['1'].SUN`, whose vespers carries NO gospelCanticleAntiphon — the
+// Magnificat antiphon rendered as an empty string. The First Vespers sung
+// that evening is the 1st Sunday of Advent's, so the Saturday branch now
+// takes season/week from the Sunday's own liturgical day.
+describe('Saturday of OT week 34 → 1st Sunday of Advent First Vespers (season boundary)', () => {
+  const ADVENT_WEEKS = advent.weeks as unknown as Record<string, { SUN?: SundayCell & { firstVespers?: { shortReading?: { ref?: string } } } }>
+
+  // @fr FR-011
+  it.each(['2026-11-28', '2027-11-27'])('%s vespers renders Advent week 1 Sunday First Vespers with a non-empty Magnificat antiphon', async (date) => {
+    const saturday = getLiturgicalDay(date)!
+    expect(saturday.season).toBe('ORDINARY_TIME')
+    expect(saturday.weekOfSeason).toBe(34)
+    const sunday = getLiturgicalDay(new Date(new Date(date + 'T00:00:00Z').getTime() + 86_400_000).toISOString().slice(0, 10))!
+    expect(sunday).toMatchObject({ season: 'ADVENT', weekOfSeason: 1 })
+
+    const vespers = await assembleHour(date, 'vespers')
+    const antiphon = section(vespers, 'gospelCanticle')?.antiphon ?? ''
+    expect(antiphon.length).toBeGreaterThan(0)
+    // Backstop rule: firstVespers ⟩ Sunday regular vespers — advent.json
+    // weeks['1'].SUN.firstVespers carries no Magnificat antiphon, so it
+    // comes from weeks['1'].SUN.vespers.
+    const adventSundayRegular = getSeasonHourPropers('ADVENT', 1, 'SUN', 'vespers', sunday.date, sunday.name)
+    expect(adventSundayRegular?.gospelCanticleAntiphon).toBeTruthy()
+    expect(antiphon).toContain(adventSundayRegular!.gospelCanticleAntiphon!)
+    expect(section(vespers, 'shortReading')?.ref).toBe(ADVENT_WEEKS['1'].SUN!.firstVespers!.shortReading!.ref)
+    // Concluding prayer pair = Advent week-1 Sunday vespers primary +
+    // alternate. Which of the two is rendered as `text` follows the existing
+    // F-2 primary↔alternate rule for a Saturday eve (identical on main for
+    // every Advent Saturday, e.g. 2025-12-06) — not asserted here.
+    const prayer = section(vespers, 'concludingPrayer')
+    const pair = [prayer?.text, prayer?.alternateText].sort()
+    const expectedPair = [adventSundayRegular?.concludingPrayer, adventSundayRegular?.alternativeConcludingPrayer].sort()
+    expect(expectedPair.every(Boolean)).toBe(true)
+    expect(pair).toEqual(expectedPair)
+    // Not the Ordinary-Time week-1 fallback.
+    expect(pair).not.toContain(OT_WEEKS['1'].SUN?.vespers?.concludingPrayer)
   })
 })
