@@ -230,7 +230,7 @@ describe('parseIntercessions', () => {
       }
     })
 
-    // @fr FR-030
+    // @fr FR-008
     it('Good Friday vespers short reading comes from weeks[6].FRI (whole block reached, not only intercessions)', async () => {
       const assembled = await assembleHour('2026-04-03', 'vespers')
       const reading = assembled!.sections.find((s) => s.type === 'shortReading') as

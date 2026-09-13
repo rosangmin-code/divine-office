@@ -128,7 +128,7 @@ describe('Sacred Triduum stays on Lent week 6 (P0-2)', () => {
     expect(easter?.weekOfSeason).toBe(1)
   })
 
-  // @fr FR-030
+  // @fr FR-008
   it('Good Friday Lauds short reading is the authored weeks[6].FRI reading (Isa 52:13-15), not Lent week 1 Friday', async () => {
     const goodFriday = getCalendarForYear(2026).find((d) => d.name === 'Good Friday')!
     const lauds = await assembleHour(goodFriday.date, 'lauds')

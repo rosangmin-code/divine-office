@@ -51,7 +51,7 @@ describe('romcal-gated sanctoral resolution (P0-3)', () => {
     expect(day('2026-09-13')).toMatchObject({ romcalType: 'SUNDAY', romcalKey: '24thSundayOfOrdinaryTime' })
   })
 
-  // @fr FR-007
+  // @fr FR-001
   it('a Sunday that shares its MM-DD with a solemnity keeps the Sunday (2028-03-19 / 2030-12-08 / 2035-03-25)', async () => {
     const cases = [
       { date: '2028-03-19', label: 'Дөч хоногийн цаг улирлын 3-р Ням', entry: SOL['03-19'] },
@@ -71,7 +71,7 @@ describe('romcal-gated sanctoral resolution (P0-3)', () => {
     }
   })
 
-  // @fr FR-040
+  // @fr FR-009
   it('the transferred solemnity renders on the date romcal moved it to (2028-03-20 Joseph, 2030-12-09 Immaculate Conception, Annunciation 2027-04-05 / 2029-04-09 / 2035-04-02)', async () => {
     const cases = [
       { date: '2028-03-20', entry: SOL['03-19'] },
@@ -91,14 +91,14 @@ describe('romcal-gated sanctoral resolution (P0-3)', () => {
     }
   })
 
-  // @fr FR-007
+  // @fr FR-001
   it('a Triduum day sharing the MM-DD is not the solemnity (2027-03-25 Holy Thursday ≠ Annunciation)', async () => {
     const d = day('2027-03-25')
     expect(d.nameMn).toBe('Дөч хоногийн цаг улирлын 6-р долоо хоног')
     expect(await laudsPrayer('2027-03-25')).not.toBe(SOL['03-25'].lauds?.concludingPrayer)
   })
 
-  // @fr FR-040
+  // @fr FR-009
   it('positive: a solemnity/feast romcal keeps on its Sunday still applies (2025-06-29 Peter & Paul, 2026-11-01 All Saints, 2025-09-14 Exaltation)', async () => {
     const cases = [
       { date: '2025-06-29', entry: SOL['06-29'] },
@@ -125,7 +125,7 @@ describe('romcal-gated sanctoral resolution (P0-3)', () => {
     expect(day('2026-11-02')).toMatchObject({ romcalType: 'FEAST', romcalKey: 'allSouls', nameMn: MEM['11-02'].name })
   })
 
-  // @fr FR-007
+  // @fr FR-001
   it('2024..2036 sweep: temporale days never carry a sanctoral name (All Souls Sunday excepted) and every keyed solemnity/feast resolves to its entry', () => {
     const keyed = new Map<string, SanctoralEntry>()
     for (const table of [SOL, FEA, MEM]) {
@@ -230,7 +230,7 @@ describe('privileged Sunday keeps its Evening Prayer II over a Monday solemnity 
 describe('resolveSanctoralForDay (unit)', () => {
   const base = { date: '2028-03-19', season: 'LENT' as const, rank: 'SOLEMNITY' as const }
 
-  // @fr FR-040
+  // @fr FR-009
   it('legacy callers without romcal metadata keep the MM-DD lookup', () => {
     expect(resolveSanctoralForDay(base)?.key).toBe('03-19')
     expect(resolveSanctoralForDay({ ...base, rank: 'WEEKDAY' })).toBeNull()
@@ -245,7 +245,7 @@ describe('resolveSanctoralForDay (unit)', () => {
     expect(resolveSanctoralForDay({ date: '2025-11-02', season: 'ADVENT', rank: 'SOLEMNITY', romcalType: 'SUNDAY', romcalKey: '1stSundayOfAdvent' })).toBeNull()
   })
 
-  // @fr FR-040
+  // @fr FR-009
   it('a sanctoral romcal type resolves by matching key on the MM-DD, or by key on the transferred date', () => {
     expect(resolveSanctoralForDay({ ...base, romcalType: 'SOLEMNITY', romcalKey: 'josephHusbandOfMary' })?.key).toBe('03-19')
     // Same MM-DD, but romcal celebrates something else (e.g. an Easter-octave day on 03-25).

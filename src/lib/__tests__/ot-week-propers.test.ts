@@ -46,7 +46,7 @@ function isSunday(dateStr: string): boolean {
 }
 
 describe('Ordinary Time weekOfSeason is the liturgical week (P0-1)', () => {
-  // @fr FR-006
+  // @fr FR-001
   it('2025-01-01..2028-12-31: every ORDINARY_TIME day has otWeek in 1..34 and weekOfSeason === otWeek; no other season carries otWeek', () => {
     let otDays = 0
     for (const year of [2025, 2026, 2027, 2028]) {
@@ -65,7 +65,7 @@ describe('Ordinary Time weekOfSeason is the liturgical week (P0-1)', () => {
     expect(otDays).toBeGreaterThan(800)
   })
 
-  // @fr FR-006
+  // @fr FR-001
   it('post-Pentecost Monday does not restart at week 1 (2026-05-25 = OT week 8; 2026-09-13 = OT week 24)', () => {
     expect(getLiturgicalDay('2026-05-25')?.weekOfSeason).toBe(8)
     expect(getLiturgicalDay('2026-09-13')?.weekOfSeason).toBe(24)
@@ -77,7 +77,7 @@ describe('Ordinary Time weekOfSeason is the liturgical week (P0-1)', () => {
 })
 
 describe('Ordinary Time Sunday propers follow the liturgical week (P0-1)', () => {
-  // @fr FR-030
+  // @fr FR-008
   it.each([2026, 2027])('%i: every numbered OT Sunday Lauds concluding prayer is weeks[otWeek].SUN.lauds; movable-solemnity Sundays use their special-key block', async (year) => {
     const sundays = getCalendarForYear(year).filter(
       (d) => d.season === 'ORDINARY_TIME' && isSunday(d.date),
@@ -120,7 +120,7 @@ describe('Ordinary Time Sunday propers follow the liturgical week (P0-1)', () =>
     expect(numbered).toBeGreaterThanOrEqual(26)
   })
 
-  // @fr FR-032
+  // @fr FR-011
   it('2026-09-12 (Sat) vespers and 2026-09-13 firstVespers carry the 24th Sunday Magnificat antiphon (Mt 18:21-35, "долоон удаа")', async () => {
     const expected = OT_WEEKS['24'].SUN!.vespers!.gospelCanticleAntiphon!
     expect(expected).toContain('долоон удаа')
@@ -137,7 +137,7 @@ describe('Ordinary Time Sunday propers follow the liturgical week (P0-1)', () =>
     expect(section(sundayLauds, 'concludingPrayer')?.text).not.toBe(OT_WEEKS['16'].SUN!.lauds!.concludingPrayer)
   })
 
-  // @fr FR-032
+  // @fr FR-011
   it('boundary: 2026-01-17 (Sat, OT week 1) evening is the 2nd Sunday First Vespers (weeks[2])', async () => {
     expect(getLiturgicalDay('2026-01-17')?.weekOfSeason).toBe(1)
     expect(getLiturgicalDay('2026-01-18')?.weekOfSeason).toBe(2)
@@ -153,7 +153,7 @@ describe('Ordinary Time Sunday propers follow the liturgical week (P0-1)', () =>
       .toBe(OT_WEEKS['2'].SUN!.lauds!.concludingPrayer)
   })
 
-  // @fr FR-032
+  // @fr FR-011
   it('boundary: 2026-05-30 (Sat after Pentecost, OT week 8) evening is Trinity Sunday First Vespers (special key, not weeks[9])', async () => {
     expect(getLiturgicalDay('2026-05-30')?.weekOfSeason).toBe(8)
     expect(getLiturgicalDay('2026-05-31')?.weekOfSeason).toBe(9)
