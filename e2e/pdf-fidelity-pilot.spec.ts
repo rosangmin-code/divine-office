@@ -1,14 +1,19 @@
 import { test, expect } from '@playwright/test'
 
 // FR-153 PDF 원형 재현: Rich Prayer Content AST overlay.
-// Pilot 대상: Ordinary Time Week 1 SUN Lauds (2026-01-18).
-// 검증 범위는 "rich overlay 가 반영된 결과가 기대대로 렌더되고, 기존
-// 경로와 시각적·구조적으로 회귀 없는가" — 본문 정확성 전수 검증은
-// vitest 측 resolver 테스트 및 Stage 3a/3b diff 리포트가 담당한다.
+// Pilot 대상: 2026-01-18 = 연중 2주일 (romcal "2nd Sunday of Ordinary Time")
+// SUN Lauds. P0-1 (2026-09-13) 이전에는 이 날의 `weekOfSeason` 이 시즌
+// 카운터 1 이라 `weeks['1']` + `w1-SUN-lauds.rich.json` 이 렌더됐지만, 연중
+// `weekOfSeason` 이 전례력 주차(otWeek=2) 로 통일되면서 이제 정확히
+// `propers/ordinary-time.json weeks['2'].SUN.lauds` + `seasonal/ordinary-time/
+// w2-SUN-lauds.rich.json` (마침기도 "Аяа, Тэнгэр газрын Эцэг минь…", 미사경본
+// 연중 2주일 본기도) 이 렌더된다. 검증 범위는 "rich overlay 가 반영된 결과가
+// 기대대로 렌더되고, 기존 경로와 시각적·구조적으로 회귀 없는가" — 본문 정확성
+// 전수 검증은 vitest 측 resolver 테스트 및 Stage 3a/3b diff 리포트가 담당한다.
 
 const PILOT_URL = '/pray/2026-01-18/lauds'
 
-test.describe('FR-153 PDF fidelity — pilot (Week 1 SUN Lauds)', () => {
+test.describe('FR-153 PDF fidelity — pilot (OT Week 2 SUN Lauds, 2026-01-18)', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(PILOT_URL)
   })
@@ -32,10 +37,15 @@ test.describe('FR-153 PDF fidelity — pilot (Week 1 SUN Lauds)', () => {
     //    - RichContent 는 `<div class="space-y-2">` 래퍼 안에 `<p>` 를 낳는다
     //    - Legacy 는 바로 `<p>` 를 낳는다
     // 둘 다 "본문 para 1개" 로 수렴.
+    // 기대 본문 = weeks['2'].SUN.lauds.concludingPrayer 의 첫 문단 (w2 rich
+    // overlay 첫 para 와 동일). P0-1 이전 앵커 텍스트 "Аяа, хайрын Эцэг минь"
+    // 는 weeks['1'](연중 1주) 본기도로, 2026-01-18 에는 더 이상 맞지 않는다.
     const bodyParagraphs = section.locator(':scope > div > p, :scope > p').filter({
-      hasText: 'Аяа, хайрын Эцэг минь',
+      hasText: 'Аяа, Тэнгэр газрын Эцэг минь',
     })
     await expect(bodyParagraphs).toHaveCount(1)
+    // 이전 주차(연중 1주) 본기도가 새어 들어오지 않는다.
+    await expect(section.getByText('Аяа, хайрын Эцэг минь', { exact: false })).toHaveCount(0)
   })
 
   // @fr FR-153
@@ -49,7 +59,7 @@ test.describe('FR-153 PDF fidelity — pilot (Week 1 SUN Lauds)', () => {
     // 3-필드 경로로 deterministic 6-line emission 한다.
     //   - line 2/4/6 (response 행) 에 red `- ` prefix
     //   - line 1/3/5 (cantor 행: refrain / versicle / Glory Be) 에는 prefix 없음
-    // Week 1 SUN Lauds 의 universal 6-line 패턴 → red `- ` prefix 3 회.
+    // OT Week 2 SUN Lauds (psalter commons 응송) 의 universal 6-line 패턴 → red `- ` prefix 3 회.
     await expect(section.getByText('В.', { exact: false })).toHaveCount(0)
     await expect(section.getByText('Х.', { exact: false })).toHaveCount(0)
     // WI-62 재스킨: 응답구 `- ` prefix 는 골드 악센트. 정확히 3 회 (line 2/4/6).

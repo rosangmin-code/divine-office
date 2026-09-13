@@ -4,8 +4,9 @@ import { DATES } from './fixtures/dates'
 // @fr FR-153h
 test.describe('Psalter psalmPrayerRich rendering (FR-153h)', () => {
   test.beforeEach(async ({ page }) => {
-    // 2026-01-18 은 romcal 기준 '2nd Sunday of OT' 이고 psalter cycle 상 week-2
-    // 를 사용한다 (week-1 Sunday 는 Baptism 이후 건너뜀). week-2 SUN Lauds 의
+    // 2026-01-18 은 romcal 기준 '2nd Sunday of OT' (P0-1 이후 weekOfSeason=otWeek=2,
+    // propers weeks['2']) 이고 psalter cycle 상 week-2 를 사용한다 (week-1
+    // Sunday 는 Baptism 이후 건너뜀). psalter week-2 SUN Lauds 의
     // 첫 psalm 은 Ps 118:1-16 — psalmPrayer 가 "Тэнгэрбурхан Эзэн минь, Та
     // бидэнд Есүс Христ барилгачдын голсон чулуу..." 로 시작.
     await page.goto(`/pray/${DATES.otWeek1Sunday}/lauds`)

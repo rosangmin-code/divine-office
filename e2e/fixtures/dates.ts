@@ -1,6 +1,10 @@
 export const DATES = {
-  // Ordinary Time Week 1 Sunday — FR-153 pilot date. Romcal labels this
-  // 2nd Sunday of OT but weekOfSeason=1 (1st Sunday is Baptism of the Lord).
+  // FR-153 pilot date: 2026-01-18 = 2nd Sunday of Ordinary Time (otWeek 2,
+  // psalterWeek 2). Since P0-1 (2026-09-13) OT `weekOfSeason === otWeek`, so
+  // the propers/rich come from `weeks['2']` / `w2-SUN-lauds` — there is no
+  // "1st Sunday" of OT (that slot is the Baptism of the Lord). The key name
+  // is historical (it once meant season-counter week 1); kept to avoid
+  // churning every spec that imports it.
   otWeek1Sunday: '2026-01-18',
 
   // Ordinary Time weekday (GREEN, WEEKDAY rank)
