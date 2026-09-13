@@ -39,10 +39,14 @@
 ### P0-3. ✅ 주일=SOLEMNITY 뭉개기 + MM-DD 단독 sanctoral 조회 → `docs/bug-reports/2026-09-13-sunday-solemnity-sanctoral-override.md`
 `mappings.ts:34` `SUNDAY→SOLEMNITY`, `calendar.ts:54-58`/`loth-service.ts:559-564` 가 romcal 선택과 무관하게 MM-DD 로 sanctoral 을 붙인다. 2028-03-19 사순 3주일 → "성 요셉", 2030-12-08 대림 2주일 → 원죄없는잉태, 2035-03-25 **부활 주일** → 주님탄생예고. **조치**: romcal `type`/`key` 보존 후 "romcal 이 선택한 날만" sanctoral 적용.
 
-### P0-4. `next@16.2.4` → `16.3.5` 업그레이드 (semver-minor, `fixAvailable: true`)
+### P0-4. ✅ `next@16.2.4` → `16.3.5` 업그레이드 (semver-minor, `fixAvailable: true`)
+> **2026-09-14 완료** (`fc1feb1`, `4918d7e`): audit critical 1 → 0, 잔여 high 1 = `pdfjs-dist`(6.x major, worker 사본·CACHE_VERSION 동시 교체 필요, 별도 과제). e2e 실패 집합 main 과 동일(고유 회귀 0). 프로덕션 실측: `x-powered-by` 제거. `/_next/image?url=…` 는 로컬 `next start` 에선 404, Vercel 에선 플랫폼이 `unoptimized` 를 인지해 원본 파일로 직접 매핑(`x-matched-path: /apple-icon.png`, 200) — 최적화 파이프라인은 타지 않으므로 목적 달성.
+
 `npm audit`: critical 1 (next, 9.3.4-canary.0 ~ 16.3.2, advisory 24건). RSC DoS·Server Action 엔드포인트 노출(`src/app/actions/calendar.ts` 'use server' 존재)·이미지 최적화 DoS(프로덕션 `/_next/image` 가 살아 있음, `next/image` 미사용) 가 실제 해당. `docs/security-incident-2026-04-vercel.md:21` 의 "의존성 조치 불필요" 는 stale. **조치**: `npm i next@^16.3.3 eslint-config-next@^16.3.3` → build+e2e; `next.config.ts` 에 `images:{unoptimized:true}`, `poweredByHeader:false`; CI 에 `npm audit --omit=dev --audit-level=high`. 부수: `pdfjs-dist@5.6.205` high (악성 PDF JS 실행, 고정 `/psalter.pdf` 만 열어 실질 낮음, fix 는 6.x major).
 
-### P0-5. 배포 게이트 — main 브랜치 보호 + required checks + CI `next build`
+### P0-5. 🟡 배포 게이트 — CI 강화 완료, Vercel Deployment Checks 등록은 사용자 몫
+> **2026-09-14 코드 측 완료** (`bc8eda9`, `e3d61e7`, `9b426f1`, `f7d832e`, `3a360a2`): CI quality job 에 `npm audit --audit-level=critical` + `next build` + `.next` 아티팩트, e2e job 을 `next start` 기반 core 세트(api + `prayer-sections`·`page-references`·`pwa`·`calendar-list-month`·`prayer-footer`, 258 케이스 ≈2분) 로 교체, `forbidOnly`/html 리포터, nightly 전체 e2e(정보성), `docs/ops-rollback.md`. 첫 실행 성공(run 3a360a2: quality 2m01s, e2e 1m57s). **남은 단계(사용자, Vercel 대시보드)**: Settings → Build and Deployment → Deployment Checks → GitHub provider 로 `Lint · Typecheck · Unit tests` 와 `Playwright · API smoke + core UI` 두 job 을 Required 등록 (둘 다 필수 — quality 실패 시 e2e 는 skipped 라 하나만 걸면 통과로 셀 수 있음). 등록 전까지는 여전히 push 즉시 배포.
+
 현재 push 즉시 Vercel 배포, CI 는 사후 통보(`gh api …/branches/main/protection` 404, `vercel.json` 에 체크 연동 없음). SW 캐시 회귀(CLAUDE.md 1순위 리스크)를 자동으로 막는 장치가 없다.
 
 ### P0-6. 데이터 검증기 RED 정리 → `docs/bug-reports/2026-09-13-verifier-red-and-plain-rich-drift.md`
