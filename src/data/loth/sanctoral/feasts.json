@@ -1,5 +1,6 @@
 {
   "02-02": {
+    "romcalKey": "presentationOfTheLord",
     "name": "Эзэний угтлагын ёслол",
     "rank": "FEAST",
     "vespers": {
@@ -64,6 +65,7 @@
     }
   },
   "08-06": {
+    "romcalKey": "transfiguration",
     "name": "Эзэний хувиргалт",
     "rank": "FEAST",
     "vespers": {
@@ -128,6 +130,7 @@
     }
   },
   "09-14": {
+    "romcalKey": "theExaltationOfTheHolyCross",
     "name": "Ариун Нандин Загалмайн алдаршуулал",
     "rank": "FEAST",
     "vespers": {
@@ -193,6 +196,7 @@
     }
   },
   "11-09": {
+    "romcalKey": "dedicationOfTheLateranBasilica",
     "name": "Латраны нэрэмжит дээд сүмийн Аравнай",
     "rank": "FEAST",
     "vespers": {

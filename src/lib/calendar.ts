@@ -12,7 +12,8 @@ import {
   getWeekdayCycle,
   buildLiturgicalNameMn,
 } from './mappings'
-import { getSanctoralPropers, resolveSpecialKey } from './propers-loader'
+import { resolveSpecialKey } from './propers-loader'
+import { resolveSanctoralForDay } from './sanctoral-resolver'
 
 const DOW_CODES: DayOfWeek[] = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 const DAY_MS = 24 * 60 * 60 * 1000
@@ -51,11 +52,15 @@ function mapEntry(entry: RomcalEntry, weekOfSeason: number, year: number): Litur
   const clampedWeek = rawPsalterWeek > 0 ? rawPsalterWeek : 1
   const psalterWeek = (((clampedWeek - 1) % 4) + 1) as 1 | 2 | 3 | 4
 
-  const mmdd = `${String(dateObj.getUTCMonth() + 1).padStart(2, '0')}-${String(dateObj.getUTCDate()).padStart(2, '0')}`
-  const sanctoralName =
-    rank === 'SOLEMNITY' || rank === 'FEAST' || rank === 'MEMORIAL'
-      ? getSanctoralPropers(mmdd)?.name
-      : undefined
+  // P0-3: the sanctoral entry applies only when romcal actually chose that
+  // celebration for the date (see `sanctoral-resolver.ts`) — never on a
+  // plain Sunday / Triduum day that merely shares the MM-DD.
+  const sanctoralName = resolveSanctoralForDay({
+    date: dateStr,
+    rank,
+    romcalType: entry.type,
+    romcalKey: entry.key,
+  })?.entry.name
 
   // Movable solemnities (Ascension/Pentecost/Trinity/Corpus Christi/Sacred
   // Heart/Christ the King) lack a fixed MM-DD sanctoral entry, so they
@@ -87,6 +92,8 @@ function mapEntry(entry: RomcalEntry, weekOfSeason: number, year: number): Litur
     weekdayCycle: getWeekdayCycle(year),
     weekOfSeason,
     psalterWeek,
+    romcalType: entry.type,
+    romcalKey: entry.key,
   }
 }
 
@@ -159,11 +166,7 @@ export function getCalendarForYear(year: number): LiturgicalDayInfo[] {
     if (day.otWeek !== undefined) day.weekOfSeason = day.otWeek
     const dateObj = new Date(day.date + 'T00:00:00Z')
     const dow = DOW_CODES[dateObj.getUTCDay()]
-    const mmdd = `${String(dateObj.getUTCMonth() + 1).padStart(2, '0')}-${String(dateObj.getUTCDate()).padStart(2, '0')}`
-    const sanctoralName =
-      day.rank === 'SOLEMNITY' || day.rank === 'FEAST' || day.rank === 'MEMORIAL'
-        ? getSanctoralPropers(mmdd)?.name
-        : undefined
+    const sanctoralName = resolveSanctoralForDay(day)?.entry.name
     const movableKey =
       day.rank === 'SOLEMNITY'
         ? resolveSpecialKey(day.season, day.name, day.date)

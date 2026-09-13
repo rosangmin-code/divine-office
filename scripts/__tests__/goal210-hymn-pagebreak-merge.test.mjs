@@ -369,8 +369,12 @@ const AREA_HASHES = {
   // g-41 (WI-60): 08-06 Transfiguration held-divergence restore — vespers antiphon
   // (минь ангижруулдаг…) + vespers/lauds/vespers2 concludingPrayer Эцгүүдийг +
   // truncated petition/doxology, aligned to firstVespers/PDF (full_pdf L28234-69).
+  // P0-3 (2026-09-13 sanctoral romcal gate): 4 feast entries gained a
+  // `"romcalKey"` meta line (presentationOfTheLord / transfiguration /
+  // theExaltationOfTheHolyCross / dedicationOfTheLateranBasilica). Insertion
+  // only — Mongolian text byte-unchanged (verified by strip-and-compare).
   'src/data/loth/sanctoral/feasts.json':
-    '2effa0cf6606e017d832848ccda176eb65b65a9c0530e2d33d301430e617522d',
+    'b61624d5cf327947bc4ac41e237fdcf8e4a1a2e0421587436b3f3567bbca1ece',
   // WI-76 intended memorials page 863->862.
   // #203 (WI-215): 11-02 All Souls + deceased lauds/vespers concludingPrayer
   // truncation — restored Trinitarian doxology from full_pdf p.852 (L28884-87).
@@ -378,8 +382,11 @@ const AREA_HASHES = {
   // g-41 (WI-60): held-divergence restore — 11-02/deceased/saturday-mary
   // altConcludingPrayer Эцэг→Эзэн, болоод→зөв, гүйж→гуйж, эдлэхийг…, +Trinitarian
   // doxology (5 truncations); full_pdf L28889-901/L28915-18/L29346-50.
+  // P0-3 (2026-09-13 sanctoral romcal gate): 11-02 gained `"romcalKey":
+  // "allSouls"` + `"outranksSunday": true` meta lines. Insertion only —
+  // Mongolian text byte-unchanged (verified by strip-and-compare).
   'src/data/loth/sanctoral/memorials.json':
-    'a07835ba274b154774b9bbe185ff4b21f576b6aabb3d240e28afd720bbfcced3',
+    '8a6d71985a0a0659dcff130c859bbb7aa8956f52bf9b9b41fd232af9531d50b4',
   'src/data/loth/sanctoral/optional-memorials.json':
     'ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356',
   // #203 (WI-212): 06-24 John Baptist lauds + vespers2 concludingPrayer
@@ -401,8 +408,13 @@ const AREA_HASHES = {
   // 본문은 위 g-42 대로 조과와 동일한데 쪽만 1저녁(833)을 가리키고 있었다.
   // 인쇄면 x. 834 는 "2 дугаар Оройн даатгал залбирал ... Төгсгөлийн даатгал
   // залбирал: Өглөөний ...тай адил" 로 조과 기도문(같은 면)을 지시한다. 본문 불변.
+  // P0-3 (2026-09-13 sanctoral romcal gate): all 9 solemnity entries gained a
+  // `"romcalKey"` meta line (josephHusbandOfMary / annunciation /
+  // birthOfJohnTheBaptist / peterAndPaulApostles / assumption / allSaints /
+  // immaculateConception / christmas / maryMotherOfGod). Insertion only —
+  // Mongolian text byte-unchanged (verified by strip-and-compare).
   'src/data/loth/sanctoral/solemnities.json':
-    '4400a416fed4e9fd892b1373ab359eb5fbe8fe24af7b8067bcc5d5002f70d6a6',
+    '9540066153c1e6438e5cd5c13d2d78633bf01d87eacedd5b6c9b5c6b4f930989',
 }
 
 function readJson(path) {

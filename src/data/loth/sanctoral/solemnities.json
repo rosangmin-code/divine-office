@@ -1,5 +1,6 @@
 {
   "03-19": {
+    "romcalKey": "josephHusbandOfMary",
     "name": "Гэгээн Иосеф",
     "rank": "SOLEMNITY",
     "vespers": {
@@ -122,6 +123,7 @@
     }
   },
   "03-25": {
+    "romcalKey": "annunciation",
     "name": "Эзэний тухай Хэл мэдээ хүргэсэн их баярын өдөр",
     "rank": "SOLEMNITY",
     "vespers": {
@@ -245,6 +247,7 @@
     }
   },
   "06-24": {
+    "romcalKey": "birthOfJohnTheBaptist",
     "name": "Иохан Баптист гэгээнтний мэндэлсэн өдөр",
     "rank": "SOLEMNITY",
     "vespers": {
@@ -365,6 +368,7 @@
     }
   },
   "06-29": {
+    "romcalKey": "peterAndPaulApostles",
     "name": "Петр, Паул гэгээнтнүүд",
     "rank": "SOLEMNITY",
     "vespers": {
@@ -485,6 +489,7 @@
     }
   },
   "08-15": {
+    "romcalKey": "assumption",
     "name": "Цэвэр Охин Мариагийн тэнгэрт залагдсан өдөр",
     "rank": "SOLEMNITY",
     "vespers": {
@@ -604,6 +609,7 @@
     }
   },
   "11-01": {
+    "romcalKey": "allSaints",
     "name": "Хамаг гэгээнтнүүд",
     "rank": "SOLEMNITY",
     "vespers": {
@@ -724,6 +730,7 @@
     }
   },
   "12-08": {
+    "romcalKey": "immaculateConception",
     "name": "Язгуурын гэм нүгэлгүй бүрэлдсэн төгс жаргалт Цэвэр Охин Мариа",
     "rank": "SOLEMNITY",
     "vespers": {
@@ -829,6 +836,7 @@
     }
   },
   "12-25": {
+    "romcalKey": "christmas",
     "name": "ЭЗЭНИЙ МЭНДЭЛСЭН ӨДӨР",
     "firstVespers": {
       "psalms": [
@@ -886,6 +894,7 @@
     }
   },
   "01-01": {
+    "romcalKey": "maryMotherOfGod",
     "name": "ТЭНГЭРБУРХАНЫ АРИУН ЭХ МАРИА",
     "vespers2": {
       "gospelCanticleAntiphon": "Аяа Христ минь, дэлхий ертөнцийн Аврагч ба Эзэн минь, Таныг тээсэн хэвлий, Таныг хөхүүлсэн хөх нь ерөөлтэй еэ! Аллэлуяа!",

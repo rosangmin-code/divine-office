@@ -143,7 +143,17 @@ export const SeasonPropersFileSchema = z
   })
   .loose()
 
-export const SanctoralFileSchema = z.record(z.string(), z.unknown())
+// Entries stay loose (hour propers are validated elsewhere); only the P0-3
+// meta fields consumed by `sanctoral-resolver.ts` are typed here.
+export const SanctoralFileSchema = z.record(
+  z.string(),
+  z
+    .object({
+      romcalKey: z.string().min(1).optional(),
+      outranksSunday: z.boolean().optional(),
+    })
+    .loose(),
+)
 
 export const OptionalMemorialsFileSchema = z.record(z.string(), z.unknown())
 

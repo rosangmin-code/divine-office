@@ -351,6 +351,25 @@ export function getSanctoralPropers(celebrationKey: string): SanctoralEntry | nu
   return null
 }
 
+// P0-3 — romcal `key` (e.g. `josephHusbandOfMary`) → sanctoral MM-DD key
+// (`03-19`). Built lazily from the optional `romcalKey` meta field on the
+// entries, so a celebration romcal transferred to another date (03-19 on a
+// Lenten Sunday → 03-20) can still be found by `sanctoral-resolver.ts`.
+let _romcalKeyIndex: Map<string, string> | null = null
+
+export function getSanctoralKeyForRomcalKey(romcalKey: string): string | null {
+  if (!_romcalKeyIndex) {
+    const index = new Map<string, string>()
+    for (const type of ['solemnities', 'feasts', 'memorials'] as const) {
+      for (const [key, entry] of Object.entries(loadSanctoralFile(type))) {
+        if (entry.romcalKey && !index.has(entry.romcalKey)) index.set(entry.romcalKey, key)
+      }
+    }
+    _romcalKeyIndex = index
+  }
+  return _romcalKeyIndex.get(romcalKey) ?? null
+}
+
 /**
  * Lookup the memorial entry that replaces the weekday when the user chooses
  * the Blessed Virgin Mary on Saturday. Delegates to the existing `memorials`

@@ -32,6 +32,18 @@ export interface LiturgicalDayInfo {
   /** Liturgical Ordinary-Time week (1..34). Present only for ORDINARY_TIME days; equals `weekOfSeason` there. */
   otWeek?: number
   psalterWeek: 1 | 2 | 3 | 4
+  /**
+   * romcal's raw celebration `type` for the date (SUNDAY / SOLEMNITY /
+   * FEAST / MEMORIAL / OPT_MEMORIAL / COMMEMORATION / FERIA / HOLY_WEEK /
+   * TRIDUUM). Unlike `rank` (which folds SUNDAY and TRIDUUM into
+   * SOLEMNITY) it tells whether romcal chose the temporale office — the
+   * sanctoral gate in `sanctoral-resolver.ts` relies on it (P0-3).
+   * Optional only so hand-built test fixtures keep compiling; the calendar
+   * always fills it.
+   */
+  romcalType?: string
+  /** romcal's celebration `key` (e.g. `3rdSundayOfLent`, `josephHusbandOfMary`, `easter`). Optional like `romcalType`. */
+  romcalKey?: string
 }
 
 // === Bible types (shared with readings) ===
@@ -582,6 +594,21 @@ export interface SeasonPropers {
 
 export interface SanctoralEntry {
   name?: string
+  /**
+   * P0-3 — romcal celebration key this entry corresponds to (e.g.
+   * `josephHusbandOfMary` for `03-19`). Lets `sanctoral-resolver.ts` find
+   * the entry on the date romcal transferred the celebration to (03-19 on
+   * a Lenten Sunday → 03-20) and refuse it on the MM-DD when romcal chose
+   * something else. Values are copied verbatim from `romcal.calendarFor`.
+   */
+  romcalKey?: string
+  /**
+   * P0-3 — apply this entry even when romcal reports a plain SUNDAY on its
+   * MM-DD. Only All Souls (11-02) needs it: it outranks an Ordinary-Time
+   * Sunday (Table of Liturgical Days I.3 vs II.6) but romcal 1.3 drops it
+   * on Sundays.
+   */
+  outranksSunday?: boolean
   lauds?: HourPropers
   vespers?: HourPropers
   vespers2?: HourPropers

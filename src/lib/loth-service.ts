@@ -14,7 +14,8 @@ import type {
 import { HOUR_NAMES_MN as hourNamesMn } from './types'
 import { getLiturgicalDay, getToday } from './calendar'
 import { getPsalterPsalmody, getComplinePsalmody, getFullComplineData, getPsalterCommons } from './psalter-loader'
-import { getSeasonHourPropers, getSeasonFirstVespers, getSeasonVespers2, getSanctoralPropers, getHymnForHour, getHymnCandidatesForHour, resolveSpecialKey } from './propers-loader'
+import { getSeasonHourPropers, getSeasonFirstVespers, getSeasonVespers2, getHymnForHour, getHymnCandidatesForHour, resolveSpecialKey } from './propers-loader'
+import { resolveSanctoralForDay } from './sanctoral-resolver'
 import { resolveCelebration } from './celebrations'
 import { resolveRichOverlay } from './prayers/resolver'
 import { loadHymnRichOverlay } from './prayers/rich-overlay'
@@ -271,9 +272,12 @@ export async function assembleHour(
       (tomorrowDay.rank === 'SOLEMNITY' || tomorrowDay.rank === 'FEAST')
     ) {
       // Path 1 — fixed-date celebration via sanctoral entry.
-      // `getSanctoralPropers` walks solemnities → feasts → memorials,
-      // so FEAST entries (02-02, 08-06, 09-14, 11-09) resolve here.
-      const tomorrowSanctoral = getSanctoralPropers(`${tMM}-${tDD}`)
+      // `resolveSanctoralForDay` (P0-3) applies the entry only when romcal
+      // chose that celebration for tomorrow — a plain Sunday sharing the
+      // MM-DD (2028-03-19 vs St Joseph) yields null, and a transferred
+      // solemnity (2028-03-20) is found by romcal key. Solemnities → feasts
+      // → memorials, so FEAST entries (02-02, 08-06, 09-14, 11-09) resolve.
+      const tomorrowSanctoral = resolveSanctoralForDay(tomorrowDay)?.entry
       let solemnityFirstVespers: FirstVespersPropers | null | undefined =
         tomorrowSanctoral?.firstVespers
       // Path 2 — movable SOLEMNITY via season-propers special key.
@@ -361,12 +365,10 @@ export async function assembleHour(
     let firstVespersData: FirstVespersPropers | null | undefined = null
     let isSelfContained = false
 
-    // Path 1 — sanctoral.firstVespers (Solemnity / Feast)
+    // Path 1 — sanctoral.firstVespers (Solemnity / Feast). P0-3: resolved
+    // through romcal's choice for the day (see `sanctoral-resolver.ts`).
     if (day.rank === 'SOLEMNITY' || day.rank === 'FEAST') {
-      const d = new Date(dateStr + 'T00:00:00Z')
-      const mm = String(d.getUTCMonth() + 1).padStart(2, '0')
-      const dd = String(d.getUTCDate()).padStart(2, '0')
-      const todaySanctoral = getSanctoralPropers(`${mm}-${dd}`)
+      const todaySanctoral = resolveSanctoralForDay(day)?.entry
       if (todaySanctoral?.firstVespers) {
         firstVespersData = todaySanctoral.firstVespers
         isSelfContained = true
@@ -519,12 +521,13 @@ export async function assembleHour(
   // 4. Get sanctoral propers (if applicable)
   //    When the user has chosen a non-default celebration, its propers take
   //    precedence over whatever sanctoral entry would normally apply.
+  //    P0-3: the romcal-gated resolver decides whether the fixed-date entry
+  //    applies today (and which MM-DD key it lives under when transferred).
   const dateObj = new Date(dateStr + 'T00:00:00Z')
   const dateKey = `${String(dateObj.getUTCMonth() + 1).padStart(2, '0')}-${String(dateObj.getUTCDate()).padStart(2, '0')}`
-  const sanctoral: SanctoralEntry | null = celebrationOverride
-    ?? ((day.rank === 'SOLEMNITY' || day.rank === 'FEAST' || day.rank === 'MEMORIAL')
-      ? getSanctoralPropers(dateKey)
-      : null)
+  const resolvedSanctoral = celebrationOverride ? null : resolveSanctoralForDay(day)
+  const sanctoral: SanctoralEntry | null = celebrationOverride ?? resolvedSanctoral?.entry ?? null
+  const sanctoralKey: string | null = sanctoral ? (resolvedSanctoral?.key ?? dateKey) : null
 
   // 5. Determine antiphon overrides (sanctoral > season)
   //    For solemnities on the day itself, use vespers2 (Second Vespers) data.
@@ -731,7 +734,7 @@ export async function assembleHour(
     // (today's dayOfWeek). For others: dayOfWeek.
     day: isFirstCompline ? dataLookupDayOfWeek : dayOfWeek,
     hour: dataLookupHour,
-    sanctoralKey: sanctoral ? dateKey : null,
+    sanctoralKey,
     psalterWeek: firstVespersBranchActive ? undefined : day.psalterWeek,
     celebrationName: day.name,
     dateStr,
@@ -960,11 +963,8 @@ function hasFirstVespersAndCompline(
 ): boolean {
   if (dayOfWeek === 'SUN') return true
   if (day.rank !== 'SOLEMNITY' && day.rank !== 'FEAST') return false
-  // Sanctoral path
-  const d = new Date(dateStr + 'T00:00:00Z')
-  const mm = String(d.getUTCMonth() + 1).padStart(2, '0')
-  const dd = String(d.getUTCDate()).padStart(2, '0')
-  const sanctoral = getSanctoralPropers(`${mm}-${dd}`)
+  // Sanctoral path (P0-3: romcal-gated, transfer-aware)
+  const sanctoral = resolveSanctoralForDay(day)?.entry
   if (sanctoral?.firstVespers) return true
   // Movable Solemnity special-key path
   if (day.rank === 'SOLEMNITY' && resolveSpecialKey(day.season, day.name) != null) {
