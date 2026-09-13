@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { getLiturgicalDay, getCalendarForYear } from '../calendar'
+import { assembleHour } from '../loth-service'
+import lent from '../../data/loth/propers/lent.json'
 
 describe('getLiturgicalDay', () => {
   it('returns null for malformed date', () => {
@@ -92,6 +94,50 @@ describe('getLiturgicalDay', () => {
     expect(day!.season).toBe('ADVENT')
     expect(day!.otWeek).toBeUndefined()
     expect(day!.nameMn).toBe('Ирэлтийн цаг улирлын 1-р Ням')
+  })
+})
+
+// P0-2 (docs/bug-reports/2026-09-13-triduum-season-key-holyweek-space.md):
+// romcal 1.3 files Palm Sunday .. Holy Saturday under season key 'Holy Week'
+// (with a space). Comparing against 'HolyWeek' made the Sacred Triduum open a
+// new season and reset weekOfSeason to 1, so `propers/lent.json weeks['6']
+// .THU/FRI/SAT` was unreachable by date. The Triduum must stay on Lent week 6
+// (Palm Sunday = 6th Sunday of Lent counting) so its authored propers render.
+describe('Sacred Triduum stays on Lent week 6 (P0-2)', () => {
+  const TRIDUUM_NAMES = ['Holy Thursday', 'Good Friday', 'Holy Saturday/Easter Vigil'] as const
+
+  // @fr FR-001
+  it.each([2026, 2027, 2028])('%i: Holy Thu / Good Fri / Holy Sat are LENT week 6', (year) => {
+    const calendar = getCalendarForYear(year)
+    for (const name of TRIDUUM_NAMES) {
+      const day = calendar.find((d) => d.name === name)
+      expect(day, `${year} ${name}`).toBeDefined()
+      expect(day!.season, `${year} ${name}`).toBe('LENT')
+      expect(day!.weekOfSeason, `${year} ${name}`).toBe(6)
+    }
+  })
+
+  // @fr FR-001
+  it.each([2026, 2027, 2028])('%i: Palm Sunday is Lent week 6 and Easter Sunday resets to Easter week 1', (year) => {
+    const calendar = getCalendarForYear(year)
+    const palm = calendar.find((d) => d.name === 'Palm Sunday')
+    const easter = calendar.find((d) => d.name === 'Easter Sunday')
+    expect(palm?.season).toBe('LENT')
+    expect(palm?.weekOfSeason).toBe(6)
+    expect(easter?.season).toBe('EASTER')
+    expect(easter?.weekOfSeason).toBe(1)
+  })
+
+  // @fr FR-030
+  it('Good Friday Lauds short reading is the authored weeks[6].FRI reading (Isa 52:13-15), not Lent week 1 Friday', async () => {
+    const goodFriday = getCalendarForYear(2026).find((d) => d.name === 'Good Friday')!
+    const lauds = await assembleHour(goodFriday.date, 'lauds')
+    const reading = lauds!.sections.find((s) => s.type === 'shortReading')
+    expect(reading).toBeDefined()
+    if (reading && reading.type === 'shortReading') {
+      expect(reading.ref).toBe(lent.weeks['6'].FRI.lauds.shortReading.ref)
+      expect(reading.ref).not.toBe(lent.weeks['1'].FRI.lauds.shortReading.ref)
+    }
   })
 })
 

@@ -118,8 +118,15 @@ export function getCalendarForYear(year: number): LiturgicalDayInfo[] {
     const date = new Date(entry.moment)
     const isSunday = date.getUTCDay() === 0
 
-    // Holy Week is sometimes a separate season key in romcal but should continue Lent's week count
-    const isHolyWeek = seasonKey === 'HolyWeek' || entry.name.includes('Holy Week') || entry.name === 'Palm Sunday'
+    // romcal 1.3 emits Holy Week (Palm Sunday .. Holy Saturday, incl. the
+    // TRIDUUM entries) under the season key 'Holy Week' (with a space — the
+    // same key `SEASON_MAP` folds into LENT). It must continue Lent's week
+    // count (Palm Sunday = week 6, Triduum = week 6) instead of opening a
+    // new season. The name checks are a belt-and-braces fallback only: the
+    // Triduum names ('Holy Thursday', 'Good Friday', 'Holy Saturday/Easter
+    // Vigil') do NOT contain 'Holy Week', so the key comparison is what
+    // keeps them on week 6 (P0-2, docs/bug-reports/2026-09-13-triduum-*).
+    const isHolyWeek = seasonKey === 'Holy Week' || entry.name.includes('Holy Week') || entry.name === 'Palm Sunday'
     const effectiveSeasonKey = isHolyWeek ? 'Lent' : seasonKey
 
     if (effectiveSeasonKey !== currentSeasonKey) {

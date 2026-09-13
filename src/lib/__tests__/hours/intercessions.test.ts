@@ -199,21 +199,45 @@ describe('parseIntercessions', () => {
 
   // #74 (GOAL #64 / H1) — colon-path "versicle-only" block hardening.
   //
-  // LATENT / DEAD-DATA. `lent.weeks.6.FRI.vespers` is "Friday of the 6th week of
-  // Lent" = Good Friday, but the calendar remaps the Sacred Triduum (Holy
-  // Thu/Fri/Sat) to LENT week 1, so a 2024–2032 full scan finds ZERO days
-  // resolving to LENT wk6 FRI — this block is UNREACHABLE via the only
-  // (date-based) route. The merge symptom (11 petitions → one 619-char versicle)
-  // reproduced ONLY by calling parseIntercessions on this block in isolation
-  // (mechanism ≠ outcome). The ACTUAL Good Friday renders the wk1 RICH overlay
-  // with 5 separated petitions — guarded by the 'Good Friday vespers render'
-  // suite below. This suite pins the defensive parser fix: a colon-path block
-  // whose petition region carries NO separator (the versicleOnlyBlock guard)
-  // splits each sentence-terminated element into its own petition rather than
-  // merging them. Data is byte-verbatim (no ":" inserted — MT/SoT 금지).
-  describe('colon-path versicle-only block (#74 H1 — latent/dead-data hardening)', () => {
+  // `lent.weeks.6.FRI.vespers` is "Friday of the 6th week of Lent" = Good
+  // Friday. Until P0-2 (docs/bug-reports/2026-09-13-triduum-season-key-
+  // holyweek-space.md) the calendar compared romcal's season key against
+  // 'HolyWeek' (no space) so the Sacred Triduum (Holy Thu/Fri/Sat) reset to
+  // LENT week 1 and this block was only reachable through a Good-Friday-
+  // specific bypass in loth-service. The calendar now keeps the Triduum on
+  // LENT week 6 (`calendar.ts` 'Holy Week' key), so the regular season-propers
+  // lookup reaches `weeks['6'].FRI.vespers` directly — the 'Sacred Triduum
+  // routing' test below pins that, and the 'Good Friday vespers render' suite
+  // pins the user-facing outcome. This suite pins the defensive parser fix: a
+  // colon-path block whose petition region carries NO separator (the
+  // versicleOnlyBlock guard) splits each sentence-terminated element into its
+  // own petition rather than merging them (11 petitions, not one 619-char
+  // versicle). Data is byte-verbatim (no ":" inserted — MT/SoT 금지).
+  describe('colon-path versicle-only block (#74 H1 — Good Friday solemn intercessions)', () => {
     const raw = lent.weeks['6'].FRI.vespers.intercessions
     const parsed = parseIntercessions(raw)
+
+    // @fr FR-001
+    it('Sacred Triduum routing: Good Friday resolves to LENT week 6, so weeks[6].FRI is reachable by date (P0-2)', () => {
+      for (const year of [2026, 2027, 2028]) {
+        const cal = getCalendarForYear(year)
+        for (const name of ['Holy Thursday', 'Good Friday', 'Holy Saturday/Easter Vigil']) {
+          const day = cal.find((d) => d.name === name)
+          expect(day, `${year} ${name}`).toBeDefined()
+          expect(day!.season, `${year} ${name}`).toBe('LENT')
+          expect(day!.weekOfSeason, `${year} ${name}`).toBe(6)
+        }
+      }
+    })
+
+    // @fr FR-030
+    it('Good Friday vespers short reading comes from weeks[6].FRI (whole block reached, not only intercessions)', async () => {
+      const assembled = await assembleHour('2026-04-03', 'vespers')
+      const reading = assembled!.sections.find((s) => s.type === 'shortReading') as
+        | Extract<HourSection, { type: 'shortReading' }>
+        | undefined
+      expect(reading?.ref).toBe(lent.weeks['6'].FRI.vespers.shortReading.ref)
+    })
 
     it('splits the 11 separator-less petitions instead of merging them into one versicle', () => {
       expect(raw).toHaveLength(12) // element[0] = intro+":"+refrain, [1..11] = 11 petitions
@@ -258,8 +282,9 @@ function goodFridayDateForYear(year: number): string {
 
 // #78 / WI-92 — real user-path regression guard.
 //
-// The date-based route is the only way users reach an Office. Good Friday's
-// Triduum calendar identity keeps most routing on LENT week 1, but its Vespers
+// The date-based route is the only way users reach an Office. Good Friday is
+// LENT week 6 FRI (P0-2 fix — previously the Triduum reset to week 1 and a
+// Good-Friday-only bypass re-fetched this block), and its Vespers
 // intercessions are authored as the Good Friday solemn intercessions at
 // lent.weeks.6.FRI.vespers (book pp. 675-676). The user-facing outcome must
 // therefore render 11 distinct Good Friday petitions, not the weekday p.647 set.
