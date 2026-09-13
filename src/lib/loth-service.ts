@@ -37,6 +37,38 @@ import { applyPageRedirects, loadOrdinariumKeyCatalog } from './hours/page-redir
 import { warmBibleCache } from './bible-loader'
 import type { HourContext } from './hours'
 
+/**
+ * Does today's Sunday Evening Prayer II outrank tomorrow's First Vespers?
+ *
+ * Universal Norms n. 61 / Table of Liturgical Days: Sundays of Advent,
+ * Lent and Easter (class I.2) outrank a Solemnity (I.3) or a Feast of the
+ * Lord (II.5) falling on the Monday, so the Sunday keeps its own Evening
+ * Prayer II. Ordinary-Time / Christmas-season Sundays (II.6) yield to the
+ * Monday's First Vespers. The single exception is the Advent → Christmas
+ * boundary (Dec 24): "Advent ends before First Vespers of the Nativity"
+ * (n. 40), so the 4th Sunday of Advent yields to Christmas First Vespers.
+ *
+ * Shared by `getHoursSummary` (card list, #240 / #245) and the vespers
+ * eve branch in `assembleHour` so the rendered body can never disagree
+ * with the cards (the P0-3 romcal-key transfer index made the eve branch
+ * find Monday solemnities such as St Joseph 2028-03-20 / Immaculate
+ * Conception 2030-12-09 / Annunciation 2027-04-05 — the body must keep the
+ * privileged Sunday's Evening Prayer II exactly as the cards do).
+ */
+function keepsSundayEveningPrayerII(
+  day: LiturgicalDayInfo,
+  dayOfWeek: DayOfWeek,
+  tomorrowDay: LiturgicalDayInfo | null,
+): boolean {
+  const isPrivilegedSunday =
+    dayOfWeek === 'SUN' &&
+    (day.season === 'ADVENT' || day.season === 'LENT' || day.season === 'EASTER')
+  if (!isPrivilegedSunday) return false
+  const isAdventToChristmasBoundary =
+    day.season === 'ADVENT' && !!tomorrowDay && tomorrowDay.season === 'CHRISTMAS'
+  return !isAdventToChristmasBoundary
+}
+
 export interface AssembleHourOptions {
   celebrationId?: string | null
 }
@@ -267,9 +299,14 @@ export async function assembleHour(
     const tDD = String(tomorrowDate.getUTCDate()).padStart(2, '0')
     const tomorrowStr = `${tomorrowDate.getUTCFullYear()}-${tMM}-${tDD}`
     const tomorrowDay = getLiturgicalDay(tomorrowStr)
+    // Privileged-Sunday guard (Universal Norms n. 61): a Sunday of Advent /
+    // Lent / Easter keeps its own Evening Prayer II even when Monday is a
+    // Solemnity/Feast with First Vespers — identical rule to the card list
+    // in `getHoursSummary`, see `keepsSundayEveningPrayerII`.
     if (
       tomorrowDay &&
-      (tomorrowDay.rank === 'SOLEMNITY' || tomorrowDay.rank === 'FEAST')
+      (tomorrowDay.rank === 'SOLEMNITY' || tomorrowDay.rank === 'FEAST') &&
+      !keepsSundayEveningPrayerII(day, dayOfWeek, tomorrowDay)
     ) {
       // Path 1 — fixed-date celebration via sanctoral entry.
       // `resolveSanctoralForDay` (P0-3) applies the entry only when romcal
@@ -1089,9 +1126,6 @@ export function getHoursSummary(dateStr: string): {
   // Vespers wins. Privileged Sundays (ADVENT/LENT/EASTER, class 2)
   // are NOT stripped — their II Vespers outranks Mon Solemnity of
   // Saints / Feast of the Lord.
-  const isPrivilegedSunday =
-    dayOfWeek === 'SUN' &&
-    (day.season === 'ADVENT' || day.season === 'LENT' || day.season === 'EASTER')
   // #245 F-X5 FU#4: Advent → Christmas season-boundary override.
   // Per Universal Norms n. 40, "Advent ends before First Vespers of
   // the Nativity of the Lord" — the season boundary itself displaces
@@ -1099,13 +1133,10 @@ export function getHoursSummary(dateStr: string): {
   // Dec 24 satisfies (today.season=ADVENT && tomorrow.season=CHRISTMAS);
   // Sun Lent → Mon Annunciation / Sun Advent → Mon Immaculate
   // Conception remain protected (no season cross).
-  const isAdventToChristmasBoundary =
-    isPrivilegedSunday &&
-    day.season === 'ADVENT' &&
-    !!tomorrowDay &&
-    tomorrowDay.season === 'CHRISTMAS'
+  // Both rules live in `keepsSundayEveningPrayerII`, shared with the
+  // vespers eve branch of `assembleHour` so cards and body agree.
   const stripEveCards =
-    tomorrowHasFirstVespers && (!isPrivilegedSunday || isAdventToChristmasBoundary)
+    tomorrowHasFirstVespers && !keepsSundayEveningPrayerII(day, dayOfWeek, tomorrowDay)
 
   const hours: { type: HourType; nameMn: string }[] = []
 

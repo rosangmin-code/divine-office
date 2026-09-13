@@ -176,6 +176,57 @@ describe('romcal-gated sanctoral resolution (P0-3)', () => {
   })
 })
 
+// Regression surfaced by the transfer index: the vespers eve branch of
+// `assembleHour` (FR-156 "tomorrow is a Solemnity/Feast with First Vespers")
+// started finding the Monday solemnity romcal transferred off a privileged
+// Sunday, so 2027-04-04 (2nd Sunday of Easter) rendered the Annunciation
+// First Vespers instead of its own Evening Prayer II. Universal Norms n. 61
+// / Table of Liturgical Days: Sundays of Advent / Lent / Easter (I.2)
+// outrank a Solemnity (I.3), and `getHoursSummary` already protects them
+// (#240). The body now applies the same `keepsSundayEveningPrayerII` rule.
+describe('privileged Sunday keeps its Evening Prayer II over a Monday solemnity First Vespers', () => {
+  // @fr FR-011
+  it.each([
+    { date: '2027-04-04', label: '2nd Sunday of Easter → Annunciation (transferred to 04-05)', entry: SOL['03-25'] },
+    { date: '2028-03-19', label: '3rd Sunday of Lent → St Joseph (transferred to 03-20)', entry: SOL['03-19'] },
+    { date: '2030-12-08', label: '2nd Sunday of Advent → Immaculate Conception (transferred to 12-09)', entry: SOL['12-08'] },
+  ])('$date $label: vespers is the Sunday II Vespers and the cards agree', async ({ date, entry }) => {
+    const d = day(date)
+    // romcal types the 2nd Sunday of Easter (Divine Mercy) as SOLEMNITY, the
+    // others as SUNDAY — the guard keys on dayOfWeek + privileged season.
+    expect(['SUNDAY', 'SOLEMNITY']).toContain(d.romcalType)
+    expect(new Date(date + 'T00:00:00Z').getUTCDay()).toBe(0)
+    expect(['ADVENT', 'LENT', 'EASTER']).toContain(d.season)
+    const vespers = await assembleHour(date, 'vespers')
+    const antiphon = section(vespers, 'gospelCanticle')?.antiphon
+    const prayer = section(vespers, 'concludingPrayer')?.text
+    // Not the solemnity's First Vespers…
+    expect(antiphon, date).not.toContain(entry.firstVespers!.gospelCanticleAntiphon!)
+    expect(prayer, date).not.toBe(entry.firstVespers?.concludingPrayer)
+    // …but the Sunday's own seasonal Evening Prayer II propers.
+    const sundayRegular = getSeasonHourPropers(d.season, d.weekOfSeason, 'SUN', 'vespers', date, d.name)
+    expect(sundayRegular?.gospelCanticleAntiphon, date).toBeTruthy()
+    expect(antiphon, date).toContain(sundayRegular!.gospelCanticleAntiphon!)
+    expect(prayer, date).toBe(sundayRegular?.concludingPrayer)
+    // Card list and body agree: the Sunday keeps vespers + compline.
+    expect(getHoursSummary(date)?.hours.map((h) => h.type), date).toEqual([
+      'firstVespers', 'firstCompline', 'lauds', 'vespers', 'compline',
+    ])
+  })
+
+  // @fr FR-011
+  it('non-privileged Sunday still yields to the Monday First Vespers (2026-09-13 → Exaltation of the Cross) and the Advent → Christmas boundary still yields (2028-12-24 → Christmas)', async () => {
+    const otSunday = await assembleHour('2026-09-13', 'vespers')
+    expect(section(otSunday, 'gospelCanticle')?.antiphon).toContain(FEA['09-14'].firstVespers!.gospelCanticleAntiphon!)
+    expect(getHoursSummary('2026-09-13')?.hours.map((h) => h.type)).toEqual(['firstVespers', 'firstCompline', 'lauds'])
+
+    expect(day('2028-12-24')).toMatchObject({ season: 'ADVENT', romcalType: 'SUNDAY' })
+    const adventSunday = await assembleHour('2028-12-24', 'vespers')
+    expect(section(adventSunday, 'gospelCanticle')?.antiphon).toContain(SOL['12-25'].firstVespers!.gospelCanticleAntiphon!)
+    expect(getHoursSummary('2028-12-24')?.hours.map((h) => h.type)).toEqual(['firstVespers', 'firstCompline', 'lauds'])
+  })
+})
+
 describe('resolveSanctoralForDay (unit)', () => {
   const base = { date: '2028-03-19', rank: 'SOLEMNITY' as const }
 
