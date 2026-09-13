@@ -146,3 +146,7 @@ Do not derive Ordinary-Time week numbers from localized or English display names
 4. Add regression probes for 2026-06-03 (expected OT 9), 2025-06-09 (expected OT 10), and a pre-Lent control such as 2026-02-10 (expected OT 5).
 
 This is a calendar/name computation fix. If it changes rendered SSR HTML labels, bump or otherwise account for the service-worker cache version because `public/sw.js` owns `CACHE_VERSION` (`public/sw.js:557`) and documents SSR HTML output as a cache-version bump reason (`public/sw.js:171`-`public/sw.js:183`).
+
+## 정정 (2026-09-14)
+
+이 리포트와 #256 수정은 **라벨(`otWeek` → `nameMn`) 경로만** 고쳤다. 고유부(propers) 조회는 여전히 시즌 카운터 `weekOfSeason` 을 사용해 연중시기 모든 주일의 본기도·복음찬가 후렴이 다른 주일 것으로 렌더되고 있었다 (2026-09-13 전체 리뷰에서 실측: 연중 24주일 아침기도 = weeks[16], 제1저녁기도 후렴 = weeks[17]). "라벨만 -1, 본문은 정상" 이라는 결론은 psalterWeek(시편) 에만 성립했다. 근본 수정과 재현 로그는 `2026-09-13-ot-sunday-propers-weekofseason.md` 참조 (연중시기 `weekOfSeason = otWeek` 통일).
