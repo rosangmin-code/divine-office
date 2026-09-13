@@ -789,6 +789,14 @@ export interface ConditionalRubricEvidencePdf {
   page: number
   line?: number
   text: string
+  /**
+   * Provenance of `text` (P0-6, 2026-09-14). `'verbatim'` (default when
+   * absent) — a byte-equal excerpt the coverage verifier asserts exists at
+   * `page`. `'rationale'` — the book prints no instruction at `page`; the
+   * rubric is derived from a general norm and `text` is an explanatory
+   * note (PDF-existence check skipped; `liturgicalBasis` mandatory).
+   */
+  kind?: 'verbatim' | 'rationale'
 }
 
 export interface ConditionalRubric {

@@ -10,6 +10,16 @@
  *      `evidencePdf.page` in `parsed_data/full_pdf.txt`. Drift here means
  *      the JSON is asserting a PDF citation that doesn't exist.
  *
+ *      Exception (P0-6, 2026-09-14): entries whose `evidencePdf.kind` is
+ *      `'rationale'` assert that the book prints NO instruction at `page`
+ *      (e.g. the five movable Solemnities of the Lord — Ascension,
+ *      Trinity, Corpus Christi, Sacred Heart, Christ the King — print only
+ *      antiphons + prayers; the psalmody borrow is the GILH general norm
+ *      mirrored from the printed Easter/Pentecost "х. 58" rubric). Their
+ *      `text` is an explanatory note, so the PDF-existence check is
+ *      skipped; instead they MUST carry `liturgicalBasis` and are counted
+ *      separately in the report so the exemption stays visible.
+ *
  *   2. COVERAGE (informational): per-season rubric pattern count from the
  *      PDF (using FR-160-B Phase B plan §2 patterns) versus the JSON
  *      marking count. Reports the table; does NOT exit non-zero on
@@ -196,7 +206,7 @@ function collectMarks(relPath) {
   return { conditional, redirect }
 }
 
-function checkIntegrity(indexed, marks, fileLabel, errors) {
+function checkIntegrity(indexed, marks, fileLabel, errors, stats) {
   if (!indexed) return // PDF unavailable — integrity check skipped.
   // Build a per-page text concatenation for substring search.
   const byPage = new Map()
@@ -226,6 +236,18 @@ function checkIntegrity(indexed, marks, fileLabel, errors) {
       errors.push(`${fileLabel} :: ${locator}: missing evidencePdf`)
       continue
     }
+    if (ev.kind === 'rationale') {
+      // Derived-from-norm rubric: no printed instruction to look up.
+      // Guard the exemption instead — it must justify itself.
+      if (!entry.liturgicalBasis) {
+        errors.push(
+          `${fileLabel} :: ${locator}: evidencePdf.kind='rationale' requires liturgicalBasis ` +
+            `(rubricId=${entry.rubricId})`,
+        )
+      }
+      stats.rationale += 1
+      continue
+    }
     const found = pageContains(ev.page, ev.text) || pageContainsAcrossLines(ev.page, ev.text)
     if (!found) {
       errors.push(
@@ -238,6 +260,15 @@ function checkIntegrity(indexed, marks, fileLabel, errors) {
     const ev = entry.evidencePdf
     if (!ev) {
       errors.push(`${fileLabel} :: ${locator}: missing evidencePdf`)
+      continue
+    }
+    if (ev.kind === 'rationale') {
+      // Page redirects always cite a printed "х. NNN" pointer — there is
+      // no norm-derived redirect. Reject rather than silently exempt.
+      errors.push(
+        `${fileLabel} :: ${locator}: pageRedirect evidencePdf.kind='rationale' is not allowed ` +
+          `(redirectId=${entry.redirectId})`,
+      )
       continue
     }
     const found = pageContains(ev.page, ev.text) || pageContainsAcrossLines(ev.page, ev.text)
@@ -262,6 +293,7 @@ function main() {
     console.warn(`[verify-conditional-rubric-coverage] WARN: ${path.relative(ROOT, PDF_PATH)} not present — integrity check skipped, only JSON counts reported`)
   }
   const errors = []
+  const stats = { rationale: 0 }
 
   console.log('verify-conditional-rubric-coverage (FR-160-B PR-2..7)')
   console.log('-'.repeat(60))
@@ -273,7 +305,7 @@ function main() {
     const range = SEASON_PAGE_RANGES[season]
     const pdfCounts = range ? countPdfMatches(indexed, range) : null
     const marks = collectMarks(file)
-    checkIntegrity(indexed, marks, file, errors)
+    checkIntegrity(indexed, marks, file, errors, stats)
     const jsonCount = marks.conditional.length + marks.redirect.length
     const pdfTotal = pdfCounts ? pdfCounts.total : null
     const ratio = pdfTotal && pdfTotal > 0 ? jsonCount / pdfTotal : 0
@@ -290,10 +322,15 @@ function main() {
   let sanctoralJson = 0
   for (const f of SANCTORAL_FILES) {
     const marks = collectMarks(f)
-    checkIntegrity(indexed, marks, f, errors)
+    checkIntegrity(indexed, marks, f, errors, stats)
     sanctoralJson += marks.conditional.length + marks.redirect.length
   }
   console.log(fmtRow('sanctoral', null, sanctoralJson, 0))
+  if (indexed) {
+    console.log(
+      `  rationale-kind rubrics exempt from PDF-existence check: ${stats.rationale} (liturgicalBasis enforced)`,
+    )
+  }
 
   if (errors.length) {
     console.error('')
