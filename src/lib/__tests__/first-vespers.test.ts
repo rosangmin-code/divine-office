@@ -1147,7 +1147,8 @@ describe('FR-011 task #60 — plain-Sunday Saturday vespers backstop', () => {
               rank: 'WEEKDAY',
               sundayCycle: 'A',
               weekdayCycle: '2',
-              weekOfSeason: 3,
+              // P0-1: OT weekOfSeason === otWeek (liturgical week 4).
+              weekOfSeason: 4,
               psalterWeek: 4,
               otWeek: 4,
             }
@@ -1164,7 +1165,8 @@ describe('FR-011 task #60 — plain-Sunday Saturday vespers backstop', () => {
               rank: 'SOLEMNITY',
               sundayCycle: 'A',
               weekdayCycle: '2',
-              weekOfSeason: 4,
+              // P0-1: OT weekOfSeason === otWeek (liturgical week 5).
+              weekOfSeason: 5,
               psalterWeek: 1,
               otWeek: 5,
             }

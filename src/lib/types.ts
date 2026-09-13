@@ -15,7 +15,21 @@ export interface LiturgicalDayInfo {
   rank: CelebrationRank
   sundayCycle: 'A' | 'B' | 'C'
   weekdayCycle: '1' | '2'
+  /**
+   * Week key used for season-propers / seasonal-rich / hymn lookups.
+   *
+   * - ORDINARY_TIME: the LITURGICAL Ordinary-Time week (1..34, identical to
+   *   `otWeek`; anchored on Christ the King = 34). `propers/ordinary-time.json
+   *   weeks[N]` and `seasonal/ordinary-time/w{N}-*` are authored by this
+   *   number. (P0-1 — before, OT carried the season counter below, which
+   *   lags the liturgical week by 1 before Lent and by ~8 after Pentecost.)
+   * - Every other season: the season counter — 1 on the season's first
+   *   day (Lent: 0 for Ash Wednesday's partial week), +1 per Sunday
+   *   (Advent/Christmas/Easter count from the second Sunday, Lent from the
+   *   first). Holy Week and the Sacred Triduum continue Lent as week 6.
+   */
   weekOfSeason: number
+  /** Liturgical Ordinary-Time week (1..34). Present only for ORDINARY_TIME days; equals `weekOfSeason` there. */
   otWeek?: number
   psalterWeek: 1 | 2 | 3 | 4
 }

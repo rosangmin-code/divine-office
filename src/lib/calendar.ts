@@ -144,11 +144,19 @@ export function getCalendarForYear(year: number): LiturgicalDayInfo[] {
   })
 
   assignOTWeeks(results)
-  // OT uses its own liturgical week numbering (otWeek) that differs from the
-  // season-sequence counter used elsewhere. Refresh nameMn for OT days now that
-  // otWeek is known so the Mongolian label matches the liturgical week.
+  // Ordinary Time uses its own liturgical week numbering (otWeek, 1..34,
+  // anchored on Christ the King) that differs from the season-sequence
+  // counter computed above (which restarts at 1 after Pentecost and lags
+  // the liturgical week by one before Lent). Every downstream consumer —
+  // `propers/ordinary-time.json weeks[N]`, the seasonal rich overlays
+  // `w{N}-SUN-*`, hymn rotation, first-vespers `nextWeek` — is keyed by the
+  // LITURGICAL week, so once otWeek is known it becomes the single
+  // `weekOfSeason` value for OT days (P0-1, docs/bug-reports/2026-09-13-
+  // ot-sunday-propers-weekofseason.md). Non-OT seasons keep the counter.
+  // nameMn is refreshed at the same time so the label matches.
   for (const day of results) {
     if (day.season !== 'ORDINARY_TIME') continue
+    if (day.otWeek !== undefined) day.weekOfSeason = day.otWeek
     const dateObj = new Date(day.date + 'T00:00:00Z')
     const dow = DOW_CODES[dateObj.getUTCDay()]
     const mmdd = `${String(dateObj.getUTCMonth() + 1).padStart(2, '0')}-${String(dateObj.getUTCDate()).padStart(2, '0')}`
@@ -163,10 +171,9 @@ export function getCalendarForYear(year: number): LiturgicalDayInfo[] {
     const movableSolemnityName = movableKey
       ? MOVABLE_SOLEMNITY_NAMES_MN[movableKey]
       : undefined
-    const effectiveWeek = day.otWeek ?? day.weekOfSeason
     day.nameMn = buildLiturgicalNameMn({
       season: day.season,
-      weekOfSeason: effectiveWeek,
+      weekOfSeason: day.weekOfSeason,
       dayOfWeek: dow,
       sanctoralName,
       movableSolemnityName,
