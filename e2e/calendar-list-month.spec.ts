@@ -227,6 +227,11 @@ for (const variant of Object.keys(VIEWPORTS) as ViewportName[]) {
 // Visual snapshots — 8 baseline images (mobile/desktop × light/dark
 // × chromium/mobile-chrome).
 //
+// Output goes to `test-results/snapshots/` (gitignored; CI uploads it as
+// an artifact). The `e2e/snapshots/*.png` files still in git are the
+// historical baselines from iter 2 and are no longer rewritten by this
+// spec — deletion is a follow-up decision.
+//
 // Iter 1 review (dvo-rev-cl FAIL): 2 of 4 PNGs were blank (hydration
 // race before screenshot); the 2 non-blank PNGs only captured mid-
 // calendar rows because /?month=2026-05 is today's month → mount-once
@@ -270,8 +275,12 @@ for (const variant of Object.keys(VIEWPORTS) as ViewportName[]) {
         // Project name in path so chromium + mobile-chrome don't
         // race-overwrite each other.
         const projectSlug = testInfo.project.name.replace(/[^a-z0-9]/gi, '-').toLowerCase()
+        // Informational capture, not an assertion — written under the
+        // gitignored Playwright output dir (`test-results/`, uploaded as
+        // a CI artifact) so a local run no longer dirties the tracked
+        // `e2e/snapshots/*.png` baselines (review 2026-09-13 §3.5 #8).
         await page.screenshot({
-          path: `e2e/snapshots/calendar-list-month-${variant}-${colorScheme}-${projectSlug}.png`,
+          path: `test-results/snapshots/calendar-list-month-${variant}-${colorScheme}-${projectSlug}.png`,
           fullPage: true,
         })
       })
