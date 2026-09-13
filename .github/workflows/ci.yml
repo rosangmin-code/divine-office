@@ -10,11 +10,15 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  NEXT_TELEMETRY_DISABLED: '1'
+
 jobs:
   quality:
+    # ⚠ 이 name 은 Vercel Deployment Checks 에 등록되는 문자열. 바꾸면 대시보드 재등록 필요.
     name: Lint · Typecheck · Unit tests
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
 
@@ -25,6 +29,14 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      # 런타임 의존성(devDeps 제외)의 critical 만 하드 게이트. P0-4 (next 16.3.5)
+      # 로 critical 은 0 이고, 잔여는 pdfjs-dist high 1건(GHSA-hq66-cqwq-w95j,
+      # fix 는 6.x major)뿐이다. pdfjs-dist 6.x 이관(라이브러리 + public/
+      # pdf.worker.min.mjs legacy worker 사본 동시 교체 + sw.js CACHE_VERSION
+      # bump) 후 `--audit-level=high` 로 올릴 것.
+      - name: npm audit (runtime deps, critical)
+        run: npm audit --omit=dev --audit-level=critical
 
       - name: ESLint
         run: npm run lint
@@ -48,11 +60,27 @@ jobs:
       - name: Phrase coverage gate (NFR-009j)
         run: npm run verify:phrase-coverage:check
 
-  e2e-smoke:
-    name: Playwright API smoke
+      # tsc 뒤에 두어 .next/dev/types 로 인한 거짓 tsc 실패(memory:
+      # stale-next-types) 를 피한다. 산출물은 e2e job 이 `next start` 로 서빙.
+      - name: Next build
+        run: npm run build
+
+      - name: Upload .next for e2e
+        uses: actions/upload-artifact@v7
+        with:
+          name: next-build-${{ github.sha }}
+          path: |
+            .next/
+            !.next/cache/
+          retention-days: 1
+          if-no-files-found: error
+
+  e2e:
+    # ⚠ Vercel Deployment Checks 등록 문자열 #2. (기존 "Playwright API smoke" 에서 개명)
+    name: Playwright · API smoke + core UI
     runs-on: ubuntu-latest
     needs: quality
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
 
@@ -67,13 +95,25 @@ jobs:
       - name: Install Playwright (Chromium only)
         run: npx playwright install --with-deps chromium
 
-      - name: Run API smoke tests
-        run: npm run test:e2e:api
+      - name: Download .next
+        uses: actions/download-artifact@v7
+        with:
+          name: next-build-${{ github.sha }}
+          path: .next
 
-      - name: Upload Playwright report on failure
-        if: failure()
+      # playwright.config.ts 가 CI 에서는 `next start --port 3200` 를 webServer 로
+      # 띄운다 (프로덕션과 동일 경로). api.spec + 핵심 UI 5 spec
+      # (prayer-sections · page-references · pwa · calendar-list-month · prayer-footer).
+      - name: Core e2e (API smoke + 5 UI specs, chromium + mobile-chrome)
+        run: npm run test:e2e:core
+
+      - name: Upload Playwright report
+        if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: playwright-report
-          path: playwright-report/
+          name: playwright-report-${{ github.sha }}
+          path: |
+            playwright-report/
+            test-results/
           retention-days: 7
+          if-no-files-found: ignore
