@@ -17,6 +17,8 @@
 
 **`CACHE_VERSION` bump 기준**: 정적 자산 경로/내용 변경, 프리캐시 대상 변경, SW 자체 로직 변경이 있으면 `divine-office-vN` 을 올린다. `activate` 훅이 이전 버전 캐시를 전체 삭제한다. bump 를 빠뜨리면 구 자산이 `cache-first` 로 무한 서빙된다.
 
+배포·롤백 절차는 `docs/ops-rollback.md`.
+
 ---
 
 ## 테스트가 못 잡는 것들
@@ -101,3 +103,4 @@ test('Saturday vespers uses next Sunday propers', ...)
 - [ ] `psalter/week-*.json` 의 `page` 값을 손보았는가? → `node scripts/verify-psalter-pages.js` 돌려서 verified-correction bucket 이 0 인지 확인 (NFR-009c)
 - [ ] 다른 데이터 영역 (hymns / compline / propers / sanctoral) 의 `page` 값을 손보았는가? → 해당 verifier 실행 (`scripts/verify-{hymn,psalter-body,compline,propers,sanctoral}-pages.js`) (NFR-009d)
 - [ ] `psalter/week-*.json` 의 `ref` 또는 시편 본문(`psalter-texts.json`) 을 손보았는가? → `node scripts/audit-psalter-ref-consistency.js` 돌려서 suspect 수가 증가하지 않았는지 확인 (ref↔선언 page 간 stanza 지문 정합성 검증, window ±2)
+- [ ] 배포 후 문제가 생기면 `docs/ops-rollback.md` 절차 (Instant Rollback 후 Undo Rollback 필수)
