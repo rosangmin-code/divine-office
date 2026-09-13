@@ -74,6 +74,10 @@ jobs:
             !.next/cache/
           retention-days: 1
           if-no-files-found: error
+          # `.next/` 는 dot-directory 라 upload-artifact 기본 설정(include-hidden-files:
+          # false) 에서는 통째로 제외되어 "No files were found" 로 실패한다 (첫 CI
+          # 실행 34790616912 에서 실증). 명시적으로 켠다.
+          include-hidden-files: true
 
   e2e:
     # ⚠ Vercel Deployment Checks 등록 문자열 #2. (기존 "Playwright API smoke" 에서 개명)
