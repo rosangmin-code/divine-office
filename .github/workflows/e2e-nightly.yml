@@ -1,0 +1,52 @@
+# 정보성 워크플로 — Vercel Deployment Checks 에 등록하지 않는다.
+# 전체 UI e2e(976 케이스) 를 프로덕션 빌드(next build → next start) 로 매일
+# 돌려 기존 실패 101건(리뷰 2026-09-13 §7) 정리 진행도를 기록한다.
+# 실패해도 배포를 막지 않는다 (continue-on-error). 결과는 html 리포트
+# 아티팩트로 확인.
+name: E2E nightly (full)
+
+on:
+  schedule:
+    - cron: '0 18 * * *' # 03:00 KST
+  workflow_dispatch:
+
+env:
+  NEXT_TELEMETRY_DISABLED: '1'
+
+jobs:
+  e2e-full:
+    name: Playwright · full suite (informational)
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright (Chromium only)
+        run: npx playwright install --with-deps chromium
+
+      - name: Next build
+        run: npm run build
+
+      # playwright.config.ts 가 CI 에서는 next start 를 webServer 로 띄운다.
+      - name: Full e2e (chromium + mobile-chrome)
+        run: npx playwright test
+        continue-on-error: true
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report-nightly-${{ github.run_id }}
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
+          if-no-files-found: ignore
