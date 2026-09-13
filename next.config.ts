@@ -7,6 +7,14 @@ import type { NextConfig } from "next";
 const SHORT_LIVED_ASSET_CACHE = 'public, max-age=86400, must-revalidate'
 
 const nextConfig: NextConfig = {
+  // The app never renders `next/image` (icons/PDF pages are plain <img> /
+  // canvas), yet the default config still exposes the `/_next/image`
+  // optimizer endpoint in production. Turning optimization off removes that
+  // unused attack surface (image-optimizer DoS / AVIF advisories in the
+  // next@<16.3.3 audit set) — with `unoptimized`, `/_next/image` answers 4xx.
+  images: { unoptimized: true },
+  // Do not advertise the framework via `x-powered-by: Next.js`.
+  poweredByHeader: false,
   async headers() {
     return [
       {
