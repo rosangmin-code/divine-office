@@ -3,7 +3,7 @@
 - **작성**: 2026-09-14 (`docs/app-review-2026-09-13.md` §8 잠재 회귀 격리 4건 조사)
 - **분류**: FR-156 전야(eve) 제1저녁기도 경로의 identity 승격 누락 (요일·시즌) + Layer 4 rich overlay 의 소스 불일치
 - **심각도**: 높음 — 매주 토요일 저녁 본기도가 대체본으로 뒤바뀌어 있었고(2026 년 46 회), 모든 성인·성 요셉·성탄 전야 등에서 화면에 **다른 날의 본기도** 가 rich 로 표시됨
-- **상태**: ✅ 수정됨 — `88ed2d3` (F-2 요일) · `2601f59` (rich 소스 parity) · `5b7de1d` (시즌 변형 + 통합 테스트) · `3c22b21` (e2e fixme 해제). 제품 결정 필요 항목은 §6.
+- **상태**: ✅ 수정됨 — `88ed2d3` (F-2 요일) · `2601f59` (rich 소스 parity) · `5b7de1d` (시즌 변형 + 통합 테스트) · `3c22b21` (e2e fixme 해제) · `17014b2` (주일 제1저녁기도 시즌 고유부 우선 병합, §4-b). 제품 결정 필요 항목은 §6.
 
 ---
 
@@ -70,6 +70,7 @@ mismatches=26
 | `2601f59` | 전야 분기의 `richLookupIdentity`(내일의 season/week/요일/sanctoralKey/name/date) + `applyRichSourceParity`(`prayers/resolver.ts`): rich 필드는 생성된 cell 의 plain 과 merged plain 이 글자 단위로 같을 때만 유지(구두점·따옴표 glyph·`ref` 무시). seasonal cell 은 rich 와 같은 키로 `getSeasonHourPropers` 재조회. 대체 본기도 rich 는 primary 와 같은 layer 에서만. rich loader 에 dec17~24 date-key tier(propers-loader 대칭) |
 | `5b7de1d` | 시편 해석 season = `effectiveLiturgicalDay.season`. 통합 테스트 `src/lib/__tests__/eve-vespers-alternate-and-rich.test.ts` (21 케이스) |
 | `3c22b21` | e2e fixme 해제·기대값 갱신 (§5) |
+| `17014b2` (§4-b, 코디네이터 승인) | `mergeSundayFirstVespers` (`hours/first-vespers-merge.ts`): 플레인 주일 제1저녁기도 조립(`/firstVespers` Path 3 + 토요일 전야) 에서 shortReading / responsory / intercessions / concludingPrayer(+alternative, +page) 는 시즌 `SUN.vespers` cell 이 인쇄하면 그것이 우선, firstVespers cell 은 시편·후렴·hymn 등 나머지만. 근거: 책 시즌 섹션이 주일 EP I 고유부를 인쇄(대림 p548-550 1 Thess 5:19-24, 사순 p618-620 2 Cor 6:1-4a, 종려 p651-653 1 Pet 1:18-21, 부활 p700-702 1 Pet 2:9-10); Phase-2 firstVespers cell 은 시편집 주일 EP I 블록 발췌(`intercessionsPage` 56/172/292/403, 연중용). 지금까지 화면(rich) 이 보여주던 것과 동일해지고 API/전야 plain 도 일치. 연중·성탄 시즌은 `SUN.vespers` 에 독서/응송/청원이 없어 무영향(sweep 실증) |
 
 수정 후 parity 전수: `mismatches=0` (2026 전 일자 × 4 시간경).
 
@@ -89,10 +90,10 @@ mismatches=26
 | B3 vespers2 빈 text 복구 | (05-14 포함) | 승천 제2저녁기도 text '' → primary p.731 |
 | B4 성삼일 응송 | 5 | 04-02 v, 04-03 l/v, 04-04 l/v: 시편집 응송 rich 제거 |
 | B5 12-24 lauds | 1 | dec24 tier: p.571 → p.582/577/581 (plain 과 일치) |
-| B6 사순·대림·부활 주일 `/firstVespers` | 16 | 짧은 독서·응송·청원 rich 제거 — plain(Phase-2 firstVespers cell, 시편집 발췌) ≠ rich(시즌 주일 EP I cell). §6-2 |
+| D 사순·대림·부활 주일 EP I 독서·응송·청원·본기도 시즌 고유부 우선 (§4-b) | 16 `/firstVespers` + 16 토요일 전야(A 와 겹침) | plain 이 시편집 발췌(p.55/171/292/402) → 시즌본(p.548/618/651/700), **rich 는 유지(page 일치)**. §4-b 이전 스윕에서는 같은 16건이 "rich 제거"(B6) 로 나타났음 — 화면 퇴행이 될 것이라 시즌 우선 병합으로 해소 |
 | C 시편 후렴 대림 변형 | 1 | 11-28 (+A) |
 
-범주 밖 차이 없음. 그 밖에 `getHoursSummary` 가 노출하지 않는 평일 `firstVespers` URL 은 sweep 에서 제외.
+범주 밖 차이 없음 (2026 93건 / 2027 89건, `eve/sweep-2026-table-v5.md`). 연중 주일(예: 09-13 `/firstVespers`, 09-12 전야) 은 D 에 없음 — 독서 2 Peter 1:19-21 p.402 / 본기도 p.797 그대로. `getHoursSummary` 가 노출하지 않는 평일 `firstVespers` URL 은 sweep 에서 제외.
 
 ## 6. 제품 결정 필요 (수정하지 않음)
 
