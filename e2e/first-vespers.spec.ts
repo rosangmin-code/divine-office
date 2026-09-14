@@ -110,8 +110,14 @@ test.describe('First Vespers of Palm Sunday (FR-156)', () => {
 // loth-service passes `psalterWeek: undefined` so resolveRichOverlay
 // skips loadPsalterCommonsRichOverlay entirely (psalterWeek != null
 // guard in resolver.ts L58). seasonal/sanctoral rich are unaffected.
+//
+// 2026-09-14 — the Sunday's reading itself now comes from the SEASON's
+// Sunday EP I proper (Easter p.700, 1 Pet 2:9-10) rather than the
+// firstVespers cell's psalter copy (2 Peter 1:19-21, psalter week 4
+// p.402): `mergeSundayFirstVespers` (docs/bug-reports/2026-09-14-eve-
+// vespers-alternate-and-rich.md §6-②). The Symptom A guard is unchanged.
 test.describe('Symptom A regression — Saturday vespers firstVespers shortReading', () => {
-  test('Easter wk3 SAT vespers (2026-04-25) shortReading.ref / text come from Sunday firstVespers (PDF p.402), not w3-SAT psalter commons', async ({
+  test('Easter wk3 SAT vespers (2026-04-25) shortReading comes from the Easter Sunday EP I proper (PDF p.700), not w3-SAT psalter commons', async ({
     request,
   }) => {
     const res = await request.get('/api/loth/2026-04-25/vespers')
@@ -124,16 +130,19 @@ test.describe('Symptom A regression — Saturday vespers firstVespers shortReadi
     )
     expect(shortReading).toBeTruthy()
 
-    // Sunday firstVespers reading wins (2 Peter 1:19-21, PDF p.402).
-    expect(shortReading.ref).toBe('2 Peter 1:19-21')
-    expect(shortReading.page).toBe(402)
+    // Season Sunday EP I reading wins (1 Pet 2:9-10, PDF p.700).
+    expect(shortReading.ref).toBe('1 Pet 2:9-10')
+    expect(shortReading.page).toBe(700)
 
-    // Body 첫 단어 "Үүр цайж" is the firstVespers plain shortReading.
-    // hours/resolvers/reading.ts wires shortReading.text into a single
-    // synthetic verse when present; otherwise it splits per-verse.
+    // Body 첫 구절 "Харин та нар сонгогдсон угсаа" is the seasonal plain
+    // shortReading. hours/resolvers/reading.ts wires shortReading.text
+    // into a single synthetic verse when present; otherwise it splits
+    // per-verse.
     const verses = shortReading.verses as Array<{ verse: number; text: string }>
     const plainText = verses.map((v) => v.text).join(' ')
-    expect(plainText).toContain('Үүр цайж')
+    expect(plainText).toContain('Харин та нар сонгогдсон угсаа')
+    // Not the psalter week-4 copy from the firstVespers cell.
+    expect(plainText).not.toContain('Үүр цайж')
 
     // Negative guard: w3-SAT-vespers psalter commons rich (1 Petr 1:3-7,
     // "Эзэн Есүс Христийн маань Тэнгэрбурхан ба Эцэг") must NOT have

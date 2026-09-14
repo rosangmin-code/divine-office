@@ -252,3 +252,57 @@ describe('Saturday of OT week 34 → 1st Sunday of Advent: seasonal psalm antiph
     expect(eve?.liturgicalDay.weekOfSeason).toBe(34)
   })
 })
+
+describe('Plain Sunday First Vespers: reading / responsory / intercessions / prayer follow the SEASON proper', () => {
+  // docs/bug-reports/2026-09-14-eve-vespers-alternate-and-rich.md §6-② →
+  // `mergeSundayFirstVespers`. The season sections print the Sunday EP I
+  // proper (Advent p.548-550, Lent p.618-620, Easter p.700-702); the
+  // Phase-2 `firstVespers` cells are psalter Sunday EP I copies
+  // (p.55/171/291/402) and only stand where the season prints nothing
+  // (Ordinary Time, Christmas-season Sundays).
+  // @fr FR-156
+  it.each([
+    ['2026-11-29', '1st Sunday of Advent', '1 Thess 5:19-24', 548, 549, 550],
+    ['2026-02-22', '1st Sunday of Lent', '2 Cor 6:1-4a', 618, 619, 620],
+    ['2026-04-12', 'Divine Mercy Sunday', '1 Pet 2:9-10', 700, 701, 702],
+  ])('%s (%s) /firstVespers: reading %s p.%i, responsory/intercessions p.%i, prayer p.%i — plain and rich agree', async (date, name, ref, srPage, midPage, cpPage) => {
+    expect(getLiturgicalDay(date)?.name).toBe(name)
+    const route = await assembleHour(date, 'firstVespers')
+    const sr = section(route, 'shortReading')!
+    expect(sr.ref).toBe(ref)
+    expect(sr.page).toBe(srPage)
+    expect(sr.textRich?.page).toBe(srPage)
+    const rs = section(route, 'responsory')!
+    expect(rs.page).toBe(midPage)
+    expect(rs.rich?.page).toBe(midPage)
+    const ic = section(route, 'intercessions')!
+    expect(ic.page).toBe(midPage)
+    expect(ic.rich?.page).toBe(midPage)
+    const c = cp(route)
+    expect(c.page).toBe(cpPage)
+    expect(c.textRich?.page).toBe(cpPage)
+    // Saturday eve `/vespers` carries the same plain text.
+    const eveDate = new Date(date + 'T00:00:00Z')
+    eveDate.setUTCDate(eveDate.getUTCDate() - 1)
+    const eve = await assembleHour(eveDate.toISOString().slice(0, 10), 'vespers')
+    expect(section(eve, 'shortReading')?.ref).toBe(ref)
+    expect(section(eve, 'shortReading')?.page).toBe(srPage)
+    expect(section(eve, 'intercessions')?.page).toBe(midPage)
+    expect(cp(eve).text).toBe(c.text)
+    expect(cp(eve).page).toBe(cpPage)
+  })
+
+  // @fr FR-156
+  it('2026-09-13 (24th Sunday of OT) /firstVespers is unchanged: psalter reading 2 Peter 1:19-21 p.402, OT Sunday prayer p.797', async () => {
+    const route = await assembleHour('2026-09-13', 'firstVespers')
+    const sr = section(route, 'shortReading')!
+    expect(sr.ref).toBe('2 Peter 1:19-21')
+    expect(sr.page).toBe(402)
+    expect(section(route, 'intercessions')?.page).toBe(403)
+    expect(cp(route).page).toBe(797)
+    expect(cp(route).textRich?.page).toBe(797)
+    const eve = await assembleHour('2026-09-12', 'vespers')
+    expect(section(eve, 'shortReading')?.ref).toBe('2 Peter 1:19-21')
+    expect(cp(eve).text).toBe(cp(route).text)
+  })
+})

@@ -188,13 +188,18 @@ describe('Saturday of OT week 34 → 1st Sunday of Advent First Vespers (season 
     const vespers = await assembleHour(date, 'vespers')
     const antiphon = section(vespers, 'gospelCanticle')?.antiphon ?? ''
     expect(antiphon.length).toBeGreaterThan(0)
-    // Backstop rule: firstVespers ⟩ Sunday regular vespers — advent.json
-    // weeks['1'].SUN.firstVespers carries no Magnificat antiphon, so it
-    // comes from weeks['1'].SUN.vespers.
+    // advent.json weeks['1'].SUN.firstVespers carries no Magnificat
+    // antiphon, so it comes from weeks['1'].SUN.vespers.
     const adventSundayRegular = getSeasonHourPropers('ADVENT', 1, 'SUN', 'vespers', sunday.date, sunday.name)
     expect(adventSundayRegular?.gospelCanticleAntiphon).toBeTruthy()
     expect(antiphon).toContain(adventSundayRegular!.gospelCanticleAntiphon!)
-    expect(section(vespers, 'shortReading')?.ref).toBe(ADVENT_WEEKS['1'].SUN!.firstVespers!.shortReading!.ref)
+    // Short reading: the season's Sunday EP I proper (Advent p.548,
+    // 1 Thess 5:19-24) wins over the firstVespers cell's psalter copy
+    // (Romans 11:25, 30-36, psalter week 1 p.55) — `mergeSundayFirstVespers`
+    // (2026-09-14, docs/bug-reports/2026-09-14-eve-vespers-alternate-and-rich.md).
+    expect(adventSundayRegular?.shortReading?.ref).toBe('1 Thess 5:19-24')
+    expect(section(vespers, 'shortReading')?.ref).toBe(adventSundayRegular!.shortReading!.ref)
+    expect(section(vespers, 'shortReading')?.ref).not.toBe(ADVENT_WEEKS['1'].SUN!.firstVespers!.shortReading!.ref)
     // Concluding prayer pair = Advent week-1 Sunday vespers primary +
     // alternate. Which of the two is rendered as `text` follows the existing
     // F-2 primary↔alternate rule for a Saturday eve (identical on main for

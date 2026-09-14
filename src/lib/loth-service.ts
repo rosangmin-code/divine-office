@@ -28,6 +28,7 @@ import {
   mergeComplineDefaults,
   promoteToFirstVespersIdentity,
 } from './hours'
+import { mergeSundayFirstVespers } from './hours/first-vespers-merge'
 import { applySeasonalAntiphon, applySeasonalAntiphonRich, pickSeasonalVariant } from './hours/seasonal-antiphon'
 import {
   applyConditionalRubrics,
@@ -507,14 +508,20 @@ export async function assembleHour(
         dateStr,
         day.name,
       )
-      // Path 3 is NOT self-contained — uses Sunday-regular vespers as
-      // per-field backstop (already in seasonPropers from initial fetch).
+      // Path 3 is NOT self-contained — composed with the Sunday's regular
+      // (EP I) vespers proper, which is already in seasonPropers from the
+      // initial fetch. `mergeSundayFirstVespers`: the season's reading /
+      // responsory / intercessions / concluding prayer(s) win over the
+      // firstVespers cell's psalter copies (book season sections vs
+      // psalter Sunday EP I blocks — see the helper); psalms + antiphons
+      // stay the firstVespers cell's. Same composition as the Saturday
+      // eve `/vespers` path below, so route and eve agree.
     }
 
     if (firstVespersData) {
       seasonPropers = isSelfContained
         ? (firstVespersData as HourPropers)
-        : { ...(seasonPropers ?? {}), ...firstVespersData }
+        : mergeSundayFirstVespers(seasonPropers, firstVespersData)
       if (firstVespersData.psalms && firstVespersData.psalms.length > 0) {
         psalmEntries = firstVespersData.psalms
       }
@@ -558,21 +565,21 @@ export async function assembleHour(
     const firstVespers = getSeasonFirstVespers(sundaySeason, nextWeek, dateStr, day.name)
       ?? getSeasonFirstVespers(day.season, day.weekOfSeason, dateStr, day.name)
     // Always compute the upcoming Sunday's regular vespers propers —
-    // used as standalone fallback when firstVespers is absent, AND as a
-    // per-field backstop underneath firstVespers (FR-156 Phase 2).
-    // Rationale: the PDF's psalter First Vespers blocks reference the
-    // seasonal Sunday propers for gospelCanticleAntiphon and
+    // used as standalone fallback when firstVespers is absent, AND as the
+    // seasonal Sunday EP I proper composed with firstVespers (FR-156
+    // Phase 2). Rationale: the PDF's psalter First Vespers blocks reference
+    // the seasonal Sunday propers for gospelCanticleAntiphon and
     // concludingPrayer ("Шад магтаал: үүнийг «Цаг улирлын Онцлог шинж»
-    // гэсэн хэсгээс татаж авна"). Rather than duplicate those fields
-    // in firstVespers, the extractor omits them and the resolver
-    // composes the final HourPropers as firstVespers ⟩ SundayRegular.
+    // гэсэн хэсгээс татаж авна"), and in Advent / Lent / Easter the season
+    // section also prints the Sunday EP I reading / responsory /
+    // intercessions (p.548-550 / 618-620 / 700-702) which take precedence
+    // over the psalter copies in the firstVespers cell —
+    // `mergeSundayFirstVespers` (identical composition to the
+    // `/firstVespers` route, Path 3 above).
     const sundayRegular = getSeasonHourPropers(sundaySeason, nextWeek, 'SUN', 'vespers', dateStr, day.name)
       ?? getSeasonHourPropers(day.season, day.weekOfSeason, 'SUN', 'vespers', dateStr, day.name)
     if (firstVespers) {
-      seasonPropers = {
-        ...(sundayRegular ?? {}),
-        ...firstVespers,
-      }
+      seasonPropers = mergeSundayFirstVespers(sundayRegular, firstVespers)
       // First Vespers may carry its own psalm array (distinct from the
       // 4-week psalter Saturday). Override so the resolver downstream
       // resolves 1st-Vespers psalm antiphons + seasonal variants.
