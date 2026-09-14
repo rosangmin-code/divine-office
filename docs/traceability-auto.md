@@ -4,7 +4,7 @@
 > and FR/NFR IDs in test titles. **Do not edit by hand.**
 > The curated matrix lives in [`docs/traceability-matrix.md`](./traceability-matrix.md).
 
-Scan: 88 test files contributed 45 unique IDs.
+Scan: 90 test files contributed 45 unique IDs.
 
 | ID | Test file | Test title(s) |
 |---|---|---|
@@ -120,7 +120,9 @@ Scan: 88 test files contributed 45 unique IDs.
 | NFR-002 | `e2e/page-redirect.spec.ts` | Mongolian Cyrillic labels: catalog labels are PDF-original (NFR-002) |
 | NFR-002 | `src/components/__tests__/footer.test.ts` | has no English aria-label fallback (NFR-002) |
 | NFR-002 | `src/components/__tests__/marian-antiphon-section.test.ts` | preserves the original text verbatim across joined lines (NFR-002 contract)<br>NFR-002 —  |
+| NFR-002 | `src/components/__tests__/psalm-block-ref-mn.test.ts` | PsalmBlock — 헤더·aria-label 몽골어 성경 참조 (NFR-002)<br>ShortReadingSection — 참조 몽골어 표기 (NFR-002) |
 | NFR-002 | `src/lib/__tests__/saturday-mary-benedictus-antiphon.test.ts` | 영어 fallback 0 — 후렴/루브릭/antiphon 에 라틴 문자 없음 (NFR-002) |
+| NFR-002 | `src/lib/__tests__/scripture-ref-mn.test.ts` | formatRefMn — 책 이름만 몽골어, 장:절 원문 유지<br>BOOK_NAMES_MN ↔ src/data/bible/*.jsonl book_mn 일치 |
 | NFR-009 | `src/lib/__tests__/solemnity-firstvespers-running-week.test.ts` | (tagged, title unknown) |
 | NFR-009c | `src/lib/__tests__/data/split-psalm-part2.test.ts` | 한 시간전례 안에 동일 ref 가 중복되지 않는다<br>참조된 모든 시편 ref 에 plain·rich 본문이 존재한다<br>분할 시편 5건의 II부가 I부와 다른 본문을 가진다 |
 | NFR-009k | `e2e/hymn-contamination.spec.ts` | 2026-05-28 lauds магтуу = real hymn #3 <br>lauds магтуу API body for 2026-05-28 carries the corrected hymn |
