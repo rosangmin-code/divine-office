@@ -1042,7 +1042,15 @@ export async function assembleHour(
     hourType: hour,
     hourNameMn: hourNamesMn[hour],
     date: dateStr,
+    // Response contract (FR-156, §6-1 option a): `liturgicalDay` stays the
+    // URL date's civil identity; the promoted identity is exposed
+    // separately and ONLY when the eve branches above moved it to another
+    // date (Saturday → Sunday, Solemnity/Feast eve). The firstVespers /
+    // firstCompline routes mirror `day` and therefore omit the field.
     liturgicalDay: day,
+    ...(effectiveLiturgicalDay.date !== day.date
+      ? { effectiveLiturgicalDay }
+      : {}),
     psalterWeek: day.psalterWeek,
     sections,
     // FR-160-B PR-10: surface hydrated audit metadata (no body). The
