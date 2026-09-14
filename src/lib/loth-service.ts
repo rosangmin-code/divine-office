@@ -17,7 +17,7 @@ import { getPsalterPsalmody, getComplinePsalmody, getFullComplineData, getPsalte
 import { getSeasonHourPropers, getSeasonFirstVespers, getSeasonVespers2, getHymnForHour, getHymnCandidatesForHour, resolveSpecialKey } from './propers-loader'
 import { resolveSanctoralForDay } from './sanctoral-resolver'
 import { resolveCelebration } from './celebrations'
-import { resolveRichOverlay } from './prayers/resolver'
+import { resolveRichOverlayLayers, applyRichSourceParity } from './prayers/resolver'
 import { loadHymnRichOverlay } from './prayers/rich-overlay'
 
 import {
@@ -262,6 +262,25 @@ export async function assembleHour(
   // tomorrow's day; the new firstVespers/firstCompline routes leave it as
   // today's day (URL date IS the rendered identity, so no promotion needed).
   let effectiveLiturgicalDay: LiturgicalDayInfo = day
+  // Rich-overlay lookup identity (Layer 4 below). `null` = today's own
+  // keys (season / week / weekday / sanctoral key / name / date). The
+  // FR-156 Solemnity-Feast eve branch sets it to TOMORROW's identity so the
+  // rich markup is fetched from the same celebration the plain propers
+  // came from — exactly the keys the `/firstVespers` route on tomorrow's
+  // URL uses. Before this, Christmas Eve 2026-12-24 (ADVENT w4 THU) merged
+  // `seasonal/advent/w1-THU-vespers.rich.json` (Advent weekday concluding
+  // prayer, p.571) under the Christmas First Vespers plain text (p.588),
+  // and the Sunday eve of the Presentation 2026-02-01 pulled the Ordinary
+  // Time Sunday-4 concluding-prayer rich (p.757) under the feast's plain
+  // (p.821).
+  let richLookupIdentity: {
+    season: LiturgicalDayInfo['season']
+    weekKey: string
+    day: DayOfWeek
+    sanctoralKey?: string | null
+    celebrationName: string
+    dateStr: string
+  } | null = null
 
   // FR-156 Phase 3a/4a/FEAST-ext: Solemnity/Feast First Vespers
   // (highest-priority vespers override). Any vespers evening — not
@@ -315,7 +334,8 @@ export async function assembleHour(
       // MM-DD (2028-03-19 vs St Joseph) yields null, and a transferred
       // solemnity (2028-03-20) is found by romcal key. Solemnities → feasts
       // → memorials, so FEAST entries (02-02, 08-06, 09-14, 11-09) resolve.
-      const tomorrowSanctoral = resolveSanctoralForDay(tomorrowDay)?.entry
+      const tomorrowResolvedSanctoral = resolveSanctoralForDay(tomorrowDay)
+      const tomorrowSanctoral = tomorrowResolvedSanctoral?.entry
       let solemnityFirstVespers: FirstVespersPropers | null | undefined =
         tomorrowSanctoral?.firstVespers
       // Path 2 — movable SOLEMNITY via season-propers special key.
@@ -373,6 +393,18 @@ export async function assembleHour(
         // routes Solemnity firstVespers via the Solemnity URL itself,
         // but the legacy eve URL still benefits from this promotion.
         effectiveLiturgicalDay = tomorrowDay
+        // Rich overlay follows the plain source: key Layer 4 on tomorrow's
+        // identity (mirror of the `/firstVespers` route's lookup for the
+        // same celebration). When the celebration authors no rich, the
+        // section falls back to plain — never another day's markup.
+        richLookupIdentity = {
+          season: tomorrowDay.season,
+          weekKey: String(tomorrowDay.weekOfSeason),
+          day: dateToDayOfWeek(tomorrowStr),
+          sanctoralKey: tomorrowResolvedSanctoral?.key ?? null,
+          celebrationName: tomorrowDay.name,
+          dateStr: tomorrowStr,
+        }
       }
     }
   }
@@ -774,19 +806,64 @@ export async function assembleHour(
   // Identical predicate to `isEveOfFollowingDay` (computed before step 6.5);
   // reuse it so the eve/promotion signal has a single source of truth.
   const firstVespersBranchActive = isEveOfFollowingDay
-  const richOverlay = resolveRichOverlay({
-    season: day.season,
-    weekKey: String(day.weekOfSeason),
-    // For firstCompline: rich overlay keyed on SAT slot (mirrors
-    // compline.json eve-shift). For firstVespers: keyed on SUN
-    // (today's dayOfWeek). For others: dayOfWeek.
-    day: isFirstCompline ? dataLookupDayOfWeek : dayOfWeek,
-    hour: dataLookupHour,
-    sanctoralKey,
-    psalterWeek: firstVespersBranchActive ? undefined : day.psalterWeek,
-    celebrationName: day.name,
-    dateStr,
-  })
+  // Eve of a Solemnity / Feast (FR-156 Path 1/2): the plain propers are
+  // tomorrow's First Vespers, so the rich overlay is keyed on tomorrow's
+  // identity (`richLookupIdentity`, set in the eve branch) — otherwise
+  // today's weekday rich (e.g. Advent w1 THU on Christmas Eve) would be
+  // spread under a different celebration's plain text.
+  const richKey = richLookupIdentity
+    ? {
+        season: richLookupIdentity.season,
+        weekKey: richLookupIdentity.weekKey,
+        day: richLookupIdentity.day,
+        hour: dataLookupHour,
+        sanctoralKey: richLookupIdentity.sanctoralKey,
+        psalterWeek: undefined,
+        celebrationName: richLookupIdentity.celebrationName,
+        dateStr: richLookupIdentity.dateStr,
+      }
+    : {
+        season: day.season,
+        weekKey: String(day.weekOfSeason),
+        // For firstCompline: rich overlay keyed on SAT slot (mirrors
+        // compline.json eve-shift). For firstVespers: keyed on SUN
+        // (today's dayOfWeek). For others: dayOfWeek.
+        day: isFirstCompline ? dataLookupDayOfWeek : dayOfWeek,
+        hour: dataLookupHour,
+        sanctoralKey,
+        psalterWeek: firstVespersBranchActive ? undefined : day.psalterWeek,
+        celebrationName: day.name,
+        dateStr,
+      }
+  const richLayers = resolveRichOverlayLayers(richKey)
+  // Rich ↔ plain source parity (`applyRichSourceParity`): a rich field is
+  // kept only when the merged plain text equals the text of the cell that
+  // rich was generated from. The seasonal cell is re-fetched with the very
+  // key used for the seasonal rich (same special-key / week / wk1 fallback
+  // chain in `getSeasonHourPropers`), the psalter-commons cell is the
+  // Layer 1 object, the sanctoral cell is Layer 3's `hourPropers`. This
+  // stops a lower layer's rich (running-week seasonal / psalter) from
+  // being rendered over a higher layer's plain (sanctoral Solemnity,
+  // Solemnity First Vespers, `vespers2`) — the class behind All Saints
+  // Lauds showing the OT Sunday-31 concluding prayer and Christmas Eve
+  // Vespers carrying the Advent weekday prayer's rich as its alternate.
+  const seasonalCellForRich = getSeasonHourPropers(
+    richKey.season,
+    Number(richKey.weekKey),
+    richKey.day,
+    dataLookupHour,
+    richKey.dateStr ?? undefined,
+    richKey.celebrationName ?? undefined,
+  )
+  const richOverlay = applyRichSourceParity(
+    richLayers,
+    {
+      psalterCommons,
+      seasonal: seasonalCellForRich,
+      sanctoral: hourPropers,
+    },
+    mergedPropers,
+  )
   mergedPropers = { ...mergedPropers, ...richOverlay }
 
   // Layer 4.5: FR-160-B conditional + page-redirect hydration.
