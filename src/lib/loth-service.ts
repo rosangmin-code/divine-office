@@ -703,12 +703,22 @@ export async function assembleHour(
   // scripture reference that fails to parse or a missing Bible chapter)
   // does not collapse the whole hour into a 404. Failed entries render as
   // empty-verse placeholders with the antiphon we already know.
+  //
+  // Season for the PDF seasonal-antiphon variant follows the PROMOTED
+  // identity, like `effectiveDayOfWeek` / `effectiveWeekOfSeason` already
+  // do. The two differ only across a season boundary: Saturday of Ordinary
+  // Time week 34 (2025-11-29 / 2026-11-28) renders the 1st Sunday of
+  // Advent's First Vespers (`5cc8a80` fetched the Advent propers), but
+  // with `day.season === 'ORDINARY_TIME'` `pickSeasonalVariant` never
+  // reached `seasonal_antiphons.advent` and Ps 141 kept its psalter default
+  // antiphon while `/2025-11-30/firstVespers` showed the Advent one.
+  const effectiveSeason = effectiveLiturgicalDay.season
   const psalmResults = await Promise.allSettled(
     psalmEntries.map((entry) =>
       resolvePsalm(
         entry,
         antiphonOverrides,
-        day.season,
+        effectiveSeason,
         dateStr,
         effectiveDayOfWeek,
         effectiveWeekOfSeason,
@@ -727,7 +737,7 @@ export async function assembleHour(
     const override = antiphonOverrides[entry.antiphon_key]
     const seasonalVariant = pickSeasonalVariant(
       entry,
-      day.season,
+      effectiveSeason,
       dateStr,
       effectiveDayOfWeek,
       effectiveWeekOfSeason,
@@ -740,7 +750,7 @@ export async function assembleHour(
       title: entry.title,
       antiphon: usedPdfVariant
         ? fallbackAntiphon
-        : applySeasonalAntiphon(fallbackAntiphon, day.season),
+        : applySeasonalAntiphon(fallbackAntiphon, effectiveSeason),
       verses: [],
       gloriaPatri: entry.gloria_patri,
       ...(entry.page != null ? { page: entry.page } : {}),
