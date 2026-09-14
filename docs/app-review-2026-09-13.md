@@ -91,7 +91,7 @@
 - 홈 → 아침기도 카드 클릭 → h1 렌더 497 ms, 뒤로가기 정상.
 - 다크모드 아침기도: 배경/본문/루브릭 대비 양호. PDF 100쪽 캔버스 780×1262(DPR 2) 정상 렌더, 흑/백 단색 아님.
 - 스크린샷 소견: 레이아웃 깨짐·겹침·잘림 없음. 홈 캘린더 리스트의 대축일명 줄바꿈("эсвэл Төгс жаргалт цэвэр Охин Мариагийн Бямба гарагийн дурсахуй")이 2줄로 흐르는 것 외 문제 없음.
-- **영문 성경 참조 라벨 노출** (스크린샷·HTML 실측): 시편/찬가 제목 아래 `PSALM 118:1-16`, `DANIEL 3:52-57` 등 라틴 문자 ref 가 대문자로 렌더된다 (`psalm-block.tsx:122` 가 데이터 `psalm.reference` 원문을 그대로 출력, `:97` aria-label 도 동일). 정적 UI 리뷰가 놓친 **가장 눈에 띄는 NFR-002 영어 혼입** — 모든 시편 헤더에 나타난다. 몽골어 책 표기(Дуулал N) 로 매핑할지 결정 필요.
+- **영문 성경 참조 라벨 노출** (스크린샷·HTML 실측): 시편/찬가 제목 아래 `PSALM 118:1-16`, `DANIEL 3:52-57` 등 라틴 문자 ref 가 대문자로 렌더된다 (`psalm-block.tsx:122` 가 데이터 `psalm.reference` 원문을 그대로 출력, `:97` aria-label 도 동일). 정적 UI 리뷰가 놓친 **가장 눈에 띄는 NFR-002 영어 혼입** — 모든 시편 헤더에 나타난다. 몽골어 책 표기(Дуулал N) 로 매핑할지 결정 필요. **✅ 2026-09-14 P1 반영** — `src/lib/scripture-ref-mn.ts` `formatRefMn` 이 책 이름만 몽골어로 (`Дуулал 118:1-16`, `Магтаал`/`Даниел 3:52-57` — PDF 레이아웃 재현), aria-label 동일; 원본 키는 `data-ref` 보존.
 - **토요일 저녁 헤더 라벨**: `/pray/2026-09-12/vespers` 본문은 제4주간 주일 제1저녁기도(시편 122·130, `/pray/2026-09-13/firstVespers` 와 후렴 동일) 로 정확하나, 헤더는 "23-р долоо хоног · Бямба · Дуулалтын **III**" 로 토요일의 시편주간을 표시해 본문(IV)과 불일치.
 - 오늘 주일 카드에 시간경 3개(제1저녁·제1끝·아침)만 뜨는 것은 09-14 성십자가 현양 축일의 제1저녁기도 우선 규칙(#240, Universal Norms n.61) — 의도된 동작. 직접 URL `/pray/2026-09-13/vespers` 는 200.
 - `.next/server` 27 MB, `.next/static` 2.3 MB. 서버 SSR 청크에 `pdfjs-dist legacy` 1.3 MB .map 이 포함(dynamic import 이지만 SSR 그래프에 트레이스됨).
@@ -161,7 +161,7 @@
 | M7 | 중간 | `settings/page.tsx:177-193,216-232,247-294`, `celebration-picker.tsx:51-92` | radiogroup roving tabindex 없음, 스위치 28×48px·`type="button"` 누락 |
 | L1–L4 | 낮음 | `footer.tsx:71-80`(button+router.push → Link), `hour-card-list.tsx:59`(`→` 유니코드), `layout.tsx:66`(레거시 theme 키 불일치), `month-nav.tsx:100,151-161`, `error.tsx`(error 미사용·global-error 부재), `/pray`·`/pdf` metadata 없음 | |
 
-**NFR-002 영어/라틴 혼입 8곳**: **`psalm-block.tsx:122` 시편·찬가 헤더의 영문 `psalm.reference`(`PSALM 118:1-16`, `DANIEL 3:52-57` — 런타임 스크린샷으로 확인, 모든 시편에 노출)**; `guide/page.tsx:267-268` "General Instruction of the Liturgy of the Hours"; `settings/page.tsx:204` "Dominus tecum."; `:148` "Aa"; `:10-18→151` "XS S M L XL XXL XXXL 4XL 5XL"; `guide/page.tsx:195`·`ordinarium/page.tsx:136-138` "R."; 런타임 `pdf-viewer.tsx:332-334`(pdf.js 오류), `pray/[date]/[hour]/page.tsx:36`(URL 세그먼트 에코). 오탈자 규칙(Гүйлтын/Зургадугаар/Илгээлт) 위반 **0건**.
+**NFR-002 영어/라틴 혼입 8곳**: **`psalm-block.tsx:122` 시편·찬가 헤더의 영문 `psalm.reference`(`PSALM 118:1-16`, `DANIEL 3:52-57` — 런타임 스크린샷으로 확인, 모든 시편에 노출)** ✅ 2026-09-14 — `formatRefMn` 으로 헤더·aria-label 몽골어화 (초대송·짧은 독서 `ref`·directive `ref` 폴백 동일 함수), 단위 17 + 컴포넌트 9 케이스 (`@fr NFR-002`); `guide/page.tsx:267-268` "General Instruction of the Liturgy of the Hours"; `settings/page.tsx:204` "Dominus tecum."; `:148` "Aa"; `:10-18→151` "XS S M L XL XXL XXXL 4XL 5XL"; `guide/page.tsx:195`·`ordinarium/page.tsx:136-138` "R."; 런타임 `pdf-viewer.tsx:332-334`(pdf.js 오류), `pray/[date]/[hour]/page.tsx:36`(URL 세그먼트 에코). 오탈자 규칙(Гүйлтын/Зургадугаар/Илгээлт) 위반 **0건**.
 
 **구조 제안**: (a) 공용 `PhraseStanza` + `ResponseLine` 프리미티브로 4벌 수렴. (b) `layout.tsx` 인라인 스크립트가 이미 `loth-settings` 를 파싱하므로 showPageRefs 등도 `html[data-*]` + CSS 게이트로 → 시프트 제거, 리프가 서버 컴포넌트로 복귀; 토큰은 `src/lib/ui-tokens.ts`. (c) `<SectionHeading level>` 컴포넌트로 13개 복붙 통합 + 헤딩 계층·대비 토큰 한 곳 처리.
 
@@ -206,7 +206,7 @@
 | 10 | 낮음 | 하드코딩 sleep(`pdf-viewer-theme.spec.ts:55,59`, `page-references.spec.ts:443,452`); e2e 가 src/data JSON 직접 읽음 4곳; CI lint 는 bare `eslint`(docs/research 까지) vs Makefile scoped; `tsconfig.json:31` `.next/dev/types` 포함 → stale `.next` 거짓 실패; `cancel-in-progress` 로 중간 커밋 CI 판정 없음 |
 | 11 | 낮음 | 테스트 디렉터리 이원화(`src/lib/__tests__/hours/` vs `src/lib/hours/__tests__/`), GOAL 번호 명명 17개, e2e 헬퍼 중복(`findPsalmody`×3), `e2e/helpers` 없음 |
 | 12 | 낮음 | 문서 정합: `PRD.md:172` "HourSection 15가지" 인데 14; `traceability-matrix.md:4` "최종 2026-04-19" 인데 마지막 커밋 08-06; `docs/modules` 4~5개월 정체; PRD 6월 이후 4 커밋 vs src 130 |
-| 13 | 낮음 | `e2e/mobile.spec.ts:83,96` 이 영어 `aria-label*="Psalm"` 에 결합 — 몽골어화 시 조용히 skip |
+| 13 | 낮음 | `e2e/mobile.spec.ts:83,96` 이 영어 `aria-label*="Psalm"` 에 결합 — 몽골어화 시 조용히 skip — ✅ 2026-09-14 `data-role="psalm-block"` 로 이관 + 0건 skip → 실패로 강화. 같은 결합 20곳(`section[aria-label="Psalm …"]`)은 `[data-role="psalm-block"][data-ref="Psalm …"]` 로, `prayer-compline.spec.ts` 의 사문화 `h4.text-sm…` 셀렉터도 `data-ref` 로 |
 
 **docs/ 분류**: 루트 98 파일 중 68(69%) 이 완료된 handoff(25)/review(36)/audit(7) 로그. README 없음, `research/` 135 파일. 신규 기여자 진입 경로는 CLAUDE.md → PRD.md 만 암묵.
 

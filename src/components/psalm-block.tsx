@@ -2,6 +2,7 @@
 
 import type { AssembledPsalm } from '@/lib/types'
 import { useSettings } from '@/lib/settings'
+import { formatRefMn } from '@/lib/scripture-ref-mn'
 import { PageRef } from './page-ref'
 import { AntiphonBox } from './prayer-renderer'
 import { RichContent } from './prayer-sections/rich-content'
@@ -93,8 +94,20 @@ export function stripTrailingLineDash(line: string): string {
 
 export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; antiphonNumber?: number }) {
   const { settings } = useSettings()
+  // NFR-002 (app-review 2026-09-13 §2·§3.3) — 데이터 `reference` 는 영문
+  // (`Psalm 63:2-9`, `Daniel 3:57-88, 56`) 이고 psalter-texts/rich 조인 키라
+  // 그대로 두되, 사용자에게 보이는 헤더·aria-label 은 PDF 표기(책 이름만
+  // 몽골어, 장:절 원문)로 렌더한다. e2e 는 로케일에 묶이지 않는
+  // `data-ref`(원본 키) 로 블록을 찾는다 (CLAUDE.md selector 원칙).
+  const refMn = formatRefMn(psalm.reference)
+  const isCanticle = psalm.psalmType === 'canticle'
   return (
-    <section data-role="psalm-block" aria-label={psalm.reference} className="mb-6">
+    <section
+      data-role="psalm-block"
+      data-ref={psalm.reference}
+      aria-label={refMn}
+      className="mb-6"
+    >
       {/* Antiphon (before) */}
       {psalm.antiphon && (
         <AntiphonBox
@@ -112,14 +125,28 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
           (title/preface <p> — g-32 에서 이미 text-center)은 무변경. 본문
           stanzas/verses/Gloria/antiphon 은 이 div 바깥 형제라 미영향. */}
       <div className="mb-2 text-center">
-        <span className="text-xs font-medium uppercase tracking-wider text-liturgical-red dark:text-liturgical-red-dark">
-          {psalm.psalmType === 'canticle' ? 'Магтаал' : 'Дуулал'}
-        </span>
+        {/* PDF 레이아웃 재현 (NFR-002): 시편은 `Дуулал 63:2-9` 한 줄
+            (full_pdf.txt L1810, L1505) 이라 라벨 span 을 h4 와 합치고, 찬가는
+            `Магтаал` 줄 + `Даниел 3:57-88, 56` 줄 (L1876-1877) 두 줄이라 라벨
+            span 을 유지한다. 이전에는 span `Дуулал` + h4 `PSALM 63:2-9` 로
+            같은 책 이름이 영문·몽골어로 두 번 찍혔다. */}
+        {isCanticle && (
+          <span className="text-xs font-medium uppercase tracking-wider text-liturgical-red dark:text-liturgical-red-dark">
+            Магтаал
+          </span>
+        )}
+        {/* `uppercase` 유지 결정: PDF 는 `Дуулал 63:2-9` 처럼 대소문자 그대로
+            지만, 앱의 빨간 섹션 헤딩(Уншлага / Дууллыг төгсгөх залбирал /
+            Магтуу / 초대송 `Дуулал 95:1-11`)은 전부 `uppercase tracking-[0.15em]`
+            로 통일돼 있다 (DESIGN.md §Components "Section title" 동일 위계).
+            시편 헤더만 예외로 두면 바로 아래 마침 기도 헤딩과 어긋난다.
+            DOM 텍스트·aria-label 은 PDF 대소문자 그대로(`Дуулал 63:2-9`,
+            절 접미 `11b`/`2б` 소문자)라 스크린리더·복사에는 영향 없다. */}
         <h4
           data-role="psalm-header"
           className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark"
         >
-          {psalm.reference} <PageRef page={psalm.page} />
+          {refMn} <PageRef page={psalm.page} />
         </h4>
         {psalm.title && (
           <p className="text-center text-xs italic text-stone-500 dark:text-stone-500">{psalm.title}</p>

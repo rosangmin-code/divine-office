@@ -1,6 +1,10 @@
 import type { ScriptureRef, VerseRef } from './types'
 
-const BOOK_NAME_MAP: Record<string, string> = {
+/**
+ * 영문 책 이름(소문자 정규화) → 성경 데이터 키. NFR-002 몽골어 표기 변환
+ * (`scripture-ref-mn.ts`) 이 책 이름 추출·정규화 계약을 공유하려고 export.
+ */
+export const BOOK_NAME_MAP: Record<string, string> = {
   // OT
   'genesis': 'genesis',
   'exodus': 'exodus',

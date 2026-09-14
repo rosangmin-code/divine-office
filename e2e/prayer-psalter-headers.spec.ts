@@ -18,7 +18,7 @@ test.describe('Psalter header preface rendering (FR-160-C)', () => {
     // PDF header attributes the antiphonal preface to "Хэсихиус"
     // (patristic Father).
     await page.goto(`/pray/${DATES.easterW4Sunday}/lauds`)
-    const ps150 = page.locator('section[aria-label="Psalm 150:1-6"]')
+    const ps150 = page.locator('[data-role="psalm-block"][data-ref="Psalm 150:1-6"]')
     const header = ps150.locator('[data-role="psalm-header-rich"]')
     await expect(header).toBeVisible()
     await expect(header).toHaveAttribute('data-kind', 'patristic_preface')
@@ -29,7 +29,7 @@ test.describe('Psalter header preface rendering (FR-160-C)', () => {
   test('Psalm 150:1-6 header carries muted preface colour (WI-62: 빨강→stone-500)', async ({ page }) => {
     await page.goto(`/pray/${DATES.easterW4Sunday}/lauds`)
     const header = page
-      .locator('section[aria-label="Psalm 150:1-6"]')
+      .locator('[data-role="psalm-block"][data-ref="Psalm 150:1-6"]')
       .locator('[data-role="psalm-header-rich"]')
     await expect(header).toHaveClass(/text-stone-500/)
   })
@@ -41,7 +41,7 @@ test.describe('Psalter header preface rendering (FR-160-C)', () => {
     // 2026-03-10 psalterWeek 3 TUE Lauds psalmody[2] = Psalm 67:2-8.
     // PDF header carries an NT typological citation pointing to Acts 28:28.
     await page.goto(`/pray/${DATES.psalterW3Tuesday}/lauds`)
-    const ps67 = page.locator('section[aria-label="Psalm 67:2-8"]')
+    const ps67 = page.locator('[data-role="psalm-block"][data-ref="Psalm 67:2-8"]')
     const header = ps67.locator('[data-role="psalm-header-rich"]')
     await expect(header).toBeVisible()
     await expect(header).toHaveAttribute('data-kind', 'nt_typological')
@@ -56,7 +56,7 @@ test.describe('Psalter header preface rendering (FR-160-C)', () => {
     page,
   }) => {
     await page.goto(`/pray/${DATES.easterW4Sunday}/lauds`)
-    const dan3 = page.locator('section[aria-label^="Daniel 3:"]').first()
+    const dan3 = page.locator('[data-role="psalm-block"][data-ref^="Daniel 3:"]').first()
     const header = dan3.locator('[data-role="psalm-header-rich"]')
     expect(await header.count()).toBe(0)
   })

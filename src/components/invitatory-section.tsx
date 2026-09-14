@@ -3,6 +3,7 @@
 import { useId, useState } from 'react'
 import type { HourSection } from '@/lib/types'
 import { useSettings } from '@/lib/settings'
+import { formatRefMn } from '@/lib/scripture-ref-mn'
 import { AntiphonBox } from './prayer-renderer'
 import { PageRef } from './page-ref'
 import { Icon } from './icon'
@@ -93,7 +94,7 @@ export function InvitatorySection({ section }: InvitatoryProps) {
 
           <div className="mt-3 flex items-baseline gap-2 flex-wrap">
             <p className="text-xs font-bold uppercase tracking-[0.15em] text-liturgical-red dark:text-liturgical-red-dark">
-              {activePsalm.ref.replace('Psalm', 'Дуулал')}
+              {formatRefMn(activePsalm.ref)}
             </p>
             {candidates && candidates.length > 1 && (
               <button
@@ -135,7 +136,7 @@ export function InvitatorySection({ section }: InvitatoryProps) {
                         : 'text-stone-600 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-stone-800'
                     }`}
                   >
-                    {c.ref.replace('Psalm', 'Дуулал')} — {c.title}
+                    {formatRefMn(c.ref)} — {c.title}
                   </button>
                 </li>
               ))}

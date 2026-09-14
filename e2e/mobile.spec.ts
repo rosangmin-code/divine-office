@@ -79,12 +79,14 @@ test.describe('Mobile layout', () => {
     test.skip(testInfo.project.name !== 'mobile-chrome', 'Mobile-only viewport assertion')
     await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
     // PsalmBlock wraps stanzas in a div with `pl-3` (12px) on mobile.
+    // NFR-002 이후 aria-label 은 몽골어(`Дуулал 108:2-14`)라 영문 결합 selector
+    // 는 조용히 0건이 됐다 (app-review 2026-09-13 §4 #13) → data-role 로 이관,
+    // 0건이면 skip 대신 실패.
     const stanzaWrapper = page
-      .locator('section[aria-label*="Psalm"], section[aria-label*="Daniel"], section[aria-label*="Isaiah"]')
+      .locator('[data-role="psalm-block"]')
       .locator('div.pl-3')
       .first()
-    const count = await stanzaWrapper.count()
-    if (count === 0) test.skip(true, 'No psalm stanza wrapper rendered on this page')
+    expect(await stanzaWrapper.count(), 'psalm stanza wrapper must render on lauds').toBe(1)
     const pl = await stanzaWrapper.evaluate((el) => parseFloat(getComputedStyle(el).paddingLeft))
     expect(pl).toBeGreaterThanOrEqual(12)
   })
@@ -93,11 +95,12 @@ test.describe('Mobile layout', () => {
     test.skip(testInfo.project.name !== 'mobile-chrome', 'Mobile-only viewport assertion')
     await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
     // Find a psalm section that has at least 2 stanza paragraphs.
+    // NFR-002: 영문 aria-label 결합 → data-role (위 테스트와 동일 이유).
     const stanzas = page
-      .locator('section[aria-label*="Psalm"], section[aria-label*="Daniel"], section[aria-label*="Isaiah"]')
+      .locator('[data-role="psalm-block"]')
       .locator('p.font-reading')
     const count = await stanzas.count()
-    if (count < 2) test.skip(true, 'Need at least 2 stanza paragraphs to measure spacing')
+    expect(count, 'need at least 2 stanza paragraphs to measure spacing').toBeGreaterThanOrEqual(2)
     const a = await stanzas.nth(0).boundingBox()
     const b = await stanzas.nth(1).boundingBox()
     expect(a).toBeTruthy()

@@ -81,7 +81,7 @@ test.describe('PDF page references', () => {
     // page is shown. Use structural roles to avoid coupling the test to the
     // Mongolian antiphon text.
     const psalmSection = page.locator(
-      '[data-role="psalm-block"][aria-label="Psalm 63:2-9"]',
+      '[data-role="psalm-block"][data-ref="Psalm 63:2-9"]',
     )
     await expect(
       psalmSection
@@ -187,7 +187,7 @@ test.describe('PDF page references', () => {
       await page.waitForSelector('article')
 
       const psalm = page.locator(
-        '[data-role="psalm-block"][aria-label="Psalm 92:2-9"]',
+        '[data-role="psalm-block"][data-ref="Psalm 92:2-9"]',
       )
       const antiphonLinks = psalm.locator(
         '[data-role="antiphon"] [data-role="page-ref-link"]',
@@ -209,7 +209,7 @@ test.describe('PDF page references', () => {
       await page.waitForSelector('article')
 
       const psalm = page.locator(
-        '[data-role="psalm-block"][aria-label="Psalm 92:2-9"]',
+        '[data-role="psalm-block"][data-ref="Psalm 92:2-9"]',
       )
       const antiphonLinks = psalm.locator(
         '[data-role="antiphon"] [data-role="page-ref-link"]',
@@ -231,7 +231,7 @@ test.describe('PDF page references', () => {
       await page.waitForSelector('article')
 
       const psalm = page.locator(
-        '[data-role="psalm-block"][aria-label="Psalm 41:2-14"]',
+        '[data-role="psalm-block"][data-ref="Psalm 41:2-14"]',
       )
       const antiphonLinks = psalm.locator(
         '[data-role="antiphon"] [data-role="page-ref-link"]',
@@ -253,7 +253,7 @@ test.describe('PDF page references', () => {
       await page.waitForSelector('article')
 
       const psalm = page.locator(
-        '[data-role="psalm-block"][aria-label="Psalm 63:2-9"]',
+        '[data-role="psalm-block"][data-ref="Psalm 63:2-9"]',
       )
       await expect(psalm.locator('[data-role="antiphon"]')).toHaveCount(2)
       await expect(
