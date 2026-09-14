@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import fs from 'node:fs'
 import type { PrayerText } from '../../types'
-import { resolveRichOverlay } from '../resolver'
+import { resolveRichOverlay, applyRichSourceParity } from '../resolver'
 import { __resetRichOverlayCache, loadHymnRichOverlay } from '../rich-overlay'
 
 // File contents keyed by suffix — the resolver uses process.cwd()-prefixed
@@ -855,6 +855,150 @@ describe('resolveRichOverlay', () => {
       expect(overlay.shortReadingRich).toBeUndefined()
       expect(overlay.intercessionsRich).toBeUndefined()
     })
+  })
+
+  describe('Advent date-keyed tier (dec17..dec24) — mirror of getSeasonHourPropers', () => {
+    // @fr FR-156
+    it('Dec 24 lauds loads wdec24-SUN-lauds before the week / wk1 tiers', () => {
+      fileContents['seasonal/advent/wdec24-SUN-lauds.rich.json'] = JSON.stringify({
+        concludingPrayerRich: makePrayer('dec24 cp'),
+      })
+      fileContents['seasonal/advent/w1-THU-lauds.rich.json'] = JSON.stringify({
+        concludingPrayerRich: makePrayer('advent w1 THU cp'),
+      })
+      const overlay = resolveRichOverlay({
+        season: 'ADVENT',
+        weekKey: '4',
+        day: 'THU',
+        hour: 'lauds',
+        celebrationName: 'Thursday of the 4th week of Advent',
+        dateStr: '2026-12-24',
+      })
+      expect(overlay.concludingPrayerRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'dec24 cp' }],
+      })
+    })
+
+    // @fr FR-156
+    it('falls through to the week tiers when no date-keyed file exists (Dec 18)', () => {
+      fileContents['seasonal/advent/w1-FRI-vespers.rich.json'] = JSON.stringify({
+        concludingPrayerRich: makePrayer('advent w1 FRI cp'),
+      })
+      const overlay = resolveRichOverlay({
+        season: 'ADVENT',
+        weekKey: '3',
+        day: 'FRI',
+        hour: 'vespers',
+        celebrationName: 'Friday of the 3rd week of Advent',
+        dateStr: '2026-12-18',
+      })
+      expect(overlay.concludingPrayerRich?.blocks[0]).toMatchObject({
+        spans: [{ kind: 'text', text: 'advent w1 FRI cp' }],
+      })
+    })
+  })
+})
+
+// docs/bug-reports/2026-09-14-eve-vespers-alternate-and-rich.md — a rich
+// field must come from the same cell as the plain it is rendered over.
+describe('applyRichSourceParity', () => {
+  const rich = (label: string) => makePrayer(label)
+
+  // @fr FR-156
+  it('keeps a seasonal rich field when the seasonal cell text equals the merged plain', () => {
+    const layers = {
+      complineCommons: null,
+      psalterCommons: null,
+      seasonal: { concludingPrayerRich: rich('seasonal cp') },
+      sanctoral: null,
+    }
+    const cell = { concludingPrayer: 'Аяа, Эцэг минь, Та биднийг үнэн рүү авчрахын тулд.' }
+    const out = applyRichSourceParity(layers, { seasonal: cell }, { ...cell })
+    expect(out.concludingPrayerRich).toEqual(layers.seasonal.concludingPrayerRich)
+  })
+
+  // @fr FR-156
+  it('drops a seasonal rich field when the sanctoral plain won the field (All Saints lauds class)', () => {
+    const layers = {
+      complineCommons: null,
+      psalterCommons: null,
+      seasonal: {
+        concludingPrayerRich: rich('OT Sunday 31 cp'),
+        alternativeConcludingPrayerRich: rich('OT Sunday 31 alt'),
+      },
+      sanctoral: null,
+    }
+    const seasonalCell = { concludingPrayer: 'OT Sunday 31 prayer', alternativeConcludingPrayer: 'OT Sunday 31 alternate' }
+    const sanctoralCell = { concludingPrayer: 'All Saints prayer' }
+    const merged = { ...seasonalCell, ...sanctoralCell }
+    const out = applyRichSourceParity(layers, { seasonal: seasonalCell, sanctoral: sanctoralCell }, merged)
+    expect(out.concludingPrayerRich).toBeUndefined()
+    // Group rule: the alternate rich cannot outlive the primary's, even
+    // though the alternate plain (still seasonal) matches its cell.
+    expect(out.alternativeConcludingPrayerRich).toBeUndefined()
+  })
+
+  // @fr FR-156
+  it('uses the sanctoral rich when the sanctoral plain won and sanctoral rich is authored', () => {
+    const layers = {
+      complineCommons: null,
+      psalterCommons: null,
+      seasonal: { concludingPrayerRich: rich('seasonal cp') },
+      sanctoral: { concludingPrayerRich: rich('sanctoral cp') },
+    }
+    const out = applyRichSourceParity(
+      layers,
+      { seasonal: { concludingPrayer: 'seasonal prayer' }, sanctoral: { concludingPrayer: 'sanctoral prayer' } },
+      { concludingPrayer: 'sanctoral prayer' },
+    )
+    expect(out.concludingPrayerRich).toEqual(layers.sanctoral.concludingPrayerRich)
+  })
+
+  // @fr FR-156
+  it('drops psalter-commons rich when the seasonal plain replaced the field (Triduum responsory class)', () => {
+    const layers = {
+      complineCommons: null,
+      psalterCommons: { responsoryRich: rich('Ps 23 responsory') },
+      seasonal: null,
+      sanctoral: null,
+    }
+    const psalterCell = {
+      responsory: { fullResponse: 'Эзэн бол миний хоньчин', versicle: 'Ургамал', shortResponse: 'Надад' },
+    }
+    const merged = { responsory: { fullResponse: '', versicle: 'Бидний төлөө Христ', shortResponse: '' } }
+    const out = applyRichSourceParity(layers, { psalterCommons: psalterCell }, merged)
+    expect(out.responsoryRich).toBeUndefined()
+  })
+
+  // @fr FR-156
+  it('ignores punctuation / quote-glyph / whitespace / ref differences between two copies of one block', () => {
+    const layers = {
+      complineCommons: null,
+      psalterCommons: null,
+      seasonal: { shortReadingRich: rich('Gal 4') },
+      sanctoral: null,
+    }
+    const seasonalCell = { shortReading: { ref: 'Gal 4:3-7', text: 'Тэр Сүнс "Ааба, Аав аа" гэж дууддаг.' } }
+    const merged = { shortReading: { ref: 'Galatians 4:3-7', text: 'Тэр Сүнс “Ааба,Аав аа”  гэж дууддаг.' } }
+    const out = applyRichSourceParity(layers, { seasonal: seasonalCell }, merged)
+    expect(out.shortReadingRich).toEqual(layers.seasonal.shortReadingRich)
+  })
+
+  // @fr FR-156
+  it('drops rich when the plain field is absent or empty, and leaves compline commons untouched', () => {
+    const layers = {
+      complineCommons: { concludingPrayerRich: rich('compline cp') },
+      psalterCommons: null,
+      seasonal: { gospelCanticleAntiphonRich: rich('seasonal gc') },
+      sanctoral: null,
+    }
+    const out = applyRichSourceParity(
+      layers,
+      { seasonal: { gospelCanticleAntiphon: 'x' } },
+      { gospelCanticleAntiphon: '' },
+    )
+    expect(out.gospelCanticleAntiphonRich).toBeUndefined()
+    expect(out.concludingPrayerRich).toEqual(layers.complineCommons.concludingPrayerRich)
   })
 })
 

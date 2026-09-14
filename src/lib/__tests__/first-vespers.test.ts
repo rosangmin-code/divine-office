@@ -334,11 +334,24 @@ describe('FR-156 Phase 1 — Saturday vespers uses firstVespers when authored', 
       expect(gcSection.antiphon).toContain('FIRST-VESPERS-GC-ANTIPHON')
     }
 
-    // Concluding prayer should also come from firstVespers.
+    // Concluding prayer: the SEASON's Sunday EP I proper wins when it
+    // prints one (`mergeSundayFirstVespers` — the book's season sections
+    // carry the Sunday EP I reading / responsory / intercessions / prayer;
+    // the Phase-2 firstVespers cells are psalter copies and never author a
+    // concluding prayer in real data). The firstVespers value only stands
+    // when the seasonal cell has none.
     const prayerSection = result!.sections.find((s) => s.type === 'concludingPrayer')
     expect(prayerSection).toBeDefined()
     if (prayerSection && prayerSection.type === 'concludingPrayer') {
-      expect(prayerSection.text).toBe('FIRST-VESPERS-CONCLUDING-PRAYER')
+      expect(prayerSection.text).toBe('REGULAR-SUNDAY-CONCLUDING-PRAYER')
+    }
+
+    // Short reading: the regular-Sunday fake prints none, so the
+    // firstVespers cell's reading stands.
+    const readingSection = result!.sections.find((s) => s.type === 'shortReading')
+    expect(readingSection).toBeDefined()
+    if (readingSection && readingSection.type === 'shortReading') {
+      expect(readingSection.verses.map((v) => v.text).join(' ')).toContain('FIRST-VESPERS-SHORT-READING')
     }
   })
 
@@ -1013,7 +1026,13 @@ describe('FR-156 Symptom A — Saturday vespers firstVespers shortReading wins o
   // маань...") on top of the firstVespers plain shortReading. The
   // textRich-priority UI rendered the Saturday psalter commons reading
   // where the Sunday firstVespers reading should appear.
-  it('Easter wk3 SAT vespers (2026-04-25) shortReading.ref / text come from Sunday firstVespers (PDF p.402), not w3-SAT psalter commons', async () => {
+  // 2026-09-14 — the Sunday's reading now comes from the SEASON's Sunday
+  // EP I proper (Easter p.700, 1 Pet 2:9-10 "Харин та нар сонгогдсон
+  // угсаа…") rather than the firstVespers cell's psalter copy (2 Peter
+  // 1:19-21, psalter week 4 p.402): `mergeSundayFirstVespers`. The Symptom
+  // A guard (no w3-SAT psalter-commons rich over the Sunday reading) is
+  // unchanged.
+  it('Easter wk3 SAT vespers (2026-04-25) shortReading comes from the Easter Sunday EP I proper (PDF p.700), not w3-SAT psalter commons', async () => {
     const { assembleHour } = await import('../loth-service')
     const result = await assembleHour('2026-04-25', 'vespers')
     expect(result).not.toBeNull()
@@ -1022,13 +1041,16 @@ describe('FR-156 Symptom A — Saturday vespers firstVespers shortReading wins o
     const sr = result!.sections.find((s) => s.type === 'shortReading')
     expect(sr).toBeDefined()
     if (sr && sr.type === 'shortReading') {
-      // Sunday firstVespers reading wins. The plain text is wired into
+      // Season Sunday EP I reading wins. The plain text is wired into
       // the section as a single synthetic verse via
       // hours/resolvers/reading.ts L26-34 (when shortReading.text is set).
-      expect(sr.ref).toBe('2 Peter 1:19-21')
-      expect(sr.page).toBe(402)
+      expect(sr.ref).toBe('1 Pet 2:9-10')
+      expect(sr.page).toBe(700)
       const plainText = sr.verses.map((v) => v.text).join(' ')
-      expect(plainText).toContain('Үүр цайж')
+      expect(plainText).toContain('Харин та нар сонгогдсон угсаа')
+      // Not the psalter week-4 Sunday EP I copy carried by the
+      // firstVespers cell (2 Peter 1:19-21, "Үүр цайж…").
+      expect(plainText).not.toContain('Үүр цайж')
       // Negative guard: w3-SAT-vespers psalter commons rich (1 Petr 1:3-7,
       // "Эзэн Есүс Христийн маань Тэнгэрбурхан ба Эцэг") must NOT have
       // overridden the firstVespers reading.

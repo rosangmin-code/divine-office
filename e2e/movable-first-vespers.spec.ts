@@ -22,9 +22,10 @@ import { DATES } from './fixtures/dates'
 // PDF-extracted text.
 //
 // 2026-09-14 — psalm refs are now the versed form (FR-156 Phase 5, e.g.
-// "Psalm 113:1-9"), so ref assertions use a prefix match. The concluding
-// prayer assertions that fail against the current resolver are isolated
-// with `test.fixme` (잠재 회귀 — 별도 조사) rather than rewritten.
+// "Psalm 113:1-9"), so ref assertions use a prefix match. Concluding-prayer
+// assertions follow the F-2 rubric (book p.516): weekday Solemnity →
+// alternate is the default; Sunday Solemnity → primary (eve and
+// `/firstVespers` route agree).
 function hasRefPrefix(refs: string[], prefix: string): boolean {
   return refs.some((r) => r === prefix || r.startsWith(`${prefix}:`))
 }
@@ -43,18 +44,30 @@ test.describe('Movable Solemnity First Vespers (FR-156 Phase 4b)', () => {
     expect(gc.antiphon).toContain('Аллэлуяа!')
   })
 
-  test('2026-05-13 Ascension eve concluding prayer comes from the Ascension firstVespers', async ({
+  // F-2 (#214, book p.516 "Эсвэл: Ням гарагт үл тохиох Их баярын өдөр" —
+  // "Or: Solemnity not on Sunday"): Ascension falls on a THURSDAY, so the
+  // alternate concluding prayer is the default and the block's primary
+  // ("…Хүүгийнхээ тэнгэрт заларснаар…") moves to `alternateText`. The eve
+  // and the `/2026-05-14/firstVespers` route agree (2026-09-14, §8 건 2).
+  test('2026-05-13 Ascension eve concluding prayer is the Ascension ALTERNATE (weekday Solemnity, F-2 p.516)', async ({
     request,
   }) => {
-    test.fixme(
-      true,
-      '잠재 회귀 — 별도 조사: 2026-05-13(수) 승천 전야 /vespers 의 concludingPrayer.text 가 easter.json weeks.ascension.SUN.firstVespers.concludingPrayer("…Хүүгийнхээ тэнгэрт заларснаар…") 가 아니라 같은 블록의 alternativeConcludingPrayer("Аяа, Тэнгэр дэх Эцэг минь, Та Христийг бидний нүдний өмнөөс…") — F-2(#214) "Ням гарагт үл тохиох Их баярын өдөр" 대체 본기도 자동 swap 이 전야에도 적용된 결과. 정식 경로 /api/loth/2026-05-14/firstVespers 도 동일하게 alternate 를 text 로 반환. 원문 본기도는 alternateText 에 존재.',
-    )
     const res = await request.get(`/api/loth/${DATES.ascensionEve2026}/vespers`)
     const body = await res.json()
     const cp = body.sections.find((s: { type: string }) => s.type === 'concludingPrayer')
     expect(cp).toBeTruthy()
-    expect(cp.text).toContain('Хүүгийнхээ тэнгэрт заларснаар биднийг баясган цэнгүүлнэ')
+    // Alternate (easter.json weeks.ascension.SUN.firstVespers.alternativeConcludingPrayer) is `text`.
+    expect(cp.text).toContain('Та Христийг бидний нүдний өмнөөс')
+    // The primary is still offered as the alternate.
+    expect(cp.alternateText).toContain('Хүүгийнхээ тэнгэрт заларснаар биднийг баясган цэнгүүлнэ')
+    // Rich follows the same (ascension) source — no Easter week-1 weekday leak.
+    if (cp.textRich) expect(cp.textRich.page).toBe(cp.page)
+    if (cp.alternateTextRich) expect(cp.alternateTextRich.page).toBe(cp.alternatePage)
+
+    const route = await (await request.get('/api/loth/2026-05-14/firstVespers')).json()
+    const routeCp = route.sections.find((s: { type: string }) => s.type === 'concludingPrayer')
+    expect(routeCp.text).toBe(cp.text)
+    expect(routeCp.alternateText).toBe(cp.alternateText)
   })
 
   test('2026-05-23 Saturday eve of Pentecost adopts Pentecost firstVespers psalmody', async ({
@@ -79,13 +92,13 @@ test.describe('Movable Solemnity First Vespers (FR-156 Phase 4b)', () => {
     expect(gc.antiphon).toContain('Ариун Сүнс бууж')
   })
 
+  // Trinity Sunday is a SUNDAY Solemnity → F-2 keeps the PRIMARY. The eve
+  // used to swap because the rubric read the eve's civil weekday (SAT)
+  // with the promoted Sunday's rank (2026-09-14, §8 건 3 —
+  // docs/bug-reports/2026-09-14-eve-vespers-alternate-and-rich.md).
   test('2026-05-30 Saturday eve of Trinity Sunday surfaces the Trinity Magnificat antiphon', async ({
     request,
   }) => {
-    test.fixme(
-      true,
-      '잠재 회귀 — 별도 조사: 2026-05-30(토) 삼위일체 전야 /vespers 의 concludingPrayer.text 가 ordinary-time.json weeks.trinitySunday.SUN.firstVespers.concludingPrayer("…Өөрийн Үгийг илгээсэн…") 가 아니라 alternativeConcludingPrayer("Аяа, Тэнгэрбурхан минь, бид Таныг магтан дуулж байна…"). 대축일이 주일(SUN)에 오는데도 F-2 "Solemnity not on Sunday" swap 이 전야(dayOfWeek=SAT) 에서 발화 — 정식 경로 /api/loth/2026-05-31/firstVespers 는 primary 를 반환하므로 전야 경로만 불일치.',
-    )
     const res = await request.get(`/api/loth/${DATES.trinitySundayEve2026}/vespers`)
     expect(res.ok()).toBe(true)
     const body = await res.json()
@@ -98,6 +111,11 @@ test.describe('Movable Solemnity First Vespers (FR-156 Phase 4b)', () => {
     const cp = body.sections.find((s: { type: string }) => s.type === 'concludingPrayer')
     expect(cp).toBeTruthy()
     expect(cp.text).toContain('Өөрийн Үгийг илгээсэн')
+    expect(cp.alternateText).toContain('бид Таныг магтан дуулж байна')
+    // Identical to the Sunday's own /firstVespers route.
+    const route = await (await request.get('/api/loth/2026-05-31/firstVespers')).json()
+    const routeCp = route.sections.find((s: { type: string }) => s.type === 'concludingPrayer')
+    expect(routeCp.text).toBe(cp.text)
   })
 
   test('2026-11-21 Saturday eve of Christ the King surfaces the Christ the King Magnificat antiphon', async ({

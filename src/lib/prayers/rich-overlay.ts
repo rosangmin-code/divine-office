@@ -119,6 +119,27 @@ export function loadSeasonalRichOverlay(
     seasonDir,
   )
 
+  // Tier 0 — date-keyed Advent cells (`weeks['dec17'..'dec24']`), mirror
+  // of `getSeasonHourPropers`'s first lookup. Without it Dec 24 Lauds
+  // (plain from `advent.json weeks.dec24.SUN.lauds`, p.582) fell to Tier 3
+  // `w1-THU-lauds` (Advent week-1 Thursday, p.571) while
+  // `wdec24-SUN-lauds.rich.json` sat unused. Same day-then-SUN fallback as
+  // the propers loader; a date-key match never falls through to the
+  // week tiers (those are a different cell).
+  if (dateStr) {
+    const d = new Date(dateStr + 'T00:00:00Z')
+    const dayOfMonth = d.getUTCDate()
+    if (d.getUTCMonth() + 1 === 12 && dayOfMonth >= 17 && dayOfMonth <= 24) {
+      const dateKey = `dec${dayOfMonth}`
+      const dayOverlay = readOverlayFile(path.join(baseDir, `w${dateKey}-${day}-${hour}.rich.json`))
+      if (dayOverlay) return dayOverlay
+      if (day !== 'SUN') {
+        const sunOverlay = readOverlayFile(path.join(baseDir, `w${dateKey}-SUN-${hour}.rich.json`))
+        if (sunOverlay) return sunOverlay
+      }
+    }
+  }
+
   // Tier 1 — special-key. propers-loader.ts:resolveSpecialKey 가 (season,
   // celebrationName, dateStr) 셋 중 적절한 신호로 매치 — Christmas 의
   // dec25/jan1/octave 는 dateStr 기반, 그 외는 celebrationName 기반.

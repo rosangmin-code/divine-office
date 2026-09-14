@@ -2,7 +2,7 @@ import type { HourSection } from '../types'
 import type { HourAssembler } from './types'
 import { buildOpeningVersicle, buildDismissal, resolveShortReading, resolveGospelCanticle, attachSectionDirectives } from './shared'
 import { parseIntercessions } from './intercessions'
-import { shouldUseAlternateConcludingPrayer, buildConcludingPrayerFields } from './concluding-prayer'
+import { resolveConcludingPrayerSwap, buildConcludingPrayerFields } from './concluding-prayer'
 
 export const assembleVespers: HourAssembler = (ctx) => {
   const sections: HourSection[] = []
@@ -80,9 +80,12 @@ export const assembleVespers: HourAssembler = (ctx) => {
   // fall-back, eve-promoted vespers would silently lose F-2 alternation
   // when tomorrow is a non-Sunday Solemnity carrying primary+alternate
   // concluding-prayer variants.
+  // The weekday is read from the SAME (effective) day — see
+  // `resolveConcludingPrayerSwap`: a Saturday eve of a Sunday Solemnity
+  // (Trinity Sunday 2026-05-31) must keep the primary exactly like the
+  // `/firstVespers` route does.
   if (ctx.mergedPropers.concludingPrayer || ctx.mergedPropers.concludingPrayerRich) {
-    const effectiveDay = ctx.effectiveLiturgicalDay ?? ctx.liturgicalDay
-    const swap = shouldUseAlternateConcludingPrayer(effectiveDay, ctx.dayOfWeek)
+    const swap = resolveConcludingPrayerSwap(ctx)
     const fields = buildConcludingPrayerFields({
       primaryText: ctx.mergedPropers.concludingPrayer,
       primaryRich: ctx.mergedPropers.concludingPrayerRich,

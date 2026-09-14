@@ -165,4 +165,52 @@ describe('assembleVespers — F-2 concluding-prayer auto-swap (#214)', () => {
     const cp = getCp(withPrayerCtx({ rank: 'WEEKDAY', season: 'ORDINARY_TIME', weekOfSeason: 13, dayOfWeek: 'SAT' }))
     expect(cp.text).toBe('PRIMARY')
   })
+
+  // docs/bug-reports/2026-09-14-eve-vespers-alternate-and-rich.md — the
+  // weekday used by the F-2 rubric must belong to the SAME day as the rank.
+  // A Saturday eve (ctx.dayOfWeek = SAT) borrowing a Sunday Solemnity
+  // (Trinity Sunday 2026-05-31) must keep the primary, exactly like the
+  // `/firstVespers` route on the Sunday itself.
+  // @fr FR-156
+  it('effectiveLiturgicalDay dated on a SUNDAY (Trinity Sunday eve) → no swap even though ctx.dayOfWeek is SAT', () => {
+    const promotedDay = {
+      date: '2026-05-31',
+      season: 'ORDINARY_TIME',
+      psalterWeek: 1,
+      rank: 'SOLEMNITY',
+      weekOfSeason: 9,
+    } as LiturgicalDayInfo
+    const ctx = withPrayerCtx({ rank: 'WEEKDAY', season: 'ORDINARY_TIME', weekOfSeason: 8, dayOfWeek: 'SAT' })
+    const cp = getCp({ ...ctx, dateStr: '2026-05-30', effectiveLiturgicalDay: promotedDay })
+    expect(cp.text).toBe('PRIMARY')
+    expect(cp.alternateText).toBe('ALTERNATE')
+  })
+
+  // @fr FR-156
+  it('effectiveLiturgicalDay dated on a weekday (Ascension Thursday eve) → swap fires from the promoted date', () => {
+    const promotedDay = {
+      date: '2026-05-14',
+      season: 'EASTER',
+      psalterWeek: 2,
+      rank: 'SOLEMNITY',
+      weekOfSeason: 6,
+    } as LiturgicalDayInfo
+    // Even a (hypothetical) Sunday civil weekday must not veto the swap —
+    // the promoted Thursday decides.
+    const ctx = withPrayerCtx({ rank: 'WEEKDAY', season: 'EASTER', weekOfSeason: 6, dayOfWeek: 'SUN' })
+    const cp = getCp({ ...ctx, dateStr: '2026-05-13', effectiveLiturgicalDay: promotedDay })
+    expect(cp.text).toBe('ALTERNATE')
+    expect(cp.alternateText).toBe('PRIMARY')
+  })
+
+  // @fr FR-156
+  it('non-promoted render: liturgicalDay.date agrees with ctx.dayOfWeek (Sunday Solemnity → primary)', () => {
+    const ctx = withPrayerCtx({ rank: 'SOLEMNITY', season: 'ORDINARY_TIME', weekOfSeason: 31, dayOfWeek: 'SUN' })
+    const cp = getCp({
+      ...ctx,
+      dateStr: '2026-11-01',
+      liturgicalDay: { ...ctx.liturgicalDay, date: '2026-11-01' },
+    })
+    expect(cp.text).toBe('PRIMARY')
+  })
 })

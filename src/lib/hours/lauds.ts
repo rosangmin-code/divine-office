@@ -3,7 +3,7 @@ import type { HourAssembler } from './types'
 import { buildInvitatory, resolveInvitatoryAntiphon, buildOpeningVersicle, buildDismissal, resolveShortReading, resolveGospelCanticle } from './shared'
 import { parseIntercessions } from './intercessions'
 import { attachSectionDirectives } from './shared'
-import { shouldUseAlternateConcludingPrayer, buildConcludingPrayerFields } from './concluding-prayer'
+import { resolveConcludingPrayerSwap, buildConcludingPrayerFields } from './concluding-prayer'
 
 export const assembleLauds: HourAssembler = (ctx) => {
   const sections: HourSection[] = []
@@ -109,9 +109,10 @@ export const assembleLauds: HourAssembler = (ctx) => {
   // eve-shifting), so the fall-back makes this a behavior-equivalent
   // refactor for current callers and a forward guarantee for any
   // future eve-promotion of lauds.
+  // `resolveConcludingPrayerSwap` reads rank AND weekday from the effective
+  // day (shared with vespers.ts / compline.ts).
   if (ctx.mergedPropers.concludingPrayer || ctx.mergedPropers.concludingPrayerRich) {
-    const effectiveDay = ctx.effectiveLiturgicalDay ?? ctx.liturgicalDay
-    const swap = shouldUseAlternateConcludingPrayer(effectiveDay, ctx.dayOfWeek)
+    const swap = resolveConcludingPrayerSwap(ctx)
     const fields = buildConcludingPrayerFields({
       primaryText: ctx.mergedPropers.concludingPrayer,
       primaryRich: ctx.mergedPropers.concludingPrayerRich,
