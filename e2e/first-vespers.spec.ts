@@ -239,20 +239,20 @@ test.describe('First Vespers of Advent Sunday — versed-ref body resolution (FR
   test('Saturday 2025-11-29 vespers (eve of Advent W1 SUN) psalm bodies are non-empty + advent variant fires', async ({
     request,
   }) => {
-    test.fixme(
-      true,
-      '잠재 회귀 — 별도 조사: 2025-11-29(OT W34 토요일) /vespers 가 Advent W1 SUN 1st Vespers 로 승격되지 않음 — liturgicalDay.season=ORDINARY_TIME(기대 ADVENT), Ps 141 후렴이 advent 변형("Сайнмэдээний айлдлыг…") 아닌 psalter 기본 후렴. 정식 경로 /api/loth/2025-11-30/firstVespers 는 정상(ADVENT + advent 후렴).',
-    )
     // 2025-11-29 = Saturday between OT W34 and Advent W1 (firstAdventSunday
     // = 2025-11-30). Saturday vespers liturgically renders Advent W1 SUN
     // 1st Vespers. PDF authors firstVespers.psalms[1] as bare "Psalm 142"
     // — WI-B3 (#91) rewrites it to "Psalm 142:1-7" so scripture-ref-parser
     // matches and Bible JSONL lookup populates verses[].
+    //
+    // 2026-09-14 (§8 건 1): the body IS promoted (`5cc8a80` fetches the
+    // Advent propers; the seasonal psalm-antiphon variant now follows the
+    // promoted season — docs/bug-reports/2026-09-14-eve-vespers-alternate-
+    // and-rich.md). The response's `liturgicalDay` deliberately stays the
+    // Saturday's civil identity (OT W34) — see the companion test below.
     const res = await request.get(`/api/loth/${DATES.lastOTSaturday}/vespers`)
     expect(res.ok()).toBe(true)
     const body = await res.json()
-    expect(body.liturgicalDay?.season).toBe('ADVENT')
-    expect(body.liturgicalDay?.weekOfSeason).toBe(1)
 
     const psalmody = body.sections.find((s: { type: string }) => s.type === 'psalmody')
     expect(psalmody).toBeTruthy()
@@ -278,6 +278,30 @@ test.describe('First Vespers of Advent Sunday — versed-ref body resolution (FR
     // минь таны өмнө утлага адил тавигдаг."). The advent antiphon begins
     // "Сайнмэдээний айлдлыг бүх үндэстнүүдэд тунхаглагтун."
     expect(ps1!.antiphon).toContain('Сайнмэдээний айлдлыг')
+
+    // Magnificat antiphon + concluding prayer = Advent W1 Sunday (p.549-550),
+    // identical to the Sunday's own /firstVespers route (primary — Sunday).
+    const gc = body.sections.find((s: { type: string }) => s.type === 'gospelCanticle')
+    expect(gc.antiphon).toContain('Алсаас ирж буй Эзэнийг харагтун')
+    const cp = body.sections.find((s: { type: string }) => s.type === 'concludingPrayer')
+    const route = await (await request.get('/api/loth/2025-11-30/firstVespers')).json()
+    const routeCp = route.sections.find((s: { type: string }) => s.type === 'concludingPrayer')
+    expect(cp.text).toBe(routeCp.text)
+    expect(cp.alternateText).toBe(routeCp.alternateText)
+  })
+
+  test('Saturday 2025-11-29 vespers response relabels liturgicalDay as Advent W1 (product decision pending)', async ({
+    request,
+  }) => {
+    test.fixme(
+      true,
+      '제품 결정 필요 (§8 건 1): 전야 /vespers 응답의 liturgicalDay 는 현행 계약상 토요일(연중 34주) 의 civil identity 를 유지하고 본문만 승격한다 (loth-service.ts effectiveLiturgicalDay 주석, first-vespers.test.ts). 헤더를 대림 1주일로 재라벨할지는 별도 결정 — 재라벨 시 카드 목록(getHoursSummary)·헤더 UI 도 함께 바뀌어야 함.',
+    )
+    const res = await request.get(`/api/loth/${DATES.lastOTSaturday}/vespers`)
+    expect(res.ok()).toBe(true)
+    const body = await res.json()
+    expect(body.liturgicalDay?.season).toBe('ADVENT')
+    expect(body.liturgicalDay?.weekOfSeason).toBe(1)
   })
 })
 

@@ -21,8 +21,8 @@ import { DATES } from './fixtures/dates'
 //
 // 2026-09-14 — psalm refs are now the versed form (FR-156 Phase 5 WI-B4:
 // "Psalm 113:1-9" / "Psalm 147:12-20"), so ref assertions use a prefix
-// match. The concluding-prayer assertion that fails against the current
-// resolver is isolated with `test.fixme` (잠재 회귀 — 별도 조사).
+// match. The concluding-prayer assertion follows the F-2 rubric (book
+// p.516): Christmas on a weekday → alternate is the default.
 function hasRefPrefix(refs: string[], prefix: string): boolean {
   return refs.some((r) => r === prefix || r.startsWith(`${prefix}:`))
 }
@@ -59,21 +59,33 @@ test.describe('Solemnity First Vespers (FR-156 Phase 3b)', () => {
     expect(gc.antiphon).toContain('хаадын Хааныг харах болно')
   })
 
-  test('2026-12-24 Christmas Eve concluding prayer comes from solemnity firstVespers', async ({
+  // F-2 (#214, book p.516 "Эсвэл: Ням гарагт үл тохиох Их баярын өдөр"):
+  // Christmas 2026 falls on a FRIDAY, so the alternate concluding prayer
+  // ("Аяа, хамаг сайн сайхны Эцэг…") is the default and the primary ("Аяа,
+  // Тэнгэрбурхан бидний Эцэг минь, жил бүр…") is offered as `alternateText`.
+  // The rich markup must come from the same Christmas block (p.588) — the
+  // eve used to carry the Advent week-1 Thursday prayer's rich (p.571) as
+  // `alternateTextRich` (2026-09-14, §8 건 2/건 4 —
+  // docs/bug-reports/2026-09-14-eve-vespers-alternate-and-rich.md).
+  test('2026-12-24 Christmas Eve concluding prayer is the Christmas ALTERNATE (weekday Solemnity, F-2 p.516) with same-source rich', async ({
     request,
   }) => {
-    test.fixme(
-      true,
-      '잠재 회귀 — 별도 조사: 2026-12-24(목) 성탄 전야 /vespers 의 concludingPrayer.text 가 solemnities.json 12-25.firstVespers.concludingPrayer("Аяа, Тэнгэрбурхан бидний Эцэг минь, жил бүр…") 가 아니라 alternativeConcludingPrayer("Аяа, хамаг сайн сайхны Эцэг…") — F-2(#214) 주일 아닌 대축일 대체 본기도 swap 이 전야에 적용. 정식 경로 /api/loth/2026-12-25/firstVespers 도 동일. 원문 본기도는 alternateText 에 존재하고 alternateTextRich 는 Advent W1 THU vespers rich 가 섞여 들어옴(별도 증상).',
-    )
     const res = await request.get(`/api/loth/${DATES.christmasEve2026}/vespers`)
     const body = await res.json()
     const cp = body.sections.find((s: { type: string }) => s.type === 'concludingPrayer')
     expect(cp).toBeTruthy()
-    // Christmas firstVespers concluding prayer begins with "Аяа,
-    // Тэнгэрбурхан бидний Эцэг минь" (not the Advent Dec24 vigil
-    // prayer, which begins differently).
-    expect(cp.text).toContain('жил бүр Та энэхүү авралын баяраар')
+    expect(cp.text).toContain('Аяа, хамаг сайн сайхны Эцэг')
+    expect(cp.alternateText).toContain('жил бүр Та энэхүү авралын баяраар')
+    expect(cp.page).toBe(588)
+    expect(cp.alternatePage).toBe(588)
+    // Rich follows the plain source (Christmas First Vespers, p.588).
+    expect(cp.textRich?.page).toBe(588)
+    expect(cp.alternateTextRich?.page).toBe(588)
+
+    const route = await (await request.get('/api/loth/2026-12-25/firstVespers')).json()
+    const routeCp = route.sections.find((s: { type: string }) => s.type === 'concludingPrayer')
+    expect(routeCp.text).toBe(cp.text)
+    expect(routeCp.alternateText).toBe(cp.alternateText)
   })
 
   test('2026-08-14 Assumption Eve surfaces the Assumption Magnificat antiphon', async ({
