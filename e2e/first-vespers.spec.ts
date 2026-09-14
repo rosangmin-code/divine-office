@@ -299,18 +299,25 @@ test.describe('First Vespers of Advent Sunday — versed-ref body resolution (FR
     expect(cp.alternateText).toBe(routeCp.alternateText)
   })
 
-  test('Saturday 2025-11-29 vespers response relabels liturgicalDay as Advent W1 (product decision pending)', async ({
+  // Product decision (docs/bug-reports/2026-09-14-eve-vespers-alternate-and-rich.md
+  // §6-1, option a): the eve `/vespers` response keeps `liturgicalDay` as
+  // the Saturday's civil identity (header / home cards / other hours stay
+  // date-consistent) and exposes the promoted identity as
+  // `effectiveLiturgicalDay` so clients can choose which label to show.
+  // @fr FR-156
+  test('Saturday 2025-11-29 vespers response: liturgicalDay stays the civil Saturday (OT 34), effectiveLiturgicalDay is Advent W1 Sunday', async ({
     request,
   }) => {
-    test.fixme(
-      true,
-      '제품 결정 필요 (§8 건 1): 전야 /vespers 응답의 liturgicalDay 는 현행 계약상 토요일(연중 34주) 의 civil identity 를 유지하고 본문만 승격한다 (loth-service.ts effectiveLiturgicalDay 주석, first-vespers.test.ts). 헤더를 대림 1주일로 재라벨할지는 별도 결정 — 재라벨 시 카드 목록(getHoursSummary)·헤더 UI 도 함께 바뀌어야 함.',
-    )
     const res = await request.get(`/api/loth/${DATES.lastOTSaturday}/vespers`)
     expect(res.ok()).toBe(true)
     const body = await res.json()
-    expect(body.liturgicalDay?.season).toBe('ADVENT')
-    expect(body.liturgicalDay?.weekOfSeason).toBe(1)
+    expect(body.liturgicalDay?.date).toBe(DATES.lastOTSaturday)
+    expect(body.liturgicalDay?.season).toBe('ORDINARY_TIME')
+    expect(body.liturgicalDay?.weekOfSeason).toBe(34)
+    expect(body.effectiveLiturgicalDay?.date).toBe('2025-11-30')
+    expect(body.effectiveLiturgicalDay?.season).toBe('ADVENT')
+    expect(body.effectiveLiturgicalDay?.weekOfSeason).toBe(1)
+    expect(body.effectiveLiturgicalDay?.name).toBe('1st Sunday of Advent')
   })
 })
 

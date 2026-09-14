@@ -231,3 +231,56 @@ describe('Pentecost Sunday (2026-05-24) — EP-II vespers2 routing (option B)', 
     expect(psalmRefs(h!)).toEqual(WEEK1_SUN_VESPERS)
   })
 })
+
+// docs/bug-reports/2026-09-14-eve-vespers-alternate-and-rich.md §6-3 —
+// Second Vespers rich convention. When the GOAL #20 swap renders the
+// `weeks[key].SUN.vespers2` cell, the seasonal rich is read from the
+// matching `w{key}-{day}-vespers2.rich.json` (`SeasonalRichHourKey`), and
+// `applyRichSourceParity` compares it against that very cell. Disk today:
+// `christmas/wdec25-SUN-vespers2` and `easter/wpentecost-SUN-vespers2`
+// (shortReadingRich only — `build-short-readings-rich.mjs` is the only
+// builder that walks the vespers2 cell); Ascension has no `-vespers2` file.
+describe('Second Vespers (vespers2 cell) rich convention — `-vespers2` seasonal rich', () => {
+  // @fr FR-156
+  it.each([
+    ['2026-12-25', 'Christmas', '1 John 1:1-3', 596, 'dec25'],
+    ['2026-05-24', 'Pentecost Sunday', 'Eph 4:3-6', 743, 'pentecost'],
+  ])('%s (%s) /vespers: shortReading %s p.%i carries the w%s-SUN-vespers2 rich (page identical to plain)', async (date, name, ref, page, weekKey) => {
+    const h = await assembleHour(date, 'vespers')
+    expect(h).not.toBeNull()
+    expect(h!.liturgicalDay.name).toBe(name)
+    const sr = section(h!, 'shortReading')
+    expect(sr.ref).toBe(ref)
+    expect(sr.page).toBe(page)
+    expect(sr.textRich?.page).toBe(page)
+    expect(sr.textRich?.source).toMatchObject({ kind: 'seasonal', weekKey, dayKey: 'SUN', hour: 'vespers2' })
+    // The First Vespers `-vespers` rich (EP I reading / prayer) must not
+    // leak under the EP II plain: every attached rich page equals its plain.
+    const cp = section(h!, 'concludingPrayer')
+    if (cp.textRich?.page != null) expect(cp.textRich.page).toBe(cp.page)
+    if (cp.alternateTextRich?.page != null) expect(cp.alternateTextRich.page).toBe(cp.alternatePage)
+    const rs = section(h!, 'responsory')
+    if (rs.rich?.page != null) expect(rs.rich.page).toBe(rs.page)
+    const ic = section(h!, 'intercessions')
+    if (ic.rich?.page != null) expect(ic.rich.page).toBe(ic.page)
+  })
+
+  // @fr FR-156
+  it('2026-05-14 Ascension /vespers (no `-vespers2` file): falls back to the `-vespers` rich, parity keeps only the shared concluding prayer p.731', async () => {
+    const h = await assembleHour('2026-05-14', 'vespers')
+    expect(h).not.toBeNull()
+    const cp = section(h!, 'concludingPrayer')
+    expect(cp.page).toBe(731)
+    // EP I and EP II print the same collect (p.731) → the `-vespers` rich
+    // passes parity and stays attached (unchanged from before §6-3).
+    expect(cp.textRich?.page).toBe(731)
+    expect(cp.textRich?.source).toMatchObject({ kind: 'seasonal', weekKey: 'ascension', hour: 'vespers' })
+    expect(cp.alternateTextRich).toBeUndefined()
+    // The vespers2 cell prints no reading → psalter commons (running
+    // week) supplies plain AND rich; the EP I `-vespers` reading rich
+    // must not replace it.
+    const sr = section(h!, 'shortReading')
+    expect(sr.textRich?.page).toBe(sr.page)
+    expect(sr.textRich?.source).toMatchObject({ kind: 'psalter-commons' })
+  })
+})

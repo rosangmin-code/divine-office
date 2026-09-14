@@ -207,6 +207,64 @@ describe('resolveRichOverlay', () => {
     expect(overlay.shortReadingRich).toBeUndefined()
   })
 
+  // §6-3 (docs/bug-reports/2026-09-14-eve-vespers-alternate-and-rich.md):
+  // `seasonalHour: 'vespers2'` reads the Second Vespers file for the
+  // SEASONAL layer only; psalter commons / sanctoral keep `hour`.
+  // @fr FR-156
+  it('seasonalHour=vespers2 loads w{key}-{day}-vespers2 for the seasonal layer only (special-key SUN fallback, psalter commons stays on `vespers`)', () => {
+    fileContents['seasonal/christmas/wdec25-SUN-vespers.rich.json'] = JSON.stringify({
+      shortReadingRich: makePrayer('EP I reading (must not load)'),
+    })
+    fileContents['seasonal/christmas/wdec25-SUN-vespers2.rich.json'] = JSON.stringify({
+      shortReadingRich: makePrayer('EP II reading'),
+    })
+    fileContents['commons/psalter/w1-FRI-vespers.rich.json'] = JSON.stringify({
+      concludingPrayerRich: makePrayer('psalter commons prayer'),
+    })
+    fileContents['commons/psalter/w1-FRI-vespers2.rich.json'] = JSON.stringify({
+      concludingPrayerRich: makePrayer('psalter vespers2 (must not load)'),
+    })
+
+    const overlay = resolveRichOverlay({
+      season: 'CHRISTMAS',
+      weekKey: '1',
+      day: 'FRI',
+      hour: 'vespers',
+      seasonalHour: 'vespers2',
+      psalterWeek: '1',
+      celebrationName: 'Christmas',
+      dateStr: '2026-12-25',
+    })
+
+    expect(overlay.shortReadingRich?.blocks[0]).toMatchObject({
+      spans: [{ kind: 'text', text: 'EP II reading' }],
+    })
+    expect(overlay.concludingPrayerRich?.blocks[0]).toMatchObject({
+      spans: [{ kind: 'text', text: 'psalter commons prayer' }],
+    })
+  })
+
+  // @fr FR-156
+  it('seasonalHour omitted defaults to `hour` (unchanged lookup)', () => {
+    fileContents['seasonal/christmas/wdec25-SUN-vespers.rich.json'] = JSON.stringify({
+      shortReadingRich: makePrayer('EP I reading'),
+    })
+    fileContents['seasonal/christmas/wdec25-SUN-vespers2.rich.json'] = JSON.stringify({
+      shortReadingRich: makePrayer('EP II reading (must not load)'),
+    })
+    const overlay = resolveRichOverlay({
+      season: 'CHRISTMAS',
+      weekKey: '1',
+      day: 'FRI',
+      hour: 'vespers',
+      celebrationName: 'Christmas',
+      dateStr: '2026-12-25',
+    })
+    expect(overlay.shortReadingRich?.blocks[0]).toMatchObject({
+      spans: [{ kind: 'text', text: 'EP I reading' }],
+    })
+  })
+
   // Task #54 — symmetric wk1 fallback for seasonal rich overlay.
   //
   // Bug: rich-overlay.ts L76-90 was asymmetric with propers-loader.ts L134.

@@ -1057,7 +1057,26 @@ export interface AssembledHour {
   hourType: HourType
   hourNameMn: string
   date: string
+  /**
+   * The URL date's own (civil) liturgical day — always the calendar entry
+   * for `date`, even when the rendered body is an eve promotion (FR-156:
+   * Saturday `/vespers` = First Vespers of Sunday, Solemnity/Feast eve).
+   * Header, home cards (`getHoursSummary`) and the other hours of the same
+   * date key off this value, so it is never relabelled to tomorrow.
+   */
   liturgicalDay: LiturgicalDayInfo
+  /**
+   * FR-156 (docs/bug-reports/2026-09-14-eve-vespers-alternate-and-rich.md
+   * §6-1, option a): the liturgical day whose office the body actually
+   * renders when the eve promotion applied — the upcoming Sunday for a
+   * Saturday `/vespers`, tomorrow's Solemnity/Feast for its eve. Present
+   * ONLY when the promotion moved the identity to another date; absent
+   * (not `null`) otherwise, including the `/firstVespers` and
+   * `/firstCompline` routes (their URL date IS the rendered identity).
+   * Clients that want the promoted label read
+   * `effectiveLiturgicalDay ?? liturgicalDay`.
+   */
+  effectiveLiturgicalDay?: LiturgicalDayInfo
   psalterWeek: 1 | 2 | 3 | 4
   sections: HourSection[]
   /**

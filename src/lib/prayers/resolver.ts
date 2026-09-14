@@ -5,6 +5,7 @@ import {
   loadPsalterCommonsRichOverlay,
   loadComplineCommonsRichOverlay,
   type RichOverlay,
+  type SeasonalRichHourKey,
 } from './rich-overlay'
 
 export interface ResolveRichContext {
@@ -12,6 +13,16 @@ export interface ResolveRichContext {
   weekKey: string
   day: DayOfWeek
   hour: HourType
+  /**
+   * Hour key for the SEASONAL layer only (`w{key}-{day}-{seasonalHour}.rich.json`).
+   * Defaults to `hour`. `loth-service` passes `'vespers2'` when the seasonal
+   * plain came from the `weeks[key].SUN.vespers2` cell (GOAL #20 Second
+   * Vespers swap on a Solemnity's own day) so the rich is read from the
+   * matching `-vespers2` file instead of the First Vespers `-vespers` one.
+   * Psalter-commons and sanctoral layers keep `hour` (their plain cells are
+   * still the `vespers` slot).
+   */
+  seasonalHour?: SeasonalRichHourKey
   sanctoralKey?: string | null
   /**
    * 4주 시편집 주간 (1..4). loth-service 가 `day.psalterWeek` 를 그대로
@@ -50,7 +61,14 @@ export function resolveRichOverlayLayers(ctx: ResolveRichContext): RichOverlayLa
   const psalterCommons = ctx.psalterWeek != null && ctx.hour !== 'compline'
     ? loadPsalterCommonsRichOverlay(ctx.psalterWeek, ctx.day, ctx.hour)
     : null
-  const seasonal = loadSeasonalRichOverlay(ctx.season, ctx.weekKey, ctx.day, ctx.hour, ctx.celebrationName, ctx.dateStr)
+  const seasonal = loadSeasonalRichOverlay(
+    ctx.season,
+    ctx.weekKey,
+    ctx.day,
+    ctx.seasonalHour ?? ctx.hour,
+    ctx.celebrationName,
+    ctx.dateStr,
+  )
   const sanctoral = ctx.sanctoralKey
     ? loadSanctoralRichOverlay(ctx.sanctoralKey, ctx.hour)
     : null

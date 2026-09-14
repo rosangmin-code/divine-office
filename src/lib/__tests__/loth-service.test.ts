@@ -305,6 +305,57 @@ describe('assembleHour', () => {
     expect(result!.hourType).toBe('vespers')
   })
 
+  // docs/bug-reports/2026-09-14-eve-vespers-alternate-and-rich.md §6-1
+  // (option a): the eve response keeps `liturgicalDay` = civil day and
+  // exposes the promoted identity as `effectiveLiturgicalDay`, present
+  // ONLY when the promotion moved the identity to another date.
+  // @fr FR-156
+  it('Saturday of OT week 34 (2026-11-28) vespers: liturgicalDay stays the civil Saturday, effectiveLiturgicalDay is the 1st Sunday of Advent', async () => {
+    const result = await assembleHour('2026-11-28', 'vespers')
+    expect(result).not.toBeNull()
+    expect(result!.liturgicalDay.date).toBe('2026-11-28')
+    expect(result!.liturgicalDay.season).toBe('ORDINARY_TIME')
+    expect(result!.liturgicalDay.weekOfSeason).toBe(34)
+    expect(result!.effectiveLiturgicalDay).toBeDefined()
+    expect(result!.effectiveLiturgicalDay!.date).toBe('2026-11-29')
+    expect(result!.effectiveLiturgicalDay!.season).toBe('ADVENT')
+    expect(result!.effectiveLiturgicalDay!.weekOfSeason).toBe(1)
+    expect(result!.effectiveLiturgicalDay!.name).toBe('1st Sunday of Advent')
+  })
+
+  // @fr FR-156
+  it('Christmas Eve (2026-12-24 Thu) vespers: effectiveLiturgicalDay is Christmas (Solemnity eve promotion)', async () => {
+    const result = await assembleHour('2026-12-24', 'vespers')
+    expect(result!.liturgicalDay.date).toBe('2026-12-24')
+    expect(result!.liturgicalDay.season).toBe('ADVENT')
+    expect(result!.effectiveLiturgicalDay).toMatchObject({
+      date: '2026-12-25',
+      name: 'Christmas',
+      rank: 'SOLEMNITY',
+      season: 'CHRISTMAS',
+    })
+  })
+
+  // @fr FR-156
+  it('omits effectiveLiturgicalDay (key absent, not null) when no eve promotion applies', async () => {
+    // 2026-09-14 (Mon, Exaltation of the Holy Cross) lauds — no promotion.
+    const lauds = await assembleHour('2026-09-14', 'lauds')
+    expect(lauds).not.toBeNull()
+    expect(Object.prototype.hasOwnProperty.call(lauds!, 'effectiveLiturgicalDay')).toBe(false)
+    // Weekday vespers with a plain Tuesday tomorrow — no promotion.
+    const vespers = await assembleHour('2026-06-15', 'vespers')
+    expect(Object.prototype.hasOwnProperty.call(vespers!, 'effectiveLiturgicalDay')).toBe(false)
+    // firstVespers / firstCompline routes: the URL date IS the rendered
+    // identity (effectiveLiturgicalDay mirrors `day`) → omitted.
+    const fv = await assembleHour('2026-11-29', 'firstVespers')
+    expect(Object.prototype.hasOwnProperty.call(fv!, 'effectiveLiturgicalDay')).toBe(false)
+    const fc = await assembleHour('2026-12-25', 'firstCompline')
+    expect(Object.prototype.hasOwnProperty.call(fc!, 'effectiveLiturgicalDay')).toBe(false)
+    // Solemnity's own Second Vespers — no promotion either.
+    const ep2 = await assembleHour('2026-12-25', 'vespers')
+    expect(Object.prototype.hasOwnProperty.call(ep2!, 'effectiveLiturgicalDay')).toBe(false)
+  })
+
   // @fr FR-NEW (#230 F-X5)
   it('Sunday firstVespers route assembles 1st Vespers content (relocated from Saturday/vespers)', async () => {
     // 2026-06-14 is the Sunday after 2026-06-13 (Saturday)

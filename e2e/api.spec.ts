@@ -153,6 +153,34 @@ test.describe('GET /api/loth/[date]/[hour]', () => {
     }
   })
 
+  // FR-156 eve-promotion contract (docs/bug-reports/2026-09-14-eve-vespers-
+  // alternate-and-rich.md §6-1, option a): `liturgicalDay` is always the
+  // URL date's civil day; `effectiveLiturgicalDay` is serialised ONLY when
+  // the rendered body was promoted to another date.
+  // @fr FR-156
+  test('effectiveLiturgicalDay is absent on a day with no eve promotion (2026-09-14 lauds)', async ({ request }) => {
+    const res = await request.get('/api/loth/2026-09-14/lauds')
+    expect(res.status()).toBe(200)
+    const body = await res.json()
+    expect(body.liturgicalDay?.date).toBe('2026-09-14')
+    expect(body).not.toHaveProperty('effectiveLiturgicalDay')
+  })
+
+  // @fr FR-156
+  test('effectiveLiturgicalDay is the promoted Advent Sunday on the last OT Saturday (2026-11-28 vespers)', async ({ request }) => {
+    const res = await request.get('/api/loth/2026-11-28/vespers')
+    expect(res.status()).toBe(200)
+    const body = await res.json()
+    // Civil identity unchanged (header / cards stay date-consistent).
+    expect(body.liturgicalDay?.date).toBe('2026-11-28')
+    expect(body.liturgicalDay?.season).toBe('ORDINARY_TIME')
+    expect(body.liturgicalDay?.weekOfSeason).toBe(34)
+    // Promoted identity exposed for clients that want the eve label.
+    expect(body.effectiveLiturgicalDay?.date).toBe('2026-11-29')
+    expect(body.effectiveLiturgicalDay?.season).toBe('ADVENT')
+    expect(body.effectiveLiturgicalDay?.weekOfSeason).toBe(1)
+  })
+
   test('returns 400 for invalid hour', async ({ request }) => {
     const res = await request.get(`/api/loth/${DATES.ordinaryWeekday}/invalid`)
     expect(res.status()).toBe(400)

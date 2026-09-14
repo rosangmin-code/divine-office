@@ -20,6 +20,20 @@ export type RichOverlay = Partial<Pick<HourPropers,
   | 'gospelCanticleAntiphonRich'
 >>
 
+/**
+ * Hour segment of a seasonal rich file name (`w{key}-{day}-{hour}.rich.json`).
+ *
+ * Besides the canonical `HourType` values the seasonal directory also
+ * carries `vespers2` files — the rich counterpart of the season-propers
+ * `weeks[key].SUN.vespers2` cell (Second Vespers of a Solemnity on its own
+ * day: `wdec25-SUN-vespers2`, `wpentecost-SUN-vespers2`, …). The plain
+ * side reaches that cell through `getSeasonVespers2` (GOAL #20 swap in
+ * `loth-service`), so the rich lookup must use the same `vespers2` key —
+ * a `-vespers` file is the First Vespers cell and never passes
+ * `applyRichSourceParity` against `vespers2` plain text.
+ */
+export type SeasonalRichHourKey = HourType | 'vespers2'
+
 const SEASON_KEBAB: Record<LiturgicalSeason, string> = {
   ADVENT: 'advent',
   CHRISTMAS: 'christmas',
@@ -103,12 +117,20 @@ function readOverlayFile(filePath: string): RichOverlay | null {
  *      weeks 2-5 평일, Advent weeks 2-3 평일에서 JSON propers 가 wk1 로
  *      떨어지는 동안 rich 만 누락되어 발생하던 partial-merge 버그 (#54)
  *      차단. weekKey === '1' 또는 special-key 매치 시 시도하지 않는다.
+ *
+ * `hour` 는 파일명의 hour 세그먼트 — `HourType` 외에 `'vespers2'` 를 받는다
+ * (`SeasonalRichHourKey`). 대축일 당일 제2저녁기도가 `getSeasonVespers2` 의
+ * `weeks[key].SUN.vespers2` 셀로 조립될 때 `w{key}-{day}-vespers2.rich.json`
+ * 을 읽는 규약 (docs/bug-reports/2026-09-14-eve-vespers-alternate-and-rich.md
+ * §6-3). tier 구조는 동일 — 현재 디스크의 vespers2 파일은 전부 special-key
+ * (`wdec25` / `wpentecost`) 또는 `w1`/`w6` SUN 슬롯이며, 호출자는 plain 이
+ * 실제로 vespers2 셀에서 왔을 때만 이 키를 넘긴다.
  */
 export function loadSeasonalRichOverlay(
   season: LiturgicalSeason,
   weekKey: string,
   day: DayOfWeek,
-  hour: HourType,
+  hour: SeasonalRichHourKey,
   celebrationName?: string | null,
   dateStr?: string | null,
 ): RichOverlay | null {

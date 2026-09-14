@@ -18,7 +18,7 @@ import { getSeasonHourPropers, getSeasonFirstVespers, getSeasonVespers2, getHymn
 import { resolveSanctoralForDay } from './sanctoral-resolver'
 import { resolveCelebration } from './celebrations'
 import { resolveRichOverlayLayers, applyRichSourceParity } from './prayers/resolver'
-import { loadHymnRichOverlay } from './prayers/rich-overlay'
+import { loadHymnRichOverlay, type SeasonalRichHourKey } from './prayers/rich-overlay'
 
 import {
   getAssembler,
@@ -160,6 +160,13 @@ export async function assembleHour(
     : isFirstCompline
       ? 'compline'
       : hour
+  // Hour segment for the SEASONAL rich file (Layer 4). Follows the cell the
+  // seasonal plain was taken from: normally `dataLookupHour`; the GOAL #20
+  // Second Vespers swap below replaces the seasonal plain with the
+  // `weeks[key].SUN.vespers2` cell and flips this to `'vespers2'` so the
+  // rich is read from `w{key}-{day}-vespers2.rich.json` (§6-3 convention,
+  // docs/bug-reports/2026-09-14-eve-vespers-alternate-and-rich.md).
+  let seasonalRichHour: SeasonalRichHourKey = dataLookupHour
 
   // 2. Get base psalmody from 4-week psalter
   let psalmEntries: PsalmEntry[] = []
@@ -236,6 +243,7 @@ export async function assembleHour(
     )
     if (seasonVespers2) {
       seasonPropers = seasonVespers2
+      seasonalRichHour = 'vespers2'
       // GOAL #87: a fixed-date season-proper Solemnity whose Second Vespers
       // prints its OWN proper psalmody in the book (Christmas Day —
       // Ps 110:1-5,7 / Ps 130 / Col 1:12-20, full_pdf p.592-596) — NOT a
@@ -834,6 +842,7 @@ export async function assembleHour(
         weekKey: richLookupIdentity.weekKey,
         day: richLookupIdentity.day,
         hour: dataLookupHour,
+        seasonalHour: seasonalRichHour,
         sanctoralKey: richLookupIdentity.sanctoralKey,
         psalterWeek: undefined,
         celebrationName: richLookupIdentity.celebrationName,
@@ -847,12 +856,24 @@ export async function assembleHour(
         // (today's dayOfWeek). For others: dayOfWeek.
         day: isFirstCompline ? dataLookupDayOfWeek : dayOfWeek,
         hour: dataLookupHour,
+        seasonalHour: seasonalRichHour,
         sanctoralKey,
         psalterWeek: firstVespersBranchActive ? undefined : day.psalterWeek,
         celebrationName: day.name,
         dateStr,
       }
-  const richLayers = resolveRichOverlayLayers(richKey)
+  let richLayers = resolveRichOverlayLayers(richKey)
+  if (seasonalRichHour === 'vespers2' && !richLayers.seasonal) {
+    // No `-vespers2` rich authored for this Second Vespers cell (e.g. the
+    // Ascension `wascension-SUN-vespers2` file does not exist). Fall back
+    // to the celebration's `-vespers` file the way the pre-convention
+    // lookup did; `applyRichSourceParity` below compares it against the
+    // `vespers` cell it was generated from, so only fields whose text is
+    // identical in EP I and EP II (Ascension's concluding prayer, p.731)
+    // survive — never the First Vespers reading / antiphon.
+    seasonalRichHour = dataLookupHour
+    richLayers = resolveRichOverlayLayers({ ...richKey, seasonalHour: seasonalRichHour })
+  }
   // Rich ↔ plain source parity (`applyRichSourceParity`): a rich field is
   // kept only when the merged plain text equals the text of the cell that
   // rich was generated from. The seasonal cell is re-fetched with the very
@@ -864,14 +885,24 @@ export async function assembleHour(
   // Solemnity First Vespers, `vespers2`) — the class behind All Saints
   // Lauds showing the OT Sunday-31 concluding prayer and Christmas Eve
   // Vespers carrying the Advent weekday prayer's rich as its alternate.
-  const seasonalCellForRich = getSeasonHourPropers(
-    richKey.season,
-    Number(richKey.weekKey),
-    richKey.day,
-    dataLookupHour,
-    richKey.dateStr ?? undefined,
-    richKey.celebrationName ?? undefined,
-  )
+  // The seasonal cell is the one the seasonal rich was generated from:
+  // `vespers2` → `getSeasonVespers2` (same special-key resolution as the
+  // GOAL #20 swap), otherwise `getSeasonHourPropers` with the rich key.
+  const seasonalCellForRich = seasonalRichHour === 'vespers2'
+    ? getSeasonVespers2(
+        richKey.season,
+        Number(richKey.weekKey),
+        richKey.dateStr ?? undefined,
+        richKey.celebrationName ?? undefined,
+      )
+    : getSeasonHourPropers(
+        richKey.season,
+        Number(richKey.weekKey),
+        richKey.day,
+        dataLookupHour,
+        richKey.dateStr ?? undefined,
+        richKey.celebrationName ?? undefined,
+      )
   const richOverlay = applyRichSourceParity(
     richLayers,
     {
@@ -1042,7 +1073,15 @@ export async function assembleHour(
     hourType: hour,
     hourNameMn: hourNamesMn[hour],
     date: dateStr,
+    // Response contract (FR-156, §6-1 option a): `liturgicalDay` stays the
+    // URL date's civil identity; the promoted identity is exposed
+    // separately and ONLY when the eve branches above moved it to another
+    // date (Saturday → Sunday, Solemnity/Feast eve). The firstVespers /
+    // firstCompline routes mirror `day` and therefore omit the field.
     liturgicalDay: day,
+    ...(effectiveLiturgicalDay.date !== day.date
+      ? { effectiveLiturgicalDay }
+      : {}),
     psalterWeek: day.psalterWeek,
     sections,
     // FR-160-B PR-10: surface hydrated audit metadata (no body). The
