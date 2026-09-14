@@ -1,4 +1,5 @@
 import type { LiturgicalDayInfo, DayOfWeek, PrayerText } from '../types'
+import { dateToDayOfWeek } from './date-utils'
 
 /**
  * Determine whether the alternate concluding prayer should become the default
@@ -41,6 +42,44 @@ export function shouldUseAlternateConcludingPrayer(
     return false
   }
   return true
+}
+
+/**
+ * Context slice the hour assemblers hand to `resolveConcludingPrayerSwap`.
+ * Mirrors the relevant `HourContext` fields (see `./types`).
+ */
+export interface ConcludingPrayerSwapContext {
+  liturgicalDay: LiturgicalDayInfo
+  effectiveLiturgicalDay?: LiturgicalDayInfo
+  dayOfWeek: DayOfWeek
+}
+
+/**
+ * Decide the F-2 swap for an assembled hour — the single call site shared
+ * by Lauds / Vespers / Compline.
+ *
+ * The rubric keys on two facts of ONE celebration: its rank and the weekday
+ * it falls on. When FR-156 promotes a render to borrow tomorrow's identity
+ * (Saturday → Sunday First Vespers, or the eve of a Solemnity / Feast),
+ * `ctx.effectiveLiturgicalDay` carries the celebration while
+ * `ctx.dayOfWeek` is still the EVE's civil weekday. Reading the rank from
+ * the promoted day but the weekday from the eve made every Saturday eve of
+ * a Sunday (romcal ranks Sundays as SOLEMNITY — Trinity Sunday 2026-05-31,
+ * 1st Sunday of Advent, plain Ordinary-Time Sundays…) fire the
+ * "Solemnity not on Sunday" alternate, while the same First Vespers on the
+ * `/firstVespers` route (URL date = the Sunday) correctly kept the primary.
+ *
+ * Therefore the weekday is derived from the effective day's own `date`
+ * (`LiturgicalDayInfo.date`, always set by `getLiturgicalDay`), so rank and
+ * weekday always describe the same day. Fixtures that build a
+ * `LiturgicalDayInfo` without `date` fall back to `ctx.dayOfWeek`, which
+ * is also the value for every non-promoted render (`effectiveDay.date ===
+ * ctx.dateStr`).
+ */
+export function resolveConcludingPrayerSwap(ctx: ConcludingPrayerSwapContext): boolean {
+  const effectiveDay = ctx.effectiveLiturgicalDay ?? ctx.liturgicalDay
+  const derived = effectiveDay.date ? dateToDayOfWeek(effectiveDay.date) : undefined
+  return shouldUseAlternateConcludingPrayer(effectiveDay, derived ?? ctx.dayOfWeek)
 }
 
 export interface ConcludingPrayerInputs {

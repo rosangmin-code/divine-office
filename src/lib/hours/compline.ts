@@ -7,7 +7,7 @@ import type {
 } from '../psalter-loader'
 import type { HourAssembler } from './types'
 import { buildOpeningVersicle, resolveShortReading, resolveGospelCanticle, attachSectionDirectives } from './shared'
-import { shouldUseAlternateConcludingPrayer, buildConcludingPrayerFields } from './concluding-prayer'
+import { resolveConcludingPrayerSwap, buildConcludingPrayerFields } from './concluding-prayer'
 
 /**
  * Pick a season-appropriate Marian antiphon index from the compline
@@ -255,9 +255,10 @@ export const assembleCompline: HourAssembler = (ctx) => {
   // with the eve weekday's rank (no swap) — F-2 silently
   // misses. `effectiveLiturgicalDay ?? liturgicalDay` falls back to
   // civil identity when no promotion happened.
+  // `resolveConcludingPrayerSwap` reads rank AND weekday from the effective
+  // day (shared with lauds.ts / vespers.ts).
   if (ctx.mergedPropers.concludingPrayer || ctx.mergedPropers.concludingPrayerRich) {
-    const effectiveDay = ctx.effectiveLiturgicalDay ?? ctx.liturgicalDay
-    const swap = shouldUseAlternateConcludingPrayer(effectiveDay, ctx.dayOfWeek)
+    const swap = resolveConcludingPrayerSwap(ctx)
     const fields = buildConcludingPrayerFields({
       primaryText: ctx.mergedPropers.concludingPrayer,
       primaryRich: ctx.mergedPropers.concludingPrayerRich,
