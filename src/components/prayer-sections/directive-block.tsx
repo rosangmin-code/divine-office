@@ -1,4 +1,5 @@
 import type { SectionOverride } from '@/lib/types'
+import { formatRefMn } from '@/lib/scripture-ref-mn'
 import { PageRef } from '../page-ref'
 
 // GOAL #201 (#201-sub-2): an inline page reference already present in the
@@ -55,7 +56,10 @@ export function DirectiveBlock({
     <div className={className}>
       {filtered.map((d) => {
         const display =
-          d.text ?? d.ref ?? (d.ordinariumKey ? `(${d.ordinariumKey})` : '')
+          // NFR-002 — `ref` 폴백도 영문 책 이름이면 몽골어 표기로 (현재 데이터엔 없음).
+          d.text ??
+          (d.ref ? formatRefMn(d.ref) : undefined) ??
+          (d.ordinariumKey ? `(${d.ordinariumKey})` : '')
         const sourcePage = directiveSourcePage(d)
         return (
           <p
