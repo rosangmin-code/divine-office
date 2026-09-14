@@ -34,28 +34,24 @@ test.describe('Compline (Night Prayer) page', () => {
   })
 
   test('fixed weekly cycle: same day-of-week has same psalms across different psalter weeks', async ({ page }) => {
-    // Get psalm references from one Wednesday
-    const psalmRefs1: string[] = []
-    const refs1 = page.locator('h4.text-sm.font-semibold.text-stone-600')
-    const count1 = await refs1.count()
-    for (let i = 0; i < count1; i++) {
-      const text = await refs1.nth(i).textContent()
-      if (text && text.includes('Psalm')) {
-        psalmRefs1.push(text)
+    // Get psalm references from one Wednesday.
+    // NFR-002: 이전 selector (`h4.text-sm.font-semibold.text-stone-600` +
+    // 영문 'Psalm' 필터)는 현재 마크업과 맞지 않아 빈 배열끼리 비교하며
+    // 공허하게 통과하던 상태 → 원본 키 `data-ref` 로 이관 + 비어 있지 않음 단언.
+    const collectPsalmRefs = async () => {
+      const blocks = page.locator('[data-role="psalm-block"][data-ref^="Psalm "]')
+      const refs: string[] = []
+      for (let i = 0; i < (await blocks.count()); i++) {
+        refs.push((await blocks.nth(i).getAttribute('data-ref')) ?? '')
       }
+      return refs
     }
+    const psalmRefs1 = await collectPsalmRefs()
+    expect(psalmRefs1.length).toBeGreaterThan(0)
 
     // Navigate to another Wednesday in a different psalter week
     await page.goto(`/pray/${DATES.lentWeekday}/compline`)
-    const psalmRefs2: string[] = []
-    const refs2 = page.locator('h4.text-sm.font-semibold.text-stone-600')
-    const count2 = await refs2.count()
-    for (let i = 0; i < count2; i++) {
-      const text = await refs2.nth(i).textContent()
-      if (text && text.includes('Psalm')) {
-        psalmRefs2.push(text)
-      }
-    }
+    const psalmRefs2 = await collectPsalmRefs()
 
     expect(psalmRefs1).toEqual(psalmRefs2)
   })

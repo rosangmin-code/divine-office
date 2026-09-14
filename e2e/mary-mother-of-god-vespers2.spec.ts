@@ -39,7 +39,7 @@ test.describe('01-01 Mary Mother of God — Second Vespers EP-II (GOAL #27)', ()
 
     // Week-1 Sunday Vespers psalms (Ps 110 / Ps 114 / Rev 19) — NOT the
     // running weekday psalter. Ps 110 block renders with inlined body.
-    const ps110 = psalmody.locator('section[aria-label="Psalm 110:1-5, 7"]')
+    const ps110 = psalmody.locator('[data-role="psalm-block"][data-ref="Psalm 110:1-5, 7"]')
     await expect(ps110).toBeVisible()
     await expect(ps110.locator('[data-role="psalm-stanza"]').first()).toBeVisible()
 

@@ -24,7 +24,7 @@ import { DATES } from './fixtures/dates'
  * #105 merge conflict.
  */
 
-const PS63_SECTION = 'section[aria-label="Psalm 63:2-9"]'
+const PS63_SECTION = '[data-role="psalm-block"][data-ref="Psalm 63:2-9"]'
 const PS63_BODY_FIRST_LINE = 'Тэнгэрбурхан, Та миний Тэнгэрбурхан'
 const PS63_CAPTION_L1 = 'Гэм нүглийн харанхуйгаас салсан хэнбугай ч'
 const PS63_TITLE = 'Тэнгэрбурханаар цангаж буй сэтгэл'

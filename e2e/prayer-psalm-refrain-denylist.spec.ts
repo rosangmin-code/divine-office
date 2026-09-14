@@ -16,7 +16,7 @@ test.describe('Refrain denylist false-positive cleanup (FR-160-A1)', () => {
 
   // @fr FR-160
   test('Psalm 150:1-6 stanza has 0 role=refrain lines', async ({ page }) => {
-    const ps150 = page.locator('section[aria-label="Psalm 150:1-6"]')
+    const ps150 = page.locator('[data-role="psalm-block"][data-ref="Psalm 150:1-6"]')
     await expect(ps150).toBeVisible()
     // Stanzas render (rich path) — confirm body is present.
     const stanzas = ps150.locator('[data-role="psalm-stanza"]')
@@ -33,7 +33,7 @@ test.describe('Refrain denylist false-positive cleanup (FR-160-A1)', () => {
   // 도입되면 즉시 fail). psalm-header / 'Дуулал' 라벨 등 본문 외 빨간
   // 글씨는 본 selector 범위 밖이므로 영향 없음.
   test('Psalm 150:1-6 stanza body has no rubric red span', async ({ page }) => {
-    const ps150 = page.locator('section[aria-label="Psalm 150:1-6"]')
+    const ps150 = page.locator('[data-role="psalm-block"][data-ref="Psalm 150:1-6"]')
     const redInsideStanza = ps150.locator(
       '[data-role="psalm-stanza"] .text-red-700, [data-role="psalm-stanza"] .text-red-400',
     )
@@ -59,7 +59,7 @@ test.describe('Refrain denylist false-positive cleanup (FR-160-A1)', () => {
   // block.
   test('Psalm 29:1-10 stanza has 0 role=refrain lines (psalterWeek 1 MON Lauds)', async ({ page }) => {
     await page.goto(`/pray/${DATES.psalterW1Monday}/lauds`)
-    const ps29 = page.locator('section[aria-label="Psalm 29:1-10"]')
+    const ps29 = page.locator('[data-role="psalm-block"][data-ref="Psalm 29:1-10"]')
     await expect(ps29).toBeVisible()
     const refrains = ps29.locator('[data-role="psalm-stanza-refrain"]')
     expect(await refrains.count()).toBe(0)
@@ -70,7 +70,7 @@ test.describe('Refrain denylist false-positive cleanup (FR-160-A1)', () => {
   // 회귀 가드 의미만 유지. (위 Psalm 150 케이스와 동일 정책.)
   test('Psalm 29:1-10 stanza body has no rubric red span', async ({ page }) => {
     await page.goto(`/pray/${DATES.psalterW1Monday}/lauds`)
-    const ps29 = page.locator('section[aria-label="Psalm 29:1-10"]')
+    const ps29 = page.locator('[data-role="psalm-block"][data-ref="Psalm 29:1-10"]')
     const redInsideStanza = ps29.locator(
       '[data-role="psalm-stanza"] .text-red-700, [data-role="psalm-stanza"] .text-red-400',
     )

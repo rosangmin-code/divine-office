@@ -23,7 +23,7 @@ test.describe('Refrain allowlist false-negative cleanup (FR-160-A4)', () => {
     page,
   }) => {
     await page.goto(`/pray/${DATES.psalterW1Tuesday}/lauds`)
-    const ps24 = page.locator('section[aria-label="Psalm 24:1-10"]')
+    const ps24 = page.locator('[data-role="psalm-block"][data-ref="Psalm 24:1-10"]')
     await expect(ps24).toBeVisible()
     // 3 forced_lines × 2 stanza occurrences (vv 7-10 antiphonal Q&A
     // repeats once) = 6 refrain-tagged lines.
@@ -43,7 +43,7 @@ test.describe('Refrain allowlist false-negative cleanup (FR-160-A4)', () => {
     page,
   }) => {
     await page.goto(`/pray/${DATES.psalterW1Tuesday}/lauds`)
-    const ps24 = page.locator('section[aria-label="Psalm 24:1-10"]')
+    const ps24 = page.locator('[data-role="psalm-block"][data-ref="Psalm 24:1-10"]')
     await expect(ps24).toBeVisible()
     // 안전 패턴 — Psalm 24 안에 refrain 마킹이 있든 (task #4 적용 후 phrase
     // mode 에서도 정상 마킹됨) 없든 새 정책은 "본문 안 어떤 refrain 도
@@ -62,7 +62,7 @@ test.describe('Refrain allowlist false-negative cleanup (FR-160-A4)', () => {
     page,
   }) => {
     await page.goto(`/pray/${DATES.psalterW3Tuesday}/lauds`)
-    const ps67 = page.locator('section[aria-label="Psalm 67:2-8"]')
+    const ps67 = page.locator('[data-role="psalm-block"][data-ref="Psalm 67:2-8"]')
     await expect(ps67).toBeVisible()
     // 2 forced_lines × 2 stanzas = 4 refrain-tagged lines (vv 3+5).
     // phrase mode 또는 legacy stanza mode 양쪽 selector 인식.
@@ -80,7 +80,7 @@ test.describe('Refrain allowlist false-negative cleanup (FR-160-A4)', () => {
     page,
   }) => {
     await page.goto(`/pray/${DATES.easterW4Sunday}/lauds`)
-    const ps150 = page.locator('section[aria-label="Psalm 150:1-6"]')
+    const ps150 = page.locator('[data-role="psalm-block"][data-ref="Psalm 150:1-6"]')
     const refrains = ps150.locator('[data-role="psalm-stanza-refrain"]')
     expect(await refrains.count()).toBe(0)
   })
@@ -105,7 +105,7 @@ test.describe('Refrain allowlist false-negative cleanup (FR-160-A4)', () => {
     page,
   }) => {
     await page.goto(`/pray/${DATES.otWeek1Sunday}/lauds`)
-    const dan3 = page.locator('section[aria-label^="Daniel 3:"]')
+    const dan3 = page.locator('[data-role="psalm-block"][data-ref^="Daniel 3:"]')
     await expect(dan3.first()).toBeVisible()
     const refrains = dan3.locator(
       '[data-role="psalm-stanza-refrain"], [data-role="psalm-phrase-refrain"]',
