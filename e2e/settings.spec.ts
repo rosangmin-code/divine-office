@@ -100,12 +100,15 @@ test.describe('Settings page', () => {
     await expect(increase).toBeDisabled()
   })
 
+  // NFR-002: the font-family radios are labelled in Mongolian Cyrillic —
+  // 'Сонгодог' (serif, classic) / 'Орчин үеийн' (sans, modern) — not the
+  // English classifiers 'Serif' / 'Sans' (settings/page.tsx FONT_FAMILIES).
   test('selecting Serif updates <html> data-font-family', async ({ page }) => {
     await page.goto(SETTINGS_URL)
-    await page.getByRole('radio', { name: /Serif/ }).click()
+    await page.getByRole('radio', { name: 'Сонгодог' }).click()
     await expect(page.locator('html')).toHaveAttribute('data-font-family', 'serif')
 
-    await page.getByRole('radio', { name: /Sans/ }).click()
+    await page.getByRole('radio', { name: 'Орчин үеийн' }).click()
     await expect(page.locator('html')).toHaveAttribute('data-font-family', 'sans')
   })
 
@@ -257,7 +260,7 @@ test.describe('Settings page', () => {
     await expect(indicator).not.toHaveClass(/liturgical-green/)
     // Other control groups (font-family / theme) still use radios — keep
     // the original NFR-016 guard on at least one active radio surface.
-    const sansRadio = page.getByRole('radio', { name: /Sans/ })
+    const sansRadio = page.getByRole('radio', { name: 'Орчин үеийн' })
     await expect(sansRadio).toHaveAttribute('aria-checked', 'true')
     await expect(sansRadio).toHaveClass(/liturgical-gold/)
   })

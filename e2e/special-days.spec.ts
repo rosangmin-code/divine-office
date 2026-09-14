@@ -123,21 +123,41 @@ test.describe('Special liturgical days', () => {
   test('Sunday firstVespers differs from Sunday LAUDS (sanity: fallback is hour-scoped)', async ({ request }) => {
     const fvRes = await request.get(`/api/loth/${DATES.ordinarySunday}/firstVespers`)
     const sunLaudsRes = await request.get(`/api/loth/${DATES.ordinarySunday}/lauds`)
+    const sunVespersRes = await request.get(`/api/loth/${DATES.ordinarySunday}/vespers`)
 
     expect(fvRes.status()).toBe(200)
     expect(sunLaudsRes.status()).toBe(200)
+    expect(sunVespersRes.status()).toBe(200)
 
     const fv = await fvRes.json()
     const lauds = await sunLaudsRes.json()
+    const vespers = await sunVespersRes.json()
 
-    // Concluding prayer text should differ — firstVespers backstops to
-    // Sunday's regular vespers, while lauds uses Sunday's own
-    // morning concluding prayer.
+    // The book prints ONE concluding prayer per Ordinary-Time Sunday, so
+    // lauds / vespers / 1st Vespers legitimately share it (an earlier
+    // version of this guard wrongly asserted fv ≠ lauds). The hour-scoped
+    // contract is: the collect exists, is non-empty, and comes from the
+    // Sunday's own propers (identical to Sunday vespers).
     const fvCp = fv.sections.find((s: { type: string }) => s.type === 'concludingPrayer')
     const lCp = lauds.sections.find((s: { type: string }) => s.type === 'concludingPrayer')
+    const vCp = vespers.sections.find((s: { type: string }) => s.type === 'concludingPrayer')
     expect(fvCp).toBeTruthy()
     expect(lCp).toBeTruthy()
-    expect(fvCp.text).not.toBe(lCp.text)
+    expect(vCp).toBeTruthy()
+    expect(String(fvCp.text).trim().length).toBeGreaterThan(0)
+    expect(fvCp.text).toBe(vCp.text)
+
+    // What IS hour-scoped: the psalmody. 1st Vespers must carry the
+    // evening psalter (Week-1 Sunday 1st Vespers set), never the Sunday
+    // morning (lauds) set.
+    const refsOf = (body: { sections: Array<{ type: string; psalms?: Array<{ reference: string }> }> }) =>
+      (body.sections.find((s) => s.type === 'psalmody')?.psalms ?? []).map((p) => p.reference)
+    const fvRefs = refsOf(fv)
+    const laudsRefs = refsOf(lauds)
+    expect(fvRefs.length).toBeGreaterThan(0)
+    expect(laudsRefs.length).toBeGreaterThan(0)
+    expect(fvRefs).not.toEqual(laudsRefs)
+    for (const ref of fvRefs) expect(laudsRefs).not.toContain(ref)
   })
 
   test('Advent Dec 20: date-keyed propers differ from regular Advent weekday', async ({ request }) => {

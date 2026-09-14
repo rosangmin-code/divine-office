@@ -266,7 +266,7 @@ test.describe('FR-160-B PR-9b — non-runtime-surfacing rubrics (data-layer cove
   })
 
   // @fr FR-160-B-5b
-  test('inventory invariant: 22 ConditionalRubric entries total, all covered by PR-9b suite', () => {
+  test('inventory invariant: 49 ConditionalRubric entries total, all covered by PR-9b suite', () => {
     // Closure check: aggregate the rubric IDs we cover across the
     // PR-9b e2e suite (active dispatch tests + data-layer authored
     // tests). Guards against silent rubric additions in future PRs
@@ -296,8 +296,47 @@ test.describe('FR-160-B PR-9b — non-runtime-surfacing rubrics (data-layer cove
       'ot-christtheking-sun-vespers2-psalmody-substitute',
       'easter-ascension-sun-lauds-psalmody-substitute',
       'easter-ascension-sun-vespers2-psalmody-substitute',
+      // GOAL #27 (#27-sub-1, 16e8741) — 01-01 Mary Mother of God EP-II
+      // (vespers2) borrows Week-1 Sunday psalmody. 1 entry.
+      'sanctoral-solemnity-01-01-mother-of-god-vespers2-psalmody-substitute',
+      // wi-110-001 (4bdf5a0) — align solemnity psalter fallbacks:
+      //   (a) movable-Solemnity firstVespers on a WEEKDAY eve keeps the
+      //       running psalter and surfaces a note-only rubric. 5 entries.
+      'easter-ascension-sun-firstvespers-weekday-psalmody-notice',
+      'ot-trinity-sun-firstvespers-weekday-psalmody-notice',
+      'ot-corpus-sun-firstvespers-weekday-psalmody-notice',
+      'ot-sacredheart-sun-firstvespers-weekday-psalmody-notice',
+      'ot-christtheking-sun-firstvespers-weekday-psalmody-notice',
+      //   (b) 7 fixed-date solemnities × {firstvespers-weekday notice,
+      //       lauds substitute, vespers2-weekday notice}. 21 entries.
+      'sanctoral-solemnity-03-19-st-joseph-firstvespers-weekday-psalmody-notice',
+      'sanctoral-solemnity-03-19-st-joseph-lauds-psalmody-substitute',
+      'sanctoral-solemnity-03-19-st-joseph-vespers2-weekday-psalmody-notice',
+      'sanctoral-solemnity-03-25-annunciation-firstvespers-weekday-psalmody-notice',
+      'sanctoral-solemnity-03-25-annunciation-lauds-psalmody-substitute',
+      'sanctoral-solemnity-03-25-annunciation-vespers2-weekday-psalmody-notice',
+      'sanctoral-solemnity-06-24-baptist-firstvespers-weekday-psalmody-notice',
+      'sanctoral-solemnity-06-24-baptist-lauds-psalmody-substitute',
+      'sanctoral-solemnity-06-24-baptist-vespers2-weekday-psalmody-notice',
+      'sanctoral-solemnity-06-29-peter-paul-firstvespers-weekday-psalmody-notice',
+      'sanctoral-solemnity-06-29-peter-paul-lauds-psalmody-substitute',
+      'sanctoral-solemnity-06-29-peter-paul-vespers2-weekday-psalmody-notice',
+      'sanctoral-solemnity-08-15-assumption-firstvespers-weekday-psalmody-notice',
+      'sanctoral-solemnity-08-15-assumption-lauds-psalmody-substitute',
+      'sanctoral-solemnity-08-15-assumption-vespers2-weekday-psalmody-notice',
+      'sanctoral-solemnity-11-01-all-saints-firstvespers-weekday-psalmody-notice',
+      'sanctoral-solemnity-11-01-all-saints-lauds-psalmody-substitute',
+      'sanctoral-solemnity-11-01-all-saints-vespers2-weekday-psalmody-notice',
+      'sanctoral-solemnity-12-08-immaculate-conception-firstvespers-weekday-psalmody-notice',
+      'sanctoral-solemnity-12-08-immaculate-conception-lauds-psalmody-substitute',
+      'sanctoral-solemnity-12-08-immaculate-conception-vespers2-weekday-psalmody-notice',
     ])
-    expect(expected.size).toBe(22)
+    // 22 (PR-9b + GOAL #20) + 1 (GOAL #27) + 5 + 21 (wi-110-001) = 49.
+    // Re-derive with: node -e "…scan conditionalRubrics across the 8 data
+    // files…" (see the `scan` walker below) whenever a data PR adds rubrics,
+    // and extend this manifest in the same PR.
+    const EXPECTED_TOTAL = 49
+    expect(expected.size).toBe(EXPECTED_TOTAL)
 
     // Discover every rubricId in the data files and assert no surprise
     // additions / removals.
@@ -329,7 +368,7 @@ test.describe('FR-160-B PR-9b — non-runtime-surfacing rubrics (data-layer cove
     }
     for (const f of files) scan(readJson(f))
 
-    expect(found.size, '22 ConditionalRubric entries total in data').toBe(22)
+    expect(found.size, `${EXPECTED_TOTAL} ConditionalRubric entries total in data`).toBe(EXPECTED_TOTAL)
     for (const id of expected) {
       expect(found.has(id), `expected rubric ${id} present in data`).toBe(true)
     }
