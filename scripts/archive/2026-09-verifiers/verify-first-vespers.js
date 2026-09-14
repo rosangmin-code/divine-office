@@ -11,9 +11,9 @@
 const fs = require('fs')
 const path = require('path')
 const { spawnSync } = require('child_process')
-const { buildPageIndex, annotatePagesInPlace } = require('./lib/first-vespers-page-annotator')
+const { buildPageIndex, annotatePagesInPlace } = require('../../lib/first-vespers-page-annotator')
 
-const ROOT = path.resolve(__dirname, '..')
+const ROOT = path.resolve(__dirname, '../../..') // archived under scripts/archive/2026-09-verifiers/
 const EXTRACTED_PATH = path.join(ROOT, 'scripts', 'output', 'first-vespers-extracted.json')
 const EXTRACTOR_PATH = path.join(ROOT, 'scripts', 'extract-first-vespers.js')
 const PROPERS_DIR = path.join(ROOT, 'src', 'data', 'loth', 'propers')
