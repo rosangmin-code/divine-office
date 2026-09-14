@@ -202,6 +202,47 @@ describe('FR-160-B ConditionalRubric schema', () => {
     })
     expect(bad.success).toBe(false)
   })
+
+  // @fr FR-160-B-1 — P0-6: `evidencePdf.kind` provenance flag. A
+  // 'rationale' entry (book prints no instruction at `page`) must justify
+  // itself with `liturgicalBasis`; 'verbatim' / absent stays the default.
+  it("accepts evidencePdf.kind 'rationale' when liturgicalBasis is present", () => {
+    const ok = ConditionalRubricSchema.safeParse({
+      rubricId: 'ot-trinity-sun-lauds-psalmody-substitute',
+      when: { season: ['ORDINARY_TIME'], dayOfWeek: ['SUN'] },
+      action: 'substitute',
+      target: { text: 'x. 58', psalterRef: { week: 1, day: 'SUN', hour: 'lauds' } },
+      appliesTo: { section: 'psalmody' },
+      evidencePdf: { page: 747, line: 25888, kind: 'rationale', text: '[Ерөнхий хэм хэмжээ] …' },
+      liturgicalBasis: 'GILH general norm; PDF p.747 prints only the Benedictus antiphon',
+    })
+    expect(ok.success).toBe(true)
+  })
+
+  // @fr FR-160-B-1
+  it("rejects evidencePdf.kind 'rationale' without liturgicalBasis", () => {
+    const bad = ConditionalRubricSchema.safeParse({
+      rubricId: 'unjustified-rationale',
+      when: { season: ['ORDINARY_TIME'] },
+      action: 'substitute',
+      target: { text: 'x' },
+      appliesTo: { section: 'psalmody' },
+      evidencePdf: { page: 747, kind: 'rationale', text: 'note' },
+    })
+    expect(bad.success).toBe(false)
+  })
+
+  // @fr FR-160-B-1
+  it('rejects an evidencePdf.kind outside verbatim / rationale', () => {
+    const bad = ConditionalRubricSchema.safeParse({
+      rubricId: 'bad-kind',
+      when: { season: ['LENT'] },
+      action: 'skip',
+      appliesTo: { section: 'gospelCanticle' },
+      evidencePdf: { page: 100, kind: 'guess', text: 'x' },
+    })
+    expect(bad.success).toBe(false)
+  })
 })
 
 describe('FR-160-B PageRedirect schema', () => {

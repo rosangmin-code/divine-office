@@ -57,8 +57,12 @@ jobs:
       - name: Traceability matrix drift check
         run: node scripts/generate-test-fr-map.mjs --check
 
-      - name: Phrase coverage gate (NFR-009j)
-        run: npm run verify:phrase-coverage:check
+      # 읽기 전용 데이터 verifier 14종 (phrase-coverage NFR-009j 포함).
+      # parsed_data/full_pdf.txt 는 gitignore 라 CI 에 없다 — PDF-anchored 3종
+      # (rubric-coverage / seasonal-antiphons / ref-consistency) 은 러너가
+      # "SKIP (SoT absent)" 로 통과시킨다. 로컬에서는 전부 실행됨.
+      - name: Data verifiers (npm run verify:all)
+        run: npm run verify:all
 
       # tsc 뒤에 두어 .next/dev/types 로 인한 거짓 tsc 실패(memory:
       # stale-next-types) 를 피한다. 산출물은 e2e job 이 `next start` 로 서빙.

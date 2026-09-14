@@ -218,10 +218,22 @@ export const PageRedirectOrdinariumKeyEnum = z.enum([
   'hymns',
 ])
 
+// `kind` (P0-6, 2026-09-14) — provenance of `text`:
+//   - 'verbatim' (default when absent): `text` is a byte-equal excerpt that
+//     `scripts/verify-conditional-rubric-coverage.js` asserts exists at
+//     `page` in parsed_data/full_pdf.txt.
+//   - 'rationale': the book prints NO instruction at `page` (e.g. the
+//     movable Solemnities of the Lord print only antiphons + prayers); the
+//     rubric is derived from a general norm (GILH) mirrored from an
+//     explicit printed model elsewhere. `text` is an explanatory note, the
+//     PDF-existence check is skipped, and `liturgicalBasis` is mandatory.
+const EvidencePdfKindEnum = z.enum(['verbatim', 'rationale'])
+
 const EvidencePdfSchema = z.object({
   page: z.number().int().min(1),
   line: z.number().int().min(0).optional(),
   text: z.string().min(1),
+  kind: EvidencePdfKindEnum.optional(),
 })
 
 const ConditionalRubricWhenSchema = z
@@ -302,6 +314,10 @@ export const ConditionalRubricSchema = z
           rubric.target.textRich != null ||
           rubric.target.ordinariumKey != null)),
     { message: 'non-skip actions require target with at least one resolvable field' },
+  )
+  .refine(
+    (rubric) => rubric.evidencePdf.kind !== 'rationale' || rubric.liturgicalBasis != null,
+    { message: "evidencePdf.kind 'rationale' requires liturgicalBasis" },
   )
 
 export const PageRedirectSchema = z.object({

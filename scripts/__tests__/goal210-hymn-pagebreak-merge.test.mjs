@@ -355,16 +355,23 @@ const AREA_HASHES = {
     '06837c6af60899053b94bb55850063f281773a2f2207e768a3c9080d83b9077d',
   // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
   // space-split correction (owctononuudiig tailvshruulzh, easter:540/865).
+  // P0-6 A (2026-09-14): ascension lauds/vespers2 conditionalRubrics[0]
+  // gained `"kind": "rationale",` inside evidencePdf (2 lines). Insertion
+  // only — Mongolian text byte-unchanged (verified by strip-and-compare).
   'src/data/loth/propers/easter.json':
-    'd1a8e024e42f175f1acdaf3b3009f004acd838a860c526cfbb20948ac56758da',
+    'eaee7a4314fa5a297770b956e307c8d1cf4ca0dfa249cbc80d0a0055f1df3ed4',
   // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
   // space-split correction (owctononuudiig tailvshruulzh, lent:618).
   'src/data/loth/propers/lent.json':
     '2eaf15d01e4a18b50288b0d1b56918e680c7e355c3adffaeeddd2baf8d0bce39',
   // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
   // space-split correction (owctononuudiig tailvshruulzh, ordinary-time x8).
+  // P0-6 A (2026-09-14): trinitySunday / corpusChristi / sacredHeart /
+  // christTheKing lauds+vespers2 conditionalRubrics[0] gained
+  // `"kind": "rationale",` inside evidencePdf (8 lines). Insertion only —
+  // Mongolian text byte-unchanged (verified by strip-and-compare).
   'src/data/loth/propers/ordinary-time.json':
-    '9581c3177314e1d9687ebc0a74b924d1715f6c5546b136441e1fac597871ef28',
+    '9eb9f6f0456be326a6b81a915621edb45c344e180f6ba100e0d5b17b6271e942',
   // g-36 (WI-50/51): sanctoral 추출오타 35건 PDF-fidelity 교정 (full_pdf.txt L28000+ 대조)
   // g-41 (WI-60): 08-06 Transfiguration held-divergence restore — vespers antiphon
   // (минь ангижруулдаг…) + vespers/lauds/vespers2 concludingPrayer Эцгүүдийг +

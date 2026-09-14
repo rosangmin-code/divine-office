@@ -3510,6 +3510,7 @@
               "evidencePdf": {
                 "page": 747,
                 "line": 14613,
+                "kind": "rationale",
                 "text": "[Ерөнхий хэм хэмжээ] Эзэний их баярын Дуулал ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна (Амилалт/Пэнтикост х.58 загвар). 4 долоо хоногийн дуулал номонд Гурвалын их баярын Өглөөний даатгал залбиралд тусгай дуулал хэвлэгдээгүй (зөвхөн Захариагийн магтаалын Шад магтаал, х.747)."
               },
               "liturgicalBasis": "Trinity Sunday is a Solemnity of the Lord; its Lauds psalmody is drawn from psalter Week 1 Sunday (GILH general norm). The four-week psalter prints only the Benedictus antiphon + prayers for this section (p.747-748), no proper psalms — mirroring the explicit Easter/Pentecost 'х.58' borrow rubric."
@@ -3536,6 +3537,7 @@
               "evidencePdf": {
                 "page": 748,
                 "line": 14651,
+                "kind": "rationale",
                 "text": "[Ерөнхий хэм хэмжээ] Эзэний их баярын 2 дугаар Оройн даатгал залбирлын Дуулал ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна (Амилалт/Пэнтикост х.58 загвар). 4 долоо хоногийн дуулал номонд Гурвалын их баярын 2 дугаар Оройн даатгал залбиралд тусгай дуулал хэвлэгдээгүй (зөвхөн Мариагийн магтаалын Шад магтаал, х.748-749)."
               },
               "liturgicalBasis": "Trinity Sunday Second Vespers psalmody is drawn from psalter Week 1 Sunday (GILH general norm). The four-week psalter prints only the Magnificat antiphon for this section (p.748-749), no proper psalms — mirroring the Easter/Pentecost 'х.58' borrow rubric."
@@ -3585,6 +3587,7 @@
               "evidencePdf": {
                 "page": 749,
                 "line": 14653,
+                "kind": "rationale",
                 "text": "[Ерөнхий хэм хэмжээ] Эзэний их баярын Дуулал ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна (Амилалт/Пэнтикост х.58 загвар). 4 долоо хоногийн дуулал номонд Христийн Бие ба Цусны баярын Өглөөний даатгал залбиралд тусгай дуулал хэвлэгдээгүй (зөвхөн Захариагийн магтаалын Шад магтаал, х.749)."
               },
               "liturgicalBasis": "Corpus Christi (Body and Blood of the Lord) is a Solemnity of the Lord; its Lauds psalmody is drawn from psalter Week 1 Sunday (GILH general norm). The four-week psalter prints only the Benedictus antiphon + prayers (p.749-751), no proper psalms — mirroring the Easter/Pentecost 'х.58' borrow rubric."
@@ -3607,6 +3610,7 @@
               "evidencePdf": {
                 "page": 750,
                 "line": 14695,
+                "kind": "rationale",
                 "text": "[Ерөнхий хэм хэмжээ] Эзэний их баярын 2 дугаар Оройн даатгал залбирлын Дуулал ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна (Амилалт/Пэнтикост х.58 загвар). 4 долоо хоногийн дуулал номонд Христийн Бие ба Цусны баярын 2 дугаар Оройн даатгал залбиралд тусгай дуулал хэвлэгдээгүй (зөвхөн Мариагийн магтаалын Шад магтаал, х.750-751)."
               },
               "liturgicalBasis": "Corpus Christi Second Vespers psalmody is drawn from psalter Week 1 Sunday (GILH general norm). The four-week psalter prints only the Magnificat antiphon (p.750-751), no proper psalms. season-only `when` (no dayOfWeek gate) so the borrow also fires when the Solemnity is kept on its proper Thursday (the SUN-slot block backs both)."
@@ -3656,6 +3660,7 @@
               "evidencePdf": {
                 "page": 751,
                 "line": 14690,
+                "kind": "rationale",
                 "text": "[Ерөнхий хэм хэмжээ] Эзэний их баярын Дуулал ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна (Амилалт/Пэнтикост х.58 загвар). 4 долоо хоногийн дуулал номонд Есүсийн Ариун Нандин Зүрхний баярын Өглөөний даатгал залбиралд тусгай дуулал хэвлэгдээгүй (зөвхөн Захариагийн магтаалын Шад магтаал, х.751)."
               },
               "liturgicalBasis": "The Most Sacred Heart of Jesus is a Solemnity of the Lord; its Lauds psalmody is drawn from psalter Week 1 Sunday (GILH general norm). The four-week psalter prints only the Benedictus antiphon + prayers (p.751-752), no proper psalms — mirroring the Easter/Pentecost 'х.58' borrow rubric."
@@ -3678,6 +3683,7 @@
               "evidencePdf": {
                 "page": 752,
                 "line": 14730,
+                "kind": "rationale",
                 "text": "[Ерөнхий хэм хэмжээ] Эзэний их баярын 2 дугаар Оройн даатгал залбирлын Дуулал ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна (Амилалт/Пэнтикост х.58 загвар). 4 долоо хоногийн дуулал номонд Есүсийн Ариун Нандин Зүрхний баярын 2 дугаар Оройн даатгал залбиралд тусгай дуулал хэвлэгдээгүй (зөвхөн Мариагийн магтаалын Шад магтаал, х.752)."
               },
               "liturgicalBasis": "Sacred Heart Second Vespers psalmody is drawn from psalter Week 1 Sunday (GILH general norm). The four-week psalter prints only the Magnificat antiphon (p.752), no proper psalms. season-only `when` (no dayOfWeek gate) because the Solemnity is kept on its proper Friday (the SUN-slot block backs the weekday celebration)."
@@ -3725,6 +3731,7 @@
               "evidencePdf": {
                 "page": 816,
                 "line": 15868,
+                "kind": "rationale",
                 "text": "[Ерөнхий хэм хэмжээ] Эзэний их баярын Дуулал ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна (Амилалт/Пэнтикост х.58 загвар). 4 долоо хоногийн дуулал номонд Ертөнцийн Хаан Христийн баярын Өглөөний даатгал залбиралд тусгай дуулал хэвлэгдээгүй (зөвхөн Захариагийн магтаалын Шад магтаал, х.816)."
               },
               "liturgicalBasis": "Christ the King (Our Lord Jesus Christ, King of the Universe) is a Solemnity of the Lord; its Lauds psalmody is drawn from psalter Week 1 Sunday (GILH general norm). The four-week psalter prints only the Benedictus antiphon + prayers (p.816-817), no proper psalms — mirroring the Easter/Pentecost 'х.58' borrow rubric."
@@ -3747,6 +3754,7 @@
               "evidencePdf": {
                 "page": 817,
                 "line": 15890,
+                "kind": "rationale",
                 "text": "[Ерөнхий хэм хэмжээ] Эзэний их баярын 2 дугаар Оройн даатгал залбирлын Дуулал ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна (Амилалт/Пэнтикост х.58 загвар). 4 долоо хоногийн дуулал номонд Ертөнцийн Хаан Христийн баярын 2 дугаар Оройн даатгал залбиралд тусгай дуулал хэвлэгдээгүй (зөвхөн Мариагийн магтаалын Шад магтаал, х.817)."
               },
               "liturgicalBasis": "Christ the King Second Vespers psalmody is drawn from psalter Week 1 Sunday (GILH general norm). The four-week psalter prints only the Magnificat antiphon (p.817), no proper psalms — mirroring the Easter/Pentecost 'х.58' borrow rubric. The Magnificat antiphon was recovered from the runaway-parse blob that previously contaminated firstVespers.concludingPrayer (WI-21 §3 #6) and is now structured here."

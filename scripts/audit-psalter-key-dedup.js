@@ -23,8 +23,11 @@
  *
  * Read-only — does NOT mutate any data file.
  *
- * Flag:
- *   --check — exit 1 when any redundant key remains (NFR-009g CI gate).
+ * Flags:
+ *   --check    — exit 1 when any redundant key remains (NFR-009g CI gate).
+ *   --no-write — skip writing scripts/out/psalter-key-dedup-audit.{json,md}
+ *                (P0-6: `npm run verify:all` runs the gate without dirtying
+ *                the tracked artefacts; the console summary is unchanged).
  */
 
 import { readFile, writeFile } from 'node:fs/promises'
@@ -205,7 +208,8 @@ async function main() {
     groups: report,
   }
 
-  await writeFile(OUT_JSON, JSON.stringify(summary, null, 2), 'utf8')
+  const noWrite = process.argv.includes('--no-write')
+  if (!noWrite) await writeFile(OUT_JSON, JSON.stringify(summary, null, 2), 'utf8')
 
   // Markdown summary
   const md = []
@@ -234,11 +238,15 @@ async function main() {
     }
     md.push('')
   }
-  await writeFile(OUT_MD, md.join('\n'), 'utf8')
+  if (!noWrite) await writeFile(OUT_MD, md.join('\n'), 'utf8')
 
   console.log(`[audit] groups=${summary.duplicateGroupCount} redundant=${summary.redundantKeyCount} unique=${summary.uniqueSignatureCount}/${summary.totalKeys}`)
-  console.log(`[audit] JSON: scripts/out/psalter-key-dedup-audit.json`)
-  console.log(`[audit] MD: scripts/out/psalter-key-dedup-audit.md`)
+  if (noWrite) {
+    console.log('[audit] --no-write: scripts/out artefacts not updated')
+  } else {
+    console.log(`[audit] JSON: scripts/out/psalter-key-dedup-audit.json`)
+    console.log(`[audit] MD: scripts/out/psalter-key-dedup-audit.md`)
+  }
 
   // NFR-009g CI gate — fail on any redundant key.
   if (process.argv.includes('--check')) {

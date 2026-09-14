@@ -1030,6 +1030,7 @@
               "evidencePdf": {
                 "page": 731,
                 "line": 25371,
+                "kind": "rationale",
                 "text": "[Ерөнхий хэм хэмжээ] Эзэний их баярын Дуулал ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна (Амилалт/Пэнтикост х.58 загвар). 4 долоо хоногийн дуулал номонд Тэнгэрт Халих баярын Өглөөний даатгал залбиралд тусгай дуулал хэвлэгдээгүй (зөвхөн Захариагийн магтаалын Шад магтаал, х.731)."
               },
               "liturgicalBasis": "Ascension is a Solemnity of the Lord; its Lauds psalmody is drawn from psalter Week 1 Sunday (GILH general norm). The four-week psalter prints only the Benedictus antiphon + prayers (p.730-732), no proper psalms — mirroring the explicit Easter/Pentecost 'х.58' borrow rubric. Borrowed psalms receive Easter-season Alleluia augmentation through resolvePsalm (GILH §113)."
@@ -1054,6 +1055,7 @@
               "evidencePdf": {
                 "page": 732,
                 "line": 25403,
+                "kind": "rationale",
                 "text": "[Ерөнхий хэм хэмжээ] Эзэний их баярын 2 дугаар Оройн даатгал залбирлын Дуулал ба магтаалыг 1 дүгээр долоо хоногийн Ням гарагаас татаж авна (Амилалт/Пэнтикост х.58 загвар). 4 долоо хоногийн дуулал номонд Тэнгэрт Халих баярын 2 дугаар Оройн даатгал залбиралд тусгай дуулал хэвлэгдээгүй (зөвхөн Мариагийн магтаалын Шад магтаал, х.732)."
               },
               "liturgicalBasis": "Ascension Second Vespers psalmody is drawn from psalter Week 1 Sunday (GILH general norm). The four-week psalter prints only the Magnificat antiphon (p.732), no proper psalms. season-only `when` (no dayOfWeek gate) because Ascension is kept on its proper Thursday (the SUN-slot block backs the weekday celebration). Borrowed psalms receive Easter Alleluia augmentation via resolvePsalm."

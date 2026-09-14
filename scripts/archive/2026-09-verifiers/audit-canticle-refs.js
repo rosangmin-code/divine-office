@@ -15,7 +15,7 @@
 const fs = require('fs')
 const path = require('path')
 
-const BASE = path.join(__dirname, '..')
+const BASE = path.join(__dirname, '../../..') // archived under scripts/archive/2026-09-verifiers/
 const PSALTER_DIR = path.join(BASE, 'src', 'data', 'loth', 'psalter')
 const TEXTS_PATH = path.join(BASE, 'src', 'data', 'loth', 'psalter-texts.json')
 

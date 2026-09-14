@@ -20,7 +20,11 @@
     "verify:first-vespers-ref": "node scripts/verify-first-vespers-ref-coverage.js",
     "verify:phrase-coverage": "node scripts/verify-phrase-coverage.js",
     "verify:phrase-coverage:check": "node scripts/verify-phrase-coverage.js --check",
-    "verify:hymn-phrase-merge": "node scripts/verify-hymn-phrase-merge.js"
+    "verify:hymn-phrase-merge": "node scripts/verify-hymn-phrase-merge.js",
+    "verify:psalter-parity": "node scripts/verify-psalter-plain-rich-parity.js",
+    "verify:psalter-parity:check": "node scripts/verify-psalter-plain-rich-parity.js --check",
+    "verify:all": "node scripts/verify-all.mjs",
+    "verify:pages": "node scripts/verify-psalter-pages.js && node scripts/verify-psalter-body-pages.js && node scripts/verify-hymn-pages.js && node scripts/verify-compline-pages.js && node scripts/verify-propers-pages.js && node scripts/verify-sanctoral-pages.js"
   },
   "dependencies": {
     "lucide-react": "^1.16.0",

@@ -3,7 +3,7 @@
 - **작성**: 2026-09-13 전체 앱 리뷰 (team-lead; 데이터 파이프라인 리뷰 에이전트가 verifier 27종 실행 → 리더가 드리프트 grep 재확인)
 - **분류**: (A) 데이터 계약 위반 + 검증기 CI 미연결 / (B) 이중 소스(plain/rich) 동기화 누락
 - **심각도**: 높음 (A 는 데이터 계약 위반이 5개월간 미감지, B 는 fallback·검증기 경로가 구본문을 읽음)
-- **상태**: 재현 로그 확보. 수정은 후속 작업.
+- **상태**: ✅ 수정됨 (2026-09-14, 커밋 `3abae18` A / `55dfcaf` B-2 / `b2ddb16` B-1 / `0150695` C — 브랜치 `worktree-agent-a96d95838a5612d8f`, 미push). A: PDF p.731/732/747~752/816/817 에 대체 지시문이 실제로 없음을 확인 → `evidencePdf.kind: 'rationale'` 스키마 도입(liturgicalBasis 필수), 검증기 GREEN. B: parity verifier 첫 실행에서 리포트의 5건 안에 **7토큰** 확인(Wisdom 9 `Түүний буулгаж`→`Түүнийг буулган`, Psalm 135 `хүүхдээс,`→`хүүхэд,` 추가), 전부 SoT 가 rich 와 일치 → plain 7줄 surgical 동기화. Psalm 135 `Далайнуудад` 는 아래 표의 "양쪽 0" 이 오류였음 — SoT L13249(p.384)/L14815(p.429) 2회, #472(77c6252) 에서 이미 PDF 교정된 항목. `scripts/verify-psalter-plain-rich-parity.js --check` (NFR-009n) 신설 + `npm run verify:all` (14종, SoT 부재 시 3종 SKIP) + CI 연결. 죽은 4종은 `scripts/archive/2026-09-verifiers/`.
 
 ---
 

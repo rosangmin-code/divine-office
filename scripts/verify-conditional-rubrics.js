@@ -20,10 +20,15 @@ const ROOT = path.resolve(__dirname, '..')
 
 const MMDD_RE = /^\d{2}-\d{2}$/
 
+// Mirrors `EvidencePdfSchema` in src/lib/schemas.ts. `kind` (P0-6):
+// 'verbatim' (default) = byte-equal PDF excerpt; 'rationale' = derived
+// from a general norm, no printed instruction at `page` (coverage
+// verifier skips the PDF-existence check; liturgicalBasis mandatory).
 const evidencePdfSchema = z.object({
   page: z.number().int().min(1),
   line: z.number().int().min(0).optional(),
   text: z.string().min(1),
+  kind: z.enum(['verbatim', 'rationale']).optional(),
 })
 
 const whenSchema = z
@@ -107,6 +112,10 @@ const conditionalRubricSchema = z
           rubric.target.textRich != null ||
           rubric.target.ordinariumKey != null)),
     { message: 'non-skip actions require target with at least one resolvable field' },
+  )
+  .refine(
+    (rubric) => rubric.evidencePdf.kind !== 'rationale' || rubric.liturgicalBasis != null,
+    { message: "evidencePdf.kind 'rationale' requires liturgicalBasis" },
   )
 
 const PROPERS_FILES = [
