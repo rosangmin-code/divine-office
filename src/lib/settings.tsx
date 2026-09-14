@@ -127,6 +127,9 @@ let snapshotValue: Settings = DEFAULTS
 // in-app WebView) so the snapshot reflects the toggle even when the
 // persisted copy could not be updated. `null` until the first write.
 let memoryValue: Settings | null = null
+// Warn once per session when the storage read fails — getClientSnapshot runs
+// on every render, so an unguarded warn would flood the console.
+let storageReadWarned = false
 
 export function getClientSnapshot(): Settings {
   if (typeof window === 'undefined') return DEFAULTS
@@ -134,7 +137,25 @@ export function getClientSnapshot(): Settings {
   // reference is returned between writes so useSyncExternalStore does not
   // loop (it bails out when getSnapshot() returns an identical value).
   if (memoryValue !== null) return memoryValue
-  const raw = window.localStorage.getItem(STORAGE_KEY)
+  let raw: string | null
+  try {
+    // Both the `window.localStorage` getter (SecurityError under Chrome
+    // "block all cookies", some WebViews, certain Safari settings) and
+    // `getItem` can throw. This runs during render inside the root-level
+    // SettingsProvider, so an uncaught throw takes every page to error.tsx.
+    raw = window.localStorage.getItem(STORAGE_KEY)
+  } catch (err) {
+    if (!storageReadWarned) {
+      storageReadWarned = true
+      console.warn(
+        '[settings] localStorage unavailable — falling back to in-memory settings',
+        err,
+      )
+    }
+    // Return the last successfully parsed value (DEFAULTS until then). Same
+    // reference every call → useSyncExternalStore does not loop.
+    return snapshotValue
+  }
   if (raw !== snapshotRaw) {
     snapshotRaw = raw
     snapshotValue = parseStoredSettings(raw)

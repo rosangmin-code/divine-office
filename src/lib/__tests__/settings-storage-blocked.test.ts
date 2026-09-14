@@ -172,3 +172,94 @@ describe('settings — normal env no-regression (WI-73 D2)', () => {
     expect(win.__events.filter((t) => t === CHANGE_EVENT)).toHaveLength(2)
   })
 })
+
+/**
+ * app-review 2026-09-13 §3.3 H1: `getClientSnapshot` is the
+ * useSyncExternalStore getSnapshot → runs during render inside the root
+ * SettingsProvider. In storage-blocked browsers (Chrome "block all cookies",
+ * some WebViews, certain Safari settings) the `window.localStorage` GETTER
+ * itself throws a SecurityError — before getItem is even reached — and an
+ * unguarded read took every page to error.tsx.
+ */
+// @fr FR-019
+describe('settings — storage-blocked read during render (app-review §3.3 H1)', () => {
+  let warnSpy: ReturnType<typeof vi.spyOn>
+
+  beforeEach(() => {
+    warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    warnSpy.mockRestore()
+  })
+
+  /** `window.localStorage` getter throws (Chrome block-all-cookies shape). */
+  function makeGetterThrowingWindow(): FakeWindow {
+    const win = makeFakeWindow({ throwOnSet: false })
+    Object.defineProperty(win, 'localStorage', {
+      configurable: true,
+      get() {
+        throw new DOMException('Access is denied for this document.', 'SecurityError')
+      },
+    })
+    return win
+  }
+
+  /** Getter resolves but `getItem` throws (WebView variant). */
+  function makeGetItemThrowingWindow(): FakeWindow {
+    const win = makeFakeWindow({ throwOnSet: false })
+    win.localStorage.getItem = () => {
+      throw new DOMException('Access is denied for this document.', 'SecurityError')
+    }
+    return win
+  }
+
+  it('(a) returns DEFAULTS and does not throw when the localStorage getter throws', async () => {
+    const mod = await loadModule(makeGetterThrowingWindow())
+
+    expect(() => mod.getClientSnapshot()).not.toThrow()
+    expect(mod.getClientSnapshot()).toBe(mod.DEFAULTS)
+  })
+
+  it('(b) returns the same reference across calls (useSyncExternalStore guard) and warns once', async () => {
+    const mod = await loadModule(makeGetterThrowingWindow())
+
+    const a = mod.getClientSnapshot()
+    const b = mod.getClientSnapshot()
+    const c = mod.getClientSnapshot()
+    expect(a).toBe(b)
+    expect(b).toBe(c)
+    expect(warnSpy).toHaveBeenCalledTimes(1)
+  })
+
+  it('(c) after writeSettings the in-memory value is returned (getter still throwing)', async () => {
+    const win = makeGetterThrowingWindow()
+    const mod = await loadModule(win)
+    expect(mod.getClientSnapshot().theme).toBe('system')
+
+    expect(() => mod.writeSettings({ theme: 'dark' })).not.toThrow()
+
+    const snap = mod.getClientSnapshot()
+    expect(snap.theme).toBe('dark')
+    expect(snap).toBe(mod.getClientSnapshot()) // stable reference post-write
+    expect(win.__events.filter((t) => t === CHANGE_EVENT)).toHaveLength(1)
+  })
+
+  it('(d) getItem-only throw variant: DEFAULTS, stable reference, single warn', async () => {
+    const mod = await loadModule(makeGetItemThrowingWindow())
+
+    expect(() => mod.getClientSnapshot()).not.toThrow()
+    const a = mod.getClientSnapshot()
+    const b = mod.getClientSnapshot()
+    expect(a).toBe(mod.DEFAULTS)
+    expect(a).toBe(b)
+    expect(warnSpy).toHaveBeenCalledTimes(1)
+  })
+
+  it('(d-2) getItem-only throw variant: writeSettings still takes effect in memory', async () => {
+    const mod = await loadModule(makeGetItemThrowingWindow())
+
+    mod.writeSettings({ fontSize: 'xl' })
+    expect(mod.getClientSnapshot().fontSize).toBe('xl')
+  })
+})
