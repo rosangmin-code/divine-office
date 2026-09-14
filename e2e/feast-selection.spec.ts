@@ -28,16 +28,45 @@ test.describe('Feast / memorial selection', () => {
   })
 
   test('selecting saturday-mary updates the URL and propagates to hour card links', async ({ page }) => {
+    // FR-145 (GOAL #4) — the inline picker on a calendar-list row drives
+    // React state (`onSelectAction`) and does NOT touch the home URL; the
+    // selection is carried to the prayer page purely via the hour-card
+    // hrefs (`?celebration=<id>`), and the prayer page's back link then
+    // restores it on `/?date=&celebration=` (see the back-link test below).
     await page.goto(`/?date=${OT_SATURDAY}`)
 
     const picker = page.getByTestId('celebration-picker').first()
-    await picker.locator('[data-celebration-id="saturday-mary"]').first().click()
-
-    await expect(page).toHaveURL(/celebration=saturday-mary/)
-
+    const maryOption = picker.locator('[data-celebration-id="saturday-mary"]').first()
     const laudsLink = page.getByRole('link', { name: /Өглөөний даатгал залбирал/ }).first()
-    const href = await laudsLink.getAttribute('href')
-    expect(href).toContain('celebration=saturday-mary')
+
+    // Before selection: default → hour cards carry no celebration query.
+    await expect(laudsLink).not.toHaveAttribute('href', /celebration=/)
+
+    await maryOption.click()
+    await expect(maryOption).toHaveAttribute('aria-checked', 'true')
+    await expect(
+      picker.locator('[data-celebration-id="default"]').first(),
+    ).toHaveAttribute('aria-checked', 'false')
+
+    // Home URL stays on the date (state-only selection).
+    await expect(page).toHaveURL(new RegExp(`\\?date=${OT_SATURDAY}$`))
+
+    // Every hour card of that row now propagates the selection.
+    await expect(laudsLink).toHaveAttribute('href', /celebration=saturday-mary/)
+    const rowLinks = page.locator(`a[href^="/pray/${OT_SATURDAY}/"]`)
+    const count = await rowLinks.count()
+    expect(count).toBeGreaterThan(0)
+    for (let i = 0; i < count; i++) {
+      await expect(rowLinks.nth(i)).toHaveAttribute('href', /celebration=saturday-mary/)
+    }
+
+    // Following the card lands on the Mary propers and the back link
+    // round-trips the selection to the home URL.
+    await laudsLink.click()
+    await expect(page).toHaveURL(new RegExp(`/pray/${OT_SATURDAY}/lauds\\?celebration=saturday-mary`))
+    await expect(
+      page.getByRole('link', { name: /Бүх цагийн залбирлууд руу буцах/ }),
+    ).toHaveAttribute('href', /celebration=saturday-mary/)
   })
 
   test('plain weekday hides the picker when only the default option exists', async ({ page }) => {
