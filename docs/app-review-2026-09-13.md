@@ -148,7 +148,7 @@
 
 | # | 심각도 | 위치 | 문제 |
 |---|---|---|---|
-| H1 | 높음 | `settings.tsx:137` | 렌더 중 호출되는 `localStorage.getItem` 에 try/catch 없음 → 저장소 차단 브라우저(쿠키 전체 차단·일부 WebView)에서 SettingsProvider 가 루트를 감싸므로 **모든 페이지가 error.tsx** |
+| H1 | 높음 | `settings.tsx:137` | ✅ **2026-09-14 수정** (`0dd0018`): `getClientSnapshot` 의 `window.localStorage` getter·`getItem` 을 try/catch 로 감싸 실패 시 마지막 파싱값(초기 DEFAULTS) 동일 참조 반환 + warn 1회. 회귀 테스트 5건 (`settings-storage-blocked.test.ts`, @fr FR-019). `sw.js` 무변경. 미push. — 원문: 렌더 중 호출되는 `localStorage.getItem` 에 try/catch 없음 → 저장소 차단 브라우저(쿠키 전체 차단·일부 WebView)에서 SettingsProvider 가 루트를 감싸므로 **모든 페이지가 error.tsx** |
 | H2 | 높음 | `prayer-footer.tsx:61-93` | 본문 아무 곳 탭 = 설정 패널 열기 + 포커스 강제 이동. SR 더블탭에 파괴적, `role=dialog`/inert 없음, 백드롭 `<button aria-hidden>` |
 | H3 | 높음 | `gospel-canticle-section.tsx:312-357`, `hymn-section.tsx:63-110`, `invitatory-section.tsx:99-143`, `marian-antiphon-section.tsx:109-156` | 커스텀 listbox 4곳: `<li role=option>` 안 `<button>` 중첩, 화살표/Esc/포커스 관리 전무, `aria-activedescendant` 없음 |
 | H4 | 높음 | `page-ref.tsx:14`, `footer.tsx:41,44`, `pray/[date]/[hour]/page.tsx:96`, `liturgical-calendar-row.tsx:91,103`, `psalm-block.tsx:125,337,344` | 색 대비 3.2~3.8:1 (stone-400, 골드 kicker, 오늘 행 골드, 다크 stone-500) — DESIGN.md 자체 AA 4.5:1 미달 |
