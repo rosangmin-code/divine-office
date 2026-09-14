@@ -274,3 +274,18 @@ P0 전례 버그 수정 브랜치를 검증하며 **UI e2e 전체(976 케이스)
 **권장**: (1) 사문화 셀렉터·상수·라벨 건은 현재 UI 기준으로 일괄 갱신(대부분 기계적), (2) `first-vespers`/`movable-first-vespers`/`solemnity-first-vespers` 의 "전야 본기도·후렴이 당일 것" 은 별도 버그 조사 후 테스트 복원, (3) 갱신이 끝나면 §3.5 제안대로 핵심 spec 을 CI 에 승격하고 나머지는 nightly 로 — 그래야 이 표가 다시 자라지 않는다.
 
 로그: 세션 scratchpad `verify/e2e.log`(브랜치), `verify/e2e-main-parity.log`(main, prod), `e2edev/e2e-dev.log`(main, dev), `e2edev/compare.txt`.
+
+---
+
+## 8. P1 진행 (2026-09-14) 및 잠재 회귀 격리 4건
+
+P1 세 건 완료 (`0dd0018` settings localStorage 보호 / `42b8dfc` 시편·찬가 헤더 참조 몽골어 표기 / `af8a3ef`~`2c7221c` UI e2e 101건 정리). e2e 는 934 passed / 0 failed / 42 skipped. §7 의 101건 중 93건은 테스트 측 갱신으로 GREEN, **8건(4 테스트 × 2 프로젝트)은 앱 동작이 의심되어 `test.fixme` 로 격리**했다. §7 표의 "전야 본기도가 당일 것" 분류는 부정확했고, 실제로는 **같은 대축일 블록의 `alternativeConcludingPrayer` 가 primary 로 swap** 된 것이다.
+
+| 테스트 | 증상 | 재현 | 판단 |
+|---|---|---|---|
+| `first-vespers.spec.ts:239` (2025-11-29 토 `/vespers`) | 연중 34주 → 대림 1주 경계 토요일 저녁이 대림 제1저녁기도로 승격되지 않음 (season ORDINARY_TIME, 시편 141/142/필리 에 psalter 기본 후렴) | `/api/loth/2025-11-30/firstVespers` 는 정상(ADVENT + advent 후렴), `/api/loth/2025-11-29/vespers` 만 실패 | **조사 필요**. `5cc8a80` 이 2026-11-28 은 고쳤으나 2025-11-29 는 다른 경로(`liturgicalDay.season` 재라벨)일 가능성 |
+| `movable-first-vespers.spec.ts:46` (2026-05-13 수, 승천 전야) | concludingPrayer 가 `alternativeConcludingPrayer` | 정식 `/api/loth/2026-05-14/firstVespers` 도 동일 | F-2(#214) `shouldUseAlternateConcludingPrayer`(SOLEMNITY && dayOfWeek≠SUN, 책 p.516 rubric) 의 **의도된 swap 일 가능성 높음** — 테스트가 F-2 이전 작성. 확인 후 단언을 `text ∪ alternateText` 로 |
+| `movable-first-vespers.spec.ts:82` (2026-05-30 토, 삼위일체 전야) | 대축일이 **주일**인데 swap 발화 | 정식 `/api/loth/2026-05-31/firstVespers` 는 primary, 전야 `/api/loth/2026-05-30/vespers` 만 alternative | **조사 필요**. `vespers.ts:85` 가 `ctx.dayOfWeek`(=SAT) 로 판정해 승격된 SUN 을 미반영 의심 |
+| `solemnity-first-vespers.spec.ts:62` (2026-12-24 목, 성탄 전야) | concludingPrayer 가 alternative + `alternateTextRich` 에 대림 1주 목요일 vespers rich(page 571) 혼입 | 정식 경로도 alternative(F-2 의도 가능) | swap 은 #46 과 같은 판단. **`alternateTextRich` 혼입은 별도 버그** — rich overlay 키가 전야 날짜의 시즌 propers 로 조회되는 것으로 보임 |
+
+관련 pre-existing: `notFound()` 가 `loading.tsx` 스트리밍 뒤라 잘못된 날짜/시간경 URL 이 HTTP 200 (§2). `error-handling.spec.ts` 는 본문 단언으로 전환했고 상태코드 문제는 별도 과제.
