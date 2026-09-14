@@ -289,3 +289,16 @@ P1 세 건 완료 (`0dd0018` settings localStorage 보호 / `42b8dfc` 시편·�
 | `solemnity-first-vespers.spec.ts:62` (2026-12-24 목, 성탄 전야) | concludingPrayer 가 alternative + `alternateTextRich` 에 대림 1주 목요일 vespers rich(page 571) 혼입 | 정식 경로도 alternative(F-2 의도 가능) | swap 은 #46 과 같은 판단. **`alternateTextRich` 혼입은 별도 버그** — rich overlay 키가 전야 날짜의 시즌 propers 로 조회되는 것으로 보임 |
 
 관련 pre-existing: `notFound()` 가 `loading.tsx` 스트리밍 뒤라 잘못된 날짜/시간경 URL 이 HTTP 200 (§2). `error-handling.spec.ts` 는 본문 단언으로 전환했고 상태코드 문제는 별도 과제.
+
+### 8.1 격리 4건 결과 (2026-09-14) → `docs/bug-reports/2026-09-14-eve-vespers-alternate-and-rich.md`
+
+| 건 | 판정 | 근거 | 조치 |
+|---|---|---|---|
+| 건 2 승천 전야 05-13 · 성탄 전야 12-24 alternative | **의도된 동작** | 책 p.516 (`full_pdf.txt` L17864 "Эсвэл: Ням гарагт үл тохиох Их баярын өдөр") — 목·금요일 대축일은 대체 본기도가 기본; `/firstVespers` 라우트와 동일 | 코드 무수정. e2e 기대값을 alternate 로 갱신 + primary 가 `alternateText` 인지·라우트 일치·rich page 일치 단언, fixme 해제 (`3c22b21`) |
+| 건 3 삼위일체 전야 05-30 swap | **버그** | `vespers.ts:85` 가 rank 는 승격된 내일, 요일은 전야 `ctx.dayOfWeek`(SAT). romcal 이 모든 주일을 SOLEMNITY 로 내므로 **매 토요일 저녁**(46/년) 이 대체본 — `/firstVespers` 라우트와 불일치 (#242 `1f4ccb7` 이후) | `resolveConcludingPrayerSwap(ctx)` 한 곳에서 rank+요일을 `effectiveLiturgicalDay.date` 기준으로, lauds/vespers/compline 공유 (`88ed2d3`). 회귀 없음: 05-13·12-24·08-14/08-15(토요일 대축일)·부활 8일 불변 |
+| 건 4 성탄 전야 `alternateTextRich` 대림 1주 목 p.571 | **버그** (같은 클래스가 대축일 당일 lauds/vespers·성삼일 응송·대축일 제2저녁기도에도) | Layer 4 rich 가 오늘의 (시즌/주차/요일) 로만 조회, plain 의 layer 를 보지 않음. main 에서 concludingPrayer rich page ≠ plain page 26건 (모든 성인 11-01 lauds 가 연중 31주일 본기도 rich p.811, 승천 05-14 제2저녁기도 text '' 등) | 전야 분기 rich identity = 내일 + `applyRichSourceParity`(rich 는 생성된 cell 의 plain 과 글자 단위로 같을 때만) + dec17~24 rich tier (`2601f59`). 수정 후 26 → 0 |
+| 건 1 2025-11-29 대림 미승격 | **반 버그 / 반 제품 결정** | 2026-11-28 과 동일 동작(연도 차 아님). propers 는 `5cc8a80` 로 대림; 시편 후렴 시즌 변형만 토요일 `day.season`(OT) 로 골라 미적용. `liturgicalDay` 는 현행 계약(civil identity 유지) | 시편 해석 season = `effectiveLiturgicalDay.season` (`5b7de1d`). 후렴·본기도·Magnificat 단언은 fixme 해제, `liturgicalDay` 재라벨 기대는 별도 테스트로 분리해 fixme 유지 |
+
+main 대비 2026 전 일자 출력 sweep: 바뀐 셀 93 = 토요일 swap 해제 46 · 전야 rich 소스 정정 4 · 타 cell rich 제거 21(+성삼일 5, 12-24 lauds dec24 tier 1) · 사순/대림/부활 주일 `/firstVespers` 독서·응송·청원 rich 제거 16 (plain 이 시편집 발췌 cell 이라 시즌 rich 와 달랐던 것 — 병합 순서는 제품 결정) · 시편 후렴 대림 변형 1. 범주 밖 없음. 게이트: vitest 119/1,961 · tsc · lint · traceability · verify:all 14 PASS · e2e 5 spec 72 passed/2 skipped(제품 결정 fixme) + 관련 19 spec 188 passed. `sw.js` 는 SSR/API 응답만 바뀌어 bump 대상 아님.
+
+**제품 결정 필요** (리포트 §6): ① 전야 응답 `liturgicalDay` 재라벨 여부 — 권장 유지 + `effectiveLiturgicalDay` API 노출; ② 주일 제1저녁기도의 독서·응송·청원을 시즌 고유부 우선으로 병합할지 — 권장 시즌 우선 (GILH); ③ `-vespers2.rich.json` 읽기 convention; ④ 12-25 sanctoral ↔ christmas.json Magnificat 후렴 한 글자 드리프트(`өргөөнөөсөө`/`өргөнөөсөө`).
