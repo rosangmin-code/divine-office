@@ -45,7 +45,8 @@
 ### P0-5. 배포 게이트 — main 브랜치 보호 + required checks + CI `next build`
 현재 push 즉시 Vercel 배포, CI 는 사후 통보(`gh api …/branches/main/protection` 404, `vercel.json` 에 체크 연동 없음). SW 캐시 회귀(CLAUDE.md 1순위 리스크)를 자동으로 막는 장치가 없다.
 
-### P0-6. 데이터 검증기 RED 정리 → `docs/bug-reports/2026-09-13-verifier-red-and-plain-rich-drift.md`
+### P0-6. ✅ 데이터 검증기 RED 정리 → `docs/bug-reports/2026-09-13-verifier-red-and-plain-rich-drift.md`
+> **2026-09-14 갱신**: 4커밋으로 수정 (`3abae18` rubric `evidencePdf.kind:'rationale'` 10건 → coverage verifier GREEN · `55dfcaf` plain 5키/7토큰 SoT 동기화 · `b2ddb16` plain↔rich parity verifier NFR-009n · `0150695` 죽은 4종 archive + `npm run verify:all` 14종 + CI 연결). `sw.js` 무변경 — 본문 변경은 SSR HTML 뿐이고 navigation 은 network-only 라 `CACHE_VERSION` bump 대상 아님. 미push.
 `verify-conditional-rubric-coverage.js` 10 errors(이동 대축일 5개의 `evidencePdf.text` 가 PDF 인용이 아닌 설명문) 는 진짜 계약 위반. plain `psalter-texts.json` 4건이 rich 와 달리 2026-05-10 오탈자 교정 미반영(fallback·검증기 지문이 구본문). 죽은 검증기 4종(first-vespers 재추출 diff 3 + audit-canticle-refs) 은 archive.
 
 ---
