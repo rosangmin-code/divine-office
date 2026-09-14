@@ -1,9 +1,12 @@
 import { describe, it, expect } from 'vitest'
+import fs from 'node:fs'
+import path from 'node:path'
 import { assembleHour } from '../loth-service'
 import { getLiturgicalDay } from '../calendar'
 import { dateToDayOfWeek } from '../hours/date-utils'
-import { getSeasonHourPropers, resolveSpecialKey } from '../propers-loader'
-import type { AssembledHour, HourSection } from '../types'
+import { getSeasonHourPropers, getSanctoralPropers, resolveSpecialKey } from '../propers-loader'
+import { applyRichSourceParity } from '../prayers/resolver'
+import type { AssembledHour, HourSection, PrayerText } from '../types'
 
 // docs/bug-reports/2026-09-14-eve-vespers-alternate-and-rich.md
 //
@@ -304,5 +307,87 @@ describe('Plain Sunday First Vespers: reading / responsory / intercessions / pra
     const eve = await assembleHour('2026-09-12', 'vespers')
     expect(section(eve, 'shortReading')?.ref).toBe('2 Peter 1:19-21')
     expect(cp(eve).text).toBe(cp(route).text)
+  })
+})
+
+describe('§6-4 (GOAL #128 B3 fidelity restore) — Christmas First Vespers Magnificat antiphon: christmas.json dec25 agrees with the printed page and the sanctoral copy', () => {
+  // §6-4: `christmas.json weeks.dec25.SUN.vespers.gospelCanticleAntiphon`
+  // read `өргөнөөсөө` (three ө) while the printed page (book p.587,
+  // physical p.294 @200dpi; `parsed_data/full_pdf.txt:20293`) and the
+  // sanctoral 12-25 firstVespers copy read `өргөөнөөсөө` (өргөө-нөөс-өө).
+  // The one-letter drift made `applyRichSourceParity` treat the seasonal
+  // cell and the rendered (sanctoral) plain as two different antiphons.
+  const PRINTED = 'өргөөнөөсөө'
+  const TYPO = 'өргөнөөсөө'
+
+  // @fr FR-156
+  it('seasonal dec25 vespers cell and sanctoral 12-25 firstVespers carry the same printed antiphon', () => {
+    const seasonalCell = getSeasonHourPropers('CHRISTMAS', 1, 'SUN', 'vespers', '2026-12-25', 'Christmas')
+    const sanctoralFv = getSanctoralPropers('12-25')?.firstVespers
+    expect(seasonalCell?.gospelCanticleAntiphon).toContain(PRINTED)
+    expect(seasonalCell?.gospelCanticleAntiphon).not.toContain(TYPO)
+    expect(sanctoralFv?.gospelCanticleAntiphon).toContain(PRINTED)
+    // Letter-for-letter identity (the parity key ignores punctuation only).
+    const identity = (s?: string) => (s ?? '').replace(/[^\p{L}\p{N}]+/gu, '')
+    expect(identity(seasonalCell?.gospelCanticleAntiphon)).toBe(identity(sanctoralFv?.gospelCanticleAntiphon))
+  })
+
+  // @fr FR-156
+  it('a seasonal gospelCanticleAntiphonRich for the dec25 cell now passes parity under the sanctoral firstVespers plain (was dropped by the drift)', () => {
+    const seasonalCell = getSeasonHourPropers('CHRISTMAS', 1, 'SUN', 'vespers', '2026-12-25', 'Christmas')!
+    const sanctoralFv = getSanctoralPropers('12-25')!.firstVespers!
+    // No `gospelCanticleAntiphonRich` is authored for wdec25-SUN-vespers on
+    // disk (only concludingPrayer / intercessions / responsory /
+    // shortReading rich) — exercise the guard with a synthetic candidate
+    // generated "from" the seasonal cell so the render path would attach it.
+    const candidate: PrayerText = {
+      blocks: [{ kind: 'para', spans: [{ kind: 'text', text: seasonalCell.gospelCanticleAntiphon! }] }],
+      page: 586,
+    }
+    const kept = applyRichSourceParity(
+      { complineCommons: null, psalterCommons: null, seasonal: { gospelCanticleAntiphonRich: candidate }, sanctoral: null },
+      { seasonal: seasonalCell, sanctoral: sanctoralFv },
+      { ...seasonalCell, ...sanctoralFv },
+    )
+    expect(kept.gospelCanticleAntiphonRich).toBe(candidate)
+    // Counter-check: re-introducing the drift drops it again.
+    const drifted = { ...seasonalCell, gospelCanticleAntiphon: seasonalCell.gospelCanticleAntiphon!.replace(PRINTED, TYPO) }
+    const dropped = applyRichSourceParity(
+      { complineCommons: null, psalterCommons: null, seasonal: { gospelCanticleAntiphonRich: candidate }, sanctoral: null },
+      { seasonal: drifted, sanctoral: sanctoralFv },
+      { ...drifted, ...sanctoralFv },
+    )
+    expect(dropped.gospelCanticleAntiphonRich).toBeUndefined()
+  })
+
+  // @fr FR-156
+  it.each([
+    ['2026-12-24', 'vespers'],
+    ['2026-12-25', 'firstVespers'],
+  ])('%s %s renders the printed antiphon (p.586) with every attached rich page equal to its plain', async (date, hour) => {
+    const h = await assembleHour(date, hour as 'vespers' | 'firstVespers')
+    const gc = section(h, 'gospelCanticle')!
+    expect(gc.antiphon).toContain(PRINTED)
+    expect(gc.antiphon).not.toContain(TYPO)
+    expect(gc.page).toBe(586)
+    if (gc.antiphonRich?.page != null) expect(gc.antiphonRich.page).toBe(586)
+    const c = cp(h)
+    expect(c.textRich?.page).toBe(c.page)
+    expect(section(h, 'shortReading')?.textRich?.page).toBe(586)
+  })
+
+  // @fr FR-156
+  it('the three-ө spelling no longer occurs anywhere under src/data (propers / sanctoral / rich)', () => {
+    const root = path.join(process.cwd(), 'src/data')
+    const hits: string[] = []
+    const walk = (dir: string) => {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const p = path.join(dir, entry.name)
+        if (entry.isDirectory()) walk(p)
+        else if (entry.name.endsWith('.json') && fs.readFileSync(p, 'utf-8').includes(TYPO)) hits.push(path.relative(root, p))
+      }
+    }
+    walk(root)
+    expect(hits).toEqual([])
   })
 })

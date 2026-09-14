@@ -351,8 +351,13 @@ const AREA_HASHES = {
     '193f7d034c1a62380617e7ca5108baf269c01f7fddf6e882fec670a33462e84e',
   // WI-88 (#87): dec25.SUN.vespers2 proper psalmody wiring (Ps 110:1-5,7 /
   // Ps 130 / Col 1:12-20, full_pdf p.592-596).
+  // 2026-09-14 (GOAL #128 §3b B3, requested as STC-005 — fidelity restore,
+  // PDF already correct so no ledger row): dec25.SUN.vespers
+  // .gospelCanticleAntiphon `өргөнөөсөө` → `өргөөнөөсөө` (one dropped `ө`
+  // restored to the printed page, book p.587 / full_pdf.txt:20293; single
+  // word, single line).
   'src/data/loth/propers/christmas.json':
-    '06837c6af60899053b94bb55850063f281773a2f2207e768a3c9080d83b9077d',
+    '7584dce9eb599c7c51638b426b064112523f2a97f4bffe5e28d970e0c864f3e8',
   // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
   // space-split correction (owctononuudiig tailvshruulzh, easter:540/865).
   // P0-6 A (2026-09-14): ascension lauds/vespers2 conditionalRubrics[0]
