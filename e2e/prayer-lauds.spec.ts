@@ -187,9 +187,12 @@ test.describe('Invitatory psalm selection (FR-151)', () => {
     await invitatory.getByTestId('invitatory-psalm-menu-toggle').click()
     await invitatory.getByRole('option', { name: /Дуулал 100:1-5/ }).click()
 
-    // 본문 교체 검증
+    // 본문 교체 검증 — invitatory.json 의 Ps 100 첫 행은 PDF 시행대로
+    // "Бүх газар дэлхий," / "ЭЗЭНд баясалтайгаар хашхирагтун." 두 행이고
+    // invitatory-section.tsx 가 행마다 <p> 를 내므로 행 단위로 확인한다.
     await expect(invitatory.getByText('Дуулал 100:1-5')).toBeVisible()
-    await expect(invitatory.getByText(/Бүх газар дэлхий, ЭЗЭНд баясалтайгаар хашхирагтун/)).toBeVisible()
+    await expect(invitatory.getByText('Бүх газар дэлхий,', { exact: true })).toBeVisible()
+    await expect(invitatory.getByText(/^ЭЗЭНд баясалтайгаар хашхирагтун\./)).toBeVisible()
     await expect(invitatory.getByText(/Ирэгтүн! ЭЗЭНд баясалтайгаар дуулцгаан/)).toHaveCount(0)
 
     // 드롭다운 닫힘

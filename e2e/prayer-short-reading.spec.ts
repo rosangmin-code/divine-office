@@ -1,6 +1,13 @@
 import { test, expect } from '@playwright/test'
 import { DATES } from './fixtures/dates'
 
+// 2026-09-14 — FR-161 R-15 이후 shortReading rich 는 `RichContent
+// flow="natural"` 로 렌더된다: 래퍼 `<div class="space-y-2">` 없이 섹션
+// 바로 아래 `<p data-render-mode="flow">` 한 개가 본문 전체를 자연 wrap 으로
+// 담는다. legacy(plain verses) 분기는 `<div class="space-y-1">` + `<p><sup>`
+// 절 번호. rich 경로의 정체성 = flow 단락 1개 + `<sup>` 0개.
+const RICH_FLOW = 'p[data-render-mode="flow"]'
+
 test.describe('shortReading (Уншлага) Rich overlay — Stage 6 (FR-153e)', () => {
   // @fr FR-153
   test('Advent Sunday lauds renders rich overlay (RichContent wrapper, no legacy verses)', async ({
@@ -13,9 +20,9 @@ test.describe('shortReading (Уншлага) Rich overlay — Stage 6 (FR-153e)'
     const section = page.locator('section[aria-label="Уншлага"]')
     await expect(section).toBeVisible()
 
-    // Rich 경로의 정체성: RichContent 래퍼 (`<div class="space-y-2">`) 1개,
-    // legacy 분기의 `<sup>` 절 번호 없음.
-    const richWrapper = section.locator('div.space-y-2')
+    // Rich 경로의 정체성: natural-flow 단락 1개, legacy 분기의 `<sup>` 절
+    // 번호 없음.
+    const richWrapper = section.locator(RICH_FLOW)
     await expect(richWrapper).toHaveCount(1)
 
     const legacyVerseNumbers = section.locator('sup')
@@ -34,7 +41,7 @@ test.describe('shortReading (Уншлага) Rich overlay — Stage 6 (FR-153e)'
     const section = page.locator('section[aria-label="Уншлага"]')
     await expect(section).toBeVisible()
 
-    const richWrapper = section.locator('div.space-y-2')
+    const richWrapper = section.locator(RICH_FLOW)
     await expect(richWrapper).toHaveCount(1)
 
     const legacyVerseNumbers = section.locator('sup')
@@ -50,7 +57,7 @@ test.describe('shortReading (Уншлага) Rich overlay — Stage 6 (FR-153e)'
     const section = page.locator('section[aria-label="Уншлага"]')
     await expect(section).toBeVisible()
 
-    const richWrapper = section.locator('div.space-y-2')
+    const richWrapper = section.locator(RICH_FLOW)
     await expect(richWrapper).toHaveCount(1)
 
     const legacyVerseNumbers = section.locator('sup')
@@ -63,15 +70,16 @@ test.describe('shortReading (Уншлага) Rich overlay — Stage 6 (FR-153e)'
   }) => {
     // shortReading 은 캐논상 항상 단일 단락이며, PDF 가 줄간 시각적 spacing
     // 으로 빈 라인을 출력해도 buildShortReading 의 collapseBodyBlanks 로
-    // 한 단락으로 reflow 되어야 한다. RichContent 의 직접 자식 `<p>` 가
-    // 정확히 1개여야 함을 검증.
+    // 한 단락으로 reflow 되어야 한다. flow 단락이 정확히 1개이고 그 안에
+    // per-line `display:block` span (legacy line-by-line 렌더) 이 없어야 함.
     await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
     const section = page.locator('section[aria-label="Уншлага"]')
     await expect(section).toBeVisible()
 
-    const richWrapper = section.locator('div.space-y-2')
+    const richWrapper = section.locator(RICH_FLOW)
     await expect(richWrapper).toHaveCount(1)
-    const paragraphs = richWrapper.locator('> p')
-    await expect(paragraphs).toHaveCount(1)
+    await expect(richWrapper.locator('span.block')).toHaveCount(0)
+    // 헤더(제목 + 참조) 2개 + 본문 flow 1개 — 본문 단락은 1개뿐.
+    await expect(section.locator('> p')).toHaveCount(3)
   })
 })

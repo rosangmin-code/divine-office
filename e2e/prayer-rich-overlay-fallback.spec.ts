@@ -1,6 +1,12 @@
 import { test, expect } from '@playwright/test'
 import { DATES } from './fixtures/dates'
 
+// 2026-09-14 — FR-161 R-15 이후 shortReading rich 는 `RichContent
+// flow="natural"` 이 섹션 바로 아래 `<p data-render-mode="flow">` 한 개로
+// 렌더한다 (옛 `<div class="space-y-2">` 래퍼 없음). legacy plain 분기만
+// `<sup>` 절 번호를 낸다. rich 경로의 정체성 = flow 단락 1개 + `<sup>` 0개.
+const RICH_FLOW = 'p[data-render-mode="flow"]'
+
 // @fr FR-153
 // Task #54 — symmetric wk1 fallback for `loadSeasonalRichOverlay`.
 //
@@ -27,8 +33,8 @@ test.describe('seasonal rich overlay wk1 fallback (task #54)', () => {
     const section = page.locator('section[aria-label="Уншлага"]')
     await expect(section).toBeVisible()
 
-    // Rich path: a single RichContent wrapper (no legacy `<sup>` verses).
-    const richWrapper = section.locator('div.space-y-2')
+    // Rich path: a single natural-flow paragraph (no legacy `<sup>` verses).
+    const richWrapper = section.locator(RICH_FLOW)
     await expect(richWrapper).toHaveCount(1)
     await expect(section.locator('sup')).toHaveCount(0)
 
@@ -46,7 +52,7 @@ test.describe('seasonal rich overlay wk1 fallback (task #54)', () => {
     const section = page.locator('section[aria-label="Уншлага"]')
     await expect(section).toBeVisible()
 
-    const richWrapper = section.locator('div.space-y-2')
+    const richWrapper = section.locator(RICH_FLOW)
     await expect(richWrapper).toHaveCount(1)
     await expect(section.locator('sup')).toHaveCount(0)
   })
@@ -60,7 +66,7 @@ test.describe('seasonal rich overlay wk1 fallback (task #54)', () => {
     const section = page.locator('section[aria-label="Уншлага"]')
     await expect(section).toBeVisible()
 
-    const richWrapper = section.locator('div.space-y-2')
+    const richWrapper = section.locator(RICH_FLOW)
     await expect(richWrapper).toHaveCount(1)
     await expect(section.locator('sup')).toHaveCount(0)
   })
@@ -73,7 +79,7 @@ test.describe('seasonal rich overlay wk1 fallback (task #54)', () => {
     const section = page.locator('section[aria-label="Уншлага"]')
     await expect(section).toBeVisible()
 
-    const richWrapper = section.locator('div.space-y-2')
+    const richWrapper = section.locator(RICH_FLOW)
     await expect(richWrapper).toHaveCount(1)
     await expect(section.locator('sup')).toHaveCount(0)
   })
@@ -95,12 +101,12 @@ test.describe('seasonal rich overlay special-key load (task #57)', () => {
     // 2026-05-24 = Pentecost Sunday. day === 'SUN' so
     // `seasonal/easter/wpentecost-SUN-lauds.rich.json` is loaded by Tier 1.
     // The file carries `shortReadingRich`; the page must render
-    // RichContent (single wrapper, no legacy `<sup>` verse numbers).
+    // RichContent (single flow paragraph, no legacy `<sup>` verse numbers).
     await page.goto(`/pray/${DATES.pentecostDay2026}/lauds`)
     const section = page.locator('section[aria-label="Уншлага"]')
     await expect(section).toBeVisible()
 
-    const richWrapper = section.locator('div.space-y-2')
+    const richWrapper = section.locator(RICH_FLOW)
     await expect(richWrapper).toHaveCount(1)
     await expect(section.locator('sup')).toHaveCount(0)
   })
@@ -149,12 +155,12 @@ test.describe('Christmas rich overlay special-key load (task #61)', () => {
     // `src/lib/__tests__/loth-service.test.ts` ("Christmas special-key
     // rich integration" describe) which calls `assembleHour` directly
     // against the real disk. This e2e covers the rendering shape:
-    // RichContent wrapper present, no legacy `<sup>` verse markers.
+    // RichContent flow paragraph present, no legacy `<sup>` verse markers.
     await page.goto(`/pray/${DATES.christmasDay2026}/lauds`)
     const section = page.locator('section[aria-label="Уншлага"]')
     await expect(section).toBeVisible()
 
-    const richWrapper = section.locator('div.space-y-2')
+    const richWrapper = section.locator(RICH_FLOW)
     await expect(richWrapper).toHaveCount(1)
     await expect(section.locator('sup')).toHaveCount(0)
   })

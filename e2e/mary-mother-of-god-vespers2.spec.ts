@@ -43,10 +43,20 @@ test.describe('01-01 Mary Mother of God — Second Vespers EP-II (GOAL #27)', ()
     await expect(ps110).toBeVisible()
     await expect(ps110.locator('[data-role="psalm-stanza"]').first()).toBeVisible()
 
-    // The borrowing is surfaced as a small directive note below the body.
-    await expect(
-      psalmody.locator('[data-role="conditional-rubric-directive"]'),
-    ).toContainText('1 дүгээр долоо хоногийн Ням гараг')
+    // The borrowing is surfaced as a small directive note. GOAL #48 hoists
+    // the bodyInlined psalmody-substitute notice to the TOP of the prayer
+    // body (before the first section, outside the psalmody section) so the
+    // user is told up-front that the psalmody is borrowed.
+    const directive = page
+      .locator('article')
+      .locator('[data-role="conditional-rubric-directive"][data-mode="substitute"]')
+    await expect(directive).toHaveCount(1)
+    await expect(directive).toContainText('1 дүгээр долоо хоногийн Ням гараг')
+    const [directiveBox, psalmodyBox] = await Promise.all([
+      directive.boundingBox(),
+      psalmody.boundingBox(),
+    ])
+    expect(directiveBox!.y).toBeLessThan(psalmodyBox!.y)
   })
 
   test('vespers EP-II differs from firstVespers EP-I Magnificat antiphon', async ({

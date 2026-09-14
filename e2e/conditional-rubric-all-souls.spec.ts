@@ -52,11 +52,22 @@ test.describe('FR-160-B-7 — All Souls 11-02 Sunday dynamic psalmody (page rend
     const stanzaCount = await psalmody.locator('[data-role="psalm-stanza"]').count()
     expect(stanzaCount).toBeGreaterThan(0)
     // The directive note is kept as an affordance alongside the body.
-    await expect(
-      psalmody.locator(
-        '[data-role="conditional-rubric-directive"][data-rubric-id="sanctoral-memorial-11-02-all-souls-lauds-sunday-substitute"]',
-      ),
-    ).toBeVisible()
+    // GOAL #48 hoists the bodyInlined psalmody-substitute notice to the
+    // TOP of the prayer body (before the first section, outside the
+    // psalmody section) so it renders exactly once — locate it within
+    // the <article> and assert it precedes the psalmody section.
+    const article = page.locator('article')
+    const directive = article.locator(
+      '[data-role="conditional-rubric-directive"][data-rubric-id="sanctoral-memorial-11-02-all-souls-lauds-sunday-substitute"]',
+    )
+    await expect(directive).toHaveCount(1)
+    await expect(directive).toBeVisible()
+    await expect(directive).toHaveAttribute('data-mode', 'substitute')
+    const [directiveBox, psalmodyBox] = await Promise.all([
+      directive.boundingBox(),
+      psalmody.first().boundingBox(),
+    ])
+    expect(directiveBox!.y).toBeLessThan(psalmodyBox!.y)
   })
 
   // @fr FR-160-B-7

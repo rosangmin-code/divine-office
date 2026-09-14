@@ -96,9 +96,12 @@ test.describe('Mobile layout', () => {
     await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
     // Find a psalm section that has at least 2 stanza paragraphs.
     // NFR-002: 영문 aria-label 결합 → data-role (위 테스트와 동일 이유).
+    // Stanzas carry `data-role="psalm-stanza"` (psalm-block.tsx); the
+    // former `p.font-reading` selector also matched header/prayer <p>s
+    // inside the section and measured the wrong gap.
     const stanzas = page
       .locator('[data-role="psalm-block"]')
-      .locator('p.font-reading')
+      .locator('p[data-role="psalm-stanza"]')
     const count = await stanzas.count()
     expect(count, 'need at least 2 stanza paragraphs to measure spacing').toBeGreaterThanOrEqual(2)
     const a = await stanzas.nth(0).boundingBox()
