@@ -1,6 +1,5 @@
 'use client'
 
-import { useId, useState } from 'react'
 import type { HourSection } from '@/lib/types'
 import { useSettings } from '@/lib/settings'
 import { formatRefMn } from '@/lib/scripture-ref-mn'
@@ -8,14 +7,13 @@ import { AntiphonBox } from './prayer-renderer'
 import { PageRef } from './page-ref'
 import { Icon } from './icon'
 import { DirectiveBlock, partitionDirectives } from './prayer-sections/directive-block'
+import { listboxOptionClassName, useListbox } from './ui/listbox'
 
 type InvitatoryProps = { section: Extract<HourSection, { type: 'invitatory' }> }
 
 export function InvitatorySection({ section }: InvitatoryProps) {
   const { settings, updateSettings } = useSettings()
   const collapsed = settings.invitatoryCollapsed
-  const listId = useId()
-  const [menuOpen, setMenuOpen] = useState(false)
   const { hasSkip, hasSubstitute, prepends, appends, substitutes, skips } =
     partitionDirectives(section.directives)
   const hideBody = hasSkip || hasSubstitute
@@ -29,6 +27,12 @@ export function InvitatorySection({ section }: InvitatoryProps) {
   const activePsalm = candidates?.[psalmIndex] ?? section.psalm
   const activePage = candidates ? candidates[psalmIndex]?.page : section.page
   const hasDirectives = (section.directives?.length ?? 0) > 0
+  // H3 — 공용 접근 가능 listbox (hymn/marian/gospel-canticle 와 동일 훅).
+  const listbox = useListbox({
+    count: candidates?.length ?? 0,
+    selectedIndex: psalmIndex,
+    onSelect: (index) => updateSettings({ invitatoryPsalmIndex: index }),
+  })
 
   return (
     <section aria-label="Урих дуудлага" className="mb-4">
@@ -98,46 +102,30 @@ export function InvitatorySection({ section }: InvitatoryProps) {
             </p>
             {candidates && candidates.length > 1 && (
               <button
-                type="button"
+                {...listbox.triggerProps}
                 data-testid="invitatory-psalm-menu-toggle"
-                onClick={() => setMenuOpen(!menuOpen)}
-                aria-expanded={menuOpen}
-                aria-controls={listId}
+                aria-label={`Бусад дуулал (${candidates.length})`}
                 className="inline-flex items-center gap-1 text-xs text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-liturgical-gold)]"
               >
                 <Icon
                   name="next"
                   size={14}
-                  className={`transition-transform ${menuOpen ? 'rotate-90' : ''}`}
+                  className={`transition-transform ${listbox.open ? 'rotate-90' : ''}`}
                   aria-hidden="true"
                 />
                 Бусад дуулал ({candidates.length})
               </button>
             )}
           </div>
-          {candidates && candidates.length > 1 && menuOpen && (
-            <ul
-              id={listId}
-              className="mt-2 space-y-1"
-              role="listbox"
-              aria-label="Дуулал сонгох"
-            >
+          {candidates && candidates.length > 1 && listbox.open && (
+            <ul {...listbox.listProps} className="mt-2 space-y-1" aria-label="Дуулал сонгох">
               {candidates.map((c, i) => (
-                <li key={c.ref} role="option" aria-selected={i === psalmIndex}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      updateSettings({ invitatoryPsalmIndex: i })
-                      setMenuOpen(false)
-                    }}
-                    className={`w-full text-left rounded px-2 py-1.5 text-sm transition-colors ${
-                      i === psalmIndex
-                        ? 'bg-amber-100 text-amber-900 dark:bg-amber-900/30 dark:text-amber-200'
-                        : 'text-stone-600 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-stone-800'
-                    }`}
-                  >
-                    {formatRefMn(c.ref)} — {c.title}
-                  </button>
+                <li
+                  key={c.ref}
+                  {...listbox.getOptionProps(i)}
+                  className={listboxOptionClassName(i === psalmIndex)}
+                >
+                  {formatRefMn(c.ref)} — {c.title}
                 </li>
               ))}
             </ul>
