@@ -31,13 +31,17 @@ type PdfDoc = {
       canvas: HTMLCanvasElement
     }) => { promise: Promise<void>; cancel: () => void }
   }>
-  destroy: () => Promise<void>
 }
+
+// pdfjs-dist 6.x removed `PDFDocumentProxy.prototype.destroy` (v6.0 api-major);
+// teardown now goes through the loading task, which owns the worker.
+type PdfLoadingTask = { destroy: () => Promise<void> }
 
 export function PdfViewer({ initialBookPage }: { initialBookPage: number }) {
   const frameRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const pdfDocRef = useRef<PdfDoc | null>(null)
+  const loadingTaskRef = useRef<PdfLoadingTask | null>(null)
   const renderTaskRef = useRef<{ cancel: () => void } | null>(null)
   const lastSwipeAtRef = useRef(0)
   const pointerStateRef = useRef<{ id: number; x: number; y: number } | null>(null)
@@ -66,19 +70,31 @@ export function PdfViewer({ initialBookPage }: { initialBookPage: number }) {
     setErrorMessage('')
     ;(async () => {
       try {
-        // legacy build: ES5-compatible main API. The default build calls
-        // Uint8Array.prototype.toHex() which is Chrome 140+/Safari 18.2+ only,
-        // so it breaks on older Android Chrome. Must stay paired with the
-        // legacy worker copied to /public/pdf.worker.min.mjs — mixing builds
-        // triggers "API version X does not match the Worker version Y".
+        // legacy build: ships the core-js polyfills the default build omits —
+        // notably Uint8Array.prototype.toHex()/fromBase64(), which are
+        // Chrome 140+/Safari 18.2+ only and break on older Android Chrome.
+        // (Verified still present in 6.3.289's legacy bundle.) Must stay paired
+        // with the legacy worker copied to /public/pdf.worker.min.mjs — mixing
+        // builds triggers "API version X does not match the Worker version Y".
         const pdfjs = (await import(
           'pdfjs-dist/legacy/build/pdf.min.mjs'
         )) as typeof import('pdfjs-dist')
-        pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs'
-        const loadingTask = pdfjs.getDocument(PDF_ASSET_PATH)
+        // The worker copy lives at a FIXED filename served with
+        // `max-age=86400, must-revalidate` (next.config.ts), and the SW never
+        // caches it (destination === 'worker' misses the script/style/font/
+        // image branch in sw.js — see docs/app-review-2026-09-13.md §SW 전략).
+        // So on a library upgrade a returning user can still hold yesterday's
+        // worker in the *HTTP* cache while the (hashed, therefore fresh) API
+        // chunk is the new one → "API version … does not match the Worker
+        // version …" and the viewer dies for up to 24h. Keying the URL on the
+        // API's own `version` makes the pair unbreakable by construction.
+        pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.mjs?v=${pdfjs.version}`
+        // 6.x api-major: `getDocument` no longer accepts a bare URL string.
+        const loadingTask = pdfjs.getDocument({ url: PDF_ASSET_PATH })
+        loadingTaskRef.current = loadingTask
         const doc = await loadingTask.promise
         if (cancelled) {
-          void doc.destroy()
+          void loadingTask.destroy()
           return
         }
         pdfDocRef.current = doc as unknown as PdfDoc
@@ -95,7 +111,9 @@ export function PdfViewer({ initialBookPage }: { initialBookPage: number }) {
     return () => {
       cancelled = true
       renderTaskRef.current?.cancel()
-      void pdfDocRef.current?.destroy()
+      // Destroying the loading task tears down the document *and* the worker.
+      void loadingTaskRef.current?.destroy()
+      loadingTaskRef.current = null
       pdfDocRef.current = null
     }
   }, [])
