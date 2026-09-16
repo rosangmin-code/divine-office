@@ -67,9 +67,11 @@ export default async function PrayPage({
   const { liturgicalDay } = assembled
 
   return (
-    // GOAL #66 sub-2 (#68) — 상시 strip 제거로 하단 여백은 `pb-6` 로 축소.
-    // 설정 패널은 fixed overlay 라 본문 flow 를 차지하지 않는다.
-    <div className="mx-auto max-w-2xl lg:max-w-3xl px-1 md:px-3 py-6 pb-6">
+    // GOAL #66 sub-2 (#68) — 설정 패널은 fixed overlay 라 본문 flow 를
+    // 차지하지 않는다. H2 (app-review §3.3) 에서 상시 노출 트리거
+    // (prayer-footer-handle, 44px 칩 + 8px 여백) 가 하단에 떠 있으므로
+    // 본문 끝(Footer 출처표시)이 칩에 가리지 않도록 `pb-20` 로 되돌린다.
+    <div className="mx-auto max-w-2xl lg:max-w-3xl px-1 md:px-3 py-6 pb-20">
       {/* 상단 ⚙ SettingsLink 없음 — 설정 진입점은 하단 PrayerFooter(본문
           탭 → Тохиргоо 패널)로 단일화. 좌측 return link 는 날짜 홈으로의
           명시적 회귀 path 로 유지(#68 에서 Огноо 메뉴 제거 후 유일한 날짜

@@ -125,6 +125,92 @@ for (const variant of Object.keys(VIEWPORTS) as ViewportName[]) {
       await openPanelByBodyTap(page)
       await expect(page.locator('[data-role="prayer-footer-menu-settings"]')).toBeVisible()
     })
+
+    // -----------------------------------------------------------------
+    // H2 (app-review 2026-09-13 §3.3) — 접근성 계약.
+    // -----------------------------------------------------------------
+
+    // @fr FR-164
+    test('D8 상시 트리거 칩으로 열린다 — 포커스 이동 + dialog 시맨틱 + 배경 inert', async ({ page }) => {
+      await page.goto(PRAY_URL)
+      const handle = page.locator('[data-role="prayer-footer-handle"]')
+      const panel = page.locator('[data-role="prayer-footer-content"]')
+      await expect(handle).toBeVisible()
+      await expect(handle).toHaveAttribute('aria-expanded', 'false')
+
+      await handle.click()
+      await expect(panel).toHaveAttribute('data-expanded', 'true')
+      await expect(handle).toHaveAttribute('aria-expanded', 'true')
+      // 모달 dialog 계약.
+      await expect(panel).toHaveAttribute('role', 'dialog')
+      await expect(panel).toHaveAttribute('aria-modal', 'true')
+      // 패널 안 첫 인터랙티브 요소로 포커스.
+      await expect(page.locator('[data-role="prayer-footer-menu-settings"]')).toBeFocused()
+      // 배경(본문)은 inert.
+      const articleInert = await page.evaluate(
+        () => document.querySelector('article')?.hasAttribute('inert') ?? null,
+      )
+      expect(articleInert).toBe(true)
+    })
+
+    // @fr FR-164
+    test('D9 Esc 로 닫으면 포커스가 트리거로 복원되고 배경 inert 가 풀린다', async ({ page }) => {
+      await page.goto(PRAY_URL)
+      const handle = page.locator('[data-role="prayer-footer-handle"]')
+      const panel = page.locator('[data-role="prayer-footer-content"]')
+      await handle.click()
+      await expect(panel).toHaveAttribute('data-expanded', 'true')
+
+      await page.keyboard.press('Escape')
+      await expect(panel).toHaveAttribute('data-expanded', 'false')
+      await expect(handle).toBeFocused()
+      const articleInert = await page.evaluate(
+        () => document.querySelector('article')?.hasAttribute('inert') ?? null,
+      )
+      expect(articleInert).toBe(false)
+    })
+
+    // @fr FR-164
+    // H2 회귀 — 관성 스크롤을 멈추는 탭이 패널을 열어선 안 된다.
+    test('D10 스크롤 직후의 본문 탭은 패널을 열지 않는다 (잠잠해지면 다시 열린다)', async ({ page }) => {
+      await page.goto(PRAY_URL)
+      const panel = page.locator('[data-role="prayer-footer-content"]')
+      await expect(panel).toHaveAttribute('data-expanded', 'false')
+
+      // 본문(비인터랙티브) 좌표 — 좌측 여백.
+      const tapX = 8
+      const tapY = Math.round(VIEWPORTS[variant].height / 2)
+
+      await page.mouse.wheel(0, 600)
+      // mouse.wheel 은 스크롤 완료를 기다리지 않는다 — 실제 scroll 이
+      // 일어난 것을 확인한 직후에 탭해야 '스크롤 직후' 시나리오가 된다.
+      await page.waitForFunction(() => window.scrollY > 100)
+      // 스크롤 직후 (< SCROLL_QUIET_MS) 의 탭 → 무시.
+      await page.mouse.click(tapX, tapY)
+      await page.waitForTimeout(250)
+      await expect(panel).toHaveAttribute('data-expanded', 'false')
+
+      // 스크롤이 잠잠해진 뒤의 같은 탭 → 정상적으로 열린다.
+      await page.waitForTimeout(800)
+      await page.mouse.click(tapX, tapY)
+      await expect(panel).toHaveAttribute('data-expanded', 'true')
+    })
+
+    // @fr FR-164
+    // H2 회귀 — 백드롭은 포커스 가능한 <button aria-hidden> 이었다.
+    test('D11 백드롭은 포커스 불가 div — aria-hidden/tabindex/button 아님', async ({ page }) => {
+      await page.goto(PRAY_URL)
+      const backdrop = page.locator('[data-role="prayer-footer-backdrop"]')
+      await expect(backdrop).toHaveCount(1)
+      const shape = await backdrop.evaluate((el) => ({
+        tag: el.tagName,
+        ariaHidden: el.getAttribute('aria-hidden'),
+        tabIndex: el.getAttribute('tabindex'),
+      }))
+      expect(shape.tag).toBe('DIV')
+      expect(shape.ariaHidden).toBeNull()
+      expect(shape.tabIndex).toBeNull()
+    })
   })
 
   // -----------------------------------------------------------------

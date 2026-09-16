@@ -8,6 +8,14 @@
  *   - 유지: always-mounted panel(translate-y swap), backdrop outside-tap,
  *     Esc dismiss, 오픈 시 설정 링크로 focus, motion-reduce transition 제거.
  *
+ * H2 (app-review 2026-09-13 §3.3) 갱신 계약:
+ *   - 상시 노출 **명시적 트리거** `data-role="prayer-footer-handle"` 추가.
+ *   - 패널 = `role="dialog" aria-modal="true" aria-labelledby` + 포커스 트랩.
+ *   - 백드롭 = 포커스 불가 `<div>` — `aria-hidden` / `tabindex` 없음.
+ *   - 본문 탭 판정은 `src/lib/prayer-footer-gesture.ts` 의 순수 함수
+ *     (스크롤 직후·드래그·AT 합성 click 배제) — 판정 자체의 단위 테스트는
+ *     `src/lib/__tests__/prayer-footer-gesture.test.ts`.
+ *
  * Test strategy (기존 컨벤션 유지):
  *   - vitest 환경에 jsdom / happy-dom 미설치. e2e/ 가 라이브 DOM event
  *     (본문 탭 → 오픈, Esc/backdrop → close, focus) 책임, 본 unit suite 는
@@ -32,7 +40,11 @@ function extractPanel(html: string): string {
   return m ? m[0] : ''
 }
 function extractBackdrop(html: string): string {
-  const m = html.match(/<button[^>]*data-role="prayer-footer-backdrop"[^>]*>/)
+  const m = html.match(/<div[^>]*data-role="prayer-footer-backdrop"[^>]*>/)
+  return m ? m[0] : ''
+}
+function extractHandle(html: string): string {
+  const m = html.match(/<button[^>]*data-role="prayer-footer-handle"[^>]*>/)
   return m ? m[0] : ''
 }
 function extractOuterContainer(html: string): string {
@@ -67,8 +79,36 @@ describe('PrayerFooter — collapsed (default)', () => {
     expect(backdrop).not.toBe('')
     expect(backdrop).toContain('opacity-0')
     expect(backdrop).toContain('pointer-events-none')
-    expect(backdrop).toContain('tabindex="-1"')
     expect(backdrop).toContain('data-expanded="false"')
+  })
+
+  // H2 — 백드롭은 포커스 가능한 <button aria-hidden> 이었다. 포커스 가능한
+  // 요소에 aria-hidden 을 붙이는 것은 ARIA 위반이라 <div> 로 바꿨다.
+  it('backdrop is a non-focusable <div> — no aria-hidden, no tabindex, no button', () => {
+    for (const html of [collapsedHtml(), expandedHtml()]) {
+      const backdrop = extractBackdrop(html)
+      expect(backdrop).not.toBe('')
+      expect(backdrop).not.toContain('aria-hidden')
+      expect(backdrop).not.toContain('tabindex')
+      expect(html).not.toMatch(/<button[^>]*data-role="prayer-footer-backdrop"/)
+    }
+  })
+
+  // H2 — 본문 탭 말고도 항상 쓸 수 있는 명시적 트리거가 있어야 한다
+  // (스크린리더·키보드 사용자에게 유일한 결정적 경로).
+  it('always renders an explicit trigger chip (collapsed AND expanded)', () => {
+    for (const html of [collapsedHtml(), expandedHtml()]) {
+      const handle = extractHandle(html)
+      expect(handle).not.toBe('')
+      expect(handle).toContain('type="button"')
+      expect(handle).toContain('aria-haspopup="dialog"')
+      expect(handle).toContain('aria-controls=')
+      expect(handle).toContain('min-h-[44px]')
+    }
+    expect(extractHandle(collapsedHtml())).toContain('aria-expanded="false"')
+    expect(extractHandle(expandedHtml())).toContain('aria-expanded="true"')
+    // NFR-002 — 트리거 라벨은 몽골어 키릴.
+    expect(collapsedHtml()).toContain('Тохиргоо')
   })
 })
 
@@ -80,6 +120,20 @@ describe('PrayerFooter — expanded=true', () => {
     expect(panel).toContain('translate-y-0')
     expect(panel).toContain('aria-hidden="false"')
     expect(panel).toContain('data-expanded="true"')
+  })
+
+  // H2 — 패널은 모달 dialog 계약을 선언해야 한다.
+  it('panel declares role=dialog + aria-modal + aria-labelledby', () => {
+    const html = expandedHtml()
+    const panel = extractPanel(html)
+    expect(panel).toContain('role="dialog"')
+    expect(panel).toContain('aria-modal="true"')
+    expect(panel).toMatch(/aria-labelledby="[^"]+"/)
+    const labelledBy = panel.match(/aria-labelledby="([^"]+)"/)![1]
+    // 라벨 대상이 실제로 존재하고 몽골어 제목을 담는다.
+    expect(html).toContain(`id="${labelledBy}"`)
+    const titleIdx = html.indexOf(`id="${labelledBy}"`)
+    expect(html.slice(titleIdx, titleIdx + 200)).toContain('Тохиргоо')
   })
 
   it('backdrop becomes interactive (opacity-100 + pointer-events-auto)', () => {
@@ -185,5 +239,28 @@ describe('PrayerFooter — interaction code path (source-grep)', () => {
     expect(code).toMatch(/\bhandleClose\b/)
     expect(code).toMatch(/\binert\b/)
     expect(code).toMatch(/prayer-footer-backdrop/)
+  })
+
+  // H2 — 탭 판정을 순수 함수에 위임하고, pointer/scroll 관측을 붙였는지.
+  it('delegates body-tap eligibility to the pure gesture guard', () => {
+    const code = sourceCode()
+    expect(code).toMatch(/shouldOpenOnBodyTap/)
+    expect(code).toMatch(/document\.addEventListener\(\s*['"]pointerdown['"]/)
+    expect(code).toMatch(/document\.addEventListener\(\s*['"]pointerup['"]/)
+    expect(code).toMatch(/addEventListener\(\s*['"]scroll['"]/)
+    // 이전 구현이 click 하나만 보고 열던 무조건 분기는 사라졌다.
+    expect(code).not.toMatch(/if\s*\(window\.getSelection\(\)\?\.toString\(\)\)\s*return/)
+  })
+
+  // H2 — 닫을 때 원래 포커스로 복원하고, 배경을 inert 로 만든다.
+  it('restores the pre-open focus and inerts the background while open', () => {
+    const code = sourceCode()
+    expect(code).toMatch(/previouslyFocused/)
+    expect(code).toMatch(/previouslyFocused\.focus\(\)/)
+    expect(code).toMatch(/setAttribute\(\s*['"]inert['"]/)
+    expect(code).toMatch(/removeAttribute\(\s*['"]inert['"]/)
+    // Tab 포커스 트랩.
+    expect(code).toMatch(/onPanelKeyDown/)
+    expect(code).toMatch(/['"]Tab['"]/)
   })
 })
