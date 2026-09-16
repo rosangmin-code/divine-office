@@ -306,3 +306,23 @@ main 대비 2026 전 일자 출력 sweep(최종): 바뀐 셀 93 = 토요일 swap
 **제품 결정 필요** (리포트 §6): ① 전야 응답 `liturgicalDay` 재라벨 여부 — 권장 유지 + `effectiveLiturgicalDay` API 노출; ③ `-vespers2.rich.json` 읽기 convention; ④ 12-25 sanctoral ↔ christmas.json Magnificat 후렴 한 글자 드리프트(`өргөөнөөсөө`/`өргөнөөсөө`). (② 주일 EP I 시즌 우선 병합은 위 후속으로 해결.)
 
 **제품 결정 반영 (2026-09-14, 리포트 §6)**: ① 유지 + `AssembledHour.effectiveLiturgicalDay?` 노출(승격일만, `86ff381`; 2026 sweep 62건 필드 추가, 본문 차이 0; e2e fixme 해제) · ③ `SeasonalRichHourKey`/`seasonalHour` 규약으로 `-vespers2.rich.json` 읽기(`713dfb6`; 12-25·05-24 제2저녁기도 shortReadingRich 복원 2건, 그 외 차이 0) · ④ 인쇄면 p.587 = `өргөөнөөсөө` → `christmas.json` 한 단어 fidelity 복원(`83dfe6b`, GOAL #128 §3b B3; PDF 가 옳아 ledger 비기록). 게이트: vitest 120/1,982 · tsc · lint · traceability · verify:all 14 PASS · e2e 4 spec 70 passed/0 skipped + 관련 4 spec 33 passed.
+
+---
+
+## 9. 주일 제2저녁기도 · 주님 공현 · 성가정 제1저녁기도 (2026-09-16, GOAL #268)
+
+§8 후속 조사(`docs/research/2026-09-16-sunday-vespers2.md`) 에서 드러난 3건. 전부 **버그** 로 판정돼 수정했다 — 제품 결정 불요. 상세·근거·미수정 항목은 `docs/bug-reports/2026-09-16-sunday-vespers2-epiphany.md`.
+
+| # | 증상 | 판정 | 근거 | 조치 |
+|---|---|---|---|---|
+| 9-1 | 주일 당일 `/vespers` 가 **제1저녁기도** 후렴을 렌더 (대림·사순·부활은 독서·응송·청원까지 EP I). 2026년 41회 | **버그** | 인쇄면 p.759-760·797-798 등: 책은 모든 주일을 `1 дүгээр Оройн…`(EP I) / `Өглөөний…` / `2 дугаар Оройн…`(EP II) 3단으로 인쇄하고 가/나/다해 표기는 책 전체 0건. 데이터도 `SUN.vespers`=EP I, `SUN.vespers2`=EP II | **FR-171** — 주일(및 FEAST 특수키 당일) `/vespers` 에 `{...vespers, ...vespers2}` 오버레이(연중 대체 본기도 보존), `getSeasonVespers2` 에 week-1 템플릿 폴백. 토요일 저녁·`/firstVespers` 불변 |
+| 9-2 | **주님 공현 대축일**의 아침·저녁·제1저녁기도 복음찬가 후렴·본기도가 **빈 문자열** (2026-01-04, 2027-01-03 …) | **버그(P0)** | romcal 이 `name="Epiphany"`/`key="epiphany"` 를 내는데 `resolveSpecialKey` 는 `'epiphany of the lord'`·`'the epiphany'` 부분일치만 검사 → 항상 실패. 추가로 `christmas.json` 의 `epiphany`↔`epiphanyWeek` 셀이 전도(p.607-610 공현 ↔ p.611-615 공현 후 평일) | **FR-172** — `romcalKey` 우선 매칭(+정확 일치 `'epiphany'` 폴백, "after Epiphany" 는 계속 null), 토→주일 분기에 **주일의** name/romcalKey 전달, 두 버킷 셀 교환 + 공현 EP I 후렴(p.609) 복원 |
+| 9-3 | `/pray/2026-12-26/vespers` 등 legacy 전야 URL 이 카드(다음날 `firstVespers`) 와 불일치 — 성탄 8일 평일 저녁을 렌더 | **버그(경미, legacy URL 한정)** | 순위표 II.5(주님의 축일) > II.7 > II.9 + 보편규범 61항, 책 p.599 적색 규정. FR-156 Path 2 가 `SOLEMNITY` 로 게이트돼 FEAST 특수키 배제 | **FR-173** — Path 2b(FEAST + 내일 주일 + 특수키 + 오늘 ≠ SOLEMNITY)를 `mergeSundayFirstVespers` 로 합성해 `/firstVespers` 라우트와 byte 일치. 성탄이 주일인 해(성가정 12-30 금)는 "내일이 주일" 게이트가 p.599 규정을 그대로 재현 |
+
+데이터 교정 8건(전부 인쇄면 크롭 판독): 연중 12·15·25주 `vespers2` 추가(p.774/780/800) · 16주 `vespers2` 교체(p.780→p.782) · 페이지값 3건(6주 647→761, 20주 751→790, 34주 816→818) · 공현 버킷 정정 2건. 뒤 두 건은 `verify-propers-pages.js` 가 이미 `manual-review` 로 플래그하고 있던 것(review 16→14, `verified-correction` 0 유지).
+
+main↔브랜치 전일자 지문 스윕: 2026+2027 2,920키 중 **98건** (주일 EP II 85 · 공현 8 · 성가정/세례 전야 3 · 페이지 교정 2), 경계 연도 2028·2029·2033·2034·2039 7,304키 중 **256건** (같은 4범주 + FEAST 특수키 당일 EP II 4). **범주 밖 0** — 평일·토요일 `/vespers`·`/firstVespers` 불변, 성탄이 주일인 해의 성가정 전야(2033·2039-12-29)·토요일 성탄(2027-12-25)·주일 12-24(2028)·모든 성인·그리스도왕·부활 주일·성령강림 전부 불변.
+
+게이트: vitest 121 files / 2,019 passed / 4 todo · tsc · lint(0 errors) · traceability · verify:all 14 PASS · verify:psalter-parity · verify-propers-pages(agree 767→775, verified-correction 0) · e2e 7 spec 51 passed / 0 failed. `sw.js` 는 SSR/API 응답만 바뀌어 bump 대상 아님.
+
+남긴 것: 2028-01-01(천주의 성모 토요일) → 공현 제1저녁기도 미승격(데이터 설계 필요) · 2027-12-25 카드 목록이 성탄 저녁기도 카드를 제거하는 **기존** 카드 규칙 갭 · 공현 EP II 의 p.610 대체 본기도 미표시(GOAL #20 통째 교체 의미 유지) · 대림/사순/부활 EP II 청원 rich 미authored · `epiphanyWeek` 날짜 범위 매칭 미구현(도달 불가 키).
