@@ -76,10 +76,15 @@ const CASES: Case[] = [
     firstResponseContains: 'Шашныхаа дотор цуглуулна',
   },
   {
-    label: 'christmas epiphany SUN lauds',
+    // GOAL #268: this formulary is the post-Epiphany WEEK (PDF p.611-612,
+    // «ЭЗЭНИЙ ИЛРЭХҮЙН ДАРААХ ДОЛОО ХОНОГ»), which was sitting in the
+    // `epiphany` bucket while the Epiphany Solemnity's own cells sat in
+    // `epiphanyWeek`. The buckets were swapped; the intercessions text is
+    // byte-identical, only its key moved.
+    label: 'christmas epiphanyWeek SUN lauds',
     host: christmas as unknown as IntercessionsHost,
-    week: 'epiphany', day: 'SUN', hour: 'lauds',
-    sot: 'full_pdf.txt (christmas epiphany SUN lauds)',
+    week: 'epiphanyWeek', day: 'SUN', hour: 'lauds',
+    sot: 'full_pdf.txt (christmas epiphanyWeek SUN lauds, p.611-612)',
     refrain: 'Өөрийн мэндлэлтээрээ Та биднийг хорон муу бүхнээс гэтэлгэнэ үү.',
     petitionCount: 4,
     firstVersicleStartsWith: 'Эзэн, Та бүх цаг үеэс өмнө оршин байсан',

@@ -356,8 +356,18 @@ const AREA_HASHES = {
   // .gospelCanticleAntiphon `өргөнөөсөө` → `өргөөнөөсөө` (one dropped `ө`
   // restored to the printed page, book p.587 / full_pdf.txt:20293; single
   // word, single line).
+  // GOAL #268 (2026-09-16): the `epiphany` and `epiphanyWeek` buckets held
+  // each other's cells (the Solemnity's Lauds/Vespers propers sat under
+  // `epiphanyWeek`, the post-Epiphany week's under `epiphany`) — swapped,
+  // keeping each bucket's own `pageRedirects`. Plus two corrections on the
+  // Epiphany bucket: Lauds antiphon page 607 → 609 (printed on p.609) and
+  // the Vespers (EP I) Magnificat antiphon, which carried the Jan-1 EP II
+  // text from p.608, replaced by p.609 «Одыг хараад мэргэд…». No Mongolian
+  // text was edited other than that one antiphon (the p.608 copy survives
+  // verbatim in sanctoral/solemnities.json 01-01.vespers2). See
+  // docs/bug-reports/2026-09-16-sunday-vespers2-epiphany.md.
   'src/data/loth/propers/christmas.json':
-    '7584dce9eb599c7c51638b426b064112523f2a97f4bffe5e28d970e0c864f3e8',
+    '4995bd3965b60224236d31599a5621ab3d2e8c0e993569e8e7f03639a345b9b2',
   // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
   // space-split correction (owctononuudiig tailvshruulzh, easter:540/865).
   // P0-6 A (2026-09-14): ascension lauds/vespers2 conditionalRubrics[0]
