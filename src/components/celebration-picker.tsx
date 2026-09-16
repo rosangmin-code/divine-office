@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useCallback } from 'react'
 import type { CelebrationOption } from '@/lib/types'
+import { useRadioGroup } from './ui/listbox'
 
 interface CelebrationPickerProps {
   dateStr: string
@@ -37,6 +38,17 @@ export function CelebrationPicker({ dateStr, options, selectedId, onSelectAction
     [dateStr, router, onSelectAction],
   )
 
+  // M7 — radiogroup roving tabindex + 방향키 (settings 의 두 radiogroup 과
+  // 같은 훅). 세로 목록이므로 orientation='vertical'.
+  // 훅은 조건부 return 앞에서 호출해야 한다 (Rules of Hooks).
+  const selectedIndex = options.findIndex(o => o.id === selectedId)
+  const group = useRadioGroup({
+    count: options.length,
+    selectedIndex,
+    onSelect: index => handleChange(options[index].id),
+    orientation: 'vertical',
+  })
+
   if (options.length <= 1) return null
 
   return (
@@ -52,20 +64,18 @@ export function CelebrationPicker({ dateStr, options, selectedId, onSelectAction
         role="radiogroup"
         aria-labelledby="celebration-picker-label"
         className="flex flex-col gap-2"
+        {...group.groupProps}
       >
         <span id="celebration-picker-label" className="sr-only">
           Залбирлын сонголт
         </span>
-        {options.map((opt) => {
+        {options.map((opt, index) => {
           const isSelected = opt.id === selectedId
           return (
             <button
               key={opt.id}
-              type="button"
-              role="radio"
-              aria-checked={isSelected}
+              {...group.getRadioProps(index)}
               data-celebration-id={opt.id}
-              onClick={() => handleChange(opt.id)}
               className={
                 'flex items-start gap-3 rounded-lg border px-3 py-2 text-left text-sm transition-colors min-h-[44px] ' +
                 (isSelected

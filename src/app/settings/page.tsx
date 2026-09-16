@@ -5,6 +5,7 @@ import { useSettings, type FontSize, type FontFamily, type ThemeMode } from '@/l
 import { Footer } from '@/components/footer'
 import { InstallAppSection } from '@/components/install-app-section'
 import { Icon } from '@/components/icon'
+import { useRadioGroup } from '@/components/ui/listbox'
 
 const FONT_SIZES: { value: FontSize; label: string; scaleEm: number }[] = [
   { value: 'xs', label: 'XS', scaleEm: 0.875 },
@@ -91,6 +92,20 @@ export default function SettingsPage() {
     updateSettings({ fontSize: FONT_SIZES[safeIndex + 1].value })
   }
 
+  // M7 — radiogroup 은 roving tabindex + 방향키가 있어야 한다 (WAI-ARIA).
+  // 이전엔 모든 radio 가 개별 tab stop 이었고 방향키가 아무 동작도 하지
+  // 않았다. listbox 와 같은 훅(useRadioGroup)을 쓴다.
+  const fontFamilyGroup = useRadioGroup({
+    count: FONT_FAMILIES.length,
+    selectedIndex: FONT_FAMILIES.findIndex(o => o.value === settings.fontFamily),
+    onSelect: index => updateSettings({ fontFamily: FONT_FAMILIES[index].value }),
+  })
+  const themeGroup = useRadioGroup({
+    count: THEMES.length,
+    selectedIndex: THEMES.findIndex(o => o.value === settings.theme),
+    onSelect: index => updateSettings({ theme: THEMES[index].value }),
+  })
+
   return (
     <div className="mx-auto max-w-2xl px-2 md:px-6 py-8">
       <header className="mb-8">
@@ -174,15 +189,18 @@ export default function SettingsPage() {
           <p className="mb-4 text-sm text-stone-500 dark:text-stone-400">
             Орчин үеийн эсвэл сонгодог
           </p>
-          <div role="radiogroup" aria-labelledby="font-family-heading" className="grid grid-cols-2 gap-2">
-            {FONT_FAMILIES.map(opt => {
+          <div
+            role="radiogroup"
+            aria-labelledby="font-family-heading"
+            className="grid grid-cols-2 gap-2"
+            {...fontFamilyGroup.groupProps}
+          >
+            {FONT_FAMILIES.map((opt, index) => {
               const active = settings.fontFamily === opt.value
               return (
                 <button
                   key={opt.value}
-                  role="radio"
-                  aria-checked={active}
-                  onClick={() => updateSettings({ fontFamily: opt.value })}
+                  {...fontFamilyGroup.getRadioProps(index)}
                   className={`min-h-[44px] rounded-lg border-2 px-4 py-3 text-sm transition-colors ${opt.sampleClass} ${
                     active ? ACTIVE_ACCENT : INACTIVE_ACCENT
                   }`}
@@ -213,15 +231,18 @@ export default function SettingsPage() {
           <p className="mb-4 text-sm text-stone-500 dark:text-stone-400">
             Гэрэлтэй, харанхуй, эсвэл системийн сонголт
           </p>
-          <div role="radiogroup" aria-labelledby="theme-heading" className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-            {THEMES.map(opt => {
+          <div
+            role="radiogroup"
+            aria-labelledby="theme-heading"
+            className="grid grid-cols-1 gap-2 sm:grid-cols-3"
+            {...themeGroup.groupProps}
+          >
+            {THEMES.map((opt, index) => {
               const active = settings.theme === opt.value
               return (
                 <button
                   key={opt.value}
-                  role="radio"
-                  aria-checked={active}
-                  onClick={() => updateSettings({ theme: opt.value })}
+                  {...themeGroup.getRadioProps(index)}
                   className={`min-h-[44px] rounded-lg border-2 px-3 py-2 text-sm font-medium transition-colors ${
                     active ? ACTIVE_ACCENT : INACTIVE_ACCENT
                   }`}
@@ -245,6 +266,7 @@ export default function SettingsPage() {
               </p>
             </div>
             <button
+              type="button"
               role="switch"
               aria-checked={settings.showPageRefs}
               aria-labelledby="page-refs-heading"
@@ -276,6 +298,7 @@ export default function SettingsPage() {
               </p>
             </div>
             <button
+              type="button"
               role="switch"
               aria-checked={psalmPrayerVisible}
               aria-labelledby="psalm-prayer-heading"
