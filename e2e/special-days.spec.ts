@@ -84,12 +84,15 @@ test.describe('Special liturgical days', () => {
   // (the Saturday → Sunday First Vespers convention). #230 (F-X5) moved
   // the rendering target from Saturday/vespers to Sunday/firstVespers
   // so the URL identity matches the liturgical identity. The contract
-  // is preserved (Sunday's 1st Vespers core propers === Sunday's regular
-  // 2nd Vespers concluding prayer + Magnificat antiphon — the PDF's
-  // psalter First Vespers blocks reference seasonal Sunday propers
-  // verbatim, see loth-service.ts §3 firstVespers branch). Anchor is
-  // now Sunday/firstVespers === Sunday/vespers.
-  test('Sunday firstVespers shares core propers with Sunday vespers (FR-011, 1st Vespers anchor relocated)', async ({ request }) => {
+  // is preserved for the CONCLUDING PRAYER (the PDF's psalter First
+  // Vespers blocks reference the seasonal Sunday propers verbatim, and
+  // in Ordinary Time the `vespers2` cell reprints the same prayer).
+  //
+  // The MAGNIFICAT ANTIPHON is the one field that must differ: FR-171
+  // (GOAL #268) — the book prints a separate `2 дугаар Оройн даатгал
+  // залбирал` antiphon on the facing page, so Sunday `/firstVespers` is
+  // Evening Prayer I and Sunday `/vespers` is Evening Prayer II.
+  test('Sunday firstVespers shares the concluding prayer with Sunday vespers but not the Magnificat antiphon (FR-011 / FR-171)', async ({ request }) => {
     const fvRes = await request.get(`/api/loth/${DATES.ordinarySunday}/firstVespers`)
     const sunRes = await request.get(`/api/loth/${DATES.ordinarySunday}/vespers`)
 
@@ -99,24 +102,26 @@ test.describe('Special liturgical days', () => {
     const fv = await fvRes.json()
     const sun = await sunRes.json()
 
-    // Core propers (concluding prayer + gospel canticle antiphon) should
-    // match Sunday's regular vespers. In OT the firstVespers entry
-    // doesn't author its own concludingPrayer / gospelCanticleAntiphon,
-    // so the per-field backstop in loth-service.ts §3 (firstVespers
-    // branch) supplies them from Sunday's regular vespers.
+    // The concluding prayer matches Sunday's regular vespers. In OT the
+    // firstVespers entry doesn't author its own concludingPrayer, so the
+    // per-field backstop in loth-service.ts §3 (firstVespers branch)
+    // supplies it from Sunday's EP I cell — and the EP II cell reprints
+    // the very same prayer.
     const fvCp = fv.sections.find((s: { type: string }) => s.type === 'concludingPrayer')
     const sunCp = sun.sections.find((s: { type: string }) => s.type === 'concludingPrayer')
     expect(fvCp).toBeTruthy()
     expect(sunCp).toBeTruthy()
     expect(fvCp.text).toBe(sunCp.text)
 
+    // The Magnificat antiphon is Evening Prayer I on `/firstVespers` and
+    // Evening Prayer II on the Sunday's own `/vespers` (FR-171), printed
+    // on consecutive book pages.
     const fvAnt = fv.sections.find((s: { type: string }) => s.type === 'gospelCanticle')
     const sunAnt = sun.sections.find((s: { type: string }) => s.type === 'gospelCanticle')
-    expect(fvAnt).toBeTruthy()
-    expect(sunAnt).toBeTruthy()
-    if (fvAnt.antiphon && sunAnt.antiphon) {
-      expect(fvAnt.antiphon).toBe(sunAnt.antiphon)
-    }
+    expect(fvAnt?.antiphon).toBeTruthy()
+    expect(sunAnt?.antiphon).toBeTruthy()
+    expect(sunAnt.antiphon).not.toBe(fvAnt.antiphon)
+    expect(sunAnt.antiphonPage).toBe(fvAnt.antiphonPage + 1)
   })
 
   // @fr FR-011 (sanity guard, post-#230 F-X5)

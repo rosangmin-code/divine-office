@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { getCalendarForYear, getLiturgicalDay } from '../calendar'
 import { assembleHour, getHoursSummary, isFirstVespersEligibleDate } from '../loth-service'
-import { getSeasonHourPropers } from '../propers-loader'
+import { getSeasonHourPropers, getSeasonVespers2 } from '../propers-loader'
 import { resolveSanctoralForDay } from '../sanctoral-resolver'
 import solemnities from '../../data/loth/sanctoral/solemnities.json'
 import feasts from '../../data/loth/sanctoral/feasts.json'
@@ -203,11 +203,17 @@ describe('privileged Sunday keeps its Evening Prayer II over a Monday solemnity 
     // Not the solemnity's First Vespers…
     expect(antiphon, date).not.toContain(entry.firstVespers!.gospelCanticleAntiphon!)
     expect(prayer, date).not.toBe(entry.firstVespers?.concludingPrayer)
-    // …but the Sunday's own seasonal Evening Prayer II propers.
-    const sundayRegular = getSeasonHourPropers(d.season, d.weekOfSeason, 'SUN', 'vespers', date, d.name)
-    expect(sundayRegular?.gospelCanticleAntiphon, date).toBeTruthy()
-    expect(antiphon, date).toContain(sundayRegular!.gospelCanticleAntiphon!)
-    expect(prayer, date).toBe(sundayRegular?.concludingPrayer)
+    // …but the Sunday's own seasonal Evening Prayer II propers. FR-171
+    // (GOAL #268): EP II is `weeks[N].SUN.vespers2` (with the week-1
+    // template fallback the book prescribes for Advent / Lent / Easter);
+    // `weeks[N].SUN.vespers` is EP I and is what Saturday evening sings.
+    const sundayEpII = getSeasonVespers2(d.season, d.weekOfSeason, date, d.name, d.romcalKey)
+    expect(sundayEpII?.gospelCanticleAntiphon, date).toBeTruthy()
+    expect(antiphon, date).toContain(sundayEpII!.gospelCanticleAntiphon!)
+    expect(prayer, date).toBe(sundayEpII?.concludingPrayer)
+    // and definitively NOT the Evening Prayer I antiphon.
+    const sundayEpI = getSeasonHourPropers(d.season, d.weekOfSeason, 'SUN', 'vespers', date, d.name, d.romcalKey)
+    expect(antiphon, date).not.toContain(sundayEpI!.gospelCanticleAntiphon!)
     // Card list and body agree: the Sunday keeps vespers + compline.
     expect(getHoursSummary(date)?.hours.map((h) => h.type), date).toEqual([
       'firstVespers', 'firstCompline', 'lauds', 'vespers', 'compline',

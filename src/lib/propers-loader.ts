@@ -93,11 +93,28 @@ function loadSeasonPropers(season: LiturgicalSeason): Record<string, Record<stri
  * because none of the keys are numeric). The rich-overlay's Tier 1
  * special-key load (#57) auto-covers once `resolveSpecialKey` returns a
  * non-null key for these dates.
+ *
+ * FR-172 (GOAL #268): `romcalKey` is consulted BEFORE `celebrationName`
+ * for the Christmas variable-date observances. romcal 1.3 emits
+ * `celebrationName === 'Epiphany'` (not "Epiphany of the Lord" / "The
+ * Epiphany"), so the substring gates below never matched and the whole
+ * Epiphany formulary — Lauds + Vespers antiphons, concluding prayers —
+ * was unreachable on the Solemnity itself (2026-01-04, 2027-01-03, …
+ * rendered an empty Magnificat antiphon and no concluding prayer).
+ * `romcalKey` is romcal's stable identifier (`epiphany`,
+ * `baptismOfTheLord`, `holyFamily`) and is not subject to localisation
+ * drift; the name gates stay as a fallback for callers that hold only a
+ * name (mocked fixtures, `resolveRichOverlayLayers` contexts built before
+ * the key was threaded through). The name fallback gained an EXACT
+ * `'epiphany'` match — a substring match would also swallow "Monday after
+ * Epiphany" / "Saturday after Epiphany", which are epiphanyWeek weekdays
+ * and must keep returning null.
  */
 export function resolveSpecialKey(
   season: LiturgicalSeason,
   celebrationName: string | undefined | null,
   dateStr?: string | null,
+  romcalKey?: string | null,
 ): string | null {
   if (season === 'EASTER') {
     if (!celebrationName) return null
@@ -117,15 +134,32 @@ export function resolveSpecialKey(
     return null
   }
   if (season === 'CHRISTMAS') {
-    // Variable-date observances first — celebrationName is the stable
-    // signal because dates depend on romcal calendar configuration
-    // (e.g. Holy Family shifts when 12-25 is a Sunday; Baptism is the
-    // Sunday after Epiphany unless Epiphany is shifted, etc.).
+    // Variable-date observances first — their dates depend on romcal
+    // calendar configuration (e.g. Holy Family shifts when 12-25 is a
+    // Sunday; Baptism is the Sunday after Epiphany unless Epiphany is
+    // shifted, etc.) so the identity, not the date, is the signal.
+    //
+    // FR-172: romcal's stable `key` wins over the localisable display
+    // name. `getLiturgicalDay` surfaces it as `LiturgicalDayInfo.romcalKey`.
+    if (romcalKey) {
+      if (romcalKey === 'holyFamily') return 'holyFamily'
+      if (romcalKey === 'baptismOfTheLord') return 'baptism'
+      if (romcalKey === 'epiphany') return 'epiphany'
+    }
     if (celebrationName) {
       const lower = celebrationName.toLowerCase()
       if (lower.includes('holy family')) return 'holyFamily'
       if (lower.includes('baptism of the lord') || lower.includes('baptism')) return 'baptism'
-      if (lower.includes('epiphany of the lord') || lower.includes('the epiphany')) return 'epiphany'
+      // EXACT match for the bare name — `includes('epiphany')` would also
+      // match "Monday after Epiphany" / "Saturday after Epiphany", which
+      // belong to the (still unimplemented) epiphanyWeek date range.
+      if (
+        lower === 'epiphany' ||
+        lower.includes('epiphany of the lord') ||
+        lower.includes('the epiphany')
+      ) {
+        return 'epiphany'
+      }
     }
     // Fixed-date observances. Use UTC parsing to match the rest of the
     // module (`getSeasonHourPropers` L107) and avoid TZ drift.
@@ -154,6 +188,7 @@ export function getSeasonHourPropers(
   hour: HourType,
   dateStr?: string,
   celebrationName?: string,
+  romcalKey?: string | null,
 ): HourPropers | null {
   const weeks = loadSeasonPropers(season)
 
@@ -175,8 +210,8 @@ export function getSeasonHourPropers(
   // the (season, name, date) matrix:
   //   EASTER         → easterSunday/ascension/pentecost (name-matched)
   //   ORDINARY_TIME  → trinitySunday/corpusChristi/sacredHeart/christTheKing (name-matched)
-  //   CHRISTMAS      → dec25/jan1/octave (date-matched), holyFamily/baptism/epiphany (name-matched)
-  const specialKey = resolveSpecialKey(season, celebrationName, dateStr)
+  //   CHRISTMAS      → dec25/jan1/octave (date-matched), holyFamily/baptism/epiphany (romcalKey- then name-matched)
+  const specialKey = resolveSpecialKey(season, celebrationName, dateStr, romcalKey)
   if (specialKey) {
     const specialDayPropers = weeks[specialKey]?.[day] ?? weeks[specialKey]?.['SUN']
     if (specialDayPropers) {
@@ -241,6 +276,7 @@ export function getSeasonFirstVespers(
   sundayWeekOfSeason: number,
   dateStr?: string,
   celebrationName?: string,
+  romcalKey?: string | null,
 ): FirstVespersPropers | null {
   const weeks = loadSeasonPropers(season)
 
@@ -268,7 +304,7 @@ export function getSeasonFirstVespers(
   // Phase 4b data-injection hook: once an OT movable carries a
   // `firstVespers` entry under `weeks['<specialKey>'].SUN.firstVespers`,
   // this lookup returns it unchanged. No caller changes needed.
-  const specialKey = resolveSpecialKey(season, celebrationName, dateStr)
+  const specialKey = resolveSpecialKey(season, celebrationName, dateStr, romcalKey)
   if (specialKey) {
     const specialDayPropers = weeks[specialKey]?.['SUN']
     const fv = (specialDayPropers as DayPropers | undefined)?.firstVespers
@@ -291,33 +327,57 @@ export function getSeasonFirstVespers(
 }
 
 /**
- * Look up the Second Vespers (vespers2) proper for a movable Solemnity.
+ * Look up the Second Vespers (`vespers2`) proper of a Sunday / Solemnity.
  *
- * GOAL #20 / FR-156 option B. On a movable Solemnity's own day,
- * `/pray/<date>/vespers` must render the Second Vespers — for movables
- * (Ascension, Pentecost, Trinity Sunday, Corpus Christi, Sacred Heart,
- * Christ the King) this lives in `weeks['<specialKey>'].SUN.vespers2`,
- * the season-propers sibling of `SanctoralEntry.vespers2` (fixed-date).
+ * GOAL #20 / FR-156 option B covered the movable Solemnities (Ascension,
+ * Pentecost, Trinity Sunday, Corpus Christi, Sacred Heart, Christ the
+ * King), whose Second Vespers lives in `weeks['<specialKey>'].SUN.vespers2`
+ * — the season-propers sibling of `SanctoralEntry.vespers2` (fixed-date).
  *
- * Returns `null` when the celebration has no movable special key, or no
- * `vespers2` block is authored — callers then keep the regular `vespers`
- * propers from `getSeasonHourPropers` so existing behaviour is preserved.
+ * FR-171 (GOAL #268) extends the lookup to the per-week 1..N Sunday
+ * cells. The book prints EVERY Sunday's propers in three blocks —
+ * `1 дүгээр Оройн даатгал залбирал` (EP I) / `Өглөөний даатгал залбирал`
+ * (Lauds) / `2 дугаар Оройн даатгал залбирал` (EP II) — with no year-cycle
+ * (A/B/C) variants anywhere, so `weeks[N].SUN.vespers` is EP I and
+ * `weeks[N].SUN.vespers2` is EP II. The Sunday's OWN `/vespers` is EP II;
+ * Saturday evening and `/firstVespers` keep using the `vespers` (EP I)
+ * cell. See `docs/research/2026-09-16-sunday-vespers2.md` §1.
  *
- * Only the movable-Solemnity special-key path is honoured (no per-week
- * 1..N fallback): a `vespers2` cell is only meaningful for a Solemnity's
- * own day, never for a plain weekday/Sunday of the running psalter.
+ * Fallback chain:
+ *   - a resolvable special key short-circuits (no week fallback) — the
+ *     same #54 guard `getSeasonHourPropers` applies, so an Easter-Sunday /
+ *     Holy-Family cell never borrows the week-template EP II.
+ *   - otherwise `weeks[N].SUN.vespers2`, then `weeks['1'].SUN.vespers2`.
+ *     The week-1 fallback mirrors `getSeasonHourPropers` and reflects the
+ *     book: Advent (PDF p.548), Lent (p.617) and Easter (p.699) print a
+ *     SINGLE Sunday formulary reused across the season's weeks, so
+ *     Advent w2-4 / Lent w2-5 / Easter w2-7 legitimately read the w1 EP II
+ *     (p.553-554 / 623-624 / 705-706). Ordinary Time authors every week,
+ *     and its `weeks['1']` carries no `vespers2` at all (the 1st Sunday of
+ *     OT is always the Baptism of the Lord, PDF p.753), so the fallback is
+ *     inert there.
+ *
+ * Returns `null` when no `vespers2` block is reachable — callers then keep
+ * the regular `vespers` propers so existing behaviour is preserved.
  */
 export function getSeasonVespers2(
   season: LiturgicalSeason,
   weekOfSeason: number,
   dateStr?: string,
   celebrationName?: string,
+  romcalKey?: string | null,
 ): HourPropers | null {
   const weeks = loadSeasonPropers(season)
-  const specialKey = resolveSpecialKey(season, celebrationName, dateStr)
-  if (!specialKey) return null
-  const specialDayPropers = weeks[specialKey]?.['SUN'] as DayPropers | undefined
-  return specialDayPropers?.vespers2 ?? null
+  const specialKey = resolveSpecialKey(season, celebrationName, dateStr, romcalKey)
+  if (specialKey) {
+    const specialDayPropers = weeks[specialKey]?.['SUN'] as DayPropers | undefined
+    return specialDayPropers?.vespers2 ?? null
+  }
+  const weekKey = String(weekOfSeason)
+  const exact = (weeks[weekKey]?.['SUN'] as DayPropers | undefined)?.vespers2
+  if (exact) return exact
+  if (weekKey === '1') return null
+  return (weeks['1']?.['SUN'] as DayPropers | undefined)?.vespers2 ?? null
 }
 
 // Cache for sanctoral propers
