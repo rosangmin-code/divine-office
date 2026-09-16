@@ -44,6 +44,14 @@ export interface ResolveRichContext {
    * Christmas fixed-date 매칭 미동작 (variable-date 매칭은 영향 없음).
    */
   dateStr?: string | null
+  /**
+   * romcal 의 안정적 식별자 (예: `epiphany`, `holyFamily`,
+   * `baptismOfTheLord`). FR-172 — `celebrationName` 은 로케일/표기 변형
+   * ("Epiphany" vs "The Epiphany of the Lord") 이 있어 special-key 매칭이
+   * 조용히 실패할 수 있으므로 romcalKey 를 우선 신호로 쓴다. 누락 시
+   * 이름 매칭으로 폴백 (기존 동작 유지).
+   */
+  romcalKey?: string | null
 }
 
 /** The four rich layers before the priority merge. `null` = nothing authored. */
@@ -51,6 +59,26 @@ export interface RichOverlayLayers {
   complineCommons: RichOverlay | null
   psalterCommons: RichOverlay | null
   seasonal: RichOverlay | null
+  /**
+   * FR-171 (GOAL #268) — a SECOND seasonal rich source, ranked directly
+   * below `seasonal` and above `psalterCommons`, paired with its own source
+   * cell in `RichSourceCells.seasonalFallback`.
+   *
+   * Used when the seasonal plain was COMPOSED from two cells rather than
+   * taken from one: the Sunday's own Evening Prayer II is
+   * `{ ...weeks[N].SUN.vespers, ...weeks[N].SUN.vespers2 }`, so the fields
+   * the `vespers2` cell does not print (Ordinary Time's alternate
+   * concluding prayer; Advent / Lent / Easter's responsory, whose EP I and
+   * EP II copies are byte-identical in the book) legitimately carry the
+   * `-vespers` file's markup. Every candidate still passes the same
+   * plain-text parity check against ITS OWN cell, so an EP I rich can never
+   * be rendered over a genuinely different EP II text (Advent's
+   * intercessions, for instance, are dropped).
+   *
+   * Absent / null for every other caller — the single-cell layers behave
+   * exactly as before.
+   */
+  seasonalFallback?: RichOverlay | null
   sanctoral: RichOverlay | null
 }
 
@@ -68,6 +96,7 @@ export function resolveRichOverlayLayers(ctx: ResolveRichContext): RichOverlayLa
     ctx.seasonalHour ?? ctx.hour,
     ctx.celebrationName,
     ctx.dateStr,
+    ctx.romcalKey,
   )
   const sanctoral = ctx.sanctoralKey
     ? loadSanctoralRichOverlay(ctx.sanctoralKey, ctx.hour)
@@ -100,6 +129,7 @@ export function mergeRichLayers(layers: RichOverlayLayers): RichOverlay {
   return {
     ...(layers.complineCommons ?? {}),
     ...(layers.psalterCommons ?? {}),
+    ...(layers.seasonalFallback ?? {}),
     ...(layers.seasonal ?? {}),
     ...(layers.sanctoral ?? {}),
   }
@@ -133,6 +163,8 @@ export const RICH_FIELD_PAIRS: ReadonlyArray<
 export interface RichSourceCells {
   psalterCommons?: Partial<HourPropers> | null
   seasonal?: Partial<HourPropers> | null
+  /** Source cell of `RichOverlayLayers.seasonalFallback` (FR-171). */
+  seasonalFallback?: Partial<HourPropers> | null
   sanctoral?: Partial<HourPropers> | null
 }
 
@@ -214,6 +246,7 @@ export function applyRichSourceParity(
   const ordered: Array<[RichOverlay | null, Partial<HourPropers> | null | undefined]> = [
     [layers.sanctoral, cells.sanctoral],
     [layers.seasonal, cells.seasonal],
+    [layers.seasonalFallback ?? null, cells.seasonalFallback],
     [layers.psalterCommons, cells.psalterCommons],
   ]
   const pickedLayer = new Map<keyof RichOverlay, number>()

@@ -17,7 +17,7 @@ import { getPsalterPsalmody, getComplinePsalmody, getFullComplineData, getPsalte
 import { getSeasonHourPropers, getSeasonFirstVespers, getSeasonVespers2, getHymnForHour, getHymnCandidatesForHour, resolveSpecialKey } from './propers-loader'
 import { resolveSanctoralForDay } from './sanctoral-resolver'
 import { resolveCelebration } from './celebrations'
-import { resolveRichOverlayLayers, applyRichSourceParity } from './prayers/resolver'
+import { resolveRichOverlayLayers, applyRichSourceParity, type RichOverlayLayers } from './prayers/resolver'
 import { loadHymnRichOverlay, type SeasonalRichHourKey } from './prayers/rich-overlay'
 
 import {
@@ -167,6 +167,13 @@ export async function assembleHour(
   // rich is read from `w{key}-{day}-vespers2.rich.json` (§6-3 convention,
   // docs/bug-reports/2026-09-14-eve-vespers-alternate-and-rich.md).
   let seasonalRichHour: SeasonalRichHourKey = dataLookupHour
+  // FR-171 (GOAL #268): set when step 3b COMPOSED the seasonal plain from
+  // `{ ...SUN.vespers, ...SUN.vespers2 }` (a plain Sunday's own Evening
+  // Prayer II) rather than replacing it with a single cell. The rich lookup
+  // then reads both `-vespers2` and `-vespers` files, each parity-checked
+  // against its own cell. The GOAL #20 special-key swap is a wholesale
+  // replacement and keeps its single-source semantics.
+  let sundayVespers2Overlay = false
 
   // 2. Get base psalmody from 4-week psalter
   let psalmEntries: PsalmEntry[] = []
@@ -204,6 +211,7 @@ export async function assembleHour(
     dataLookupHour,
     dateStr,
     day.name,
+    day.romcalKey,
   )
 
   // GOAL #20 (option B): movable-Solemnity Second Vespers swap. On a
@@ -233,13 +241,14 @@ export async function assembleHour(
     // Movable EASTER/OT keys ignore `dateStr` (name-matched) → unchanged;
     // jan1/octave carry no `christmas.json` vespers2 → getSeasonVespers2
     // returns null → no behavior change (jan1 stays on the sanctoral swap).
-    resolveSpecialKey(day.season, day.name, dateStr) != null
+    resolveSpecialKey(day.season, day.name, dateStr, day.romcalKey) != null
   ) {
     const seasonVespers2 = getSeasonVespers2(
       day.season,
       day.weekOfSeason,
       dateStr,
       day.name,
+      day.romcalKey,
     )
     if (seasonVespers2) {
       seasonPropers = seasonVespers2
@@ -289,6 +298,7 @@ export async function assembleHour(
     sanctoralKey?: string | null
     celebrationName: string
     dateStr: string
+    romcalKey?: string | null
   } | null = null
 
   // FR-156 Phase 3a/4a/FEAST-ext: Solemnity/Feast First Vespers
@@ -317,10 +327,6 @@ export async function assembleHour(
   //      the celebration name to a season-propers special key
   //      (`weeks['ascension'].SUN.firstVespers`, etc.) via
   //      `resolveSpecialKey`. Data lives in Phase 4b (task #24).
-  //      FEAST 는 Path 1 only (data-driven activation) — GILH/GIRM
-  //      상 FEAST 는 통상 1st Vespers 없고, 위 4건만 PDF 원문이
-  //      authored 한 예외. movable FEAST special-key 버킷도 없으므로
-  //      Path 2 는 SOLEMNITY 에서만 시도.
   if (hour === 'vespers') {
     const tomorrowDate = new Date(dateStr + 'T00:00:00Z')
     tomorrowDate.setUTCDate(tomorrowDate.getUTCDate() + 1)
@@ -362,16 +368,23 @@ export async function assembleHour(
       // drops the concluding prayer + Magnificat antiphon. Restricting
       // Path 2 to special-key solemnities lets the Saturday→Sunday branch
       // handle plain Sundays as before.
+      const tomorrowSpecialKey = resolveSpecialKey(
+        tomorrowDay.season,
+        tomorrowDay.name,
+        undefined,
+        tomorrowDay.romcalKey,
+      )
       if (
         !solemnityFirstVespers &&
         tomorrowDay.rank === 'SOLEMNITY' &&
-        resolveSpecialKey(tomorrowDay.season, tomorrowDay.name) != null
+        tomorrowSpecialKey != null
       ) {
         solemnityFirstVespers = getSeasonFirstVespers(
           tomorrowDay.season,
           tomorrowDay.weekOfSeason,
           tomorrowStr,
           tomorrowDay.name,
+          tomorrowDay.romcalKey,
         )
       }
       if (solemnityFirstVespers) {
@@ -413,6 +426,7 @@ export async function assembleHour(
           sanctoralKey: tomorrowResolvedSanctoral?.key ?? null,
           celebrationName: tomorrowDay.name,
           dateStr: tomorrowStr,
+          romcalKey: tomorrowDay.romcalKey,
         }
       }
     }
@@ -458,13 +472,14 @@ export async function assembleHour(
     if (
       !firstVespersData &&
       day.rank === 'SOLEMNITY' &&
-      resolveSpecialKey(day.season, day.name) != null
+      resolveSpecialKey(day.season, day.name, undefined, day.romcalKey) != null
     ) {
       firstVespersData = getSeasonFirstVespers(
         day.season,
         day.weekOfSeason,
         dateStr,
         day.name,
+        day.romcalKey,
       )
       if (firstVespersData) isSelfContained = true
       // GOAL #177 — running psalter-week Sunday FIRST Vespers psalmody
@@ -515,6 +530,7 @@ export async function assembleHour(
         day.weekOfSeason,
         dateStr,
         day.name,
+        day.romcalKey,
       )
       // Path 3 is NOT self-contained — composed with the Sunday's regular
       // (EP I) vespers proper, which is already in seasonPropers from the
@@ -570,8 +586,26 @@ export async function assembleHour(
     const sundayDay = getLiturgicalDay(sundayStr)
     const sundaySeason = sundayDay?.season ?? day.season
     const nextWeek = sundayDay?.weekOfSeason ?? day.weekOfSeason + 1
-    const firstVespers = getSeasonFirstVespers(sundaySeason, nextWeek, dateStr, day.name)
-      ?? getSeasonFirstVespers(day.season, day.weekOfSeason, dateStr, day.name)
+    // FR-172 (GOAL #268): the celebration IDENTITY handed to the propers
+    // loader must be the SUNDAY's, not Saturday's. Christmas-season buckets
+    // are keyed by identity (`holyFamily` / `baptism` / `epiphany`), so
+    // passing Saturday's own name ("Saturday after Epiphany",
+    // "The Most Holy Name of Jesus") resolved no special key and the
+    // Sunday's authored First Vespers was skipped — 2026-01-10 evening
+    // rendered no Magnificat antiphon and no concluding prayer even though
+    // `weeks['baptism'].SUN.firstVespers` exists. Ordinary-Time and the
+    // other seasons are keyed by week NUMBER, so they are unaffected.
+    //
+    // `dateStr` deliberately stays SATURDAY's: `getSeasonHourPropers` /
+    // `getSeasonFirstVespers` use it for the ADVENT dec17-24 date-key
+    // block, and substituting the Sunday's date would make the eve of a
+    // Sunday Dec 24 (2028-12-24, 2034-12-24) read `weeks['dec24'].SUN`,
+    // which authors only `lauds` — the whole vespers lookup would return
+    // null instead of the 4th Advent Sunday's propers.
+    const sundayName = sundayDay?.name ?? day.name
+    const sundayRomcalKey = sundayDay?.romcalKey
+    const firstVespers = getSeasonFirstVespers(sundaySeason, nextWeek, dateStr, sundayName, sundayRomcalKey)
+      ?? getSeasonFirstVespers(day.season, day.weekOfSeason, dateStr, day.name, day.romcalKey)
     // Always compute the upcoming Sunday's regular vespers propers —
     // used as standalone fallback when firstVespers is absent, AND as the
     // seasonal Sunday EP I proper composed with firstVespers (FR-156
@@ -584,8 +618,8 @@ export async function assembleHour(
     // over the psalter copies in the firstVespers cell —
     // `mergeSundayFirstVespers` (identical composition to the
     // `/firstVespers` route, Path 3 above).
-    const sundayRegular = getSeasonHourPropers(sundaySeason, nextWeek, 'SUN', 'vespers', dateStr, day.name)
-      ?? getSeasonHourPropers(day.season, day.weekOfSeason, 'SUN', 'vespers', dateStr, day.name)
+    const sundayRegular = getSeasonHourPropers(sundaySeason, nextWeek, 'SUN', 'vespers', dateStr, sundayName, sundayRomcalKey)
+      ?? getSeasonHourPropers(day.season, day.weekOfSeason, 'SUN', 'vespers', dateStr, day.name, day.romcalKey)
     if (firstVespers) {
       seasonPropers = mergeSundayFirstVespers(sundayRegular, firstVespers)
       // First Vespers may carry its own psalm array (distinct from the
@@ -610,6 +644,73 @@ export async function assembleHour(
     } else {
       // Pre-Phase-2 path: reuse the upcoming Sunday's regular (2nd) Vespers propers.
       seasonPropers = sundayRegular
+    }
+  }
+
+  // 3b. FR-171 (GOAL #268) — Sunday Evening Prayer II on the Sunday itself.
+  //
+  // The book prints every Sunday's propers as three numbered blocks —
+  // `1 дүгээр Оройн даатгал залбирал` (Evening Prayer I) /
+  // `Өглөөний даатгал залбирал` (Morning Prayer) /
+  // `2 дугаар Оройн даатгал залбирал` (Evening Prayer II) — with no
+  // year-cycle (A/B/C) variants anywhere in the volume. The data mirrors
+  // that: `weeks[N].SUN.vespers` is EP I, `weeks[N].SUN.vespers2` is EP II.
+  // Saturday evening and `/firstVespers` correctly sing the EP I cell; the
+  // Sunday's OWN `/vespers` was re-using that same cell and therefore
+  // rendered Evening Prayer I a second time (41 of 52 Sundays in 2026 —
+  // in Advent / Lent / Easter the reading, responsory and intercessions
+  // were EP I's too). See `docs/research/2026-09-16-sunday-vespers2.md` §1.
+  //
+  // OVERLAY, not replacement: Ordinary-Time `vespers2` cells print only the
+  // Magnificat antiphon + the (identical) concluding prayer, and the book
+  // prints the `Сонголтот залбирал` alternate once per Sunday — replacing
+  // wholesale would drop it. Advent / Lent / Easter and the Christmas
+  // feasts author complete `vespers2` cells, so there the overlay IS a
+  // replacement.
+  //
+  // Gates:
+  //   - `hour === 'vespers'` — never `/firstVespers`, never Saturday eve.
+  //   - the celebration's OWN evening: a Sunday, or a Feast of the Lord
+  //     that carries a season-propers special key (Holy Family, Baptism of
+  //     the Lord — which land on a weekday in the years Christmas or
+  //     Epiphany displaces them: Holy Family Fri 2033-12-30, Baptism Mon
+  //     2029-01-08). The SOLEMNITY equivalent is the GOAL #20 swap above.
+  //   - no First-Vespers promotion fired above (`effectiveLiturgicalDay`
+  //     still today): a Sunday whose Monday carries First Vespers already
+  //     renders tomorrow's celebration, and the privileged-Sunday guard
+  //     (`keepsSundayEveningPrayerII`) decides which wins.
+  //   - the GOAL #20 movable-Solemnity swap has not already run
+  //     (`seasonalRichHour !== 'vespers2'`).
+  // Special-key celebrations that own no `vespers2` (Easter Sunday — its
+  // `vespers` cell IS Evening Prayer II, jan1, the Christmas Octave
+  // weekdays) short-circuit inside `getSeasonVespers2`, so this block is a
+  // no-op for them.
+  const isOwnDayOfFeastSpecialKey =
+    day.rank === 'FEAST' &&
+    resolveSpecialKey(day.season, day.name, dateStr, day.romcalKey) != null
+  if (
+    hour === 'vespers' &&
+    (dayOfWeek === 'SUN' || isOwnDayOfFeastSpecialKey) &&
+    effectiveLiturgicalDay.date === day.date &&
+    seasonalRichHour !== 'vespers2'
+  ) {
+    const sundayVespers2 = getSeasonVespers2(
+      day.season,
+      day.weekOfSeason,
+      dateStr,
+      day.name,
+      day.romcalKey,
+    )
+    if (sundayVespers2) {
+      seasonPropers = { ...(seasonPropers ?? {}), ...sundayVespers2 }
+      seasonalRichHour = 'vespers2'
+      sundayVespers2Overlay = true
+      // Mirror of the #20 swap: a `vespers2` cell that prints its own
+      // psalmody (none today outside dec25/pentecost, both special-key)
+      // overrides the running psalter.
+      if (sundayVespers2.psalms && sundayVespers2.psalms.length > 0) {
+        psalmEntries = sundayVespers2.psalms
+      }
     }
   }
 
@@ -847,6 +948,7 @@ export async function assembleHour(
         psalterWeek: undefined,
         celebrationName: richLookupIdentity.celebrationName,
         dateStr: richLookupIdentity.dateStr,
+        romcalKey: richLookupIdentity.romcalKey,
       }
     : {
         season: day.season,
@@ -861,6 +963,7 @@ export async function assembleHour(
         psalterWeek: firstVespersBranchActive ? undefined : day.psalterWeek,
         celebrationName: day.name,
         dateStr,
+        romcalKey: day.romcalKey,
       }
   let richLayers = resolveRichOverlayLayers(richKey)
   if (seasonalRichHour === 'vespers2' && !richLayers.seasonal) {
@@ -894,6 +997,7 @@ export async function assembleHour(
         Number(richKey.weekKey),
         richKey.dateStr ?? undefined,
         richKey.celebrationName ?? undefined,
+        richKey.romcalKey,
       )
     : getSeasonHourPropers(
         richKey.season,
@@ -902,12 +1006,42 @@ export async function assembleHour(
         dataLookupHour,
         richKey.dateStr ?? undefined,
         richKey.celebrationName ?? undefined,
+        richKey.romcalKey,
       )
+  // FR-171: the plain-Sunday Evening Prayer II overlay composed TWO cells
+  // (`{ ...SUN.vespers, ...SUN.vespers2 }`), so the `-vespers` rich is a
+  // legitimate second source for the fields `vespers2` does not print —
+  // Ordinary Time's alternate concluding prayer, and Advent / Lent /
+  // Easter's responsory + concluding prayers, whose EP I and EP II copies
+  // are byte-identical in the book (every authored `-vespers2` file on disk
+  // carries `shortReadingRich` only). Parity still compares each candidate
+  // against ITS OWN cell, so Advent's EP I intercessions rich is dropped
+  // rather than rendered over the EP II petitions. Not applied to the
+  // GOAL #20 special-key swap: that REPLACES the cell wholesale, so its
+  // single-source semantics stand.
+  let seasonalFallbackRich: RichOverlayLayers['seasonalFallback'] = null
+  let seasonalFallbackCell: HourPropers | null = null
+  if (sundayVespers2Overlay && seasonalRichHour === 'vespers2') {
+    seasonalFallbackRich = resolveRichOverlayLayers({
+      ...richKey,
+      seasonalHour: dataLookupHour,
+    }).seasonal
+    seasonalFallbackCell = getSeasonHourPropers(
+      richKey.season,
+      Number(richKey.weekKey),
+      richKey.day,
+      dataLookupHour,
+      richKey.dateStr ?? undefined,
+      richKey.celebrationName ?? undefined,
+      richKey.romcalKey,
+    )
+  }
   const richOverlay = applyRichSourceParity(
-    richLayers,
+    { ...richLayers, seasonalFallback: seasonalFallbackRich },
     {
       psalterCommons,
       seasonal: seasonalCellForRich,
+      seasonalFallback: seasonalFallbackCell,
       sanctoral: hourPropers,
     },
     mergedPropers,
@@ -1148,8 +1282,8 @@ function hasFirstVespersAndCompline(
   const sanctoral = resolveSanctoralForDay(day)?.entry
   if (sanctoral?.firstVespers) return true
   // Movable Solemnity special-key path
-  if (day.rank === 'SOLEMNITY' && resolveSpecialKey(day.season, day.name) != null) {
-    const fv = getSeasonFirstVespers(day.season, day.weekOfSeason, dateStr, day.name)
+  if (day.rank === 'SOLEMNITY' && resolveSpecialKey(day.season, day.name, undefined, day.romcalKey) != null) {
+    const fv = getSeasonFirstVespers(day.season, day.weekOfSeason, dateStr, day.name, day.romcalKey)
     if (fv) return true
   }
   return false

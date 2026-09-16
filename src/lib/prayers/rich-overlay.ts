@@ -133,6 +133,7 @@ export function loadSeasonalRichOverlay(
   hour: SeasonalRichHourKey,
   celebrationName?: string | null,
   dateStr?: string | null,
+  romcalKey?: string | null,
 ): RichOverlay | null {
   const seasonDir = SEASON_KEBAB[season]
   const baseDir = path.join(
@@ -165,7 +166,7 @@ export function loadSeasonalRichOverlay(
   // Tier 1 — special-key. propers-loader.ts:resolveSpecialKey 가 (season,
   // celebrationName, dateStr) 셋 중 적절한 신호로 매치 — Christmas 의
   // dec25/jan1/octave 는 dateStr 기반, 그 외는 celebrationName 기반.
-  const specialKey = resolveSpecialKey(season, celebrationName, dateStr)
+  const specialKey = resolveSpecialKey(season, celebrationName, dateStr, romcalKey)
   if (specialKey) {
     // Day-specific 우선, SUN-슬롯 fallback. propers-loader 의
     // `weeks[specialKey]?.[day] ?? weeks[specialKey]?.['SUN']` 와 동일한
