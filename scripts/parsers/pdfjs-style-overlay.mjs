@@ -506,7 +506,12 @@ export async function extractStyleOverlay({ pdfPath, bookPages }) {
       page.cleanup()
     }
   } finally {
-    await doc.destroy()
+    // pdfjs-dist 6.x (v6.0 api-major) removed `PDFDocumentProxy.prototype
+    // .destroy`; teardown goes through the loading task, which owns the
+    // document and (when enabled) the worker. Same migration as
+    // `src/components/pdf-viewer.tsx`. Without this the builder aborts every
+    // page with "doc.destroy is not a function" (82 failures on a fresh run).
+    await loadingTask.destroy()
   }
 
   // Keep output in book-page order.
