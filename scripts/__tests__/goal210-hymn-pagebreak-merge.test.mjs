@@ -375,8 +375,14 @@ const AREA_HASHES = {
   // christTheKing lauds+vespers2 conditionalRubrics[0] gained
   // `"kind": "rationale",` inside evidencePdf (8 lines). Insertion only —
   // Mongolian text byte-unchanged (verified by strip-and-compare).
+  // GOAL #268 (2026-09-16): Sunday Evening Prayer II cells — weeks 12 / 15 /
+  // 25 `vespers2` added from the printed pages 774 / 780 / 800, week 16's
+  // `vespers2` (which carried the week-15 p.780 text) replaced by p.782
+  // «Өөрөөс нь булаагдашгүй сайныг Мариа сонгон авчээ.», and three
+  // `gospelCanticleAntiphonPage` typos corrected against the printed page
+  // (6.vespers 647 → 761, 20.vespers2 751 → 790, 34.vespers2 816 → 818).
   'src/data/loth/propers/ordinary-time.json':
-    '9eb9f6f0456be326a6b81a915621edb45c344e180f6ba100e0d5b17b6271e942',
+    '3f5791516d94b241f37ac4b68f2831d0c7e90808ff7aab2ad49568f78a48f6cc',
   // g-36 (WI-50/51): sanctoral 추출오타 35건 PDF-fidelity 교정 (full_pdf.txt L28000+ 대조)
   // g-41 (WI-60): 08-06 Transfiguration held-divergence restore — vespers antiphon
   // (минь ангижруулдаг…) + vespers/lauds/vespers2 concludingPrayer Эцгүүдийг +
