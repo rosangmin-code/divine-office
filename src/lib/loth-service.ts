@@ -327,6 +327,33 @@ export async function assembleHour(
   //      the celebration name to a season-propers special key
   //      (`weeks['ascension'].SUN.firstVespers`, etc.) via
   //      `resolveSpecialKey`. Data lives in Phase 4b (task #24).
+  //   2b. FR-173 (GOAL #268) — movable FEASTS OF THE LORD that fall on a
+  //      SUNDAY and carry a season-propers special key: Holy Family
+  //      (PDF p.599) and the Baptism of the Lord (p.616). Both print
+  //      «1 дүгээр Оройн даатгал залбирал» in the book, and p.599's red
+  //      rubric — «Хэрэв Эзэний Мэндэлсэн өдөр … Ням гарагт таарвал …
+  //      12 сарын 30-нд … “1 дүгээр Оройн даатгал залбирал” гэж байхгүй.»
+  //      — says First Vespers is omitted ONLY in the years where Christmas
+  //      is a Sunday (Holy Family then moves to Friday 12-30). The
+  //      `tomorrowDow === 'SUN'` gate below reproduces that rubric exactly
+  //      and costs nothing else: both feasts are Sundays in every other
+  //      year. Table of Liturgical Days II.5 (Feast of the Lord) outranks
+  //      II.7 (St Stephen / St John / Holy Innocents) and II.9 (weekday of
+  //      the Christmas Octave), so 12-26..12-31 evening yields to Holy
+  //      Family EP I — which is what `getHoursSummary` already assumes
+  //      when it strips the eve cards (#240). Before this, the legacy eve
+  //      URL `/pray/2026-12-26/vespers` disagreed with the card list and
+  //      rendered the Octave weekday's Evening Prayer.
+  //      Composition differs from Path 1/2: the `weeks[key].SUN.firstVespers`
+  //      cells of holyFamily / baptism are psalter extracts (psalms +
+  //      reading + responsory + intercessions, NO Magnificat antiphon and
+  //      NO concluding prayer), so they are merged with the celebration's
+  //      own `SUN.vespers` (EP I) cell through `mergeSundayFirstVespers` —
+  //      byte-identical to what the `/firstVespers` route (Path 3 below)
+  //      renders on the feast's own URL. A Solemnity's own EP II still
+  //      wins over the next day's Feast EP I (Table I.2/I.3 > II.5), hence
+  //      the `day.rank !== 'SOLEMNITY'` guard: Christmas Day on a Saturday
+  //      (2027-12-25) keeps its Second Vespers.
   if (hour === 'vespers') {
     const tomorrowDate = new Date(dateStr + 'T00:00:00Z')
     tomorrowDate.setUTCDate(tomorrowDate.getUTCDate() + 1)
@@ -387,11 +414,46 @@ export async function assembleHour(
           tomorrowDay.romcalKey,
         )
       }
+      // Path 2b — Feast of the Lord on a SUNDAY (Holy Family, Baptism of
+      // the Lord). See the header comment above for the rubric. Composed
+      // with the celebration's own EP I cell, never self-contained.
+      let eveComposedWith: HourPropers | null = null
+      if (
+        !solemnityFirstVespers &&
+        tomorrowDay.rank === 'FEAST' &&
+        dateToDayOfWeek(tomorrowStr) === 'SUN' &&
+        day.rank !== 'SOLEMNITY' &&
+        tomorrowSpecialKey != null
+      ) {
+        const feastFirstVespers = getSeasonFirstVespers(
+          tomorrowDay.season,
+          tomorrowDay.weekOfSeason,
+          tomorrowStr,
+          tomorrowDay.name,
+          tomorrowDay.romcalKey,
+        )
+        if (feastFirstVespers) {
+          solemnityFirstVespers = feastFirstVespers
+          eveComposedWith = getSeasonHourPropers(
+            tomorrowDay.season,
+            tomorrowDay.weekOfSeason,
+            'SUN',
+            'vespers',
+            tomorrowStr,
+            tomorrowDay.name,
+            tomorrowDay.romcalKey,
+          )
+        }
+      }
       if (solemnityFirstVespers) {
-        // Solemnity First Vespers is self-contained — no per-field
+        // Path 1/2 First Vespers are self-contained — no per-field
         // backstop to the regular seasonal vespers. The PDF prints the
         // entire 1st Vespers ordinary on the solemnity's own section.
-        seasonPropers = solemnityFirstVespers as HourPropers
+        // Path 2b (`eveComposedWith` set) composes instead, mirroring the
+        // `/firstVespers` route so card and eve URL agree byte-for-byte.
+        seasonPropers = eveComposedWith
+          ? mergeSundayFirstVespers(eveComposedWith, solemnityFirstVespers)
+          : (solemnityFirstVespers as HourPropers)
         if (solemnityFirstVespers.psalms && solemnityFirstVespers.psalms.length > 0) {
           psalmEntries = solemnityFirstVespers.psalms
         }
