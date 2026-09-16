@@ -40,7 +40,7 @@
 `mappings.ts:34` `SUNDAY→SOLEMNITY`, `calendar.ts:54-58`/`loth-service.ts:559-564` 가 romcal 선택과 무관하게 MM-DD 로 sanctoral 을 붙인다. 2028-03-19 사순 3주일 → "성 요셉", 2030-12-08 대림 2주일 → 원죄없는잉태, 2035-03-25 **부활 주일** → 주님탄생예고. **조치**: romcal `type`/`key` 보존 후 "romcal 이 선택한 날만" sanctoral 적용.
 
 ### P0-4. ✅ `next@16.2.4` → `16.3.5` 업그레이드 (semver-minor, `fixAvailable: true`)
-> **2026-09-14 완료** (`fc1feb1`, `4918d7e`): audit critical 1 → 0, 잔여 high 1 = `pdfjs-dist`(6.x major, worker 사본·CACHE_VERSION 동시 교체 필요, 별도 과제). e2e 실패 집합 main 과 동일(고유 회귀 0). 프로덕션 실측: `x-powered-by` 제거. `/_next/image?url=…` 는 로컬 `next start` 에선 404, Vercel 에선 플랫폼이 `unoptimized` 를 인지해 원본 파일로 직접 매핑(`x-matched-path: /apple-icon.png`, 200) — 최적화 파이프라인은 타지 않으므로 목적 달성.
+> **2026-09-14 완료** (`fc1feb1`, `4918d7e`): audit critical 1 → 0, 잔여 high 1 = `pdfjs-dist`(6.x major, worker 사본·CACHE_VERSION 동시 교체 필요, 별도 과제) → **2026-09-16 해소** (§3.4 #1 참조, audit high 1 → 0). e2e 실패 집합 main 과 동일(고유 회귀 0). 프로덕션 실측: `x-powered-by` 제거. `/_next/image?url=…` 는 로컬 `next start` 에선 404, Vercel 에선 플랫폼이 `unoptimized` 를 인지해 원본 파일로 직접 매핑(`x-matched-path: /apple-icon.png`, 200) — 최적화 파이프라인은 타지 않으므로 목적 달성.
 
 `npm audit`: critical 1 (next, 9.3.4-canary.0 ~ 16.3.2, advisory 24건). RSC DoS·Server Action 엔드포인트 노출(`src/app/actions/calendar.ts` 'use server' 존재)·이미지 최적화 DoS(프로덕션 `/_next/image` 가 살아 있음, `next/image` 미사용) 가 실제 해당. `docs/security-incident-2026-04-vercel.md:21` 의 "의존성 조치 불필요" 는 stale. **조치**: `npm i next@^16.3.3 eslint-config-next@^16.3.3` → build+e2e; `next.config.ts` 에 `images:{unoptimized:true}`, `poweredByHeader:false`; CI 에 `npm audit --omit=dev --audit-level=high`. 부수: `pdfjs-dist@5.6.205` high (악성 PDF JS 실행, 고정 `/psalter.pdf` 만 열어 실질 낮음, fix 는 6.x major).
 
@@ -171,7 +171,7 @@
 
 | # | 심각도 | 문제 |
 |---|---|---|
-| 1 | 치명 | `next@16.2.4` 미패치 (P0-4) |
+| 1 | 치명 | ✅ `next@16.2.4` 미패치 (P0-4) · ✅ `pdfjs-dist@5.6.205` high (GHSA-hq66-cqwq-w95j) — 아래 완료 노트 |
 | 2 | 높음 | `CACHE_VERSION` 83회 bump 중 CLAUDE.md 기준 실제 필요는 3~5회(고정 URL 자산 변경). SSR HTML(캐시 안 함)·`_next/static`(content-hash + immutable) 변경엔 불필요한데 bump 마다 전 사용자 캐시 전면 삭제 → chunk·Noto 폰트 재다운로드. v15 머지 충돌 사례(`sw.js:494-496`) |
 | 3 | 중간 | **오프라인 안내 vs 구현 불일치**: SW 는 항상 offline.html 로 떨어져 어떤 기도문도 오프라인 열람 불가인데 `install-app-section.tsx:141` 은 "офлайн хэрэглэх боломжтой". 캐시된 chunk 는 HTML 이 없어 오프라인에서 한 번도 안 쓰임 = static cache-first 분기 가치 0 |
 | 4 | 중간 | CSP `script-src 'self' 'unsafe-inline' 'unsafe-eval'`(`vercel.json:29`) → 스크립트 보호 0. `'unsafe-eval'` 은 Next 프로덕션·pdf.js 모두 불필요 → 즉시 제거 가능; `'unsafe-inline'` 은 `layout.tsx:56-74` 때문 → next 업그레이드 후 nonce. `interest-cohort=()` 폐기 토큰 |
@@ -183,6 +183,9 @@
 | 10 | 낮음 | `x-powered-by` 노출; 보안 헤더는 vercel.json·캐시는 next.config 로 이원화 → Vercel 이탈 시 소실 |
 | 11 | 낮음 | `sw.js:760-762` cache.put 예외 미처리·상한 없음; `:711,724` skipWaiting+claim 직후 구 탭 lazy chunk 404 가능(controllerchange 처리 0) |
 | 12 | 낮음 | 사고문서 stale + P0/P1 체크 전부 미완(`security-incident…md:29-52`); devDeps 취약 `npm audit fix` |
+
+> **2026-09-16 완료 — #1 pdfjs-dist 6.x 이관**: `5.6.205` → `6.3.289` (GHSA-hq66-cqwq-w95j, 악성 PDF 의 임의 JS 실행). `npm audit --omit=dev` high 1 → **0** (devDeps 포함해도 0), CI 게이트를 `--audit-level=critical` → `--audit-level=high` 로 상향. 6.0 의 api-major 2건이 실제 해당: `getDocument` 가 URL 문자열을 더 이상 받지 않아 `{ url }` 로, `PDFDocumentProxy.prototype.destroy` 제거로 teardown 을 `loadingTask.destroy()` 로 이관 (`pdf-viewer.tsx`). **legacy 빌드는 6.x 에도 존재하며 `Uint8Array.prototype.toHex`/`fromBase64` core-js 폴리필을 그대로 싣는다**(5.6.205 와 동일 프로파일 실측) — 구형 Android Chrome 지원 근거 유지. `public/pdf.worker.min.mjs` 를 같은 버전 legacy worker 로 교체(sha256 `7fc442c2…` → `a33cfe72…`), `CACHE_VERSION` v83 → v84.
+> 이관 중 확인된 것: **worker 자산의 staleness 벡터는 SW 가 아니라 HTTP 캐시다.** worker 요청의 `destination` 은 `'worker'` 라 `sw.js` 의 script/style/font/image 분기에 안 걸린다(실측 — v84 캐시 18 entry 에 `/pdf.worker.min.mjs` 부재, 아래 "SW 전략 실측" 과 일치). 대신 `next.config.ts` 의 `max-age=86400` 때문에 배포 후 최대 24h 동안 **구 worker + 신 API** 조합이 성립해 `"API version … does not match the Worker version …"` 로 뷰어가 통째로 죽을 수 있다. `workerSrc` 를 `/pdf.worker.min.mjs?v=${pdfjs.version}` 로 키잉해 페어를 URL 수준에서 강제하는 것으로 차단 (경로 불변 → `next.config.ts` 헤더 매칭·SW 분기 영향 없음).
 
 **SW 전략 실측** (`sw.js:727-769`): navigation → network-only(실패 시 offline.html) / `_next/static` script·style·font → cache-first(만료 없음, HTTP immutable 과 중복) / image(`/icon.svg` 등 고정 URL) → cache-first(**bump 가 진짜 필요한 유일 경로**) / `/api/*`·`/psalter.pdf`·`/pdf.worker.min.mjs`·RSC·cross-origin → SW 미개입.
 
@@ -233,7 +236,7 @@
 | **이번 주** | P0-1~3 전례 버그 (calendar.ts 한 층, ≈1일 + 회귀 테스트) · P0-4 next 업그레이드 · P0-5 브랜치 보호+CI build · P0-6 rubric-coverage GREEN + plain 4건 동기화 |
 | **2주 내** | 시편 헤더 영문 ref 라벨 몽골어화 결정 (NFR-002) · 토요일 저녁 헤더 시편주간 라벨 규칙 확정 · `settings.tsx:137` try/catch (H1) · CSP `'unsafe-eval'` 제거 · `verify:all` + CI SoT 프로비저닝 · plain↔rich 동등성 verifier · Playwright reporter/forbidOnly · 사문화 spec 정리 · 오프라인 안내 문구 결정 |
 | **1개월** | 무음 fallback 정책 통일 + `loadJson(schema)` · `assembleHour` 분해 · listbox/radiogroup a11y (H3/M7) · 헤딩 계층 (M2) · 대비 토큰 (H4) · prayer-footer 탭 동작 재설계 (H2) · FR 번호 단일화 · docs 아카이브 + README |
-| **분기** | `sw.js` 빌드 ID 템플릿화 + bump 폐지 · 오프라인 정책 구현(택1) · 렌더 프리미티브 수렴 (M6) · scripts archive + 리포 대용량 정리 + `git gc` · pdfjs-dist 6.x 검토 |
+| **분기** | `sw.js` 빌드 ID 템플릿화 + bump 폐지 · 오프라인 정책 구현(택1) · 렌더 프리미티브 수렴 (M6) · scripts archive + 리포 대용량 정리 + `git gc` · ~~pdfjs-dist 6.x 검토~~ ✅ 2026-09-16 (6.3.289 이관, §3.4 #1) |
 
 ---
 

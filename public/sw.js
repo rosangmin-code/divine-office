@@ -700,7 +700,31 @@
 // psalter-texts.rich.json 의 `phrases` 만 변경 — lines·paragraphBoundaries·source
 // 불변. 29개 블록에서 시편 본문 줄나눔이 바뀌므로 stale-cache 회귀 방지 bump.
 // SW 로직 변경 없음 — navigation `network-only` 유지, PRECACHE 대상 무변경.
-const CACHE_VERSION = 'divine-office-v83'
+// v83 → v84 — pdfjs-dist 5.6.205 → 6.3.289 이관 (GHSA-hq66-cqwq-w95j: 악성
+// PDF 의 임의 JS 실행, high). 본 bump 는 **정적 자산의 내용이 실제로 바뀌는**
+// 사례다 (v42~v83 의 "chunk 내용 변경" conservative bump 와 구분):
+// (a) `public/pdf.worker.min.mjs` — 고정 파일명 자산의 *내용* 이 6.3.289
+//     legacy worker 사본으로 교체된다 (sha256 7fc442c2… → a33cfe72…).
+//     API(뷰어 chunk)와 worker 는 버전이 반드시 페어여야 하며, 어긋나면
+//     pdf.js 가 "The API version … does not match the Worker version …" 로
+//     던져 `/pdf/[page]` 뷰어가 통째로 죽는다.
+//     ※ 이 자산은 SW 가 캐시하지 않는다 — worker 요청의 destination 은
+//       'worker' 라서 아래 script/style/font/image 분기에 걸리지 않는다
+//       (실측 확인, docs/app-review-2026-09-13.md §SW 전략과 일치). 실제
+//       staleness 벡터는 next.config.ts 의 `max-age=86400` HTTP 캐시이며,
+//       그쪽은 `pdf-viewer.tsx` 가 workerSrc 를 `?v=${pdfjs.version}` 로
+//       키잉해 페어를 URL 수준에서 보장하는 것으로 막는다. 그럼에도 본
+//       bump 를 올리는 이유는 CLAUDE.md 의 명시 기준("정적 자산 경로/내용
+//       변경 → bump")이 내용 변경을 그대로 트리거하기 때문이다.
+// (b) `src/components/pdf-viewer.tsx` — 6.x api-major 대응 (getDocument 가
+//     URL 문자열을 더 이상 받지 않음 → `{ url }`, PDFDocumentProxy.destroy
+//     제거 → loadingTask.destroy, workerSrc 버전 키잉) 으로 뷰어 chunk 내용이
+//     바뀐다. 이쪽은 SW 의 cache-first script 분기 대상이라 v42~v83 의
+//     conservative 컨벤션대로 캐시를 비워야 한다.
+// 자산 *경로* 는 무변경(`/pdf.worker.min.mjs` 그대로 — 쿼리는 경로가 아니다),
+// PRECACHE 대상(offline.html·icon.svg) 무변경, SW 로직 변경 없음 —
+// navigation 은 `network-only` 유지, caches.put(html) 미도입.
+const CACHE_VERSION = 'divine-office-v84'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 

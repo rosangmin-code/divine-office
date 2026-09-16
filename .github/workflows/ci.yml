@@ -30,13 +30,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # 런타임 의존성(devDeps 제외)의 critical 만 하드 게이트. P0-4 (next 16.3.5)
-      # 로 critical 은 0 이고, 잔여는 pdfjs-dist high 1건(GHSA-hq66-cqwq-w95j,
-      # fix 는 6.x major)뿐이다. pdfjs-dist 6.x 이관(라이브러리 + public/
+      # 런타임 의존성(devDeps 제외)의 high 이상을 하드 게이트. P0-4 (next
+      # 16.3.5) 로 critical 0, pdfjs-dist 6.3.289 이관(라이브러리 + public/
       # pdf.worker.min.mjs legacy worker 사본 동시 교체 + sw.js CACHE_VERSION
-      # bump) 후 `--audit-level=high` 로 올릴 것.
-      - name: npm audit (runtime deps, critical)
-        run: npm audit --omit=dev --audit-level=critical
+      # v84) 으로 GHSA-hq66-cqwq-w95j 가 해소되어 high 도 0 이다.
+      # 잔여 moderate/low 는 devDeps 뿐이라 `--omit=dev` 로 제외된다.
+      - name: npm audit (runtime deps, high)
+        run: npm audit --omit=dev --audit-level=high
 
       - name: ESLint
         run: npm run lint
