@@ -1,10 +1,11 @@
 'use client'
 
-import { useId, useState, type JSX } from 'react'
+import { useState, type JSX } from 'react'
 import type { HourSection, PrayerSpan, PrayerText } from '@/lib/types'
 import { PageRef } from '../page-ref'
 import { Icon } from '../icon'
 import { AntiphonBox } from './antiphon-box'
+import { listboxOptionClassName, useListbox } from '../ui/listbox'
 
 const CANTICLE_NAMES: Record<string, string> = {
   benedictus: 'Захариагийн магтаал',
@@ -204,8 +205,6 @@ export function GospelCanticleSection({
   // stay hidden), so the #94 e2e (combobox.click() → option.click()) only
   // exercises a real custom listbox. The native-select impl (#96) shipped but
   // could not satisfy that contract — this WI converts it.
-  const [menuOpen, setMenuOpen] = useState(false)
-  const listId = useId()
   const safeIdx = hasCandidates
     ? clampCandidateIndex(selectedIdx, candidates!.length)
     : 0
@@ -289,6 +288,19 @@ export function GospelCanticleSection({
       : [{ c: candidates![0], i: 0 }]
     : []
 
+  // H3 — 공용 접근 가능 listbox (hymn/marian/invitatory 와 동일 훅).
+  // optionItems 의 **위치**가 곧 listbox 인덱스이고, 실제 후보 인덱스는
+  // `optionItems[pos].i` 다 (defensive degrade 경로에서 둘이 갈릴 수 있다).
+  const optionPos = Math.max(
+    0,
+    optionItems.findIndex(({ i }) => i === safeIdx),
+  )
+  const listbox = useListbox({
+    count: optionItems.length,
+    selectedIndex: optionPos,
+    onSelect: (pos) => setSelectedIdx(optionItems[pos]?.i ?? 0),
+  })
+
   // FR-168 — dropdown + rubric block, rendered once near the top of the
   // section (above the canticle heading) ONLY on the candidate path.
   const renderCandidateControls = () =>
@@ -310,47 +322,32 @@ export function GospelCanticleSection({
             aria-label="${name} — шад магтаалыг сонгох", aria-selected. */}
         <div data-role="canticle-antiphon-dropdown">
           <button
-            type="button"
-            role="combobox"
-            aria-haspopup="listbox"
-            aria-expanded={menuOpen}
-            aria-controls={listId}
+            {...listbox.triggerProps}
             aria-label={`${name} — шад магтаалыг сонгох`}
-            onClick={() => setMenuOpen(!menuOpen)}
             className="inline-flex items-center gap-1 text-sm text-stone-700 transition-colors hover:text-stone-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-liturgical-gold)] dark:text-stone-300 dark:hover:text-stone-100"
           >
             <Icon
               name="next"
               size={14}
-              className={`transition-transform ${menuOpen ? 'rotate-90' : ''}`}
+              className={`transition-transform ${listbox.open ? 'rotate-90' : ''}`}
               aria-hidden="true"
             />
             Шад магтаал сонгох ({optionItems.length})
           </button>
 
-          {menuOpen && (
+          {listbox.open && (
             <ul
-              id={listId}
-              role="listbox"
+              {...listbox.listProps}
               aria-label={`${name} — шад магтаалыг сонгох`}
               className="mt-2 space-y-1"
             >
-              {optionItems.map(({ c, i }) => (
-                <li key={i} role="option" aria-selected={i === safeIdx}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedIdx(i)
-                      setMenuOpen(false)
-                    }}
-                    className={`w-full rounded px-2 py-1.5 text-left text-sm transition-colors ${
-                      i === safeIdx
-                        ? 'bg-amber-100 text-amber-900 dark:bg-amber-900/30 dark:text-amber-200'
-                        : 'text-stone-600 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-stone-800'
-                    }`}
-                  >
-                    {c.text}
-                  </button>
+              {optionItems.map(({ c, i }, pos) => (
+                <li
+                  key={i}
+                  {...listbox.getOptionProps(pos)}
+                  className={listboxOptionClassName(i === safeIdx)}
+                >
+                  {c.text}
                 </li>
               ))}
             </ul>

@@ -1,10 +1,11 @@
 // GOAL #66 sub-2 (#68) — loading.tsx: 상시 strip 이 제거되어 하단 strip
 // skeleton 도 제거(로드 직후 회색 바 노출 방지, page.tsx AC-a 와 정합).
-// 본문 컨테이너 여백도 pb-16 → pb-6 로 축소.
+// 본문 컨테이너 여백은 H2 (app-review §3.3) 의 상시 트리거 칩 높이를
+// 비우도록 pb-20 (page.tsx 와 동일).
 export default function PrayLoading() {
   return (
     <>
-      <div className="mx-auto max-w-2xl px-1 py-6 pb-6 lg:max-w-3xl md:px-3">
+      <div className="mx-auto max-w-2xl px-1 py-6 pb-20 lg:max-w-3xl md:px-3">
         {/* Back link skeleton — settings-icon skeleton 제거됨 (WI-C). */}
         <div className="mb-4 flex items-center">
           <div className="h-5 w-40 animate-pulse rounded bg-stone-100 dark:bg-stone-800" />

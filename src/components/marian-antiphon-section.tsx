@@ -1,9 +1,10 @@
 'use client'
 
-import { useId, useState } from 'react'
+import { useState } from 'react'
 import type { HourSection } from '@/lib/types'
 import { PageRef } from './page-ref'
 import { Icon } from './icon'
+import { listboxOptionClassName, useListbox } from './ui/listbox'
 
 type MarianAntiphonSectionProps = {
   section: Extract<HourSection, { type: 'marianAntiphon' }>
@@ -58,11 +59,15 @@ export function splitMarianTextOnAlleluia(text: string): string[] {
 }
 
 export function MarianAntiphonSection({ section }: MarianAntiphonSectionProps) {
-  const listId = useId()
   const [selectedIdx, setSelectedIdx] = useState(section.selectedIndex ?? 0)
-  const [menuOpen, setMenuOpen] = useState(false)
 
   const candidates = section.candidates
+  // H3 — 공용 접근 가능 listbox (hymn/invitatory/gospel-canticle 와 동일 훅).
+  const listbox = useListbox({
+    count: candidates?.length ?? 0,
+    selectedIndex: selectedIdx,
+    onSelect: setSelectedIdx,
+  })
   const current = candidates?.[selectedIdx]
   const displayTitle = current?.title ?? section.title
   const displayText = current?.text ?? section.text
@@ -107,49 +112,37 @@ export function MarianAntiphonSection({ section }: MarianAntiphonSectionProps) {
       {candidates && candidates.length > 1 && (
         <div className="mt-3">
           <button
-            type="button"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-expanded={menuOpen}
-            aria-controls={listId}
+            {...listbox.triggerProps}
+            aria-label={`Бусад дуу (${candidates.length})`}
             className="inline-flex items-center gap-1 text-xs text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-liturgical-gold)]"
           >
             <Icon
               name="next"
               size={14}
-              className={`transition-transform ${menuOpen ? 'rotate-90' : ''}`}
+              className={`transition-transform ${listbox.open ? 'rotate-90' : ''}`}
               aria-hidden="true"
             />
             Бусад дуу ({candidates.length})
           </button>
 
-          {menuOpen && (
+          {listbox.open && (
             <ul
-              id={listId}
+              {...listbox.listProps}
               className="mt-2 space-y-1"
-              role="listbox"
               aria-label="Мариагийн дуу сонгох"
             >
               {candidates.map((c, i) => (
-                <li key={c.title} role="option" aria-selected={i === selectedIdx}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedIdx(i)
-                      setMenuOpen(false)
-                    }}
-                    className={`w-full text-left rounded px-2 py-1.5 text-sm transition-colors ${
-                      i === selectedIdx
-                        ? 'bg-amber-100 text-amber-900 dark:bg-amber-900/30 dark:text-amber-200'
-                        : 'text-stone-600 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-stone-800'
-                    }`}
-                  >
-                    {c.title}
-                    {i === section.selectedIndex && (
-                      <span className="ml-2 text-xs text-stone-400 dark:text-stone-500">
-                        (өнөөдрийн)
-                      </span>
-                    )}
-                  </button>
+                <li
+                  key={c.title}
+                  {...listbox.getOptionProps(i)}
+                  className={listboxOptionClassName(i === selectedIdx)}
+                >
+                  {c.title}
+                  {i === section.selectedIndex && (
+                    <span className="ml-2 text-xs text-stone-400 dark:text-stone-500">
+                      (өнөөдрийн)
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>

@@ -84,17 +84,17 @@ test.describe('Prayer section detail rendering', () => {
 
     test('hymn candidate menu button is visible', async ({ page }) => {
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
-      const btn = page.getByRole('button', { name: /Бусад магтуу/ })
+      const btn = page.getByRole('combobox', { name: /Бусад магтуу/ })
       await expect(btn).toBeVisible()
     })
 
     test('clicking menu button reveals candidate list', async ({ page }) => {
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
-      const btn = page.getByRole('button', { name: /Бусад магтуу/ })
+      const btn = page.getByRole('combobox', { name: /Бусад магтуу/ })
       await btn.click()
       const list = page.getByRole('listbox', { name: 'Магтуу сонгох' })
       await expect(list).toBeVisible()
-      const items = list.locator('li')
+      const items = list.getByRole('option')
       expect(await items.count()).toBeGreaterThan(1)
     })
 
@@ -108,13 +108,15 @@ test.describe('Prayer section detail rendering', () => {
       const originalText = await hymnSection.locator('.font-reading').first().textContent()
 
       // Open menu and select a different hymn
-      await page.getByRole('button', { name: /Бусад магтуу/ }).click()
-      const items = page.getByRole('listbox', { name: 'Магтуу сонгох' }).locator('li button')
+      await page.getByRole('combobox', { name: /Бусад магтуу/ }).click()
+      // H3 — 옵션은 이제 `<li role="option">` 자신이 클릭 대상이다
+      // (중첩 <button> 제거: option 의 자식은 presentational 이어야 한다).
+      const items = page.getByRole('listbox', { name: 'Магтуу сонгох' }).getByRole('option')
       // Find an item that is NOT currently selected
       const count = await items.count()
       for (let i = 0; i < count; i++) {
         const item = items.nth(i)
-        const ariaSelected = await item.locator('..').getAttribute('aria-selected')
+        const ariaSelected = await item.getAttribute('aria-selected')
         if (ariaSelected !== 'true') {
           await item.click()
           break
@@ -127,7 +129,7 @@ test.describe('Prayer section detail rendering', () => {
 
     test('today marker is shown on algorithmically selected hymn', async ({ page }) => {
       await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
-      await page.getByRole('button', { name: /Бусад магтуу/ }).click()
+      await page.getByRole('combobox', { name: /Бусад магтуу/ }).click()
       await expect(page.getByText('(өнөөдрийн)')).toBeVisible()
     })
 
@@ -228,17 +230,17 @@ test.describe('Prayer section detail rendering', () => {
   test.describe('Marian antiphon selection (FR-130)', () => {
     test('marian antiphon selection menu is visible in compline', async ({ page }) => {
       await page.goto(`/pray/${DATES.ordinaryWeekday}/compline`)
-      const btn = page.getByRole('button', { name: /Бусад дуу/ })
+      const btn = page.getByRole('combobox', { name: /Бусад дуу/ })
       await expect(btn).toBeVisible()
     })
 
     test('clicking menu reveals 4 Marian antiphon candidates', async ({ page }) => {
       await page.goto(`/pray/${DATES.ordinaryWeekday}/compline`)
-      const btn = page.getByRole('button', { name: /Бусад дуу/ })
+      const btn = page.getByRole('combobox', { name: /Бусад дуу/ })
       await btn.click()
       const list = page.getByRole('listbox', { name: 'Мариагийн дуу сонгох' })
       await expect(list).toBeVisible()
-      const items = list.locator('li')
+      const items = list.getByRole('option')
       expect(await items.count()).toBe(4)
     })
 
@@ -247,9 +249,9 @@ test.describe('Prayer section detail rendering', () => {
       // The default is Salve Regina
       await expect(page.getByText('Төгс жаргалт Цэвэр Охин Мариагийн хүндэтгэлийн дуу')).toBeVisible()
 
-      await page.getByRole('button', { name: /Бусад дуу/ }).click()
+      await page.getByRole('combobox', { name: /Бусад дуу/ }).click()
       // Select "Аврагчийн хайрт эх" (second option)
-      await page.getByRole('listbox', { name: 'Мариагийн дуу сонгох' }).locator('li button').nth(1).click()
+      await page.getByRole('listbox', { name: 'Мариагийн дуу сонгох' }).getByRole('option').nth(1).click()
 
       // Title should change to the selected antiphon
       await expect(page.getByText('Аврагчийн хайрт эх').first()).toBeVisible()
