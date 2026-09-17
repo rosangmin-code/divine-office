@@ -4,7 +4,7 @@
 > and FR/NFR IDs in test titles. **Do not edit by hand.**
 > The curated matrix lives in [`docs/traceability-matrix.md`](./traceability-matrix.md).
 
-Scan: 100 test files contributed 52 unique IDs.
+Scan: 101 test files contributed 54 unique IDs.
 
 | ID | Test file | Test title(s) |
 |---|---|---|
@@ -129,6 +129,8 @@ Scan: 100 test files contributed 52 unique IDs.
 | FR-173 | `src/lib/__tests__/sunday-vespers2-epiphany.test.ts` | (tagged, title unknown)<br>no First Vespers in the years Christmas falls on a Sunday (book p.599 red rubric)<br>a Monday Baptism does not displace the Epiphany Sunday Evening Prayer II (2029 / 2034 / 2035) |
 | FR-174 | `src/app/__tests__/notfound-status-boundary.test.ts` | (tagged, title unknown) |
 | FR-175 | `src/lib/__tests__/evening-prayer-ii-precedence.test.ts` | 제2저녁기도 vs 다음날 제1저녁기도 (FR-175) |
+| FR-176 | `src/lib/__tests__/table-of-liturgical-days-evening.test.ts` | 전례일 순위표 — 저녁 시간대 우선순위 (FR-176) |
+| FR-177 | `src/lib/__tests__/table-of-liturgical-days-evening.test.ts` | (tagged, title unknown) |
 | NFR-002 | `e2e/footer-toggle.spec.ts` | no English aria-label fallback on footer controls (NFR-002) |
 | NFR-002 | `e2e/gospel-canticle-verse-division.spec.ts` | lauds Benedictus: 이전 병합 절이 별개 절로 분리 (NFR-002 문구)<br>vespers Magnificat: 이전 병합 절이 별개 절로 분리 (NFR-002 문구) |
 | NFR-002 | `e2e/homepage.spec.ts` | hour cards do not leak the English HourType enum caption (NFR-002) |

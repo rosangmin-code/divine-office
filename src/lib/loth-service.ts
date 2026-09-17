@@ -60,9 +60,34 @@ import type { HourContext } from './hours'
  * stripping it (recorded as a known gap in
  * `docs/bug-reports/2026-09-16-sunday-vespers2-epiphany.md`).
  *
- * `dayOfWeek !== 'SUN'` is load-bearing in (b): romcal ranks EVERY Sunday
- * as `SOLEMNITY`, so without it a plain Ordinary-Time Sunday (II.6) would
- * be protected against a Monday Feast of the Lord (II.5) and undo (a).
+ * **(c) Weekday celebration that prints its own Evening Prayer II vs a
+ * plain Sunday of Ordinary Time / Christmas season** — the Assumption on
+ * Saturday 2026-08-15, Sts Peter and Paul 2030-06-29, All Saints
+ * 2031-11-01, the Birth of John the Baptist 2028-06-24; and the Feasts of
+ * the Lord, the Presentation 2030-02-02, the Exaltation of the Cross
+ * 2030-09-14, the Transfiguration 2033-08-06 … A Solemnity (I.3) and a
+ * Feast of the Lord (II.5) both outrank a Sunday of Ordinary Time or the
+ * Christmas season (II.6), so the celebration keeps its own Evening Prayer
+ * II — the book prints one for each of these and before this rule there
+ * was no way to reach it. Sundays of Advent / Lent / Easter (I.2) still
+ * win, which is why the season test is here and not a blanket "tomorrow
+ * is a Sunday".
+ *
+ * The gate is the DATA, not the rank: only a celebration whose sanctoral
+ * entry carries a `vespers2` qualifies. That is exactly the set the book
+ * gives a distinct Second Vespers (the 8 Solemnities + the 4 Feasts of the
+ * Lord), and it keeps a saint's Feast (II.7, no `vespers2` — it does not
+ * outrank a Sunday) from ever reaching the rule.
+ *
+ * `tomorrowDay.romcalType === 'SUNDAY'` is what makes (c) mean *plain*
+ * Sunday: romcal reports the superseding celebration's own type when one
+ * displaces the Sunday, so Epiphany (I.2, `SOLEMNITY`), the Holy Family
+ * (`FEAST`) and Divine Mercy Sunday keep the pre-existing behaviour — for
+ * Epiphany that is deliberate, since Epiphany outranks Jan 1 (FR-176).
+ *
+ * `dayOfWeek !== 'SUN'` is load-bearing in (b) and (c): romcal ranks EVERY
+ * Sunday as `SOLEMNITY`, so without it a plain Ordinary-Time Sunday (II.6)
+ * would be protected against a Monday Feast of the Lord (II.5) and undo (a).
  *
  * Shared by `getHoursSummary` (card list, #240 / #245) and the vespers
  * eve branch in `assembleHour` so the rendered body can never disagree
@@ -80,6 +105,13 @@ import type { HourContext } from './hours'
  * card↔body split to repair, and changing it is a rubric decision about
  * what the Mongolian book intends, not a bug fix.
  */
+/** `YYYY-MM-DD` + 1 day, UTC-anchored like the rest of this module. */
+function nextDateStr(dateStr: string): string {
+  const d = new Date(dateStr + 'T00:00:00Z')
+  d.setUTCDate(d.getUTCDate() + 1)
+  return d.toISOString().slice(0, 10)
+}
+
 function keepsOwnEveningPrayerII(
   day: LiturgicalDayInfo,
   dayOfWeek: DayOfWeek,
@@ -95,8 +127,22 @@ function keepsOwnEveningPrayerII(
     return !isAdventToChristmasBoundary
   }
 
+  if (dayOfWeek === 'SUN' || !tomorrowDay) return false
+  if (day.rank !== 'SOLEMNITY' && day.rank !== 'FEAST') return false
+
   // (b) weekday Solemnity vs tomorrow's Feast of the Lord
-  if (dayOfWeek !== 'SUN' && day.rank === 'SOLEMNITY' && tomorrowDay?.rank === 'FEAST') {
+  if (day.rank === 'SOLEMNITY' && tomorrowDay.rank === 'FEAST') return true
+
+  // (c) vs tomorrow's plain non-privileged Sunday
+  const tomorrowIsPrivilegedSunday =
+    tomorrowDay.season === 'ADVENT' ||
+    tomorrowDay.season === 'LENT' ||
+    tomorrowDay.season === 'EASTER'
+  if (
+    tomorrowDay.romcalType === 'SUNDAY' &&
+    !tomorrowIsPrivilegedSunday &&
+    resolveSanctoralForDay(day)?.entry?.vespers2
+  ) {
     return true
   }
 
@@ -660,7 +706,16 @@ export async function assembleHour(
     effectiveLiturgicalDay = day
   }
 
-  if (!seasonPropers && dayOfWeek === 'SAT' && hour === 'vespers') {
+  // FR-176 rule (c): a weekday Solemnity outranks a plain Sunday of
+  // Ordinary Time / Christmas season (I.3 > II.6), so Saturday's own
+  // Evening Prayer II stays. Without this gate the FR-156 branch above
+  // correctly declined to promote, but the plain Saturday→Sunday rule
+  // below still promoted the identity and the psalmody — leaving the
+  // Assumption's Magnificat antiphon sitting on the Sunday's psalms.
+  const saturdayDefersToSunday =
+    dayOfWeek !== 'SAT' ||
+    !keepsOwnEveningPrayerII(day, dayOfWeek, getLiturgicalDay(nextDateStr(dateStr)))
+  if (!seasonPropers && dayOfWeek === 'SAT' && hour === 'vespers' && saturdayDefersToSunday) {
     // Next day is Sunday. FR-156: prefer the Sunday's dedicated
     // firstVespers propers when authored (Phase 2, task #20). Falls
     // back to the upcoming Sunday's regular vespers propers otherwise.
@@ -825,8 +880,45 @@ export async function assembleHour(
   //    For firstVespers route, prefer sanctoral.firstVespers when authored;
   //    for firstCompline route, fall back to sanctoral.compline (no
   //    `firstCompline` field exists in SanctoralEntry per current schema).
+  //    FR-176: when the eve promotion above moved the office to ANOTHER day,
+  //    today's own sanctoral propers must not overlay it — we are rendering
+  //    tomorrow's First Vespers, not today's Evening Prayer. Tomorrow's
+  //    sanctoral First Vespers is already folded into `seasonPropers` by
+  //    Path 1, and the rich overlay is already keyed to tomorrow through
+  //    `richLookupIdentity`, so the plain sanctoral layer was the one place
+  //    still speaking for the wrong day (2028-01-01 evening rendered the
+  //    Epiphany's identity with Jan 1's Magnificat antiphon).
+  //
+  //    Narrowed to entries that carry a `vespers2` — the celebrations that
+  //    would otherwise impose their OWN Evening Prayer II on an evening that
+  //    belongs to tomorrow. All Souls (11-02) has a single `vespers` cell and
+  //    a substitute directive that FR-160-B-7 deliberately keeps surfaced on
+  //    a Saturday eve, so it stays outside this gate.
+  const officeMovedToAnotherDay =
+    effectiveLiturgicalDay.date !== day.date && !!sanctoral?.vespers2
   let hourPropers: HourPropers | undefined
-  if (hour === 'vespers' && day.rank === 'SOLEMNITY' && sanctoral?.vespers2) {
+  if (officeMovedToAnotherDay) {
+    hourPropers = undefined
+  } else if (
+    hour === 'vespers' &&
+    (day.rank === 'SOLEMNITY' || day.rank === 'FEAST') &&
+    sanctoral?.vespers2
+  ) {
+    // FR-177 — the celebration's OWN evening is Evening Prayer II whenever
+    // the book prints one. `vespers2` is exactly that signal: 8 Solemnities
+    // + the 4 Feasts of the Lord (`sanctoral/{solemnities,feasts}.json`);
+    // no memorial or saint's Feast carries it, so the rank test only guards
+    // against reading a `vespers2` that is not there.
+    //
+    // The `FEAST` half was missing, so the Presentation, the
+    // Transfiguration, the Exaltation of the Cross and the Dedication of
+    // the Lateran fell through to `sanctoral.vespers` — their FIRST
+    // Vespers — on their own evening, every year. The book is explicit
+    // about what that cell is and when it is used: p.821 «Хэрэв энэ баяр
+    // Ням гарагт таарвал 1 дүгээр Оройн даатгал залбирал уншина.» (also
+    // p.831, p.835; p.840 prints the heading without the note, and the
+    // data mirrors that per-feast difference). Same defect shape as
+    // FR-171 for Sundays.
     hourPropers = sanctoral.vespers2 as HourPropers
   } else if (isFirstVespers && sanctoral?.firstVespers) {
     hourPropers = sanctoral.firstVespers as HourPropers

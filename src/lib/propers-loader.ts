@@ -306,9 +306,24 @@ export function getSeasonFirstVespers(
   // this lookup returns it unchanged. No caller changes needed.
   const specialKey = resolveSpecialKey(season, celebrationName, dateStr, romcalKey)
   if (specialKey) {
-    const specialDayPropers = weeks[specialKey]?.['SUN']
-    const fv = (specialDayPropers as DayPropers | undefined)?.firstVespers
+    const specialDayPropers = weeks[specialKey]?.['SUN'] as DayPropers | undefined
+    const fv = specialDayPropers?.firstVespers
     if (fv) return fv
+    // FR-176 — a cell that carries `vespers2` distinguishes Evening Prayer I
+    // from Evening Prayer II, and by the FR-171 convention its `vespers`
+    // cell IS Evening Prayer I. The Epiphany is the one special key that
+    // relies on this: the book prints its evening-before Magnificat antiphon
+    // («Одыг хараад мэргэд…», p.609) at the head of the section with no
+    // «1 дүгээр Оройн даатгал залбирал» heading above it, so the bucket has
+    // `vespers` + `vespers2` and no `firstVespers`.
+    //
+    // Cells WITHOUT `vespers2` are deliberately excluded: `easterSunday`,
+    // `jan1`, `octave` and `epiphanyWeek` print a single
+    // «Оройн даатгал залбирал», which is the day's OWN evening prayer and
+    // must never be served as somebody's First Vespers.
+    if (specialDayPropers?.vespers2 && specialDayPropers.vespers) {
+      return specialDayPropers.vespers as FirstVespersPropers
+    }
   }
 
   const weekKey = String(sundayWeekOfSeason)

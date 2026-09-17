@@ -98,10 +98,17 @@ describe('F-2 alternate concluding prayer on the eve path follows the PROMOTED d
     const eve = await assembleHour('2026-08-14', 'vespers')
     const route = await assembleHour('2026-08-15', 'firstVespers')
     expect(cp(eve).text).toBe(cp(route).text)
-    // 08-15 vespers (vespers2, SAT Solemnity): alternate authored → swap fires.
+    // 08-15 Second Vespers. FR-176 이전에는 이 토요일이 다음 주일로 승격돼
+    // **20주일 연중 주일의** 대체 본기도(x.789)가 승천의 본기도에 얹혀 있었다.
+    // 지금은 승천(I.3)이 연중 주일(II.6)을 이겨 자기 제2저녁기도를 지키므로,
+    // 책이 인쇄한 그대로 x.834 본기도만 있고 대체 본기도는 없다 — 평일에
+    // 오는 승천(2028-08-15 화)과 글자까지 동일하다.
     const ep2 = await assembleHour('2026-08-15', 'vespers')
-    expect(cp(ep2).alternatePage).toBe(789)
+    expect(cp(ep2).page).toBe(834)
+    expect(cp(ep2).alternatePage).toBeUndefined()
     expect(cp(ep2).text).toContain('Гэм Нүгэлгүй Цэвэ')
+    const weekdayOccurrence = await assembleHour('2028-08-15', 'vespers')
+    expect(cp(ep2).text).toBe(cp(weekdayOccurrence).text)
   })
 
   // @fr FR-156
