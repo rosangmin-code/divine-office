@@ -4,7 +4,7 @@
 > and FR/NFR IDs in test titles. **Do not edit by hand.**
 > The curated matrix lives in [`docs/traceability-matrix.md`](./traceability-matrix.md).
 
-Scan: 97 test files contributed 47 unique IDs.
+Scan: 100 test files contributed 52 unique IDs.
 
 | ID | Test file | Test title(s) |
 |---|---|---|
@@ -17,7 +17,7 @@ Scan: 97 test files contributed 47 unique IDs.
 | FR-008 | `src/lib/__tests__/ot-week-propers.test.ts` | (tagged, title unknown) |
 | FR-009 | `src/lib/__tests__/sanctoral-romcal-gate.test.ts` | the transferred solemnity renders on the date romcal moved it to (2028-03-20 Joseph, 2030-12-09 Immaculate Conception, Annunciation 2027-04-05 / 2029-04-09 / 2035-04-02)<br>positive: a solemnity/feast romcal keeps on its Sunday still applies (2025-06-29 Peter & Paul, 2026-11-01 All Saints, 2025-09-14 Exaltation)<br>legacy callers without romcal metadata keep the MM-DD lookup<br>temporale types block the MM-DD entry; All Souls on an ORDINARY_TIME Sunday is the only exception<br>a sanctoral romcal type resolves by matching key on the MM-DD, or by key on the transferred date |
 | FR-011 | `e2e/prayer-magnificat-pages.spec.ts` | Magnificat page references (Easter W2 THU vespers) |
-| FR-011 | `e2e/special-days.spec.ts` | (tagged, title unknown)<br>Sunday firstVespers shares core propers with Sunday vespers (FR-011, 1st Vespers anchor relocated)<br>Sunday firstVespers differs from Sunday LAUDS (sanity: fallback is hour-scoped) |
+| FR-011 | `e2e/special-days.spec.ts` | (tagged, title unknown)<br>Sunday firstVespers shares the concluding prayer with Sunday vespers but not the Magnificat antiphon (FR-011 / FR-171)<br>Sunday firstVespers differs from Sunday LAUDS (sanity: fallback is hour-scoped) |
 | FR-011 | `src/lib/__tests__/first-vespers.test.ts` | (tagged, title unknown) |
 | FR-011 | `src/lib/__tests__/loth-service.test.ts` | Sunday firstVespers concluding prayer matches Sunday vespers (FR-011 anchor X) |
 | FR-011 | `src/lib/__tests__/ot-week-propers.test.ts` | 2026-09-12 (Sat) vespers and 2026-09-13 firstVespers carry the 24th Sunday Magnificat antiphon (Mt 18:21-35, <br>boundary: 2026-01-17 (Sat, OT week 1) evening is the 2nd Sunday First Vespers (weeks[2])<br>boundary: 2026-05-30 (Sat after Pentecost, OT week 8) evening is Trinity Sunday First Vespers (special key, not weeks[9])<br>(tagged, title unknown) |
@@ -123,6 +123,12 @@ Scan: 97 test files contributed 47 unique IDs.
 | FR-168 | `src/lib/__tests__/saturday-mary-benedictus-antiphon.test.ts` | FR-168 [D1] saturday-mary Lauds Benedictus 후렴 = 옵션1(default), 평일과 불일치<br>FR-168 [D2] 6개 후렴 candidates 보존 (드롭다운 데이터 원천)<br>FR-168 [D3] 안내 루브릭 — 별도 필드(후렴 본문과 분리)<br>FR-168 [D4] 후렴 데이터 무결성 + authentic 몽골어 (NFR-002) |
 | FR-169 | `e2e/lords-prayer-rubric-amen.spec.ts` | [D1-structured] no «…» Lord\<br>[D1-legacy] no incipit bullet on ${label} (legacy items[] path)<br>[D2] Lord\ |
 | FR-169 | `src/components/prayer-sections/__tests__/lords-prayer-rubric-amen-removal.test.ts` | GOAL #115 [D1] — Lord\<br>GOAL #115 [D2] — Lord\<br>GOAL #115 [D3] — regression guards (must NOT change) |
+| FR-171 | `e2e/special-days.spec.ts` | Sunday firstVespers shares the concluding prayer with Sunday vespers but not the Magnificat antiphon (FR-011 / FR-171) |
+| FR-171 | `src/lib/__tests__/sunday-vespers2-epiphany.test.ts` | (tagged, title unknown)<br>Advent / Lent / Easter also swap the short reading + intercessions (the season prints a full EP II)<br>Ordinary Time keeps the alternate concluding prayer the vespers2 cell does not print<br>getSeasonVespers2 falls back to the week-1 template but never across a special key<br>Saturday evening and /firstVespers still sing Evening Prayer I (regression guard)<br>a movable Solemnity keeps the GOAL #20 vespers2 swap and a displaced Sunday keeps its sanctoral<br>every Ordinary-Time Sunday except week 1 has a vespers2 cell<br>the Magnificat antiphon page is always the Evening Prayer I page + 1<br>weeks 12 / 15 / 16 / 25 carry the antiphons printed on pp. 774 / 780 / 782 / 800 |
+| FR-172 | `src/lib/__tests__/sunday-vespers2-epiphany.test.ts` | resolves the Christmas variable-date observances by romcal key<br>still resolves from the display name alone (mocked fixtures keep working)<br>does NOT swallow the post-Epiphany weekdays (they are a different formulary)<br>romcal really does emit the bare name + key (calendar contract)<br>(tagged, title unknown)<br>the Epiphany bucket holds the Solemnity and  |
+| FR-173 | `src/lib/__tests__/sunday-vespers2-epiphany.test.ts` | (tagged, title unknown)<br>no First Vespers in the years Christmas falls on a Sunday (book p.599 red rubric)<br>a Monday Baptism does not displace the Epiphany Sunday Evening Prayer II (2029 / 2034 / 2035) |
+| FR-174 | `src/app/__tests__/notfound-status-boundary.test.ts` | (tagged, title unknown) |
+| FR-175 | `src/lib/__tests__/evening-prayer-ii-precedence.test.ts` | 제2저녁기도 vs 다음날 제1저녁기도 (FR-175) |
 | NFR-002 | `e2e/footer-toggle.spec.ts` | no English aria-label fallback on footer controls (NFR-002) |
 | NFR-002 | `e2e/gospel-canticle-verse-division.spec.ts` | lauds Benedictus: 이전 병합 절이 별개 절로 분리 (NFR-002 문구)<br>vespers Magnificat: 이전 병합 절이 별개 절로 분리 (NFR-002 문구) |
 | NFR-002 | `e2e/homepage.spec.ts` | hour cards do not leak the English HourType enum caption (NFR-002) |

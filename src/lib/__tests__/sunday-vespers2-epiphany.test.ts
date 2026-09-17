@@ -268,15 +268,15 @@ describe('FR-173 Holy Family / Baptism First Vespers on the eve', () => {
     if (day(eve).rank === 'SOLEMNITY') {
       // 2027-12-25: Christmas (Table of Liturgical Days I.2) keeps its own
       // Evening Prayer II over the Feast of the Lord's First Vespers (II.5).
-      // NOTE: `getHoursSummary` still strips the eve cards here — a
-      // PRE-EXISTING card-list gap (`keepsSundayEveningPrayerII` protects
-      // only Advent/Lent/Easter SUNDAYS, not a Solemnity on a Saturday).
-      // Recorded in docs/bug-reports/2026-09-16-sunday-vespers2-epiphany.md
-      // §"left unfixed"; the body deliberately does NOT follow the cards
-      // here, because the cards are the side that is wrong.
+      // The card-list gap noted here originally (`keepsSundayEveningPrayerII`
+      // protected only Advent/Lent/Easter SUNDAYS, never a Solemnity on a
+      // Saturday) was closed by FR-175 — `keepsOwnEveningPrayerII` now covers
+      // the weekday-Solemnity-vs-Feast case, so the cards follow the body.
       expect(section(eveBody, 'gospelCanticle')?.antiphon, eve)
         .not.toBe(epI.gospelCanticleAntiphon)
       expect(eveBody?.effectiveLiturgicalDay, eve).toBeUndefined()
+      expect(cards, eve).toContain('vespers')
+      expect(cards, eve).toContain('compline')
       return
     }
 

@@ -39,15 +39,30 @@ import { warmBibleCache } from './bible-loader'
 import type { HourContext } from './hours'
 
 /**
- * Does today's Sunday Evening Prayer II outrank tomorrow's First Vespers?
+ * Does today's own Evening Prayer II outrank tomorrow's First Vespers?
  *
- * Universal Norms n. 61 / Table of Liturgical Days: Sundays of Advent,
- * Lent and Easter (class I.2) outrank a Solemnity (I.3) or a Feast of the
- * Lord (II.5) falling on the Monday, so the Sunday keeps its own Evening
- * Prayer II. Ordinary-Time / Christmas-season Sundays (II.6) yield to the
- * Monday's First Vespers. The single exception is the Advent → Christmas
- * boundary (Dec 24): "Advent ends before First Vespers of the Nativity"
- * (n. 40), so the 4th Sunday of Advent yields to Christmas First Vespers.
+ * Universal Norms n. 61 / Table of Liturgical Days. Two independent rules:
+ *
+ * **(a) Privileged Sunday** — Sundays of Advent, Lent and Easter (class
+ * I.2) outrank a Solemnity (I.3) or a Feast of the Lord (II.5) falling on
+ * the Monday, so the Sunday keeps its own Evening Prayer II. Ordinary-Time
+ * / Christmas-season Sundays (II.6) yield to the Monday's First Vespers.
+ * The single exception is the Advent → Christmas boundary (Dec 24):
+ * "Advent ends before First Vespers of the Nativity" (n. 40), so the 4th
+ * Sunday of Advent yields to Christmas First Vespers.
+ *
+ * **(b) Solemnity on a weekday vs a Feast of the Lord** — Christmas
+ * (I.2) falling on a Saturday keeps its Evening Prayer II against the
+ * Holy Family's First Vespers (II.5) on the Sunday: 2027-12-25,
+ * 2032-12-25, … This mirrors the `day.rank !== 'SOLEMNITY'` gate on
+ * FR-173 Path 2b in `assembleHour`, which already made the *body* keep
+ * Christmas Evening Prayer II — the card list was the side still
+ * stripping it (recorded as a known gap in
+ * `docs/bug-reports/2026-09-16-sunday-vespers2-epiphany.md`).
+ *
+ * `dayOfWeek !== 'SUN'` is load-bearing in (b): romcal ranks EVERY Sunday
+ * as `SOLEMNITY`, so without it a plain Ordinary-Time Sunday (II.6) would
+ * be protected against a Monday Feast of the Lord (II.5) and undo (a).
  *
  * Shared by `getHoursSummary` (card list, #240 / #245) and the vespers
  * eve branch in `assembleHour` so the rendered body can never disagree
@@ -55,19 +70,37 @@ import type { HourContext } from './hours'
  * find Monday solemnities such as St Joseph 2028-03-20 / Immaculate
  * Conception 2030-12-09 / Annunciation 2027-04-05 — the body must keep the
  * privileged Sunday's Evening Prayer II exactly as the cards do).
+ *
+ * NOT covered (deliberately): a weekday Solemnity whose *next* day is a
+ * plain Sunday — e.g. the Assumption on Saturday 2026-08-15, or Mary
+ * Mother of God on Saturday 2028-01-01. By the Table those Solemnities
+ * (I.3) outrank a Sunday of Ordinary Time / Christmas season (II.6), but
+ * here the cards and the body already agree (both defer to the Sunday's
+ * First Vespers, the plain Saturday→Sunday rule), so there is no
+ * card↔body split to repair, and changing it is a rubric decision about
+ * what the Mongolian book intends, not a bug fix.
  */
-function keepsSundayEveningPrayerII(
+function keepsOwnEveningPrayerII(
   day: LiturgicalDayInfo,
   dayOfWeek: DayOfWeek,
   tomorrowDay: LiturgicalDayInfo | null,
 ): boolean {
+  // (a) privileged Sunday
   const isPrivilegedSunday =
     dayOfWeek === 'SUN' &&
     (day.season === 'ADVENT' || day.season === 'LENT' || day.season === 'EASTER')
-  if (!isPrivilegedSunday) return false
-  const isAdventToChristmasBoundary =
-    day.season === 'ADVENT' && !!tomorrowDay && tomorrowDay.season === 'CHRISTMAS'
-  return !isAdventToChristmasBoundary
+  if (isPrivilegedSunday) {
+    const isAdventToChristmasBoundary =
+      day.season === 'ADVENT' && !!tomorrowDay && tomorrowDay.season === 'CHRISTMAS'
+    return !isAdventToChristmasBoundary
+  }
+
+  // (b) weekday Solemnity vs tomorrow's Feast of the Lord
+  if (dayOfWeek !== 'SUN' && day.rank === 'SOLEMNITY' && tomorrowDay?.rank === 'FEAST') {
+    return true
+  }
+
+  return false
 }
 
 export interface AssembleHourOptions {
@@ -364,11 +397,11 @@ export async function assembleHour(
     // Privileged-Sunday guard (Universal Norms n. 61): a Sunday of Advent /
     // Lent / Easter keeps its own Evening Prayer II even when Monday is a
     // Solemnity/Feast with First Vespers — identical rule to the card list
-    // in `getHoursSummary`, see `keepsSundayEveningPrayerII`.
+    // in `getHoursSummary`, see `keepsOwnEveningPrayerII`.
     if (
       tomorrowDay &&
       (tomorrowDay.rank === 'SOLEMNITY' || tomorrowDay.rank === 'FEAST') &&
-      !keepsSundayEveningPrayerII(day, dayOfWeek, tomorrowDay)
+      !keepsOwnEveningPrayerII(day, dayOfWeek, tomorrowDay)
     ) {
       // Path 1 — fixed-date celebration via sanctoral entry.
       // `resolveSanctoralForDay` (P0-3) applies the entry only when romcal
@@ -740,7 +773,7 @@ export async function assembleHour(
   //   - no First-Vespers promotion fired above (`effectiveLiturgicalDay`
   //     still today): a Sunday whose Monday carries First Vespers already
   //     renders tomorrow's celebration, and the privileged-Sunday guard
-  //     (`keepsSundayEveningPrayerII`) decides which wins.
+  //     (`keepsOwnEveningPrayerII`) decides which wins.
   //   - the GOAL #20 movable-Solemnity swap has not already run
   //     (`seasonalRichHour !== 'vespers2'`).
   // Special-key celebrations that own no `vespers2` (Easter Sunday — its
@@ -1338,6 +1371,22 @@ function hasFirstVespersAndCompline(
   day: LiturgicalDayInfo,
   dayOfWeek: DayOfWeek,
 ): boolean {
+  // Easter Sunday has NO First Vespers — the Easter Vigil takes its place.
+  // Printed evidence: the book's Easter Sunday section (p.690-693) runs
+  // «Дээгүүр өнгөрөх цаг улирлын эхлэл» → «Урих дуудлага» → «Өглөөний
+  // даатгал залбирал» → «Оройн даатгал залбирал», with no «1 дүгээр Оройн
+  // даатгал залбирал» heading — unlike the Second Sunday of Easter, which
+  // prints one on p.701. The data agrees: `easter.json`
+  // `weeks.easterSunday.SUN` holds only `lauds` and `vespers`.
+  //
+  // Without this exception the blanket `dayOfWeek === 'SUN'` rule below
+  // made two things wrong every year: `/pray/<easter>/firstVespers`
+  // answered 200 with a copy of Evening Prayer II (via the backstop
+  // merge), and — because the card list asks whether TOMORROW carries
+  // First Vespers — Holy Saturday lost its own Evening Prayer and Night
+  // Prayer cards even though the book prints Holy Saturday's Evening
+  // Prayer on p.683.
+  if (day.romcalKey === 'easter') return false
   if (dayOfWeek === 'SUN') return true
   if (day.rank !== 'SOLEMNITY' && day.rank !== 'FEAST') return false
   // Sanctoral path (P0-3: romcal-gated, transfer-aware)
@@ -1473,10 +1522,10 @@ export function getHoursSummary(dateStr: string): {
   // Dec 24 satisfies (today.season=ADVENT && tomorrow.season=CHRISTMAS);
   // Sun Lent → Mon Annunciation / Sun Advent → Mon Immaculate
   // Conception remain protected (no season cross).
-  // Both rules live in `keepsSundayEveningPrayerII`, shared with the
+  // Both rules live in `keepsOwnEveningPrayerII`, shared with the
   // vespers eve branch of `assembleHour` so cards and body agree.
   const stripEveCards =
-    tomorrowHasFirstVespers && !keepsSundayEveningPrayerII(day, dayOfWeek, tomorrowDay)
+    tomorrowHasFirstVespers && !keepsOwnEveningPrayerII(day, dayOfWeek, tomorrowDay)
 
   const hours: { type: HourType; nameMn: string }[] = []
 
