@@ -3,9 +3,9 @@
 ## 담당 소스 파일
 
 ### 페이지
-- `src/app/page.tsx` — 홈페이지: 전례일 정보 카드, 기도시간 카드 목록, 날짜 네비게이션
+- `src/app/(home)/page.tsx` — 홈페이지: 전례일 정보 카드, 기도시간 카드 목록, 날짜 네비게이션
 - `src/app/layout.tsx` — 루트 레이아웃, 몽골어 설정, 폰트, 메타데이터
-- `src/app/loading.tsx` — 홈 로딩 스켈레톤
+- `src/app/(home)/loading.tsx` — 홈 로딩 스켈레톤
 - `src/app/error.tsx` — 에러 바운더리
 - `src/app/not-found.tsx` — 404 페이지
 - `src/app/pray/[date]/[hour]/page.tsx` — 기도 렌더링 페이지

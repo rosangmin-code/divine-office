@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server'
 import { assembleHour, isFirstVespersEligibleDate } from '@/lib/loth-service'
 import { isValidDateStr } from '@/lib/date-validation'
-import type { HourType } from '@/lib/types'
-
-const VALID_HOURS: HourType[] = ['lauds', 'vespers', 'compline', 'firstVespers', 'firstCompline']
+import { VALID_HOURS, isValidHourType, isEveHourType } from '@/lib/hour-validation'
 
 export async function GET(
   request: Request,
@@ -18,7 +16,7 @@ export async function GET(
     )
   }
 
-  if (!VALID_HOURS.includes(hour as HourType)) {
+  if (!isValidHourType(hour)) {
     return NextResponse.json(
       { error: `Invalid hour: ${hour}. Valid hours: ${VALID_HOURS.join(', ')}` },
       { status: 400 },
@@ -28,10 +26,7 @@ export async function GET(
   // #242 F-X5 FU#2 — 404 gate for firstVespers/firstCompline routes on
   // dates that do NOT carry First Vespers content. Mirrors the page.tsx
   // gate so the API surface and SSR surface stay aligned.
-  if (
-    (hour === 'firstVespers' || hour === 'firstCompline') &&
-    !isFirstVespersEligibleDate(date)
-  ) {
+  if (isEveHourType(hour) && !isFirstVespersEligibleDate(date)) {
     // #247 NIT-3 / #250 F-2 — UX hint: a typical direct-URL miss
     // (e.g. typing /api/loth/2022-12-24/firstVespers expecting Christmas
     // Eve) lands here because the firstVespers content lives on the
@@ -61,7 +56,7 @@ export async function GET(
   }
 
   const celebrationId = new URL(request.url).searchParams.get('celebration')
-  const assembled = await assembleHour(date, hour as HourType, { celebrationId })
+  const assembled = await assembleHour(date, hour, { celebrationId })
 
   if (!assembled) {
     return NextResponse.json(

@@ -8,7 +8,7 @@ import { MonthNav } from './month-nav'
 // Why this exists as a separate file:
 //   - MonthNav (#15) is callback-driven (`onMonthChange(yearMonth)`)
 //     so the render path needs a handler that pushes `/?month=<ym>`.
-//   - The home page (`src/app/page.tsx`) is a server component — it
+//   - The home page (`src/app/(home)/page.tsx`) is a server component — it
 //     calls `getCalendarMonth` which depends on fs / romcal that
 //     cannot run client-side, so `'use client'` on page.tsx is not
 //     viable.

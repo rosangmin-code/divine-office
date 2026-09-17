@@ -1,7 +1,5 @@
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
-import { assembleHour, isFirstVespersEligibleDate } from '@/lib/loth-service'
-import { isValidDateStr } from '@/lib/date-validation'
+import { assembleHour } from '@/lib/loth-service'
 import { PrayerRenderer } from '@/components/prayer-renderer'
 // GOAL #24 WI-C (#31) — 상단 ⚙ SettingsLink 제거 (D5=a). 진입점은 하단
 // PrayerFooter 의 [⚙ Тохиргоо] 메뉴로 단일화. SettingsLink import 도
@@ -14,8 +12,6 @@ import type { HourType } from '@/lib/types'
 import { BORDER_COLOR_CLASSES } from '@/lib/liturgical-colors'
 import { formatDateMn, romanNumeral } from '@/lib/mappings'
 
-const VALID_HOURS: HourType[] = ['lauds', 'vespers', 'compline', 'firstVespers', 'firstCompline']
-
 export default async function PrayPage({
   params,
   searchParams,
@@ -26,33 +22,11 @@ export default async function PrayPage({
   const { date, hour: hourParam } = await params
   const { celebration } = await searchParams
 
-  if (!isValidDateStr(date)) {
-    notFound()
-  }
-
-  if (!VALID_HOURS.includes(hourParam as HourType)) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-stone-500 dark:text-stone-400">Буруу цагийн төрөл: {hourParam}</p>
-      </div>
-    )
-  }
-
+  // `date` / `hourParam` are already validated by the segment layout
+  // (`layout.tsx`), which raises notFound() outside the `loading.tsx`
+  // Suspense boundary so the response carries a real 404 status. Repeating
+  // the guards here would be dead code with a wrong status code.
   const hourType = hourParam as HourType
-
-  // #242 F-X5 FU#2 — 404 gate for firstVespers/firstCompline URLs on
-  // dates that do NOT carry First Vespers content (ordinary weekdays
-  // with no Solemnity/Feast). Without this gate, the URL silently
-  // returned an out-of-rubric Sunday-vespers fallback. The eligibility
-  // check is independent of `assembleHour` (which still falls back to a
-  // surface-level structure) so the 404 fires before the assembler is
-  // even invoked.
-  if (
-    (hourType === 'firstVespers' || hourType === 'firstCompline') &&
-    !isFirstVespersEligibleDate(date)
-  ) {
-    notFound()
-  }
 
   const assembled = await assembleHour(date, hourType, { celebrationId: celebration })
 

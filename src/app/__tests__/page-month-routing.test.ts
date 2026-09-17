@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { resolveMonthRouting } from '../page'
+import { resolveMonthRouting } from '../(home)/page'
 
 // @fr FR-145
 // GOAL #4 (#14) wi-002 — page.tsx `?month=` routing + ±60일 윈도우 폐기.
@@ -80,7 +80,7 @@ describe('resolveMonthRouting (FR-145, GOAL #4 wi-002)', () => {
 // rather than relying on manual review.
 describe('page.tsx structural guards (FR-145, GOAL #4 wi-002)', () => {
   const PAGE_SRC = readFileSync(
-    resolve(__dirname, '../page.tsx'),
+    resolve(__dirname, '../(home)/page.tsx'),
     'utf8',
   )
 
@@ -103,7 +103,7 @@ describe('page.tsx structural guards (FR-145, GOAL #4 wi-002)', () => {
 // wi-004 (#16) — header integration guards.
 describe('page.tsx wi-004 header integration (FR-145, GOAL #4)', () => {
   const PAGE_SRC = readFileSync(
-    resolve(__dirname, '../page.tsx'),
+    resolve(__dirname, '../(home)/page.tsx'),
     'utf8',
   )
 

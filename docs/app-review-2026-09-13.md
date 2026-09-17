@@ -73,9 +73,9 @@
 | `/` | 200 | 80 KB | 34 ms | `lang="mn"`, 오늘 카드 3개(1저녁·1끝·아침) |
 | `/pray/2026-09-13/lauds` | 200 | 148 KB | 40 ms | |
 | `/pray/2026-12-25/lauds` | 200 | 173 KB | 20 ms | 가장 큰 HTML |
-| `/pray/2026-02-29/lauds` | **200** | 25 KB | 9 ms | `notFound()` 호출되나 `loading.tsx` 스트리밍 때문에 상태코드 200 |
-| `/pray/2026-09-13/nonexistent` | **200** | 22 KB | 14 ms | "Буруу цагийн төрөл: nonexistent" 평문, 뒤로 링크 없음 |
-| `/pdf/0`, `/pdf/99999` | **200** | 20 KB | 7 ms | not-found UI 인데 200 |
+| `/pray/2026-02-29/lauds` | ~~200~~ → **404** | 25 KB | 9 ms | `notFound()` 호출되나 `loading.tsx` 스트리밍 때문에 상태코드 200. **✅ 2026-09-17 FR-174** — 검증을 세그먼트 `layout.tsx`(Suspense 경계 바깥)로 이동 |
+| `/pray/2026-09-13/nonexistent` | ~~200~~ → **404** | 22 KB | 14 ms | "Буруу цагийн төрөл: nonexistent" 평문, 뒤로 링크 없음. **✅ 2026-09-17 FR-174** — layout 이 `notFound()` → 공용 not-found UI(홈 링크 포함) |
+| `/pdf/0`, `/pdf/99999` | ~~200~~ → **404** | 20 KB | 7 ms | not-found UI 인데 200. **✅ 2026-09-17 FR-174** — 홈 스켈레톤을 `(home)` 라우트 그룹으로 옮겨 루트 스트리밍 경계 제거 |
 | `/api/loth/2026-09-13/lauds` | 200 | 72 KB JSON | 189 ms | Cache-Control 없음 |
 | `/api/loth/bad-date/lauds` | 400 | 56 B | 3 ms | 검증 정상 |
 | `/settings` `/guide` `/ordinarium` | 200 | 27 / 143 / 212 KB | ≤21 ms | 정적, `s-maxage=31536000` |
