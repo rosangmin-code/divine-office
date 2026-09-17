@@ -25,6 +25,46 @@ test.describe('Mobile layout', () => {
     }
   })
 
+  // @fr FR-178
+  test('시간경 카드가 조밀하다 — 3장 블록이 세로 공간을 과하게 먹지 않는다', async ({ page }) => {
+    // 사용자 피드백 (2026-09-17): "카드형이 불필요하게 공간을 많이 차지하는 거 같아".
+    // 기본 글씨 크기 기준 카드 1장 = 세로 패딩 2×12 + 아이콘/텍스트 24 = 48px,
+    // 카드 간격 8px → 3장 블록 160px. 여유를 둬 상한 200px 으로 고정한다.
+    // (이전: 카드 68px + 간격 16px = 236px)
+    await page.goto(`/?date=${DATES.ordinaryWeekday}`)
+    const cards = page.locator('a[href*="/pray/"]').filter({ has: page.locator('h3') })
+    await expect(cards.first()).toBeVisible()
+    expect(await cards.count()).toBeGreaterThanOrEqual(3)
+
+    const blockHeight = await cards.first().evaluate(
+      (el) => Math.round((el.parentElement as HTMLElement).getBoundingClientRect().height),
+    )
+    expect(blockHeight).toBeLessThanOrEqual(200)
+
+    // 터치 타겟은 글씨 크기와 무관하게 44px 하한 (min-h-[44px]).
+    for (let i = 0; i < (await cards.count()); i++) {
+      const box = await cards.nth(i).boundingBox()
+      expect(box!.height).toBeGreaterThanOrEqual(44)
+      expect(box!.height).toBeLessThanOrEqual(64)
+    }
+  })
+
+  // @fr FR-178
+  test('홈과 기도 본문의 좌우 여백이 같다', async ({ page }) => {
+    // 사용자 지적 (2026-09-17): 기도 본문은 여백을 최소화해 뒀는데 홈은 그대로라
+    // 두 화면의 여백이 달랐다. 최상위 컨테이너 패딩을 같은 값으로 맞춘다.
+    const pad = async (url: string, sel: string) => {
+      await page.goto(url)
+      return page.locator(sel).first().evaluate((el) => {
+        const c = getComputedStyle(el)
+        return [c.paddingLeft, c.paddingRight].join('/')
+      })
+    }
+    const home = await pad(`/?date=${DATES.ordinaryWeekday}`, 'div.mx-auto')
+    const pray = await pad(`/pray/${DATES.ordinaryWeekday}/lauds`, 'div.mx-auto')
+    expect(home).toBe(pray)
+  })
+
   test('prayer page has no horizontal scroll', async ({ page }) => {
     await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
 

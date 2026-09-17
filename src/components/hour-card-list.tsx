@@ -10,7 +10,7 @@ interface HourCardListProps {
 
 export function HourCardList({ hours, dateStr, celebrationId }: HourCardListProps) {
   return (
-    <section aria-label="Цагийн залбирлууд" className="space-y-4">
+    <section aria-label="Цагийн залбирлууд" className="space-y-2">
       {hours.map((hour) => (
         <HourCard key={hour.type} hour={hour} dateStr={dateStr} celebrationId={celebrationId} />
       ))}
@@ -33,12 +33,12 @@ function HourCard({
   return (
     <Link
       href={`/pray/${dateStr}/${hour.type}${suffix}`}
-      className="group flex items-center gap-4 rounded-xl bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] dark:bg-neutral-900 dark:shadow-none dark:ring-1 dark:ring-stone-800"
+      className="group flex min-h-[44px] items-center gap-3 rounded-xl bg-white p-3 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] dark:bg-neutral-900 dark:shadow-none dark:ring-1 dark:ring-stone-800"
     >
       {/* Icon */}
       <HourIcon
         hour={hour.type}
-        className="h-7 w-7 shrink-0 text-stone-500 dark:text-stone-400"
+        className="h-6 w-6 shrink-0 text-stone-500 dark:text-stone-400"
       />
 
       {/* Content — Mongolian hour name only. The raw English HourType enum

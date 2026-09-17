@@ -83,7 +83,7 @@ export const LiturgicalCalendarRow = forwardRef<HTMLLIElement, LiturgicalCalenda
         aria-expanded={expanded}
         aria-controls={`calendar-row-body-${row.date}`}
         data-testid="calendar-row-toggle"
-        className="block w-full px-3 py-3 text-left"
+        className="block w-full px-2 py-3 text-left"
       >
         {headerLabel && (
           <p
@@ -122,7 +122,7 @@ export const LiturgicalCalendarRow = forwardRef<HTMLLIElement, LiturgicalCalenda
         <div
           id={`calendar-row-body-${row.date}`}
           data-testid="calendar-row-body"
-          className="border-t border-stone-200 px-3 pb-4 pt-3 dark:border-stone-800"
+          className="border-t border-stone-200 px-2 pb-3 pt-2 dark:border-stone-800"
         >
           {/* Psalter week — small caption, matches existing hour-page layout */}
           <p className="mb-3 text-xs text-stone-500 dark:text-stone-400">

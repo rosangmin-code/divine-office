@@ -115,7 +115,7 @@ export default async function HomePage({
     // last calendar row / reference-link strip never disappears behind
     // the footer at scroll-end (wi-006 / #18). The footer's own padding
     // additionally adds env(safe-area-inset-bottom) on iOS notch.
-    <div className="mx-auto max-w-2xl px-2 md:px-6 pt-6 pb-24">
+    <div className="mx-auto max-w-2xl px-1 md:px-3 pt-6 pb-24">
       {/* Header — image.png style month-navigation. MonthNav itself
           serves as the page's primary title (its label shows the
           current month, e.g. '2026 оны 5-р сар'). The previous
