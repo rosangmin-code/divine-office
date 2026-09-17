@@ -22,9 +22,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      # Node 20 은 2026-04 EOL. `pdfjs-dist@6` 이 engines `>=22.13.0 || >=24` 를
+      # 선언해 20 에서는 npm ci 가 EBADENGINE 을 경고한다. 로컬 개발은 24.x.
       - uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -94,7 +96,7 @@ jobs:
 
       - uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
