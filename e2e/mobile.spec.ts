@@ -115,20 +115,46 @@ test.describe('Mobile layout', () => {
     expect(contentWidth).toBeGreaterThanOrEqual(320)
   })
 
-  test('psalm has left padding on mobile (NFR-014)', async ({ page }, testInfo) => {
+  // @fr FR-178
+  test('시편 본문이 본문 좌측에 정렬된다 (여백 0)', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'mobile-chrome', 'Mobile-only viewport assertion')
     await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
-    // PsalmBlock wraps stanzas in a div with `pl-3` (12px) on mobile.
-    // NFR-002 이후 aria-label 은 몽골어(`Дуулал 108:2-14`)라 영문 결합 selector
-    // 는 조용히 0건이 됐다 (app-review 2026-09-13 §4 #13) → data-role 로 이관,
-    // 0건이면 skip 대신 실패.
-    const stanzaWrapper = page
-      .locator('[data-role="psalm-block"]')
-      .locator('div.pl-3')
-      .first()
-    expect(await stanzaWrapper.count(), 'psalm stanza wrapper must render on lauds').toBe(1)
-    const pl = await stanzaWrapper.evaluate((el) => parseFloat(getComputedStyle(el).paddingLeft))
-    expect(pl).toBeGreaterThanOrEqual(12)
+    // 사용자 지시 (2026-09-17): 시편 절도 본문과 같은 4px 로. 이전에는 stanza
+    // wrapper 가 `pl-3`(12px) 을 얹어 산문·마침기도(4px)와 어긋났다.
+    const offsets = await page.evaluate(() => {
+      const art = document.querySelector('article')!
+      const base = art.getBoundingClientRect().left
+      const first = (sel: string) => {
+        const el = document.querySelector(sel)
+        return el ? Math.round(el.getBoundingClientRect().left - base) : -1
+      }
+      return {
+        stanza: first('[data-role="psalm-stanza"]'),
+        canticle: first('[data-role="gospel-canticle-verse"]'),
+      }
+    })
+    expect(offsets.stanza, '시편 절이 본문 좌측에 정렬').toBe(0)
+    if (offsets.canticle >= 0) {
+      expect(offsets.canticle, '복음찬가도 같은 정렬').toBe(0)
+    }
+  })
+
+  // @fr FR-161
+  test('접힌 시편 줄은 여전히 hanging indent 를 유지한다', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'mobile-chrome', 'Mobile-only viewport assertion')
+    await page.goto(`/pray/${DATES.ordinaryWeekday}/lauds`)
+    // 외곽 여백을 없애도 줄 단위 `pl-6 -indent-6` 는 남아야 한다 — 절의 첫 줄은
+    // 본문 좌측에, 접혀 내려간 줄은 그보다 들여쓰여야 읽을 때 절 경계가 보인다.
+    const indents = await page.evaluate(() => {
+      const el = document.querySelector('[data-role="psalm-phrase"]')
+      if (!el) return null
+      const cs = getComputedStyle(el)
+      return { pl: parseFloat(cs.paddingLeft), ti: parseFloat(cs.textIndent) }
+    })
+    if (indents) {
+      expect(indents.pl).toBeGreaterThan(0)
+      expect(indents.ti).toBeLessThan(0)
+    }
   })
 
   test('psalm stanzas have visible spacing on mobile (NFR-014)', async ({ page }, testInfo) => {

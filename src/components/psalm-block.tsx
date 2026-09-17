@@ -194,7 +194,7 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
 
       {/* Stanzas (PDF source) or Verses (fallback) */}
       {psalm.stanzasRich && psalm.stanzasRich.blocks && psalm.stanzasRich.blocks.length > 0 ? (
-        <div className="space-y-5 pl-3 md:space-y-4 md:pl-2">
+        <div className="space-y-5 md:space-y-4">
           {psalm.stanzasRich.blocks.map((block, bi) => {
             if (block.kind !== 'stanza') return null
             // FR-161 R-4: phrase-render path. When the stanza carries
@@ -338,7 +338,7 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
           })}
         </div>
       ) : psalm.stanzas && psalm.stanzas.length > 0 ? (
-        <div className="space-y-5 pl-3 md:space-y-4 md:pl-2">
+        <div className="space-y-5 md:space-y-4">
           {psalm.stanzas.map((stanza, si) => (
             <p key={si} data-role="psalm-stanza" className="whitespace-pre-line font-reading text-base leading-relaxed text-stone-800 dark:text-stone-200">
               {stanza.map((line, li) => {
@@ -358,7 +358,7 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
           ))}
         </div>
       ) : psalm.verses.length > 0 ? (
-        <div className="space-y-1 pl-3 md:pl-2">
+        <div className="space-y-1">
           {psalm.verses.map((v, i) => (
             <p key={i} className="whitespace-pre-line font-reading text-base leading-relaxed text-stone-800 dark:text-stone-200">
               <sup className="mr-1 text-xs text-stone-500 dark:text-stone-500" aria-label={`Ишлэл ${v.verse}`}>{v.verse}</sup>
@@ -367,7 +367,7 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
           ))}
         </div>
       ) : (
-        <div className="pl-3 md:pl-2">
+        <div>
           <p role="note" className="text-sm italic text-stone-500 dark:text-stone-500">
             [Орчуулга хийгдэж байна]
           </p>

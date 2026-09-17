@@ -406,12 +406,12 @@ export function GospelCanticleSection({
           const paragraphSet = new Set(section.paragraphBoundaries ?? [])
           return (
             // WI-49 — 복음 칸티클을 일반 시편과 동일한 hanging-indent 로.
-            // wrapper 를 시편식 `pl-3 md:pl-2` (psalm-block stanza container
+            // wrapper 를 시편식 baseline (psalm-block stanza container
             // 의 pl baseline) 로, 각 verse <p> 에 `pl-6 -indent-6` (시편
             // phrase span 과 동일: 첫 줄 flush 밑으로 pl-6, wrap 이어지는
             // 줄은 -indent-6 hanging). space-y-1 은 제거 — 시편 본문 줄은
             // 서로 붙어 흐르고 단락 경계(mt-3)만 간격을 준다. 텍스트 불변.
-            <div className="pl-3 md:pl-2">
+            <div>
               {section.verses!.map((verse, vi) => {
                 const isParagraphStart = paragraphSet.has(vi)
                 return (
@@ -435,8 +435,8 @@ export function GospelCanticleSection({
         })()
       ) : section.text ? (
         // WI-49 — text.split 폴백 경로도 verses 경로와 동일한 시편식
-        // hanging-indent (wrapper pl-3 md:pl-2, 각 line <p> pl-6 -indent-6).
-        <div className="pl-3 md:pl-2">
+        // hanging-indent (wrapper 여백 0 — FR-178, 각 line <p> pl-6 -indent-6).
+        <div>
           {section.text.split('\n').map((line, li) => (
             <p
               key={li}

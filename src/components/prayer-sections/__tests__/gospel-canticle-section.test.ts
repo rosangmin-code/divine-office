@@ -531,7 +531,10 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
       )
       // 외곽 시편식 `pl-3 md:pl-2` wrapper baseline 유지 (g-40: space-y-1
       // 제거 → hanging-indent wrapper 로 의도 변경, gospel-canticle-section.tsx L417).
-      expect(html).toMatch(/<div[^>]*class="[^"]*pl-3[^"]*"/)
+      // FR-178 — 외곽 wrapper 의 좌측 여백(`pl-3 md:pl-2`)은 제거됐다. 본문이
+      // article 좌측(4px)에 붙고, hanging indent 는 각 line 의 `pl-6 -indent-6`
+      // 가 그대로 담당한다.
+      expect(html).not.toMatch(/<div[^>]*class="[^"]*pl-3[^"]*"/)
     })
 
     it('empty paragraphBoundaries array 도 부재와 동일 동작 (defensive)', () => {
