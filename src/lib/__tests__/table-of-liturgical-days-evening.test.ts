@@ -136,7 +136,8 @@ describe('주님의 축일 당일 저녁기도 = 제2저녁기도 (FR-177)', () 
   })
 
   it('제1저녁기도 셀은 `/firstVespers` 경로에만 쓰인다', async () => {
-    expect(await antiphon('2026-09-14', 'firstVespers')).toBe(cell(feasts, '09-14', 'firstVespers'))
+    // FR-180: 십자가 현양의 제1저녁기도는 주일에 걸린 해(2025)에만 있다.
+    expect(await antiphon('2025-09-14', 'firstVespers')).toBe(cell(feasts, '09-14', 'firstVespers'))
   })
 
   it('대축일은 종전대로 제2저녁기도 (회귀 가드)', async () => {

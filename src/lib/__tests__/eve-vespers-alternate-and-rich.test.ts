@@ -165,8 +165,11 @@ describe('Rich overlay follows the plain source on the eve path', () => {
   })
 
   // @fr FR-156
-  it('2026-02-01 (Sun) eve of the Presentation: no OT Sunday-4 rich (p.757) under the feast\'s plain (p.821)', async () => {
-    const hour = await assembleHour('2026-02-01', 'vespers')
+  it('2025-02-01 (Sat) eve of the Presentation on a Sunday: no OT Sunday-4 rich (p.757) under the feast\'s plain (p.821)', async () => {
+    // FR-180: the Presentation's First Vespers exists only when 02-02 is a
+    // Sunday (p.821 «Хэрэв энэ баяр Ням гарагт таарвал …»). 2025-02-02 is
+    // one; 2026-02-02 (Mon) no longer promotes the eve.
+    const hour = await assembleHour('2025-02-01', 'vespers')
     const c = cp(hour)
     expect(c.page).toBe(821)
     expect(c.textRich).toBeUndefined()

@@ -144,13 +144,23 @@ export const SeasonPropersFileSchema = z
   .loose()
 
 // Entries stay loose (hour propers are validated elsewhere); only the P0-3
-// meta fields consumed by `sanctoral-resolver.ts` are typed here.
+// meta fields consumed by `sanctoral-resolver.ts` are typed here, plus the
+// FR-180 `firstVespers.sundayOnly` gate (`EvidencePdfSchema` is declared
+// further down, hence `z.lazy`).
 export const SanctoralFileSchema = z.record(
   z.string(),
   z
     .object({
       romcalKey: z.string().min(1).optional(),
       outranksSunday: z.boolean().optional(),
+      firstVespers: z
+        .object({
+          sundayOnly: z
+            .object({ evidencePdf: z.lazy(() => EvidencePdfSchema) })
+            .optional(),
+        })
+        .loose()
+        .optional(),
     })
     .loose(),
 )

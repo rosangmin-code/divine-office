@@ -401,8 +401,11 @@ const AREA_HASHES = {
   // `"romcalKey"` meta line (presentationOfTheLord / transfiguration /
   // theExaltationOfTheHolyCross / dedicationOfTheLateranBasilica). Insertion
   // only — Mongolian text byte-unchanged (verified by strip-and-compare).
+  // FR-180 (2026-09-18): 02-02 / 08-06 / 09-14 `firstVespers` swapped the
+  // mis-encoded `conditionalRubrics` (substitute hymn) for `sundayOnly`
+  // carrying the same evidencePdf. Prayer text byte-unchanged.
   'src/data/loth/sanctoral/feasts.json':
-    'b61624d5cf327947bc4ac41e237fdcf8e4a1a2e0421587436b3f3567bbca1ece',
+    'ee6869f27ee462e08d2345cb3eaf9408343ecc2e980f963812ff319b3240680a',
   // WI-76 intended memorials page 863->862.
   // #203 (WI-215): 11-02 All Souls + deceased lauds/vespers concludingPrayer
   // truncation — restored Trinitarian doxology from full_pdf p.852 (L28884-87).

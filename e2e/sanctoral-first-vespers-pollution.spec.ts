@@ -13,13 +13,18 @@ import { test, expect } from '@playwright/test'
 // on the feast's own `firstVespers` card: GET /api/loth/{feastDate}/firstVespers
 // (the route returns 200 for fixed-date solemnities/feasts — cf. the
 // route-handler eligibility gate test).
+//
+// FR-180: the Presentation (02-02), Transfiguration (08-06) and Exaltation
+// of the Cross (09-14) have First Vespers ONLY when the feast falls on a
+// Sunday (book p.821 / p.831 / p.835 «Ням гарагт таарвал»), so those three
+// use a Sunday-occurrence year — the 2026 weekday dates answer 404.
 
 const EP_II_MARKER = '2 дугаар Оройн даатгал залбирал' // Second Vespers bleed
 const PAGE_HEADER_SPLICE = 'Гэгээнтнүүдийн Онцлог шинж' // Sanctoral running-header
 const BENEDICTUS_BLEED = 'Захариагийн магтаал' // Lauds gospel-canticle label
 const INVITATORY_BLEED = 'Урих дуудлага' // Invitatory header
 
-// [feastDate (2026), label, EP-I collect head fragment that MUST survive]
+// [feastDate (2026 unless noted), label, EP-I collect head fragment that MUST survive]
 const CASES: Array<[string, string, string]> = [
   ['2026-12-08', '무염시태 Immaculate Conception (P0, was 92,803 chars)', 'Язгуурын гэм нүгэлгүй бүрэлдсэн Цэвэр охин Мариагаар'],
   ['2026-08-15', '성모승천 Assumption (Pattern B, Lauds bleed)', 'Та Өөрийн Хүүгийн эх байх дархан эрхийг цэвэр ариун'],
@@ -28,9 +33,9 @@ const CASES: Array<[string, string, string]> = [
   ['2026-06-24', '세례자요한 Birth of John the Baptist (Pattern B)', 'Өөрийн ард түмнийг авралын замаар замнахад тусална'],
   ['2026-03-25', '주님탄생예고 Annunciation', 'Таны Үг бие махбод болж, Цэвэр Охин Мариагаас мэндэлсэн'],
   ['2026-03-19', '성요셉 St Joseph', 'Та бидний Аврагчийг Гэгээн Иосефийн халамжид даатгасан'],
-  ['2026-02-02', '주님봉헌 Presentation', 'Аяа, төгс хүчит Эцэг минь'],
-  ['2026-08-06', '주님거룩한변모 Transfiguration', 'Та амин ганц Хүүгийнхээ жавхлант'],
-  ['2026-09-14', '십자가현양 Exaltation of the Cross', 'Амин ганц Хүүгээ загалмайн'],
+  ['2025-02-02', '주님봉헌 Presentation (Sun occurrence — FR-180)', 'Аяа, төгс хүчит Эцэг минь'],
+  ['2028-08-06', '주님거룩한변모 Transfiguration (Sun occurrence — FR-180)', 'Та амин ганц Хүүгийнхээ жавхлант'],
+  ['2025-09-14', '십자가현양 Exaltation of the Cross (Sun occurrence — FR-180)', 'Амин ганц Хүүгээ загалмайн'],
   ['2026-11-09', '라테란대성전봉헌 Lateran Basilica', 'эрх сүрийнхээ мөнхийн өргөөг бэлтгэхээр амьд суурь чулууг'],
   // 01-01 Mother of God: runaway was in alternativeConcludingPrayer (which the
   // firstVespers render surfaces as the concludingPrayer section's primary

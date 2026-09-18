@@ -457,8 +457,10 @@ export async function assembleHour(
       // → memorials, so FEAST entries (02-02, 08-06, 09-14, 11-09) resolve.
       const tomorrowResolvedSanctoral = resolveSanctoralForDay(tomorrowDay)
       const tomorrowSanctoral = tomorrowResolvedSanctoral?.entry
+      // FR-180: a `sundayOnly` cell (02-02 / 08-06 / 09-14) is absent
+      // unless tomorrow is a Sunday — the eve then keeps its own office.
       let solemnityFirstVespers: FirstVespersPropers | null | undefined =
-        tomorrowSanctoral?.firstVespers
+        eligibleSanctoralFirstVespers(tomorrowSanctoral, tomorrowStr)
       // Path 2 — movable SOLEMNITY via season-propers special key.
       // Gated to SOLEMNITY AND a resolvable special key (`resolveSpecialKey`
       // returns one of: ascension / pentecost / trinitySunday /
@@ -603,8 +605,11 @@ export async function assembleHour(
     // through romcal's choice for the day (see `sanctoral-resolver.ts`).
     if (day.rank === 'SOLEMNITY' || day.rank === 'FEAST') {
       const todaySanctoral = resolveSanctoralForDay(day)?.entry
-      if (todaySanctoral?.firstVespers) {
-        firstVespersData = todaySanctoral.firstVespers
+      // FR-180: honours `sundayOnly` — the route is not eligible on a
+      // weekday occurrence anyway (`isFirstVespersEligibleDate`).
+      const todayFirstVespers = eligibleSanctoralFirstVespers(todaySanctoral, dateStr)
+      if (todayFirstVespers) {
+        firstVespersData = todayFirstVespers
         isSelfContained = true
       }
     }
@@ -896,6 +901,9 @@ export async function assembleHour(
   //    a Saturday eve, so it stays outside this gate.
   const officeMovedToAnotherDay =
     effectiveLiturgicalDay.date !== day.date && !!sanctoral?.vespers2
+  // FR-180: `sundayOnly` First Vespers cells count as absent on a weekday
+  // occurrence, here as at every other consumer.
+  const sanctoralFirstVespers = eligibleSanctoralFirstVespers(sanctoral, dateStr)
   let hourPropers: HourPropers | undefined
   if (officeMovedToAnotherDay) {
     hourPropers = undefined
@@ -920,8 +928,8 @@ export async function assembleHour(
     // data mirrors that per-feast difference). Same defect shape as
     // FR-171 for Sundays.
     hourPropers = sanctoral.vespers2 as HourPropers
-  } else if (isFirstVespers && sanctoral?.firstVespers) {
-    hourPropers = sanctoral.firstVespers as HourPropers
+  } else if (isFirstVespers && sanctoralFirstVespers) {
+    hourPropers = sanctoralFirstVespers as HourPropers
   } else if (isFirstCompline) {
     // SanctoralEntry has no compline / firstCompline field by design —
     // compline propers come from the ordinarium-level compline.json
@@ -1436,6 +1444,24 @@ export async function getTodayHour(hour: HourType): Promise<AssembledHour | null
 }
 
 /**
+ * FR-180 — a sanctoral First Vespers cell, or `undefined` when the book
+ * restricts it to a Sunday occurrence (`sundayOnly`) and `dateStr` — the
+ * feast's own date — is not a Sunday. Every consumer of
+ * `SanctoralEntry.firstVespers` goes through here so the card list, the
+ * route eligibility gate, the eve-of-feast promotion and the
+ * `/firstVespers` route agree.
+ */
+function eligibleSanctoralFirstVespers(
+  entry: SanctoralEntry | null | undefined,
+  dateStr: string,
+): FirstVespersPropers | undefined {
+  const fv = entry?.firstVespers
+  if (!fv) return undefined
+  if (fv.sundayOnly && dateToDayOfWeek(dateStr) !== 'SUN') return undefined
+  return fv
+}
+
+/**
  * Internal helper — does this date carry First Vespers / First Compline
  * (i.e. should the cards appear above Lauds)?
  *
@@ -1454,6 +1480,9 @@ export async function getTodayHour(hour: HourType): Promise<AssembledHour | null
  *   - Solemnity/Feast with a sanctoral.firstVespers entry (12 fixed-date
  *     solemnities + 4 fixed-date feasts: 02-02 Presentation, 08-06
  *     Transfiguration, 09-14 Exaltation, 11-09 Lateran Basilica).
+ *     FR-180: the first three are `sundayOnly` — the book prints their
+ *     First Vespers only for a Sunday occurrence, so on a weekday they
+ *     count as having none (`eligibleSanctoralFirstVespers`).
  *   - Movable Solemnity (Ascension, Pentecost, Trinity Sunday,
  *     Corpus Christi, Sacred Heart, Christ the King) — `getSeasonFirstVespers`
  *     via `resolveSpecialKey` (Phase 4b #24).
@@ -1481,9 +1510,9 @@ function hasFirstVespersAndCompline(
   if (day.romcalKey === 'easter') return false
   if (dayOfWeek === 'SUN') return true
   if (day.rank !== 'SOLEMNITY' && day.rank !== 'FEAST') return false
-  // Sanctoral path (P0-3: romcal-gated, transfer-aware)
+  // Sanctoral path (P0-3: romcal-gated, transfer-aware; FR-180 sundayOnly)
   const sanctoral = resolveSanctoralForDay(day)?.entry
-  if (sanctoral?.firstVespers) return true
+  if (eligibleSanctoralFirstVespers(sanctoral, dateStr)) return true
   // Movable Solemnity special-key path
   if (day.rank === 'SOLEMNITY' && resolveSpecialKey(day.season, day.name, undefined, day.romcalKey) != null) {
     const fv = getSeasonFirstVespers(day.season, day.weekOfSeason, dateStr, day.name, day.romcalKey)

@@ -221,10 +221,13 @@ describe('privileged Sunday keeps its Evening Prayer II over a Monday solemnity 
   })
 
   // @fr FR-011
-  it('non-privileged Sunday still yields to the Monday First Vespers (2026-09-13 → Exaltation of the Cross) and the Advent → Christmas boundary still yields (2028-12-24 → Christmas)', async () => {
-    const otSunday = await assembleHour('2026-09-13', 'vespers')
-    expect(section(otSunday, 'gospelCanticle')?.antiphon).toContain(FEA['09-14'].firstVespers!.gospelCanticleAntiphon!)
-    expect(getHoursSummary('2026-09-13')?.hours.map((h) => h.type)).toEqual(['firstVespers', 'firstCompline', 'lauds'])
+  it('non-privileged Sunday still yields to the Monday First Vespers (2026-11-08 → Dedication of the Lateran) and the Advent → Christmas boundary still yields (2028-12-24 → Christmas)', async () => {
+    // FR-180: the Exaltation of the Cross (09-14) has First Vespers only on
+    // a Sunday occurrence, so 2026-09-13 → 09-14 (Mon) no longer yields; the
+    // Lateran (11-09, p.840) prints First Vespers unconditionally.
+    const otSunday = await assembleHour('2026-11-08', 'vespers')
+    expect(section(otSunday, 'gospelCanticle')?.antiphon).toContain(FEA['11-09'].firstVespers!.gospelCanticleAntiphon!)
+    expect(getHoursSummary('2026-11-08')?.hours.map((h) => h.type)).toEqual(['firstVespers', 'firstCompline', 'lauds'])
 
     expect(day('2028-12-24')).toMatchObject({ season: 'ADVENT', romcalType: 'SUNDAY' })
     const adventSunday = await assembleHour('2028-12-24', 'vespers')

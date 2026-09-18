@@ -39,29 +39,13 @@
       "concludingPrayer": "Аяа, төгс хүчит Эцэг минь, хүмүүн бидний төлөө бие махбодыг олсон Таны Хүү Есүс Христийг өргөө сүмд өргөж байсан тул Тэр бидний зүрх сэтгэлийг гэм нүглээс чөлөөлж, Таны оршихуйд аваачих болтугай. Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан Есүс Христ бидний Эзэн, Таны Хүүгээр уламжлан тийн болтугай.",
       "concludingPrayerPage": 821,
       "gospelCanticleAntiphonPage": 821,
-      "conditionalRubrics": [
-        {
-          "rubricId": "sanctoral-feast-02-02-presentation-firstvespers-sunday",
-          "when": {
-            "dayOfWeek": [
-              "SUN"
-            ]
-          },
-          "action": "substitute",
-          "target": {
-            "text": "Хэрэв энэ баяр Ням гарагт таарвал 1 дүгээр Оройн даатгал залбирал уншина."
-          },
-          "appliesTo": {
-            "section": "hymn"
-          },
-          "evidencePdf": {
-            "page": 821,
-            "line": 27950,
-            "text": "Хэрэв энэ баяр Ням гарагт таарвал 1 дүгээр"
-          },
-          "liturgicalBasis": "FEAST rank: 02-02 (Presentation) firstVespers is conditionally read only on Sunday. Attached to firstVespers cell so runtime applyConditionalRubrics evaluates this rubric when sanctoral[firstVespers] is merged (loth-service.ts Layer 4.5)."
+      "sundayOnly": {
+        "evidencePdf": {
+          "page": 821,
+          "line": 27950,
+          "text": "Хэрэв энэ баяр Ням гарагт таарвал 1 дүгээр Оройн даатгал залбирал уншина."
         }
-      ]
+      }
     }
   },
   "08-06": {
@@ -104,29 +88,13 @@
       "concludingPrayer": "Аяа, Тэнгэрбурхан Эцэг минь, Та амин ганц Хүүгийнхээ жавхлант хувиралгалтаар Эцгүүдийг гэрчлэлээр итгэл бишрэлийн далд нууцыг бататгасан бөгөөд Өөрийн охид хөвгүүдийн үрчлэлтийг ер бусаар зөгнөн бэлгэдсэн билээ. Бид Таны хүүгийн дууг сонсохдоо Түүний хамтаар мөнхийн амьдралын өвийг залгамжлагчид болохыг Та бидэнд болгоон соёрхоно уу. Тэрээр Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг цорын ганц Тэнгэрбурхан билээ.",
       "concludingPrayerPage": 831,
       "gospelCanticleAntiphonPage": 831,
-      "conditionalRubrics": [
-        {
-          "rubricId": "sanctoral-feast-08-06-transfiguration-firstvespers-sunday",
-          "when": {
-            "dayOfWeek": [
-              "SUN"
-            ]
-          },
-          "action": "substitute",
-          "target": {
-            "text": "(Хэрэв энэ баяр Ням гарагт таарвал)"
-          },
-          "appliesTo": {
-            "section": "hymn"
-          },
-          "evidencePdf": {
-            "page": 831,
-            "line": 28232,
-            "text": "(Хэрэв энэ баяр Ням гарагт таарвал)"
-          },
-          "liturgicalBasis": "FEAST rank — 08-06 (Transfiguration) firstVespers conditionally read on Sunday only. Attached to firstVespers cell for runtime evaluation."
+      "sundayOnly": {
+        "evidencePdf": {
+          "page": 831,
+          "line": 28232,
+          "text": "(Хэрэв энэ баяр Ням гарагт таарвал)"
         }
-      ]
+      }
     }
   },
   "09-14": {
@@ -170,29 +138,13 @@
       "concludingPrayer": "Аяа, Тэнгэрбурхан Эцэг минь, хүн төрөлхтний авралын төлөө Амин ганц Хүүгээ загалмайн үхлээс Та үл татгалзуулсан тул газар дэлхий дэх түүний далд нууцыг танин мэдэхдээ бид тэнгэр дэх Түүний цагаатгалын хишгийг хүртэхийг Та болгоон соёрхоно уу. Тантай, Ариун Сүнсний нэгдэлтэй, үүрд мөнх оршин хаанчилдаг Тэнгэрбурхан Есүс Христ бидний Эзэн, Таны Хүүгээр уламжлан тийн болтугай.",
       "concludingPrayerPage": 835,
       "gospelCanticleAntiphonPage": 835,
-      "conditionalRubrics": [
-        {
-          "rubricId": "sanctoral-feast-09-14-holy-cross-firstvespers-sunday",
-          "when": {
-            "dayOfWeek": [
-              "SUN"
-            ]
-          },
-          "action": "substitute",
-          "target": {
-            "text": "(Хэрэв энэ баяр Ням гарагт таарвал)"
-          },
-          "appliesTo": {
-            "section": "hymn"
-          },
-          "evidencePdf": {
-            "page": 835,
-            "line": 28353,
-            "text": "(Хэрэв энэ баяр Ням гарагт таарвал)"
-          },
-          "liturgicalBasis": "FEAST rank — 09-14 (Holy Cross) firstVespers conditionally read on Sunday only. Attached to firstVespers cell for runtime evaluation."
+      "sundayOnly": {
+        "evidencePdf": {
+          "page": 835,
+          "line": 28353,
+          "text": "(Хэрэв энэ баяр Ням гарагт таарвал)"
         }
-      ]
+      }
     }
   },
   "11-09": {

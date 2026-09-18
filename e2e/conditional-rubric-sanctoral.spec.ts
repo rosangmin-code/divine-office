@@ -3,13 +3,13 @@ import { DATES } from './fixtures/dates'
 
 // FR-160-B PR-9b — Sanctoral + Christmas conditional rubric e2e coverage.
 //
-// Sanctoral conditional rubrics (5 total across memorials.json + feasts.json
-// + christmas.json):
+// Sanctoral conditional rubrics (2 total across memorials.json +
+// christmas.json):
 //   - 11-02 All Souls' lauds  → substitute psalmody when dayOfWeek=SUN
 //   - 11-02 All Souls' vespers → substitute psalmody when dayOfWeek=SUN
-//   - 02-02 Presentation firstVespers → substitute hymn when dayOfWeek=SUN
-//   - 08-06 Transfiguration firstVespers → substitute hymn when dayOfWeek=SUN
-//   - 09-14 Holy Cross firstVespers → substitute hymn when dayOfWeek=SUN
+//   (FR-180: the three feasts.json `firstVespers` rubrics — 02-02 / 08-06 /
+//   09-14 «Ням гарагт таарвал» — were a STRUCTURAL note, not a hymn
+//   substitute; they moved to `firstVespers.sundayOnly`, see below.)
 // Plus Christmas:
 //   - dec25 lauds → substitute psalmody when CHRISTMAS + dateRange 12-25..12-25
 //
@@ -212,61 +212,43 @@ test.describe('FR-160-B PR-9b — non-runtime-surfacing rubrics (data-layer cove
     expect(sub!.target?.text).toContain('Ертөнцийн Хаан')
   })
 
-  // @fr FR-160-B-5b
-  test('FEAST 02-02 Presentation firstVespers hymn substitute rubric authored (Sunday-only gate)', () => {
-    // Sanctoral feasts.json '02-02'.firstVespers cell carries a
-    // `dayOfWeek=SUN` substitute rubric on the hymn section. Activates
-    // only when 02-02 falls on Sunday (calendar fact). The hymn cell
-    // currently isn't in DIRECTIVE_SECTION_TYPES so directives don't
-    // surface in API; data presence verified for dispatch readiness.
-    const feasts = readJson<Record<string, { firstVespers?: { conditionalRubrics?: ConditionalRubricSnapshot[] } }>>(
+  // @fr FR-180
+  test('FEAST 02-02 / 08-06 / 09-14 firstVespers carry `sundayOnly` (book p.821/831/835) and no hymn-substitute rubric; 11-09 Lateran has neither', () => {
+    // The book prints «Хэрэв энэ баяр Ням гарагт таарвал 1 дүгээр Оройн
+    // даатгал залбирал уншина.» (p.821) and «(Хэрэв энэ баяр Ням гарагт
+    // таарвал)» (p.831, p.835) at the head of the feast's First Vespers —
+    // a rule about WHETHER Evening Prayer I exists that year, not a hymn
+    // directive. Before FR-180 it was authored as a `substitute hymn`
+    // rubric keyed to SUN, which replaced the hymn body with the note on
+    // exactly the Sundays the office is legitimate. The Lateran (p.840)
+    // prints the heading without the note and stays unconditional.
+    type FirstVespersCell = {
+      sundayOnly?: { evidencePdf?: { page?: number; text?: string } }
+      conditionalRubrics?: ConditionalRubricSnapshot[]
+    }
+    const feasts = readJson<Record<string, { firstVespers?: FirstVespersCell }>>(
       'src/data/loth/sanctoral/feasts.json',
     )
-    const fv = feasts['02-02'].firstVespers
-    expect(fv?.conditionalRubrics, '02-02 firstVespers conditionalRubrics array').toBeDefined()
-    const sub = fv!.conditionalRubrics!.find(
-      (r) => r.rubricId === 'sanctoral-feast-02-02-presentation-firstvespers-sunday',
-    )
-    expect(sub, 'Presentation firstVespers Sunday rubric authored').toBeDefined()
-    expect(sub!.action).toBe('substitute')
-    expect(sub!.appliesTo.section).toBe('hymn')
-    expect(sub!.when?.dayOfWeek).toEqual(['SUN'])
+    const expected: Array<[string, number, string]> = [
+      ['02-02', 821, 'Ням гарагт таарвал 1 дүгээр Оройн даатгал залбирал уншина'],
+      ['08-06', 831, 'Ням гарагт таарвал'],
+      ['09-14', 835, 'Ням гарагт таарвал'],
+    ]
+    for (const [key, page, fragment] of expected) {
+      const fv = feasts[key].firstVespers
+      expect(fv, `${key} firstVespers cell`).toBeDefined()
+      expect(fv!.sundayOnly?.evidencePdf?.page, `${key} sundayOnly page`).toBe(page)
+      expect(fv!.sundayOnly?.evidencePdf?.text ?? '', `${key} sundayOnly text`).toContain(fragment)
+      expect(fv!.conditionalRubrics, `${key} firstVespers must carry no rubric`).toBeUndefined()
+    }
+    const lateran = feasts['11-09'].firstVespers
+    expect(lateran, '11-09 firstVespers cell').toBeDefined()
+    expect(lateran!.sundayOnly, '11-09 Lateran is unconditional').toBeUndefined()
+    expect(lateran!.conditionalRubrics).toBeUndefined()
   })
 
   // @fr FR-160-B-5b
-  test('FEAST 08-06 Transfiguration firstVespers hymn substitute rubric authored', () => {
-    const feasts = readJson<Record<string, { firstVespers?: { conditionalRubrics?: ConditionalRubricSnapshot[] } }>>(
-      'src/data/loth/sanctoral/feasts.json',
-    )
-    const fv = feasts['08-06'].firstVespers
-    expect(fv?.conditionalRubrics).toBeDefined()
-    const sub = fv!.conditionalRubrics!.find(
-      (r) => r.rubricId === 'sanctoral-feast-08-06-transfiguration-firstvespers-sunday',
-    )
-    expect(sub, 'Transfiguration firstVespers Sunday rubric authored').toBeDefined()
-    expect(sub!.action).toBe('substitute')
-    expect(sub!.appliesTo.section).toBe('hymn')
-    expect(sub!.when?.dayOfWeek).toEqual(['SUN'])
-  })
-
-  // @fr FR-160-B-5b
-  test('FEAST 09-14 Holy Cross firstVespers hymn substitute rubric authored', () => {
-    const feasts = readJson<Record<string, { firstVespers?: { conditionalRubrics?: ConditionalRubricSnapshot[] } }>>(
-      'src/data/loth/sanctoral/feasts.json',
-    )
-    const fv = feasts['09-14'].firstVespers
-    expect(fv?.conditionalRubrics).toBeDefined()
-    const sub = fv!.conditionalRubrics!.find(
-      (r) => r.rubricId === 'sanctoral-feast-09-14-holy-cross-firstvespers-sunday',
-    )
-    expect(sub, 'Holy Cross firstVespers Sunday rubric authored').toBeDefined()
-    expect(sub!.action).toBe('substitute')
-    expect(sub!.appliesTo.section).toBe('hymn')
-    expect(sub!.when?.dayOfWeek).toEqual(['SUN'])
-  })
-
-  // @fr FR-160-B-5b
-  test('inventory invariant: 49 ConditionalRubric entries total, all covered by PR-9b suite', () => {
+  test('inventory invariant: 46 ConditionalRubric entries total, all covered by PR-9b suite', () => {
     // Closure check: aggregate the rubric IDs we cover across the
     // PR-9b e2e suite (active dispatch tests + data-layer authored
     // tests). Guards against silent rubric additions in future PRs
@@ -281,9 +263,6 @@ test.describe('FR-160-B PR-9b — non-runtime-surfacing rubrics (data-layer cove
       'ordinary-time-w34-sun-christ-the-king-substitute',
       'sanctoral-memorial-11-02-all-souls-lauds-sunday-substitute',
       'sanctoral-memorial-11-02-all-souls-vespers-sunday-substitute',
-      'sanctoral-feast-02-02-presentation-firstvespers-sunday',
-      'sanctoral-feast-08-06-transfiguration-firstvespers-sunday',
-      'sanctoral-feast-09-14-holy-cross-firstvespers-sunday',
       // GOAL #20 (#20-sub-2) — data-less movable-Solemnity Lauds + 2nd
       // Vespers psalmody substitutes (Week-1 Sunday borrow). 10 entries.
       'ot-trinity-sun-lauds-psalmody-substitute',
@@ -331,11 +310,12 @@ test.describe('FR-160-B PR-9b — non-runtime-surfacing rubrics (data-layer cove
       'sanctoral-solemnity-12-08-immaculate-conception-lauds-psalmody-substitute',
       'sanctoral-solemnity-12-08-immaculate-conception-vespers2-weekday-psalmody-notice',
     ])
-    // 22 (PR-9b + GOAL #20) + 1 (GOAL #27) + 5 + 21 (wi-110-001) = 49.
+    // 22 (PR-9b + GOAL #20) − 3 (FR-180: feast firstVespers Sunday-only
+    // notes moved to `sundayOnly`) + 1 (GOAL #27) + 5 + 21 (wi-110-001) = 46.
     // Re-derive with: node -e "…scan conditionalRubrics across the 8 data
     // files…" (see the `scan` walker below) whenever a data PR adds rubrics,
     // and extend this manifest in the same PR.
-    const EXPECTED_TOTAL = 49
+    const EXPECTED_TOTAL = 46
     expect(expected.size).toBe(EXPECTED_TOTAL)
 
     // Discover every rubricId in the data files and assert no surprise

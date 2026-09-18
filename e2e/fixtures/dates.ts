@@ -89,13 +89,23 @@ export const DATES = {
   christmasDay2026: '2026-12-25',
   maryMotherOfGod2026: '2026-01-01',    // Solemnity of Mary, Mother of God (Thursday)
 
-  // FR-156 task #30 — FEAST rank First Vespers eves.
-  // Resolver now accepts rank === 'FEAST' so the 4 feast entries whose
-  // PDF authors 1st Vespers (02-02, 08-06, 09-14, 11-09) surface on
-  // the evening before.
-  presentationEve2026: '2026-02-01',       // Sun eve — Presentation Mon Feb 2
-  transfigurationEve2026: '2026-08-05',    // Wed eve — Transfiguration Thu Aug 6
-  holyCrossEve2026: '2026-09-13',          // Sun eve — Exaltation Mon Sep 14
+  // FR-156 task #30 / FR-180 — FEAST rank First Vespers eves.
+  // The resolver accepts rank === 'FEAST', but the book restricts three of
+  // the four feast entries that author a 1st Vespers to the years when the
+  // feast falls on a SUNDAY: p.821 Presentation «Хэрэв энэ баяр Ням гарагт
+  // таарвал 1 дүгээр Оройн даатгал залбирал уншина.», p.831 Transfiguration
+  // and p.835 Exaltation «(Хэрэв энэ баяр Ням гарагт таарвал)». The Lateran
+  // Basilica (p.840) prints the heading without that note — every year.
+  //
+  // Sunday occurrences (EP I exists; Saturday eve adopts it):
+  presentationEve2025: '2025-02-01',       // Sat eve — Presentation SUN Feb 2 2025
+  transfigurationEve2028: '2028-08-05',    // Sat eve — Transfiguration SUN Aug 6 2028
+  holyCrossEve2025: '2025-09-13',          // Sat eve — Exaltation SUN Sep 14 2025
+  // Weekday occurrences (NO EP I — the evening before keeps its own office):
+  presentationWeekdayEve2026: '2026-02-01',    // 4th Sunday OT — Presentation is MON Feb 2 2026
+  transfigurationWeekdayEve2026: '2026-08-05', // Wed — Transfiguration is THU Aug 6 2026
+  holyCrossWeekdayEve2026: '2026-09-13',       // 24th Sunday OT — Exaltation is MON Sep 14 2026
+  // Lateran: no Sunday-only note, EP I on any weekday eve.
   lateranBasilicaEve2026: '2026-11-08',    // Sun eve — Lateran Basilica Mon Nov 9
 
   // Easter Sunday (WHITE)

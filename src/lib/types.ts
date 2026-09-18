@@ -553,6 +553,19 @@ export interface FirstVespersPropers extends HourPropers {
    * 동일하게 작동.
    */
   psalms?: PsalmEntry[]
+  /**
+   * FR-180 — the book restricts this First Vespers to the years when the
+   * feast falls on a SUNDAY. Printed at the head of the feast's section:
+   * p.821 Presentation «Хэрэв энэ баяр Ням гарагт таарвал 1 дүгээр Оройн
+   * даатгал залбирал уншина.», p.831 Transfiguration and p.835 Exaltation
+   * «(Хэрэв энэ баяр Ням гарагт таарвал)». The Dedication of the Lateran
+   * (p.840) prints the heading with no such note and carries no flag.
+   * When set and the feast's date is not a Sunday, every consumer treats
+   * the cell as absent: no firstVespers/firstCompline cards, the
+   * `/firstVespers` route is not eligible (404), and the evening before
+   * keeps its own Evening Prayer.
+   */
+  sundayOnly?: { evidencePdf: ConditionalRubricEvidencePdf }
 }
 
 export interface DayPropers {
