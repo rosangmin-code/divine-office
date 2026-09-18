@@ -4,7 +4,7 @@
 > and FR/NFR IDs in test titles. **Do not edit by hand.**
 > The curated matrix lives in [`docs/traceability-matrix.md`](./traceability-matrix.md).
 
-Scan: 101 test files contributed 55 unique IDs.
+Scan: 101 test files contributed 56 unique IDs.
 
 | ID | Test file | Test title(s) |
 |---|---|---|
@@ -133,6 +133,7 @@ Scan: 101 test files contributed 55 unique IDs.
 | FR-176 | `src/lib/__tests__/table-of-liturgical-days-evening.test.ts` | 전례일 순위표 — 저녁 시간대 우선순위 (FR-176) |
 | FR-177 | `src/lib/__tests__/table-of-liturgical-days-evening.test.ts` | (tagged, title unknown) |
 | FR-178 | `e2e/mobile.spec.ts` | 시간경 카드가 조밀하다 — 3장 블록이 세로 공간을 과하게 먹지 않는다<br>홈과 기도 본문의 좌우 여백이 같다<br>시편 본문이 본문 좌측에 정렬된다 (여백 0) |
+| FR-179 | `e2e/settings.spec.ts` | switches have a 44px touch target at every font size |
 | NFR-002 | `e2e/footer-toggle.spec.ts` | no English aria-label fallback on footer controls (NFR-002) |
 | NFR-002 | `e2e/gospel-canticle-verse-division.spec.ts` | lauds Benedictus: 이전 병합 절이 별개 절로 분리 (NFR-002 문구)<br>vespers Magnificat: 이전 병합 절이 별개 절로 분리 (NFR-002 문구) |
 | NFR-002 | `e2e/homepage.spec.ts` | hour cards do not leak the English HourType enum caption (NFR-002) |

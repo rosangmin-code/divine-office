@@ -206,7 +206,7 @@ export function renderBody(
       <div className="space-y-4">
         <ol className="space-y-2 text-sm text-stone-600 dark:text-stone-300">
           <li className="flex gap-2">
-            <span className="font-semibold text-stone-400 dark:text-stone-500">1.</span>
+            <span className="font-semibold text-stone-500 dark:text-stone-400">1.</span>
             <span className="flex flex-wrap items-center gap-1">
               Safari-гийн
               <ShareIcon />
@@ -214,7 +214,7 @@ export function renderBody(
             </span>
           </li>
           <li className="flex gap-2">
-            <span className="font-semibold text-stone-400 dark:text-stone-500">2.</span>
+            <span className="font-semibold text-stone-500 dark:text-stone-400">2.</span>
             <span>&quot;Нүүр дэлгэцэнд нэмэх&quot; сонголтыг сонго</span>
           </li>
         </ol>

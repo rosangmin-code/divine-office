@@ -38,10 +38,10 @@ export interface FooterProps {
 function CreditLines() {
   return (
     <div data-role="footer-content" className="text-center">
-      <p className="text-xs text-stone-400 dark:text-stone-500">
+      <p className="text-xs text-stone-500 dark:text-stone-400">
         Цагийн Залбирал — Монгол Католик Сүм
       </p>
-      <p className="mt-1 text-xs text-stone-400 dark:text-stone-500">
+      <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
         Зарим орчуулга хийгдэж байна
       </p>
     </div>

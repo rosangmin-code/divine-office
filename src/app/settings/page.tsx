@@ -6,6 +6,7 @@ import { Footer } from '@/components/footer'
 import { InstallAppSection } from '@/components/install-app-section'
 import { Icon } from '@/components/icon'
 import { useRadioGroup } from '@/components/ui/listbox'
+import { Switch } from '@/components/ui/switch'
 
 const FONT_SIZES: { value: FontSize; label: string; scaleEm: number }[] = [
   { value: 'xs', label: 'XS', scaleEm: 0.875 },
@@ -215,7 +216,7 @@ export default function SettingsPage() {
             data-testid="font-preview"
             className="mt-4 rounded-lg bg-stone-50 px-4 py-3 text-stone-700 dark:bg-stone-800 dark:text-stone-300"
           >
-            <p className="mb-1 text-xs uppercase tracking-wide text-stone-400 dark:text-stone-500">
+            <p className="mb-1 text-xs uppercase tracking-wide text-stone-500 dark:text-stone-400">
               Жишээ
             </p>
             <p>Эзэн таны нэр алдаршиг, таны хаант улс ирэх болтугай.</p>
@@ -265,24 +266,11 @@ export default function SettingsPage() {
                 PDF хуудасны дугаарыг бичвэр дотор харуулах
               </p>
             </div>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={settings.showPageRefs}
-              aria-labelledby="page-refs-heading"
-              onClick={() => updateSettings({ showPageRefs: !settings.showPageRefs })}
-              className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors ${
-                settings.showPageRefs
-                  ? 'bg-liturgical-gold dark:bg-liturgical-gold-dark'
-                  : 'bg-stone-300 dark:bg-stone-600'
-              }`}
-            >
-              <span
-                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${
-                  settings.showPageRefs ? 'translate-x-6' : 'translate-x-1'
-                }`}
-              />
-            </button>
+            <Switch
+              checked={settings.showPageRefs}
+              labelledBy="page-refs-heading"
+              onChange={() => updateSettings({ showPageRefs: !settings.showPageRefs })}
+            />
           </div>
         </section>
 
@@ -297,24 +285,11 @@ export default function SettingsPage() {
                 Дуулал бүрийн дараах залбирлыг харуулах
               </p>
             </div>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={psalmPrayerVisible}
-              aria-labelledby="psalm-prayer-heading"
-              onClick={() => updateSettings({ psalmPrayerCollapsed: psalmPrayerVisible })}
-              className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors ${
-                psalmPrayerVisible
-                  ? 'bg-liturgical-gold dark:bg-liturgical-gold-dark'
-                  : 'bg-stone-300 dark:bg-stone-600'
-              }`}
-            >
-              <span
-                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform ${
-                  psalmPrayerVisible ? 'translate-x-6' : 'translate-x-1'
-                }`}
-              />
-            </button>
+            <Switch
+              checked={psalmPrayerVisible}
+              labelledBy="psalm-prayer-heading"
+              onChange={() => updateSettings({ psalmPrayerCollapsed: psalmPrayerVisible })}
+            />
           </div>
         </section>
 

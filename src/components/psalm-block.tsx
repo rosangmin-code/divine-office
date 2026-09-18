@@ -149,7 +149,7 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
           {refMn} <PageRef page={psalm.page} />
         </h4>
         {psalm.title && (
-          <p className="text-center text-xs italic text-stone-500 dark:text-stone-500">{psalm.title}</p>
+          <p className="text-center text-xs italic text-stone-500 dark:text-stone-400">{psalm.title}</p>
         )}
         {/* FR-160-C: psalm-header preface (patristic Father / NT typological).
             F-X9 (#373) — defensive guard strips title-prefix and (attribution)-
@@ -361,14 +361,14 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
         <div className="space-y-1">
           {psalm.verses.map((v, i) => (
             <p key={i} className="whitespace-pre-line font-reading text-base leading-relaxed text-stone-800 dark:text-stone-200">
-              <sup className="mr-1 text-xs text-stone-500 dark:text-stone-500" aria-label={`Ишлэл ${v.verse}`}>{v.verse}</sup>
+              <sup className="mr-1 text-xs text-stone-500 dark:text-stone-400" aria-label={`Ишлэл ${v.verse}`}>{v.verse}</sup>
               {v.text}
             </p>
           ))}
         </div>
       ) : (
         <div>
-          <p role="note" className="text-sm italic text-stone-500 dark:text-stone-500">
+          <p role="note" className="text-sm italic text-stone-500 dark:text-stone-400">
             [Орчуулга хийгдэж байна]
           </p>
         </div>

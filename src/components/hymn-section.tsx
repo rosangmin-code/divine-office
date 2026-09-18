@@ -89,7 +89,7 @@ export function HymnSection({ section }: HymnSectionProps) {
                 >
                   {c.number}. {c.title}
                   {i === section.selectedIndex && (
-                    <span className="ml-2 text-xs text-stone-400 dark:text-stone-500">
+                    <span className="ml-2 text-xs text-stone-500 dark:text-stone-400">
                       (өнөөдрийн)
                     </span>
                   )}

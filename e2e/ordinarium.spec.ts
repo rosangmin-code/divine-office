@@ -42,7 +42,10 @@ test.describe('Ordinarium page (дэг жаяг)', () => {
       .filter({ hasText: 'Дөчин хоногийн цаг улиралд' })
       .first()
     await expect(rubric).toBeVisible()
-    await expect(rubric).toHaveClass(/text-red-700\/80/)
+    // FR-179: 루브릭 빨강의 80% 불투명도를 없앴다 — 다크 모드에서 4.41:1 로 AA 미달.
+    // PRD §12.1 의 루브릭 규칙(`text-red-700 dark:text-red-400`)과 같은 클래스.
+    await expect(rubric).toHaveClass(/text-red-700/)
+    await expect(rubric).not.toHaveClass(/text-red-700\/80/)
   })
 
   test('evening section contains Magnificat first stanza', async ({ page }) => {

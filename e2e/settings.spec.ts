@@ -198,12 +198,15 @@ test.describe('Settings page', () => {
   test('psalm-prayer switch uses gold when ON (visible) (FR-032)', async ({ page }) => {
     await page.goto(SETTINGS_URL)
     const switchBtn = page.getByRole('switch', { name: /Дууллыг төгсгөх залбирал/ })
+    // FR-179: 골드는 안쪽 트랙(`data-role="switch-track"`)이 든다 — `role="switch"`
+    // 버튼 자체는 44px 터치 타겟으로 커졌다.
+    const track = switchBtn.locator('[data-role="switch-track"]')
     // #3-sub-2: 양수 토글 — 기본 ON(보임)이므로 기본 상태가 gold.
     await expect(switchBtn).toHaveAttribute('aria-checked', 'true')
-    await expect(switchBtn).toHaveClass(/liturgical-gold/)
+    await expect(track).toHaveClass(/liturgical-gold/)
     // OFF(숨김)로 끄면 gold 해제.
     await switchBtn.click()
-    await expect(switchBtn).not.toHaveClass(/liturgical-gold/)
+    await expect(track).not.toHaveClass(/liturgical-gold/)
   })
 
   // wi-004 (#16) moved Settings off the home header; wi-006 (#18)
@@ -269,7 +272,26 @@ test.describe('Settings page', () => {
     await page.goto(SETTINGS_URL)
     const switchBtn = page.getByRole('switch', { name: /Хуудасны лавлагаа/ })
     await switchBtn.click()
-    await expect(switchBtn).toHaveClass(/liturgical-gold/)
+    await expect(switchBtn.locator('[data-role="switch-track"]')).toHaveClass(/liturgical-gold/)
+  })
+
+  // @fr FR-179
+  test('switches have a 44px touch target at every font size', async ({ page }) => {
+    // M7 (app-review 2026-09-13): 스위치가 28×48px 트랙 그대로라 44px 미달이었다.
+    // 트랙은 안쪽 span 으로, role="switch" 버튼은 고정 px 하한으로 — rem 이면 작은
+    // 글씨(xs, 14px root)에서 다시 44px 아래로 내려간다.
+    for (const size of ['xs', 'md', 'x5l']) {
+      await page.goto(SETTINGS_URL)
+      await page.evaluate((s) => localStorage.setItem('loth-settings', JSON.stringify({ fontSize: s })), size)
+      await page.reload()
+      const switches = page.getByRole('switch')
+      await expect(switches).toHaveCount(2)
+      for (let i = 0; i < 2; i++) {
+        const box = await switches.nth(i).boundingBox()
+        expect(box!.height, `${size} #${i} height`).toBeGreaterThanOrEqual(44)
+        expect(box!.width, `${size} #${i} width`).toBeGreaterThanOrEqual(44)
+      }
+    }
   })
 
   test('font preview box is visible and replaces old Ave Maria text (FR-030)', async ({ page }) => {

@@ -16,7 +16,7 @@
   --color-liturgical-rose-dark: #f9a8d4;
 
   /* Brass gold accent (악센트: 제목·구분·포커스·today/축일) */
-  --color-liturgical-gold: #9a7b2e;
+  --color-liturgical-gold: #7e6526; /* FR-179: #9a7b2e(3.8:1) → 캔버스 5.3 · 카드 5.5 · 컨테이너 4.5 */
   --color-liturgical-gold-dark: #c9a961;
   --color-liturgical-gold-container: #f1e7cf; /* primary-container (악센트 연한 배경) */
 
@@ -29,8 +29,8 @@
   --color-stone-100: #f5f0e8; /* 보조 표면 / hover BG */
   --color-stone-200: #e6dfd8; /* border · divider · 역상 텍스트(어두운 표면 위) */
   --color-stone-300: #ddd4c4; /* 강한 divider / 옅은 역상 텍스트 */
-  --color-stone-400: #8e8b82; /* faint 텍스트 / 아이콘 */
-  --color-stone-500: #6c6a64; /* 보조 텍스트 */
+  --color-stone-400: #8f8c84; /* 아이콘 · 다크 모드 보조 텍스트(#2a2520 위 4.5:1). 라이트 모드 텍스트엔 쓰지 않는다(3.2:1) — FR-179 */
+  --color-stone-500: #66645e; /* 보조 텍스트 (골드 컨테이너 #f1e7cf 위에서도 4.8:1) — FR-179 */
   --color-stone-600: #57554f; /* 강한 보조 텍스트 */
   --color-stone-700: #3d3d3a; /* 어두운 표면 / 강조 텍스트 */
   --color-stone-800: #2a2520; /* 본문 텍스트 */

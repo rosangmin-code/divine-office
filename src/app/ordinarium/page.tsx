@@ -49,7 +49,7 @@ const sections = ordinariumData.sections as Section[]
 function PageNum({ page }: { page?: number }) {
   if (!page) return null
   return (
-    <span className="ml-2 text-xs text-stone-400 dark:text-stone-500">
+    <span className="ml-2 text-xs text-stone-500 dark:text-stone-400">
       х.{page}
     </span>
   )
@@ -108,7 +108,7 @@ function BlockRenderer({ block }: { block: Block }) {
       return (
         <p
           data-block="rubric"
-          className="font-reading text-sm leading-relaxed text-red-700/80 dark:text-red-400/80"
+          className="font-reading text-sm leading-relaxed text-red-700 dark:text-red-400"
         >
           {block.text}
         </p>
@@ -151,7 +151,7 @@ function BlockRenderer({ block }: { block: Block }) {
     case 'antiphon-group':
       return (
         <div className="mt-3">
-          <p className="font-reading text-sm font-semibold text-red-700/80 dark:text-red-400/80">
+          <p className="font-reading text-sm font-semibold text-red-700 dark:text-red-400">
             {block.season}
             <PageNum page={block.page} />
           </p>

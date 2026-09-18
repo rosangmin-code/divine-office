@@ -7,8 +7,8 @@ description: >
   경건하고 차분한 독서 경험 + 어르신 가독성 우선.
 colors:
   # --- 단일 악센트 (황동골드) ---
-  primary: "#9a7b2e"
-  primary-hover: "#866a26"
+  primary: "#7e6526"        # FR-179: #9a7b2e 는 캔버스 위 3.8:1 로 자체 AA 규칙 미달 → 캔버스 5.3 · surface 5.5 · primary-container 4.5
+  primary-hover: "#6e5820"  # primary 보다 한 단 어둡게
   primary-container: "#f1e7cf"
   on-primary: "#fffaf0"
   on-primary-container: "#4a3a10"
@@ -20,8 +20,8 @@ colors:
   # --- 본문/잉크 ---
   on-surface: "#2a2520"
   on-surface-strong: "#141413"
-  on-surface-variant: "#6c6a64"
-  on-surface-faint: "#8e8b82"
+  on-surface-variant: "#66645e"  # FR-179: primary-container 위에서도 4.8:1 (이전 #6c6a64 = 4.4)
+  on-surface-faint: "#8f8c84"    # 아이콘·다크 모드 보조 텍스트 전용. 라이트 모드 텍스트에 쓰지 않는다(3.2:1) — 텍스트는 on-surface-variant
   # --- 전례 절기색 (의미 전용, 시즌 구동) ---
   season-green: "#2d6a4f"
   season-violet: "#7b2d8b"

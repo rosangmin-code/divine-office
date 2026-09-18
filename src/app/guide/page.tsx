@@ -38,7 +38,7 @@ const footnotes = gilhData.footnotes as Footnote[]
 function PageNum({ page }: { page?: number }) {
   if (!page) return null
   return (
-    <span className="ml-2 text-xs text-stone-400 dark:text-stone-500">
+    <span className="ml-2 text-xs text-stone-500 dark:text-stone-400">
       х.{page}
     </span>
   )
@@ -49,7 +49,7 @@ function FootnoteRef({ number }: { number: string }) {
     <a
       href={`#fn-${number}`}
       id={`fnref-${number}`}
-      className="text-xs text-red-600/70 dark:text-red-400/70 hover:underline align-super"
+      className="text-xs text-red-700 dark:text-red-400 hover:underline align-super"
     >
       [{number}]
     </a>
@@ -99,7 +99,7 @@ function TableOfContents() {
                       className="flex items-baseline gap-1 text-stone-600 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-200"
                     >
                       <span>
-                        {sub.number && <span className="text-red-600/70 dark:text-red-400/70">§{sub.number} </span>}
+                        {sub.number && <span className="text-red-700 dark:text-red-400">§{sub.number} </span>}
                         {sub.title}
                       </span>
                       <span className="flex-1 border-b border-dotted border-stone-200 dark:border-stone-700 mx-1" />
@@ -165,7 +165,7 @@ function SubsectionContent({ sub, isRubric }: { sub: Subsection; isRubric: boole
     <section id={sub.id} className="scroll-mt-8 mt-6">
       <h3 className="text-base font-semibold text-stone-800 dark:text-stone-200 mb-3 flex items-baseline">
         {sub.number && (
-          <span className="text-red-600/70 dark:text-red-400/70 mr-2">§{sub.number}</span>
+          <span className="text-red-700 dark:text-red-400 mr-2">§{sub.number}</span>
         )}
         {sub.title}
         <PageNum page={sub.page} />
@@ -231,7 +231,7 @@ function FootnotesSection() {
           >
             <a
               href={`#fnref-${fn.number}`}
-              className="font-semibold text-red-600/70 dark:text-red-400/70 hover:underline mr-1"
+              className="font-semibold text-red-700 dark:text-red-400 hover:underline mr-1"
             >
               [{fn.number}]
             </a>
