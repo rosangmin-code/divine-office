@@ -1,5 +1,7 @@
 # Two-column-interleave truncation sweep — processing plan
 
+> **2026-09-18** — `shard-{A,B,C,D}-results.jsonl` 은 이 날부터 git 추적 해제(로컬/아카이브 보관, `.gitignore`). 재현은 shard 스크립트(`scan-shard-c.py` 등) 재실행.
+
 - Work item: `[#106-sub-2]` / 108
 - Input census: `docs/research/51-truncation-sweep/targets.md` at `a83720c`
 - Sweep denominator: `N = 17,743`

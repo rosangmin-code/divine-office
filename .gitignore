@@ -77,3 +77,9 @@ Screenshot_*.jpg
 __pycache__/
 .goal106-pages.pkl
 docs/research/goal106-followup/pages.pkl
+
+# GOAL 106 절단 스윕 결과 jsonl (shard A–D, 27MB) — 2026-09-18 부터 git 추적 해제.
+# 결론은 신뢰 불가로 기록된 산출물(docs/research/GOAL106*)이라 로컬/아카이브에만
+# 보관하고, 재현은 docs/research/51-truncation-sweep/scan-shard-c.py 등 shard
+# 스크립트 재실행으로. CI·src·verify-all 은 이 파일들을 읽지 않는다.
+docs/research/51-truncation-sweep/shard-*-results.jsonl
