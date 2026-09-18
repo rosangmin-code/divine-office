@@ -17,10 +17,10 @@ precision correction:
   occurrence while one or more week occurrences override `psalmPrayerPage` and/or
   `psalmPrayer`. This is the old F-X2 multi-occurrence class. If Psalm 92:2-9
   pilot #219 is excluded, the historical "remaining batch" count is 11
-  (`docs/handoff-fx2-psalmprayer-audit.md:103`,
-  `docs/handoff-fx2-psalmprayer-audit.md:107`,
-  `docs/handoff-fx2-psalmprayer-audit.md:118`,
-  `docs/handoff-fx2-psalmprayer-audit.md:345`).
+  (`docs/archive/handoff-fx2-psalmprayer-audit.md:103`,
+  `docs/archive/handoff-fx2-psalmprayer-audit.md:107`,
+  `docs/archive/handoff-fx2-psalmprayer-audit.md:118`,
+  `docs/archive/handoff-fx2-psalmprayer-audit.md:345`).
 - Two refs, `Psalm 141:1-9` and `Psalm 142:1-7`, are **not stale rich** because
   they have no `psalmPrayerRich` field. They are first-vespers/catalog-completion
   backlog and currently render through plain fallback where used

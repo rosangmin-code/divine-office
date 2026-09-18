@@ -5,7 +5,7 @@ import type { HourSection, PrayerText } from '../types'
 // @fr FR-easter-1 (task #203) — dynamic reproduction of the user-reported
 // 부활시기 회귀 ("부활시기인데 시편후렴/독서/응송/Marian/intercession/concluding 이
 // 연중시기로 폴백"). Static analysis (task #202 audit, see
-// `docs/handoff-fr-easter-regression.md`) found the resolver chain
+// `docs/archive/handoff-fr-easter-regression.md`) found the resolver chain
 // (propers-loader.ts wk1 fallback + rich-overlay.ts 3-tier + loth-service.ts
 // 5-layer merge) intact, so the user's symptom must surface dynamically or
 // not at all. This file pins down each anchor's actual output.
@@ -186,7 +186,7 @@ describe('FR-easter-1 (task #203) — dynamic Easter wk1 fallback reproduction',
 
 // Priority D — easter w1-*.rich.json field coverage table reference.
 // (Generated 2026-04-29 from `seasonal/easter/w1-*.rich.json`; documented in
-// `docs/handoff-fr-easter-regression.md` §6 Priority D after this anchor.)
+// `docs/archive/handoff-fr-easter-regression.md` §6 Priority D after this anchor.)
 //
 // Weekday rich files (MON-FRI lauds+vespers, SAT lauds — 11 files) carry:
 //   concludingPrayerRich, intercessionsRich, responsoryRich, shortReadingRich

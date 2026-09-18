@@ -10,7 +10,7 @@
 // psalm — see src/data/loth/psalter/week-1.json:98) on a Pixel 7-ish
 // mobile viewport, then asserts the structural markers. Visual wrap
 // quality is left to the screenshot evidence committed in
-// docs/fr-161-r7-pilot-psalm110-evidence.md.
+// docs/archive/fr-161-r7-pilot-psalm110-evidence.md.
 
 import { test, expect, devices } from '@playwright/test'
 

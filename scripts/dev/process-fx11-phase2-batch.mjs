@@ -302,7 +302,7 @@ function classifyResult(result, ref) {
  * window) was treated as a permanent FAIL even when one more page
  * forward would have closed the gap. This was the root cause of the
  * Psalm 118:1-16 b3 isolated-vs-batch verdict mismatch documented in
- * `docs/audit-drift-final-2026-05-10.md` §3 CAT-T5 (#479 audit).
+ * `docs/archive/audit-drift-final-2026-05-10.md` §3 CAT-T5 (#479 audit).
  *
  * Post-#481 the loop ALSO continues on `DRIFT_LINE_COUNT` when
  * `extractorLineCount < richLineCount` (under-gather). When

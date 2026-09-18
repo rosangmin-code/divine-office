@@ -122,7 +122,7 @@ That direct invitatory source has Psalm 24:6 as one line:
 
 There is also an older/alternate ordinarium copy that keeps `Иаковын Тэнгэрбурхан, Таны царайг...` together on one line (`src/data/loth/ordinarium.json:196`, `src/data/loth/ordinarium.json:204`, `src/data/loth/ordinarium.json:205`). This confirms the bad split is not intrinsic to the Mongolian text; it is specific to the psalter-text extraction path.
 
-The project already documents this dual storage: `docs/prayer-inventory.md:14` says Psalm 24 exists in both `psalter-texts.json` and `ordinarium/invitatory.json`, and `docs/prayer-inventory.md:26` describes `ordinarium/invitatory.json` as directly containing four invitatory psalm candidates.
+The project already documents this dual storage: `docs/archive/prayer-inventory.md:14` says Psalm 24 exists in both `psalter-texts.json` and `ordinarium/invitatory.json`, and `docs/archive/prayer-inventory.md:26` describes `ordinarium/invitatory.json` as directly containing four invitatory psalm candidates.
 
 ## D3: Recommended Fix
 

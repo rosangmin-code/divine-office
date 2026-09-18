@@ -1,6 +1,6 @@
 # Mental Model — 대축일 시편 출처 (GILH §225–229) + 출처 부재 시 평일 폴백 정책
 
-GOAL #105 블루프린트. SoT 상세: `docs/handoff-2026-06-08-solemnity-firstvespers-laudate.md` (GILH §225–229 1차 추출) + 감사 `~/.claude/pair-cowork/scratch/dvo/goal105-mm-feasibility.md` (전 대축일 13개 시간경별 현재 vs GILH, file:line).
+GOAL #105 블루프린트. SoT 상세: `docs/archive/handoff-2026-06-08-solemnity-firstvespers-laudate.md` (GILH §225–229 1차 추출) + 감사 `~/.claude/pair-cowork/scratch/dvo/goal105-mm-feasibility.md` (전 대축일 13개 시간경별 현재 vs GILH, file:line).
 
 ## 의도된 동작 (GILH 시간경별 — 시간전례 총지침 §225–229)
 

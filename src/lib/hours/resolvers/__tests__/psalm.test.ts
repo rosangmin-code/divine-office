@@ -415,7 +415,7 @@ describe('resolvePsalm — F-X2 Phase 2 multi-occurrence overrides', () => {
 // resolver suppresses `psalmPrayerRich` so the renderer falls back to the
 // plain-text path — preventing rendering of the catalog rich AST (which
 // encodes the W1-default text) alongside the override body. See
-// docs/handoff-fx2-phase3-audit-2026-05-08.md §1-3 for verbatim PDF
+// docs/archive/handoff-fx2-phase3-audit-2026-05-08.md §1-3 for verbatim PDF
 // sources and consensus log.
 describe('resolvePsalm — F-X2 Phase 3 psalmPrayer text override (Option A + R-1)', () => {
   // Verbatim PDF strings (parsed_data/full_pdf.txt). Exact byte-equality

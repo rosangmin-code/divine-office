@@ -100,7 +100,7 @@ hymn 21 에 적용한 결과:
 
 → `phrases[0]=[0,0]`, `phrases[1]=[1,1]` 로 분리되어 "Их Эзэнийг" 가 고립. 나머지 wrap 연속(мэт, сарниулаад, илэрхийлж, цуурайтна, горхи ч, магтагтун, учраас, бялхсан, болсон тул, байгаач)은 전부 **소문자**라 Pass 2 가 정상 병합. **유일하게 대문자(비소문자)로 시작한 wrap 연속행 "Их Эзэн(ийг)"(전능하신 주님 — 신적 칭호라 대문자) 만 Pass 2 의 소문자 게이트를 못 통과해 고립.**
 
-빌더 주석(L406-410)도 한계를 일부 인지한다(스탠자 첫 행이 소문자로 시작하는 cross-stanza wrap 의 prior-phrase 부재 edge case, `docs/handoff-fx8-magtuu-wrap-rule.md`). 그러나 **"대문자 고유명사/신적 칭호가 wrap 연속행 머리에 올 수 있다"** 는 정반대 케이스는 고려되지 않았다.
+빌더 주석(L406-410)도 한계를 일부 인지한다(스탠자 첫 행이 소문자로 시작하는 cross-stanza wrap 의 prior-phrase 부재 edge case, `docs/archive/handoff-fx8-magtuu-wrap-rule.md`). 그러나 **"대문자 고유명사/신적 칭호가 wrap 연속행 머리에 올 수 있다"** 는 정반대 케이스는 고려되지 않았다.
 
 ### provenance
 hymn phrase 주입은 `#279/#291 (F-X3 Phase B sweep-hymn-w1)` 에서 `build-hymn-phrases-into-rich.mjs` 의 split/merge 2-pass 로 전 hymn 코퍼스에 적용됨. (psalter 의 `f323f6f #499` capital-start sweep 은 별개 builder·별개 데이터 — X.897 과 무관.)

@@ -19,7 +19,7 @@
  * source). If those 4 entries regress on a future regenerate, re-apply
  * the repair script — don't re-run this extractor as a full overwrite.
  *
- * Affected refs (see docs/task-40-psalter-texts-reconciliation.md):
+ * Affected refs (see docs/archive/task-40-psalter-texts-reconciliation.md):
  *   Psalm 116:1-9  (prayer was swallowed by Psalm 121)
  *   Psalm 121:1-8  (body picked up Psalm 116 tail)
  *   Psalm 97:1-12  (stanza order shuffled by column split)

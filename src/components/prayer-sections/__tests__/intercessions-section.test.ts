@@ -2,7 +2,7 @@
  * Unit + integration tests for F-X12 Phase A (#374) — legacy
  * intercessions-section refrain italic heuristic.
  *
- * Audit doc: `docs/handoff-fx10-fx11-fx12-audit-2026-05-08.md` §3.5
+ * Audit doc: `docs/archive/handoff-fx10-fx11-fx12-audit-2026-05-08.md` §3.5
  *
  * Two-axis coverage:
  *  1. Regex unit tests (`LEGACY_INTERCESSION_REFRAIN_LEAD_RE`) —

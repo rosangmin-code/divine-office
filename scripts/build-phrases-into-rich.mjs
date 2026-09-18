@@ -1041,7 +1041,7 @@ function countMatchingPrefix(stream, start, richTexts) {
  * pushed to the curator queue regardless of whether `injectPhrasesIntoRichData`
  * actually used the column (line-count match drove the inject decision).
  *
- * The audit (#446 docs/audit-curator-queue-2026-05-09.md) found 70-80% of
+ * The audit (#446 docs/archive/audit-curator-queue-2026-05-09.md) found 70-80% of
  * the 206-entry queue is SCAN BYPRODUCTS — page titles ("Дуулал N"), book
  * sections ("Магтаал…"), the doxology ("Эцэг, Хүү, Ариун Сүнсэнд…"),
  * day/season/page headers ("Бямба…", "3 ДУГААР ДОЛОО ХОНОГ", Roman

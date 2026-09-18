@@ -2016,7 +2016,7 @@ describe('planRefUpdates phrase.indent propagation (F-X11 Phase 2-D #463)', () =
 // F-X11 Phase 2-F (#477) — skip-if-explicit guard for the propagation
 // rule above. Phase 2-D (#463) introduced the rule to fix Pattern A
 // (phrase.indent=0 + uniform line.indent=1 → propagate). Audit #475
-// (docs/audit-indent-mismatch-2026-05-10.md) showed that the rule also
+// (docs/archive/audit-indent-mismatch-2026-05-10.md) showed that the rule also
 // silently flattens intentional non-zero phrase.indent values that
 // disagree with the uniform line.indent — Pattern B (Roman 'I'/'II'
 // centered section markers at line.indent=0 + phrase.indent=2) and

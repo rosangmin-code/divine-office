@@ -3,7 +3,7 @@
  * F-X2 Phase 2 page-verification script (read-only audit helper).
  *
  * For each of the 11 keys × 15 occurrences flagged by the deeper audit
- * (`docs/handoff-fx2-psalmprayer-audit.md` §3.1), locate the corresponding
+ * (`docs/archive/handoff-fx2-psalmprayer-audit.md` §3.1), locate the corresponding
  * `Дууллыг төгсгөх залбирал` (psalm prayer) instance in `parsed_data/full_pdf.txt`
  * and print the printed page number it sits on. The audit-estimated pages
  * (occurrence_psalm_page + 1 or +2) are compared to the actual PDF pages so we

@@ -1,7 +1,7 @@
 # Mental Model - Solemnity First Vespers Laudate Correction (GOAL #115)
 
 > Blueprint SSOT for `[#115-sub-1]` Step 1. Primary source handoff:
-> `docs/handoff-2026-06-08-solemnity-firstvespers-laudate.md`. Related
+> `docs/archive/handoff-2026-06-08-solemnity-firstvespers-laudate.md`. Related
 > broader policy: `docs/design/mental-models/solemnity-psalmody-gilh.md`.
 > This MM is written in English; source Mongolian text is cited only where the
 > exact data string or rubric identifier matters.
@@ -139,7 +139,7 @@ Out of scope:
 
 ## Sync Surface
 
-- `docs/handoff-2026-06-08-solemnity-firstvespers-laudate.md` remains the
+- `docs/archive/handoff-2026-06-08-solemnity-firstvespers-laudate.md` remains the
   detailed evidence handoff for GILH sections 225-229, local excerpt behavior,
   and the internal history of the invalid Week 1 copy.
 - `docs/design/mental-models/solemnity-psalmody-gilh.md` is the broader
@@ -166,7 +166,7 @@ Out of scope:
 ## Citation Index
 
 - GILH/source handoff:
-  `docs/handoff-2026-06-08-solemnity-firstvespers-laudate.md`.
+  `docs/archive/handoff-2026-06-08-solemnity-firstvespers-laudate.md`.
 - Broader GILH policy:
   `docs/design/mental-models/solemnity-psalmody-gilh.md`.
 - Current Trinity policy-bearing data:

@@ -207,7 +207,7 @@ export type PrayerBlock =
        * (regression-safe additive — this is how every pre-#408 stanza
        * looks today).
        *
-       * See `docs/handoff-fx11-paragraph-break-audit-2026-05-08.md` §4
+       * See `docs/archive/handoff-fx11-paragraph-break-audit-2026-05-08.md` §4
        * Option B for the design rationale.
        */
       paragraphBoundaries?: number[]
@@ -284,7 +284,7 @@ export interface PsalmEntry {
   // the W1-default prayer text, so emitting it alongside an override would
   // render mismatched UX. The 3 occurrences therefore fall back to the
   // plain-text rendering path (already exercised by FR-153h). See
-  // docs/handoff-fx2-phase3-audit-2026-05-08.md §1-3 for verbatim PDF
+  // docs/archive/handoff-fx2-phase3-audit-2026-05-08.md §1-3 for verbatim PDF
   // sources and peer-locked R-1 consensus.
   psalmPrayer?: string           // Override for catalog psalmPrayer text (occurrence-specific)
   // PDF 의 각 시편 엔트리는 default 후렴 아래 rubric 행으로 시즌/날짜/주차별
