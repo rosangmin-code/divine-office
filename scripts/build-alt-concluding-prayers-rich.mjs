@@ -18,6 +18,15 @@
  *
  * 실행:
  *   node scripts/build-alt-concluding-prayers-rich.mjs
+ *   node scripts/build-alt-concluding-prayers-rich.mjs --only-hour=vespers2
+ *
+ * FR-182: `vespers2` (Sunday / Solemnity Evening Prayer II, FR-171) is in
+ * HOURS — the six `w{key}-SUN-vespers2.rich.json` overlays previously
+ * carried only `shortReadingRich` because this list predated the cell.
+ * Only fully printed EP II cells (those with their own `intercessions`)
+ * are authored — see the guard in the loop. `--only-hour=<hour>` restricts a
+ * run to one hour so the other overlays (some hand-curated after generation)
+ * are not rewritten.
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
@@ -87,7 +96,10 @@ const PDF_CORRECTIONS_BY_PAGE = {
   620: [{ from: ', Амин', to: ', амин' }],
 }
 
-const HOURS = ['lauds', 'vespers', 'compline']
+const ONLY_HOUR = process.argv.find((a) => a.startsWith('--only-hour='))?.slice('--only-hour='.length)
+const HOURS = ['lauds', 'vespers', 'vespers2', 'compline'].filter(
+  (h) => !ONLY_HOUR || h === ONLY_HOUR,
+)
 
 async function main() {
   if (!existsSync(PDF_PATH)) {
@@ -115,6 +127,15 @@ async function main() {
         for (const hour of HOURS) {
           const entry = day[hour]
           if (!entry || typeof entry !== 'object') continue
+          // FR-182: a `vespers2` cell that prints only antiphon + prayer (every
+          // Ordinary-Time Sunday, Holy Family, Epiphany, Baptism, Ascension,
+          // Trinity) is composed over the EP I cell at runtime (FR-171) and its
+          // rich comes from the `-vespers` file through `seasonalFallback`.
+          // Authoring a partial `-vespers2` file for it would shadow that and
+          // drop the alternate prayer's rich (parity group rule). Only fully
+          // printed Second Vespers cells — the ones with their own intercessions
+          // — get a `-vespers2` overlay.
+          if (hour === 'vespers2' && !Array.isArray(entry.intercessions)) continue
           const prayer = entry.alternativeConcludingPrayer
           const page = entry.alternativeConcludingPrayerPage
           const id = `${def.season}/w${weekKey}/${dayKey}/${hour}`
