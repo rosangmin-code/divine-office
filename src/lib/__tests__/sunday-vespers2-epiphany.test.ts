@@ -65,9 +65,12 @@ describe('FR-172 resolveSpecialKey — romcalKey first, exact-name fallback', ()
 
   // @fr FR-172
   it('does NOT swallow the post-Epiphany weekdays (they are a different formulary)', () => {
+    // Name alone (no date): nothing to resolve — must not become 'epiphany'.
     expect(resolveSpecialKey('CHRISTMAS', 'Monday after Epiphany')).toBeNull()
-    expect(resolveSpecialKey('CHRISTMAS', 'Saturday after Epiphany', '2026-01-10')).toBeNull()
-    expect(resolveSpecialKey('CHRISTMAS', 'Saturday after Epiphany', '2026-01-10', 'saturdayAfterEpiphany')).toBeNull()
+    // With a date the weekday resolves to ITS OWN formulary (FR-181,
+    // `weeks.epiphanyWeek`, p.611) — still never to 'epiphany'.
+    expect(resolveSpecialKey('CHRISTMAS', 'Saturday after Epiphany', '2026-01-10')).toBe('epiphanyWeek')
+    expect(resolveSpecialKey('CHRISTMAS', 'Saturday after Epiphany', '2026-01-10', 'saturdayAfterEpiphany')).toBe('epiphanyWeek')
   })
 
   // @fr FR-172

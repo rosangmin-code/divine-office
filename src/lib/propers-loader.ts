@@ -62,7 +62,8 @@ function loadSeasonPropers(season: LiturgicalSeason): Record<string, Record<stri
  *   ORDINARY_TIME  → trinitySunday · corpusChristi ·
  *                    sacredHeart · christTheKing            (name-matched)
  *   CHRISTMAS      → dec25 (12-25)        · jan1 (01-01)   (date-matched)
- *                  · octave (12-26..31)                     (date-matched)
+ *                  · octave (12-26..31 and 01-02..Epiphany eve)
+ *                  · epiphanyWeek (Epiphany+1..Baptism eve)  (date-matched, FR-181)
  *                  · holyFamily · baptism · epiphany        (name-matched)
  *
  * Name matching is permissive (`lower.includes(fragment)`) so romcal
@@ -108,7 +109,15 @@ function loadSeasonPropers(season: LiturgicalSeason): Record<string, Record<stri
  * the key was threaded through). The name fallback gained an EXACT
  * `'epiphany'` match — a substring match would also swallow "Monday after
  * Epiphany" / "Saturday after Epiphany", which are epiphanyWeek weekdays
- * and must keep returning null.
+ * and must resolve through the date branch below, not to `'epiphany'`.
+ *
+ * FR-181: the January weekdays of the Christmas season are date-matched
+ * against the two movable Sundays (`christmasMovableDates`): Jan 2 up to
+ * the Epiphany eve → `'octave'` (the book's «Эзэний мэндэлтийн дараах
+ * долоо хоногууд» formulary, p.601, which also serves Dec 26–31), and the
+ * day after the Epiphany up to the Baptism eve → `'epiphanyWeek'` (p.611).
+ * Before FR-181 both stretches fell through to `null` and rendered the
+ * bare psalter with no seasonal reading, antiphon or prayer.
  */
 export function resolveSpecialKey(
   season: LiturgicalSeason,
@@ -152,7 +161,7 @@ export function resolveSpecialKey(
       if (lower.includes('baptism of the lord') || lower.includes('baptism')) return 'baptism'
       // EXACT match for the bare name — `includes('epiphany')` would also
       // match "Monday after Epiphany" / "Saturday after Epiphany", which
-      // belong to the (still unimplemented) epiphanyWeek date range.
+      // belong to the epiphanyWeek date range resolved below (FR-181).
       if (
         lower === 'epiphany' ||
         lower.includes('epiphany of the lord') ||
@@ -172,13 +181,51 @@ export function resolveSpecialKey(
       // Christmas octave weekdays (Dec 26-31) — this catalog covers any
       // celebration that lands inside the Octave outside dec25 itself.
       if (month === 12 && dayOfMonth >= 26 && dayOfMonth <= 31) return 'octave'
+      // FR-181 — the two Christmas weekday formularies the book prints:
+      //   p.601 «Эзэний мэндэлтийн дараах долоо хоногууд» (weeks after the
+      //         Nativity — plural) → key 'octave': Dec 26–31 AND Jan 2 … the
+      //         day before the Epiphany. The book prints no other formulary
+      //         for Jan 2–5, and the plural title covers both stretches.
+      //   p.611 «Эзэний илрэхүйн дараах долоо хоног» (the week after the
+      //         Epiphany) → key 'epiphanyWeek': the day after the Epiphany …
+      //         the day before the Baptism of the Lord.
+      // The Epiphany itself / the Baptism are Sundays (or the Baptism a
+      // Monday when the Epiphany is Jan 7/8) and were already resolved
+      // above by romcalKey / name; a caller holding neither still gets
+      // null on those two dates because the comparisons are strict.
+      if (month === 1 && dayOfMonth >= 2) {
+        const { epiphany, baptism } = christmasMovableDates(d.getUTCFullYear())
+        if (dateStr < epiphany) return 'octave'
+        if (dateStr > epiphany && dateStr < baptism) return 'epiphanyWeek'
+      }
     }
-    // epiphanyWeek (weekdays Jan 7..Baptism eve) requires explicit
-    // date-range tracking that depends on the Baptism date. Left as a
-    // follow-up — the wepiphanyWeek-SUN-* rich files remain unloaded.
     return null
   }
   return null
+}
+
+/**
+ * FR-181 — the two movable Sundays that bound the January weekdays of the
+ * Christmas season, computed the way romcal's default (Sunday-Epiphany)
+ * configuration places them:
+ *   - Epiphany = the Sunday between Jan 2 and Jan 8 (the book's own rule,
+ *     p.609: «1 дүгээр сарын 6 эсвэл 1 дүгээр сарын 2-оос 8-ны хоорондох
+ *     Ням гараг»),
+ *   - Baptism of the Lord = the following Sunday — or the very next day
+ *     (a Monday) when the Epiphany lands on Jan 7 or 8, so that the season
+ *     never runs past its span.
+ * Returns `YYYY-MM-DD` strings. `christmas-weekday-propers.test.ts` locks
+ * this against `getCalendarForYear` (romcal) for 2025–2040 so the two
+ * rules cannot drift apart silently.
+ */
+export function christmasMovableDates(year: number): { epiphany: string; baptism: string } {
+  const jan2 = new Date(Date.UTC(year, 0, 2))
+  const epiphanyDate = new Date(jan2)
+  epiphanyDate.setUTCDate(jan2.getUTCDate() + ((7 - jan2.getUTCDay()) % 7))
+  const baptismDate = new Date(epiphanyDate)
+  baptismDate.setUTCDate(epiphanyDate.getUTCDate() + (epiphanyDate.getUTCDate() >= 7 ? 1 : 7))
+  const fmt = (dt: Date): string => dt.toISOString().slice(0, 10)
+  return { epiphany: fmt(epiphanyDate), baptism: fmt(baptismDate) }
 }
 
 export function getSeasonHourPropers(

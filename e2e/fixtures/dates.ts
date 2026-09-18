@@ -89,6 +89,29 @@ export const DATES = {
   christmasDay2026: '2026-12-25',
   maryMotherOfGod2026: '2026-01-01',    // Solemnity of Mary, Mother of God (Thursday)
 
+  // FR-181 — the two Christmas weekday formularies the book prints, reached
+  // by date range (`resolveSpecialKey`): p.601 «Эзэний мэндэлтийн дараах
+  // долоо хоногууд» (key `octave`: Dec 26–31 AND Jan 2 … the day before the
+  // Epiphany) and p.611 «Эзэний илрэхүйн дараах долоо хоног» (key
+  // `epiphanyWeek`: the day after the Epiphany … the day before the
+  // Baptism). The Epiphany is the Sunday in Jan 2–8; the Baptism is the
+  // following Sunday, or the Monday when the Epiphany is Jan 7/8.
+  // 2026: Epiphany SUN 01-04, Baptism SUN 01-11.
+  christmasWeekdayFri2026: '2026-01-02',   // Fri — memorial of Sts Basil & Gregory, base = octave
+  christmasWeekdaySat2026: '2026-01-03',   // Sat — opt. memorial Holy Name; evening = Epiphany EP I
+  epiphany2026: '2026-01-04',              // Sun
+  epiphanyWeekMon2026: '2026-01-05',       // Mon after Epiphany
+  epiphanyWeekWed2026: '2026-01-07',       // Wed — opt. memorial St Raymond, base = epiphanyWeek
+  epiphanyWeekSat2026: '2026-01-10',       // Sat after Epiphany; evening = Baptism EP I
+  baptismOfTheLord2026: '2026-01-11',      // Sun
+  // 2029: Epiphany SUN 01-07 → Baptism MON 01-08, so no epiphanyWeek days.
+  christmasWeekdayWed2029: '2029-01-03',
+  saturdayBeforeEpiphany2029: '2029-01-06',
+  baptismOfTheLordMon2029: '2029-01-08',
+  // 2030: Epiphany SUN 01-06, Baptism SUN 01-13.
+  epiphanyWeekMon2030: '2030-01-07',
+  epiphanyWeekSat2030: '2030-01-12',
+
   // FR-156 task #30 / FR-180 — FEAST rank First Vespers eves.
   // The resolver accepts rank === 'FEAST', but the book restricts three of
   // the four feast entries that author a 1st Vespers to the years when the

@@ -57,7 +57,9 @@
 | ~~낮~~ ✅ | ~~색 대비 H4~~ | 2026-09-18 FR-179. 13 URL × 2 테마 미달 0 |
 | ~~낮~~ ✅ | ~~스위치 터치 타겟~~ | 2026-09-18 FR-179. hit 64×44, 트랙 48×28 유지 |
 | 낮 | 대림·사순·부활 EP II 청원 rich | `w{1,6}-SUN-vespers2.rich.json` 에 shortReading 만 저작 (평문은 정상) |
-| 낮 | `epiphanyWeek` 도달 불가 | 날짜 범위 매칭 미구현 |
+| ~~낮~~ ✅ | ~~`epiphanyWeek` 도달 불가~~ | 2026-09-18 FR-181. `resolveSpecialKey` 1월 산술(공현 = 1/2 이후 첫 주일, 세례 = +7 또는 월요일). 조사 중 **1/2~공현 전날도 시편집**으로 나가던 것이 드러나 p.601 «…долоо хоногууд»(복수) formulary 를 그 구간에도 적용 — 판단이므로 veto 가능(리포트 §6 (a)) |
+| 낮 | 세례가 월요일인 해(2029·2034·2035) | 세례 lauds 짧은독서가 세례 셀이 아닌 시편집 월요일, `/firstVespers` 404(FR-173 `SUN` 게이트). 기존 사안, FR-181 리포트 §6 (b) |
+| 낮 | `wepiphanyWeek-SUN-*.rich.json` `source.weekKey` 오기 | `"epiphany"` 로 적혀 있음(적재 무영향, 메타데이터만). FR-181 리포트 §6 (c) |
 | 낮 | 리포 위생 | 연구 shard 28MB·`scripts/out` 4MB 추적, loose 4,261개, `scripts/archive` 분류 |
 | 낮 | docs 아카이브 | 루트 98 중 68이 완료 로그, README 없음 |
 
