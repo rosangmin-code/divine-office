@@ -87,7 +87,7 @@
     "source": {
       "kind": "seasonal",
       "season": "CHRISTMAS",
-      "weekKey": "epiphany",
+      "weekKey": "epiphanyWeek",
       "dayKey": "SUN",
       "hour": "lauds"
     }
@@ -228,7 +228,7 @@
     "source": {
       "kind": "seasonal",
       "season": "CHRISTMAS",
-      "weekKey": "epiphany",
+      "weekKey": "epiphanyWeek",
       "dayKey": "SUN",
       "hour": "lauds"
     }
@@ -321,7 +321,7 @@
     "source": {
       "kind": "seasonal",
       "season": "CHRISTMAS",
-      "weekKey": "epiphany",
+      "weekKey": "epiphanyWeek",
       "dayKey": "SUN",
       "hour": "lauds"
     }
@@ -378,7 +378,7 @@
     "source": {
       "kind": "seasonal",
       "season": "CHRISTMAS",
-      "weekKey": "epiphany",
+      "weekKey": "epiphanyWeek",
       "dayKey": "SUN",
       "hour": "lauds"
     }
@@ -399,7 +399,7 @@
     "source": {
       "kind": "seasonal",
       "season": "CHRISTMAS",
-      "weekKey": "epiphany",
+      "weekKey": "epiphanyWeek",
       "dayKey": "SUN",
       "hour": "lauds"
     }

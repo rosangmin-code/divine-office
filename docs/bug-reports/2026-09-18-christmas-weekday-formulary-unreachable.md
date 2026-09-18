@@ -166,7 +166,7 @@ lauds-only dates (eve of Epiphany/Baptism, vespers promoted → unchanged): 12 a
 | 항목 | 이유 |
 |---|---|
 | **(a) 1/2–5 에 p.601 formulary 를 적용한 것은 판단** | 책 표제가 복수(«долоо хоногууд»)이고 1/2–5 용 다른 formulary 가 없어 같은 셀을 썼다. 라틴 원전은 12/29–31 과 1/2–5 를 따로 인쇄하지만 몽골어 책은 하나로 묶었다고 읽었다. 다르게 보면 `resolveSpecialKey` 의 `dateStr < epiphany → 'octave'` 한 줄만 빼면 이전처럼 시편집으로 돌아간다 |
-| **(b) 세례가 월요일인 해(2029·2034·2035)** | 세례 lauds 의 짧은독서가 세례 셀(Езекиел 37:12б-14)이 아니라 시편집 월요일(Иеремиа 15:15-16)로 나오고(후렴·본기도는 세례), `/pray/<세례>/firstVespers` 가 404(FR-173 의 `SUN` 게이트). 이번 변경 전부터 그랬고 이번 범위 밖 |
-| **(c) `wepiphanyWeek-SUN-{lauds,vespers}.rich.json` 의 `source.weekKey`** | `"epiphany"` 로 적혀 있다(파일명·본문은 epiphanyWeek 맞음). parity 는 텍스트 동일성으로 판정해 적재엔 영향 없음 — 메타데이터 오기 |
+| **(b) 세례가 월요일인 해(2029·2034·2035)** | 세례 lauds 의 짧은독서가 세례 셀(Езекиел 37:12б-14)이 아니라 시편집 월요일(Иеремиа 15:15-16)로 나오고(후렴·본기도는 세례), `/pray/<세례>/firstVespers` 가 404(FR-173 의 `SUN` 게이트). 이번 변경 전부터 그랬고 이번 범위 밖. **2026-09-18 판정: 버그 아님** — 책 p.616 은 세례 짧은독서를 인쇄하지 않고 앱은 sanctoral/특수 셀에 독서가 없으면 진행 중인 시편집 요일 독서로 fallback 한다(2026-02-02 봉헌·08-06 변모·06-29 베드로바오로·08-15 성모승천 전부 동일; 주일 세례의 Езекиел 37 도 시편집 주일 독서). `/firstVespers` 404 는 공현(I.2) EP II 가 세례(II.5) EP I 을 이기는 보편 규범대로이며 2029-01-07 저녁은 공현 EP II 로 렌더됨 — 다만 코드상 보호는 `keepsOwnEveningPrayerII` 가 아니라 FR-173 Path 2b 의 `SUN` 게이트가 담당(결과 옳음, 근거 간접). 회귀 가드: `christmas-weekday-propers.test.ts` 마지막 describe |
+| **(c) `wepiphanyWeek-SUN-{lauds,vespers}.rich.json` 의 `source.weekKey`** | `"epiphany"` 로 적혀 있다(파일명·본문은 epiphanyWeek 맞음). parity 는 텍스트 동일성으로 판정해 적재엔 영향 없음 — 메타데이터 오기. **2026-09-18 수정됨** — 두 파일 10곳 `"epiphanyWeek"` 로 교체(코드는 `source.weekKey` 를 읽지 않아 동작 무변경) |
 | **(d) 1/2 바실리오·그레고리오 기념일, 1/7 라이몬도 선택기념일** | 앱이 보유한 성인 고유부가 ~14일뿐이라 `memorials.json` 에 항목이 없고, 시즌 formulary 로만 렌더된다. 기존 systemic 공백(memory `sanctoral-ot-fallback-systemic`), 이번엔 시편집 → 성탄 시기 formulary 로 좋아진 것뿐 |
 | **octave `vespers` 셀 마침기도가 lauds 와 같은 p.603** | 책 p.605 가 "Өглөөний … адил" 로 아침기도 것을 참조하라고 하므로 데이터가 맞다. 무변경 |

@@ -16,7 +16,7 @@
 // block below locks that arithmetic against romcal for 2025–2040.
 
 import { describe, it, expect } from 'vitest'
-import { assembleHour } from '../loth-service'
+import { assembleHour, getHoursSummary, isFirstVespersEligibleDate } from '../loth-service'
 import { getCalendarForYear, getLiturgicalDay } from '../calendar'
 import { christmasMovableDates, resolveSpecialKey } from '../propers-loader'
 import christmas from '../../data/loth/propers/christmas.json'
@@ -245,5 +245,50 @@ describe('FR-181 — Ordinary Time is untouched', () => {
     expect(lauds?.liturgicalDay.season).toBe('ORDINARY_TIME')
     expect(section(lauds, 'gospelCanticle').antiphon).toMatch(/^Эзэн бидний Тэнгэрбурхан магтагдах болтугай/)
     expect(section(lauds, 'shortReading').page).toBe(81)
+  })
+})
+
+// Baptism of the Lord on a MONDAY (Epiphany on Jan 7 / Jan 8 — 2029, 2034,
+// 2035). Verdict 2026-09-18, docs/bug-reports/2026-09-18-christmas-weekday-
+// formulary-unreachable.md §6 (b): NOT a bug.
+//   (a) the book prints no short reading for the Baptism (p.616), so the
+//       app falls back to the running psalter's reading for the weekday —
+//       the same rule every fixed-date feast/solemnity on a weekday follows
+//       (2026-02-02 Presentation, 2026-08-06 Transfiguration, 2026-06-29
+//       Peter & Paul, 2026-08-15 Assumption). The Sunday occurrence's
+//       Ezekiel 37 is likewise the psalter Sunday reading, not a Baptism cell.
+//   (b) the Epiphany (Table of Liturgical Days I.2) keeps its own Evening
+//       Prayer II over the Baptism's (II.5) First Vespers, so Sunday evening
+//       is the Epiphany's and `/pray/<mon>/firstVespers` is rightly 404. In
+//       code the protection comes from Path 2b's `tomorrowDow === 'SUN'` gate
+//       (FR-173), not from `keepsOwnEveningPrayerII` — right result,
+//       indirect reason.
+describe('FR-181 — Baptism of the Lord on a Monday (Epiphany Jan 7/8) keeps the Epiphany Evening Prayer II', () => {
+  const epiphanyVespers2 = weeks.epiphany.SUN.vespers2
+
+  // @fr FR-181
+  it('2029-01-08 (Mon) is not First-Vespers eligible and its lauds still carries the Baptism antiphon + prayer', async () => {
+    expect(isFirstVespersEligibleDate('2029-01-08')).toBe(false)
+    expect(getHoursSummary('2029-01-08')?.hours.map((h) => h.type)).toEqual(['lauds', 'vespers', 'compline'])
+    const lauds = await assembleHour('2029-01-08', 'lauds')
+    expect(lauds?.liturgicalDay.romcalKey).toBe('baptismOfTheLord')
+    expect(section(lauds, 'gospelCanticle').antiphon).toMatch(/^Христ Ариун угаалыг хүртсэн/)
+    expect(section(lauds, 'concludingPrayer').page).toBe(616)
+    // (a) psalter fallback for the reading — the running week's Monday.
+    expect(section(lauds, 'shortReading').ref).toBe('Иеремиа 15:15-16')
+  })
+
+  // @fr FR-181
+  it('2029-01-07 (Epiphany, Sun) keeps its own Evening Prayer II cards and body', async () => {
+    expect(getHoursSummary('2029-01-07')?.hours.map((h) => h.type)).toEqual([
+      'firstVespers',
+      'firstCompline',
+      'lauds',
+      'vespers',
+      'compline',
+    ])
+    const vespers = await assembleHour('2029-01-07', 'vespers')
+    expect(vespers?.effectiveLiturgicalDay?.date ?? '2029-01-07').toBe('2029-01-07')
+    expect(section(vespers, 'gospelCanticle').antiphon).toBe(epiphanyVespers2.gospelCanticleAntiphon)
   })
 })

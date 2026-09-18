@@ -58,8 +58,8 @@
 | ~~낮~~ ✅ | ~~스위치 터치 타겟~~ | 2026-09-18 FR-179. hit 64×44, 트랙 48×28 유지 |
 | ~~낮~~ ✅ | ~~대림·사순·부활 EP II 청원 rich~~ | 2026-09-18 FR-182. 원인은 rich 빌더 4개(청원·응송·마침기도·선택기도)의 `HOURS` 에 `vespers2` 부재 — 짧은독서 빌더만 있었다. 6개 `-vespers2.rich.json` 에 4필드 생성(게이트 24/24). partial `vespers2` 셀(연중 주일 등)엔 파일을 만들지 않는 가드 — 만들면 `-vespers` fallback 의 선택 마침기도 rich 가 사라지는 회귀(리포트 §4) |
 | ~~낮~~ ✅ | ~~`epiphanyWeek` 도달 불가~~ | 2026-09-18 FR-181. `resolveSpecialKey` 1월 산술(공현 = 1/2 이후 첫 주일, 세례 = +7 또는 월요일). 조사 중 **1/2~공현 전날도 시편집**으로 나가던 것이 드러나 p.601 «…долоо хоногууд»(복수) formulary 를 그 구간에도 적용 — 판단이므로 veto 가능(리포트 §6 (a)) |
-| 낮 | 세례가 월요일인 해(2029·2034·2035) | 세례 lauds 짧은독서가 세례 셀이 아닌 시편집 월요일, `/firstVespers` 404(FR-173 `SUN` 게이트). 기존 사안, FR-181 리포트 §6 (b) |
-| 낮 | `wepiphanyWeek-SUN-*.rich.json` `source.weekKey` 오기 | `"epiphany"` 로 적혀 있음(적재 무영향, 메타데이터만). FR-181 리포트 §6 (c) |
+| ~~낮~~ ✅ | ~~세례가 월요일인 해(2029·2034·2035)~~ | 2026-09-18 판정: **버그 아님**. (a) 책 p.616 은 세례 짧은독서를 인쇄하지 않아 앱은 진행 중인 시편집 요일 독서로 fallback — 평일 축일·대축일 전부(봉헌·변모·베드로바오로·성모승천) 같은 규칙이고 주일 세례의 Езекиел 37 도 시편집 주일 독서. (b) 공현(순위표 I.2) 제2저녁기도가 세례(II.5) 제1저녁기도를 이기므로 `/firstVespers` 404 와 공현 EP II 유지가 옳음(코드상 보호는 `keepsOwnEveningPrayerII` 가 아니라 FR-173 Path 2b `SUN` 게이트 — 결과 옳고 근거 간접). 회귀 가드 2건 `christmas-weekday-propers.test.ts` |
+| ~~낮~~ ✅ | ~~`wepiphanyWeek-SUN-*.rich.json` `source.weekKey` 오기~~ | 2026-09-18 수정 — 두 파일 10곳 `"epiphany"` → `"epiphanyWeek"`. `source` 는 provenance 메타라 코드가 `weekKey` 를 읽지 않음(compline 만 `source.id` 확인) |
 | 낮 | 리포 위생 | 연구 shard 28MB·`scripts/out` 4MB 추적, loose 4,261개, `scripts/archive` 분류 |
 | 낮 | docs 아카이브 | 루트 98 중 68이 완료 로그, README 없음 |
 
