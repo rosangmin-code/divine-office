@@ -9,7 +9,14 @@ test.describe('Refrain denylist false-positive cleanup (FR-160-A1)', () => {
   // → red text in the UI. PDF p449-450 actual rendering is plain
   // black body text (verse-ending phrase, NOT a rubric refrain).
   // After the denylist gate, the entire Psalm 150 stanza body must
-  // contain 0 lines tagged psalm-stanza-refrain.
+  // contain 0 refrain-tagged lines.
+  //
+  // FR-183 (2026-10-14) — refrain 마킹은 렌더 경로에 따라 두 data-role 중
+  // 하나로 나온다: phrase 분기 "psalm-phrase-refrain", legacy line 분기
+  // "psalm-stanza-refrain". FR-161 phrase 확산 + FR-183 의 시편 3 ref
+  // phrase 주입으로 legacy 경로를 타는 시편은 0개가 되어, stanza-refrain
+  // 단독 selector 는 항상 0건 → 음성 단언이 거짓 통과한다. 아래 케이스들은
+  // 양쪽을 OR 매칭해 실제 가드로 되돌린다.
   test.beforeEach(async ({ page }) => {
     await page.goto(`/pray/${DATES.easterW4Sunday}/lauds`)
   })
@@ -21,8 +28,10 @@ test.describe('Refrain denylist false-positive cleanup (FR-160-A1)', () => {
     // Stanzas render (rich path) — confirm body is present.
     const stanzas = ps150.locator('[data-role="psalm-stanza"]')
     expect(await stanzas.count()).toBeGreaterThanOrEqual(1)
-    // No line within the Psalm 150 block is tagged refrain.
-    const refrains = ps150.locator('[data-role="psalm-stanza-refrain"]')
+    // No line within the Psalm 150 block is tagged refrain (both paths).
+    const refrains = ps150.locator(
+      '[data-role="psalm-stanza-refrain"], [data-role="psalm-phrase-refrain"]',
+    )
     expect(await refrains.count()).toBe(0)
   })
 
@@ -47,7 +56,9 @@ test.describe('Refrain denylist false-positive cleanup (FR-160-A1)', () => {
   // accidentally swallows non-Psalm150 refs would surface.
   test('Daniel 3 canticle refrains preserved on OT Wk1 SUN Lauds (regression guard)', async ({ page }) => {
     await page.goto(`/pray/${DATES.otWeek1Sunday}/lauds`)
-    const refrains = page.locator('[data-role="psalm-stanza-refrain"]')
+    const refrains = page.locator(
+      '[data-role="psalm-stanza-refrain"], [data-role="psalm-phrase-refrain"]',
+    )
     expect(await refrains.count()).toBeGreaterThanOrEqual(3)
   })
 
@@ -61,7 +72,9 @@ test.describe('Refrain denylist false-positive cleanup (FR-160-A1)', () => {
     await page.goto(`/pray/${DATES.psalterW1Monday}/lauds`)
     const ps29 = page.locator('[data-role="psalm-block"][data-ref="Psalm 29:1-10"]')
     await expect(ps29).toBeVisible()
-    const refrains = ps29.locator('[data-role="psalm-stanza-refrain"]')
+    const refrains = ps29.locator(
+      '[data-role="psalm-stanza-refrain"], [data-role="psalm-phrase-refrain"]',
+    )
     expect(await refrains.count()).toBe(0)
   })
 

@@ -4,7 +4,7 @@
 > and FR/NFR IDs in test titles. **Do not edit by hand.**
 > The curated matrix lives in [`docs/traceability-matrix.md`](./traceability-matrix.md).
 
-Scan: 106 test files contributed 59 unique IDs.
+Scan: 109 test files contributed 60 unique IDs.
 
 | ID | Test file | Test title(s) |
 |---|---|---|
@@ -141,6 +141,10 @@ Scan: 106 test files contributed 59 unique IDs.
 | FR-181 | `src/lib/__tests__/christmas-weekday-propers.test.ts` | (tagged, title unknown)<br>Epiphany / Baptism dates agree with getCalendarForYear for 2025–2040<br>Baptism is the Monday after an Epiphany on Jan 7 / Jan 8 (2029, 2034, 2035)<br>2026: Jan 2–3 → octave, Jan 4 → epiphany, Jan 5–10 → epiphanyWeek, Jan 11 → baptism<br>2029 (Epiphany Jan 7, Baptism Mon Jan 8): Jan 2–6 → octave and no epiphanyWeek day at all<br>2030 (Epiphany Jan 6): Jan 7–12 → epiphanyWeek<br>fixed-date keys are unchanged: Dec 25 → dec25, Dec 26–31 → octave, Jan 1 → jan1<br>a caller with neither romcalKey nor name still gets null ON the Epiphany / Baptism dates<br>2026-01-05 (Mon after Epiphany) lauds renders the epiphanyWeek formulary with its rich overlay<br>2026-01-05 vespers renders the epiphanyWeek Evening Prayer (Eph 2:3b-5, «Христ, Та бол Гэрлийн Гэрэл»)<br>2026-01-07 (optional memorial of St Raymond, no sanctoral data) keeps the epiphanyWeek base<br>2026-01-10 (Sat after Epiphany): lauds = epiphanyWeek, vespers is still the Baptism First Vespers<br>compline on the week after the Epiphany is untouched (ordinarium compline.json slot)<br>2026-01-03 (Sat) lauds renders the Christmas-weekdays formulary; vespers is still the Epiphany First Vespers<br>2026-01-02 (Fri, memorial of Sts Basil & Gregory — no sanctoral propers authored) renders the Christmas-weekdays formulary<br>2026-12-29 (Tue in the Octave) still renders the same formulary — Dec 26–31 unchanged<br>2026-01-12 (Mon, OT week 1) renders the Ordinary-Time weekday<br>2029-01-08 (Mon) is not First-Vespers eligible and its lauds still carries the Baptism antiphon + prayer<br>2029-01-07 (Epiphany, Sun) keeps its own Evening Prayer II cards and body |
 | FR-182 | `e2e/vespers2-rich-overlay.spec.ts` | data contract: the six vespers2 rich files carry all five rich fields with the cell pages<br>${c.date} ${c.label} vespers — intercessions / responsory / concluding prayer render rich, plain text unchanged<br>control: the same days’ lauds keep their (pre-existing) rich intercessions<br>control: an Ordinary-Time Sunday vespers (partial vespers2 cell, no -vespers2 rich file) keeps its psalter intercessions and the -vespers concluding-prayer rich<br>/pray/2026-11-29/vespers renders the intercessions through the rich path |
 | FR-182 | `src/lib/__tests__/vespers2-rich-overlay.test.ts` | (tagged, title unknown) |
+| FR-183 | `e2e/verse-hanging-indent.spec.ts` | ${date} 아침기도: 시편 본문의 모든 줄이 행잉 들여쓰기를 갖는다<br>행잉 들여쓰기 폭은 글씨 크기에 비례한다 (rem 기반)<br>시편과 복음찬가가 같은 들여쓰기 폭을 쓴다<br>산문(짧은독서·시편 마침기도)은 들여쓰기 없이 평평하게 흐른다 |
+| FR-183 | `src/components/__tests__/psalm-block-phrases.test.ts` | legacy line mode: line.indent 0/1/2 all render with unified  |
+| FR-183 | `src/lib/__tests__/invitatory-logical-lines.test.ts` | (tagged, title unknown) |
+| FR-183 | `src/lib/__tests__/psalter-phrase-coverage.test.ts` | (tagged, title unknown) |
 | NFR-002 | `e2e/footer-toggle.spec.ts` | no English aria-label fallback on footer controls (NFR-002) |
 | NFR-002 | `e2e/gospel-canticle-verse-division.spec.ts` | lauds Benedictus: 이전 병합 절이 별개 절로 분리 (NFR-002 문구)<br>vespers Magnificat: 이전 병합 절이 별개 절로 분리 (NFR-002 문구) |
 | NFR-002 | `e2e/homepage.spec.ts` | hour cards do not leak the English HourType enum caption (NFR-002) |

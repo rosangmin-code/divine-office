@@ -76,12 +76,18 @@ test.describe('Refrain allowlist false-negative cleanup (FR-160-A4)', () => {
   // Regression guard — denylist (Psalm 150:1-6 / 29:1-10 from FR-160-A1)
   // and authentic threshold-detected refrains (Daniel 3 from FR-153f)
   // must remain unaffected by the allowlist mechanism.
+  // FR-183 (2026-10-14) — 음성 단언이 거짓 통과하지 않도록 phrase / legacy
+  // 양쪽 data-role 을 OR 매칭한다. 이 파일의 양성 단언들은 이미 같은 패턴을
+  // 쓰고 있었으나 이 케이스만 stanza-refrain 단독이라, legacy 경로를 타는
+  // 시편이 0개가 된 뒤로는 selector 자체가 비어 가드 역할을 못 했다.
   test('Psalm 150:1-6 still has 0 refrain lines (denylist precedence)', async ({
     page,
   }) => {
     await page.goto(`/pray/${DATES.easterW4Sunday}/lauds`)
     const ps150 = page.locator('[data-role="psalm-block"][data-ref="Psalm 150:1-6"]')
-    const refrains = ps150.locator('[data-role="psalm-stanza-refrain"]')
+    const refrains = ps150.locator(
+      '[data-role="psalm-stanza-refrain"], [data-role="psalm-phrase-refrain"]',
+    )
     expect(await refrains.count()).toBe(0)
   })
 
