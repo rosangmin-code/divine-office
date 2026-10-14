@@ -153,9 +153,16 @@ describe('PsalmBlock — phrase render branch (FR-161 R-4)', () => {
   })
 
   // WI #502 — legacy line mode 통일 회귀 가드. line.indent 0/1/2
-  // 모두 동일 className. legacy mode 는 hanging indent 없이 baseline
-  // (parent 의 pl-3) 만 사용 — 따라서 indent class 는 empty string.
-  it('legacy line mode: line.indent 0/1/2 all render with no `pl-*` modifier (WI #502)', () => {
+  // 모두 동일 className (데이터의 indent 단계를 믿지 않는다).
+  //
+  // FR-183 (사용자 규칙 2026-10-14) 로 기대값이 바뀌었다: 이전에는 legacy
+  // mode 가 hanging indent 없이 `class="block"` 로만 렌더됐는데, 그 결과
+  // phrase 데이터가 없는 ref (`Psalm 118:1-16` 등 3건) 의 접힌 줄이
+  // 평평하게 떨어져 절 경계가 사라졌다. 이제 legacy mode 도 phrase mode 와
+  // **동일한 `pl-6 -indent-6`** 를 쓴다. WI #502 의 "line.indent 단계별
+  // 분기 금지" 는 그대로 유효하다 — 아래 negative 단언이 그것을 지킨다.
+  // @fr FR-183
+  it('legacy line mode: line.indent 0/1/2 all render with unified `pl-6 -indent-6` (WI #502 + FR-183)', () => {
     const psalm = makePsalm([
       makeStanzaBlock(['Line A', 'Line B', 'Line C'], {
         lineIndents: [0, 1, 2],
@@ -165,13 +172,15 @@ describe('PsalmBlock — phrase render branch (FR-161 R-4)', () => {
     // Legacy outer keeps whitespace-pre-line; no render-mode marker.
     expect(html).toContain('whitespace-pre-line')
     expect(html).not.toContain('data-render-mode="phrase"')
-    // All three lines collapse to `class="block"` (no indent modifier).
-    expect(html).toMatch(/<span class="block">Line A</)
-    expect(html).toMatch(/<span class="block">Line B</)
-    expect(html).toMatch(/<span class="block">Line C</)
-    // Negative: pl-6 / pl-12 must NOT appear on legacy stanza line spans.
-    expect(html).not.toMatch(/<span class="block pl-6">/)
-    expect(html).not.toMatch(/<span class="block pl-12">/)
+    // All three lines share the hanging-indent class regardless of indent level.
+    expect(html).toMatch(/<span class="block pl-6 -indent-6">Line A</)
+    expect(html).toMatch(/<span class="block pl-6 -indent-6">Line B</)
+    expect(html).toMatch(/<span class="block pl-6 -indent-6">Line C</)
+    // Negative (WI #502): per-level pl-12 / pl-18 must NOT reappear.
+    expect(html).not.toMatch(/<span class="block pl-12/)
+    expect(html).not.toMatch(/<span class="block pl-18/)
+    // Negative (FR-183): no stanza line may fall back to a bare `block`.
+    expect(html).not.toMatch(/<span class="block">Line/)
   })
 
   // 사용자 directive (2026-05-14): 시편 본문 전체 까만색 통일. refrain
@@ -352,7 +361,11 @@ describe('PsalmBlock — F-X11 paragraph boundary rendering', () => {
     // Boundary attribute on exactly one span.
     const matches = html.match(/data-paragraph-boundary="true"/g) ?? []
     expect(matches.length).toBe(1)
-    expect(html).toMatch(/data-paragraph-boundary="true"[^>]+class="block mt-3"[^>]*>L3</)
+    // FR-183: legacy line spans now carry the unified hanging indent, so the
+    // paragraph-gap class sits alongside `pl-6 -indent-6` (was `block mt-3`).
+    expect(html).toMatch(
+      /data-paragraph-boundary="true"[^>]+class="block pl-6 -indent-6 mt-3"[^>]*>L3</,
+    )
   })
 
   it('end-to-end: Psalm 46:2-12 user-reported case — wrap pair AND paragraph break preserved', () => {

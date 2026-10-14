@@ -310,7 +310,19 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
                   // 의 pl-3 baseline 만 적용). 데이터 line.indent 는
                   // rich.json 에 보존 (PDF SoT). 자세한 rationale 은
                   // phrase mode 분기의 코멘트 참고.
-                  const indentClass = ''
+                  //
+                  // FR-183 (사용자 규칙 2026-10-14) — 운문은 논리 행 단위로
+                  // 렌더하고 화면 폭 때문에 접힌 줄에는 행잉 들여쓰기를 준다.
+                  // 이전에는 이 경로만 `indentClass = ''` 이라 접힌 줄이
+                  // 평평하게 떨어졌다 (실측 393px: phrase 경로 24~48px vs 이
+                  // 경로 0px). 들여쓰기를 phrase 데이터 유무에 걸어 두면
+                  // `phrases` 가 빠진 ref 하나로 규칙이 깨지므로 — 실제로
+                  // 시편 118:1-16·이사야 61:10-62:5·시편 88:2-10 3건이 그랬다
+                  // — 데이터와 무관한 구조적 방어로 phrase 모드와 동일한
+                  // `pl-6 -indent-6` 을 건다. 폭은 rem 기반이라 글씨 크기
+                  // 설정에 비례해 함께 커진다 (고정 px 금지 — FR-179 와 달리
+                  // 여기는 터치 타겟이 아니라 본문 들여쓰기다).
+                  const indentClass = 'pl-6 -indent-6'
                   const isRefrain = line.role === 'refrain'
                   // 사용자 directive (2026-05-14): legacy line mode 도
                   // refrain 포함 전체 본문이 까만색으로 통일. `text-red-700
@@ -348,16 +360,31 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
                 // 무시하고 모두 동일 baseline 으로 렌더. 데이터 자체
                 // (leading spaces) 는 JSON 보존, renderer 단에서만
                 // strip. 자세한 rationale 은 phrase mode 코멘트 참고.
+                //
+                // FR-183 — 접힌 줄 행잉 들여쓰기도 phrase / legacy-line
+                // mode 와 동일하게 적용한다 (위 legacy-line 분기의 코멘트
+                // 참고). leading whitespace strip 은 그대로 유지 —
+                // 들여쓰기 "폭" 은 renderer 가 통일하고, 데이터의 leading
+                // space 는 신뢰하지 않는다는 WI #502 결정은 유효하다.
                 const leading = line.match(/^ */)![0].length
                 const trimmed = stripTrailingLineDash(line.slice(leading))
                 return (
-                  <span key={li} className="block">{trimmed}</span>
+                  <span key={li} className="block pl-6 -indent-6">{trimmed}</span>
                 )
               })}
             </p>
           ))}
         </div>
       ) : psalm.verses.length > 0 ? (
+        // FR-183 — 행잉 들여쓰기를 적용하지 **않는** 유일한 운문 경로다.
+        // 여기는 PDF 시편집이 아니라 성경 JSONL fallback (resolvePsalm 의
+        // `lookupRef` 분기) 이라 책의 조판 행 구조 자체가 없다 — 절 하나가
+        // 통째로 한 `<p>` 이고 앞에 절 번호 `<sup>` 가 붙는다. "책에서 접힌
+        // 행은 앞 행과 같은 논리 행" 이라는 FR-183 규칙은 인쇄된 행 구조를
+        // 전제하므로 이 경로에는 적용 대상이 없다.
+        // 도달성: 스케줄에 쓰이는 130 ref 전부 `psalter-texts.json` 에
+        // stanzas 를 갖고 있어 프로덕션에서는 도달하지 않는다 (mocked 테스트
+        // 픽스처 전용 — memory `resolvepsalm-no-text-bare-ref-test-noise`).
         <div className="space-y-1">
           {psalm.verses.map((v, i) => (
             <p key={i} className="whitespace-pre-line font-reading text-base leading-relaxed text-stone-800 dark:text-stone-200">
