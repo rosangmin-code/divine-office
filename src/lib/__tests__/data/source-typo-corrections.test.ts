@@ -9,7 +9,10 @@ const repoRoot = process.cwd()
 
 describe('GOAL #128 D3 source-typo and fidelity correction guards', () => {
   // @fr FR-NEW (#128 D3)
-  it('restores Week 1 Thursday Vespers concluding prayer to PDF-fidelity "Тиймийн тул"', () => {
+  // 2026-10-15: GOAL #128 filed this as a data-entry divergence (B1), but the
+  // printed page (book p.140) reads «туд» — it is a book typo the data
+  // corrects, now ledgered as STC-007.
+  it('corrects the Week 1 Thursday Vespers concluding prayer book typo «туд» to "Тиймийн тул"', () => {
     const prayer = week1.days.THU.vespers.concludingPrayer
 
     expect(prayer).toContain('Тиймийн тул өглөө болоход')
@@ -32,7 +35,7 @@ describe('GOAL #128 D3 source-typo and fidelity correction guards', () => {
   })
 
   // @fr FR-NEW (#128 D3)
-  it('records only PDF-deviation rows in the ledger, not B1/B2 fidelity restores', () => {
+  it('records only PDF-deviation rows in the ledger: B1 «туд» is one (printed p.140), B2 «Харагтүн» is not', () => {
     const ledger = readFileSync(
       resolve(repoRoot, 'docs/data/source-typo-ledger.md'),
       'utf-8',
@@ -42,8 +45,13 @@ describe('GOAL #128 D3 source-typo and fidelity correction guards', () => {
     expect(ledger).toContain('psalter-headers.rich.json')
     expect(ledger).toContain('Гэнгэрбурханд')
     expect(ledger).toContain('Тэнгэрбурханд')
-    expect(ledger).not.toContain('week-1.json')
+    // B1 was reclassified 2026-10-15 from the printed page: the book itself
+    // prints «туд», so the week-1 correction is a PDF deviation (STC-007).
+    expect(ledger).toContain('STC-007')
+    expect(ledger).toContain('Тиймийн / туд')
+    // B2 stays a fidelity restore — the book prints «Харагтун» (pp.833, 842).
     expect(ledger).not.toContain('solemnities.json')
+    expect(ledger).not.toContain('Харагтүн')
   })
 
   // @fr FR-NEW (#128 D3)
