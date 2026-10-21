@@ -27,3 +27,29 @@ GOAL #128 correction policy in
 | STC-018 | `src/data/loth/sanctoral/memorials.json` -> `11-02.vespers.alternativeConcludingPrayer`, `deceased.lauds.alternativeConcludingPrayer` (`:41`) | Office for the Dead · Alternative concluding prayer | PDF: `Та зардас Н..-ийг Өөртөө дуудсан бөгөөд` (printed p.852; `parsed_data/full_pdf.txt:28893`) | `Та зардас Н.-ийг Өөртөө дуудсан бөгөөд` | E1: the name placeholder `Н.` (red) is followed by a second, black full stop; E2: one deletion; E3: `Н.-ийг` is the placeholder form used elsewhere on the same page; E4: 400 dpi printed-page render confirms both periods are printed. The 2026-08 punctuation review had filed this as an extraction duplicate. | `CORRECT` | 2026-04-04 | initial data entry (`07f9f64`); recorded 2026-10-15 (psalter errata sheet LH-023) |
 
 Rows STC-005 to STC-018 were added on 2026-10-15 from a printed-page sweep of the book (each candidate rendered with `pdftoppm` and read on the page image, not from extracted text). In every one of them the app already used the corrected form, mostly since initial data entry, so these rows record existing deviations rather than new edits. Book typos the app still reproduces are listed only in the psalter errata sheet (LH-005, LH-009, LH-015, LH-016, LH-021, LH-022) pending a decision on whether the app should correct them. The ID STC-005 was once proposed for the `өргөнөөсөө` → `өргөөнөөсөө` fix (GOAL #128 B3) but never used, because that was a data-entry restore with the book already correct; here it denotes GILH footnote 31.
+
+## 2026-10-19 revised edition
+
+On 2026-10-20 the book's editor (Fr. Pierre Palussière) sent a corrected PDF of the same edition: same 485 pages, same layout and page numbers. It replaced the source PDF in the repo root and `public/psalter.pdf`, and `parsed_data/full_pdf.txt` was re-extracted from it with `scripts/reextract-pdf-pages.sh`. The `full_pdf.txt:NNNN` line references in the rows above point to the 2026-01-10 printing; that extraction is kept locally as `parsed_data/full_pdf.2026-01-10.txt` (gitignored).
+
+**Status of the rows above.** The revision applied 23 of the 24 items on the psalter errata sheet, so the book now prints the app's form for STC-001 to STC-014 and STC-016 to STC-018. These rows no longer deviate from the source PDF and stay here as history. Two of them changed further:
+
+- STC-010: the revision prints `Өглөө болоход` (a different word, not just the capital) and the app follows it.
+- STC-018: the revision prints `Н.-ыг/-ийг` (both case endings for the name placeholder) and the app follows it.
+
+STC-015 is still an active deviation. The editor kept the lower-case `- өвчтөнийг` on p.744 (he judged LH-018 unnecessary), and the app keeps its capital. The capital `Х` in STC-009 likewise remains the app's own choice.
+
+**What was carried into the app.** Only the characters the revision changed were applied; text the editor left alone was not touched, even where the app's form differs. The old and new extractions were diffed page by page (220 changed hunks; 4 were lines that only moved across a page break). Each change was located in the app by its surrounding words, and applied automatically only where the old form no longer occurs anywhere in the revised book. A word-level comparison of every changed string confirms that nothing else moved: 358 strings in 45 files.
+
+- `Аяа` → `Аяа,` 330×, and `Аяа.` → `Аяа,` 9× (errata LH-005, LH-015, LH-016, LH-021, LH-022)
+- `эдгээгч` → `Эдгээгч` 12× (one printed intercession, repeated in the propers)
+- `харуулж.` → `харуулж,`, `илгээж.` → `илгээж,` (each in plain and rich)
+- `Н.-ийг` → `Н.-ыг/-ийг` 2×
+- `14:13,` → `14:13;` (GILH footnote 36), `Өдөр` → `Өглөө`, `Тэнгэрбурхан,` → `Тэнгэрбурхан минь,`, `үнэнч.` → `үнэнч,`, `минь` → `минь,` (1× each)
+
+Where the editor changed some printings of a passage and not others:
+
+- **The app stores each printing separately.** It follows each one. For example, the responsory `Аяа, Эзэн минь, өглөө эрт…` takes the comma in Week 2 Thursday (p.252) but not in Week 4 Thursday (p.478).
+- **The app stores one shared copy.** It takes the corrected form. For example, Psalm 143 takes the commas the editor added on pp.528–529, and the p.130 responsory takes the comma throughout; there the first of four printings kept `Аяа / Эзэн` across a line break.
+
+Two red dashes added at the foot of pp.693 and 733 (`дайснуудыг –`, `болой.–`) mark that a psalm continues on the next page. They are page-layout marks, not psalm text, and were not carried into the app.

@@ -679,7 +679,8 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
     it('nuncDimittis: 이미 capital 규칙 정합 — 4 절 내용 불변', async () => {
       const data = await loadCanticles()
       expect(data.nuncDimittis.verses).toEqual([
-        'Аяа Эзэн минь, Та урьд өгүүлсэнчлэн зардас намайгаа амар амгалангаар эдүгээ чөлөөлтүгэй.',
+        // 2026-10-21: revised edition prints «Аяа,» (comma after the vocative particle)
+        'Аяа, Эзэн минь, Та урьд өгүүлсэнчлэн зардас намайгаа амар амгалангаар эдүгээ чөлөөлтүгэй.',
         'Учир нь миний нүд бүх ард түмний нүүрэн дээр таны бэлтгэсэн авралыг харсан юм.',
         'Энэ нь харь үндэстэнд илчлэгдэх гэгээн гэрэл,',
         'Таны ард түмэн Израилийг алдаршуулах сүр жавхлан юм.',

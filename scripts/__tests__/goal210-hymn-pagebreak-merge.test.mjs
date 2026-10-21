@@ -343,12 +343,18 @@ const HISTORICAL_MERGED_TARGETS = [
 ]
 
 const AREA_HASHES = {
+  // 2026-10-21: 2026-10-19 revised edition of the book (Fr. Pierre's corrected PDF) —
+  // carried over only the characters the revision changed (mostly «Аяа» → «Аяа,»;
+  // word-level audit of every changed string: nothing else moved).
   'src/data/loth/ordinarium/compline.json':
-    '10261a2e03d3b73bf479abbdfea6bf0ca72f15ce4a24b88db94cedc76ee86a4c',
+    '6bb9fb7711d26e6d2c6822e8461744dce5ad47059d97a0daba8e699f99b29338',
   // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
   // space-split correction (owctononuudiig tailvshruulzh, advent:633).
+  // 2026-10-21: 2026-10-19 revised edition of the book (Fr. Pierre's corrected PDF) —
+  // carried over only the characters the revision changed (mostly «Аяа» → «Аяа,»;
+  // word-level audit of every changed string: nothing else moved).
   'src/data/loth/propers/advent.json':
-    '193f7d034c1a62380617e7ca5108baf269c01f7fddf6e882fec670a33462e84e',
+    '44fa7f4dd292c3c67c96e3f17c810b41a33fb428e82ad27f5b845730247924c5',
   // WI-88 (#87): dec25.SUN.vespers2 proper psalmody wiring (Ps 110:1-5,7 /
   // Ps 130 / Col 1:12-20, full_pdf p.592-596).
   // 2026-09-14 (GOAL #128 §3b B3, requested as STC-005 — fidelity restore,
@@ -366,19 +372,28 @@ const AREA_HASHES = {
   // text was edited other than that one antiphon (the p.608 copy survives
   // verbatim in sanctoral/solemnities.json 01-01.vespers2). See
   // docs/bug-reports/2026-09-16-sunday-vespers2-epiphany.md.
+  // 2026-10-21: 2026-10-19 revised edition of the book (Fr. Pierre's corrected PDF) —
+  // carried over only the characters the revision changed (mostly «Аяа» → «Аяа,»;
+  // word-level audit of every changed string: nothing else moved).
   'src/data/loth/propers/christmas.json':
-    '4995bd3965b60224236d31599a5621ab3d2e8c0e993569e8e7f03639a345b9b2',
+    'adf898bf7fbc577f6c4c32e6369864e9deae6c5d7198a24d25e38e87db38b1f0',
   // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
   // space-split correction (owctononuudiig tailvshruulzh, easter:540/865).
   // P0-6 A (2026-09-14): ascension lauds/vespers2 conditionalRubrics[0]
   // gained `"kind": "rationale",` inside evidencePdf (2 lines). Insertion
   // only — Mongolian text byte-unchanged (verified by strip-and-compare).
+  // 2026-10-21: 2026-10-19 revised edition of the book (Fr. Pierre's corrected PDF) —
+  // carried over only the characters the revision changed (mostly «Аяа» → «Аяа,»;
+  // word-level audit of every changed string: nothing else moved).
   'src/data/loth/propers/easter.json':
-    'eaee7a4314fa5a297770b956e307c8d1cf4ca0dfa249cbc80d0a0055f1df3ed4',
+    '9cc9a0ce27ab8f5eed69a5a133d58a5c3da5aeb72f7af389f5778ab05c3be830',
   // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
   // space-split correction (owctononuudiig tailvshruulzh, lent:618).
+  // 2026-10-21: 2026-10-19 revised edition of the book (Fr. Pierre's corrected PDF) —
+  // carried over only the characters the revision changed (mostly «Аяа» → «Аяа,»;
+  // word-level audit of every changed string: nothing else moved).
   'src/data/loth/propers/lent.json':
-    '2eaf15d01e4a18b50288b0d1b56918e680c7e355c3adffaeeddd2baf8d0bce39',
+    '3694b89c9d0ae6f2eba43ef10b81b84ccb52d5c615942c7df51358eabba69ad1',
   // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
   // space-split correction (owctononuudiig tailvshruulzh, ordinary-time x8).
   // P0-6 A (2026-09-14): trinitySunday / corpusChristi / sacredHeart /
@@ -391,8 +406,11 @@ const AREA_HASHES = {
   // «Өөрөөс нь булаагдашгүй сайныг Мариа сонгон авчээ.», and three
   // `gospelCanticleAntiphonPage` typos corrected against the printed page
   // (6.vespers 647 → 761, 20.vespers2 751 → 790, 34.vespers2 816 → 818).
+  // 2026-10-21: 2026-10-19 revised edition of the book (Fr. Pierre's corrected PDF) —
+  // carried over only the characters the revision changed (mostly «Аяа» → «Аяа,»;
+  // word-level audit of every changed string: nothing else moved).
   'src/data/loth/propers/ordinary-time.json':
-    '3f5791516d94b241f37ac4b68f2831d0c7e90808ff7aab2ad49568f78a48f6cc',
+    '634499b2b5396aca00fe335234f9d30e33252b5f5dc16ab6cb24be397e0f9970',
   // g-36 (WI-50/51): sanctoral 추출오타 35건 PDF-fidelity 교정 (full_pdf.txt L28000+ 대조)
   // g-41 (WI-60): 08-06 Transfiguration held-divergence restore — vespers antiphon
   // (минь ангижруулдаг…) + vespers/lauds/vespers2 concludingPrayer Эцгүүдийг +
@@ -404,8 +422,11 @@ const AREA_HASHES = {
   // FR-180 (2026-09-18): 02-02 / 08-06 / 09-14 `firstVespers` swapped the
   // mis-encoded `conditionalRubrics` (substitute hymn) for `sundayOnly`
   // carrying the same evidencePdf. Prayer text byte-unchanged.
+  // 2026-10-21: 2026-10-19 revised edition of the book (Fr. Pierre's corrected PDF) —
+  // carried over only the characters the revision changed (mostly «Аяа» → «Аяа,»;
+  // word-level audit of every changed string: nothing else moved).
   'src/data/loth/sanctoral/feasts.json':
-    'ee6869f27ee462e08d2345cb3eaf9408343ecc2e980f963812ff319b3240680a',
+    'df70d31c61c563c1bebc8f57657ac661b06cceb04e5f0a12db11a53b68b9de95',
   // WI-76 intended memorials page 863->862.
   // #203 (WI-215): 11-02 All Souls + deceased lauds/vespers concludingPrayer
   // truncation — restored Trinitarian doxology from full_pdf p.852 (L28884-87).
@@ -416,8 +437,11 @@ const AREA_HASHES = {
   // P0-3 (2026-09-13 sanctoral romcal gate): 11-02 gained `"romcalKey":
   // "allSouls"` + `"outranksSunday": true` meta lines. Insertion only —
   // Mongolian text byte-unchanged (verified by strip-and-compare).
+  // 2026-10-21: 2026-10-19 revised edition of the book (Fr. Pierre's corrected PDF) —
+  // carried over only the characters the revision changed (mostly «Аяа» → «Аяа,»;
+  // word-level audit of every changed string: nothing else moved).
   'src/data/loth/sanctoral/memorials.json':
-    '8a6d71985a0a0659dcff130c859bbb7aa8956f52bf9b9b41fd232af9531d50b4',
+    '3a6c2660500ab1c676699cf0482c298eec6ac73f1c9d00a434e11769f6480655',
   'src/data/loth/sanctoral/optional-memorials.json':
     'ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356',
   // #203 (WI-212): 06-24 John Baptist lauds + vespers2 concludingPrayer
@@ -444,8 +468,11 @@ const AREA_HASHES = {
   // birthOfJohnTheBaptist / peterAndPaulApostles / assumption / allSaints /
   // immaculateConception / christmas / maryMotherOfGod). Insertion only —
   // Mongolian text byte-unchanged (verified by strip-and-compare).
+  // 2026-10-21: 2026-10-19 revised edition of the book (Fr. Pierre's corrected PDF) —
+  // carried over only the characters the revision changed (mostly «Аяа» → «Аяа,»;
+  // word-level audit of every changed string: nothing else moved).
   'src/data/loth/sanctoral/solemnities.json':
-    '9540066153c1e6438e5cd5c13d2d78633bf01d87eacedd5b6c9b5c6b4f930989',
+    '99d5758a1e703db634f7510c3296d822d6165a79087429dd804f632f40538b62',
 }
 
 function readJson(path) {

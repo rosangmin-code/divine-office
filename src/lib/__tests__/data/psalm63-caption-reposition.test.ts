@@ -40,8 +40,9 @@ const PS63_BODY_FIRST_LINE = 'Тэнгэрбурхан, Та миний Тэнг
 const PS63_CAPTION_L1 = 'Гэм нүглийн харанхуйгаас салсан хэнбугай ч'
 const PS63_CAPTION_L2 = 'Тэнгэрбурханыг хүсэн тэмүүлнэ.'
 const PS63_TITLE = 'Тэнгэрбурханаар цангаж буй сэтгэл'
+// 2026-10-21: revised edition prints «Аяа,» here (book p.57 antiphon).
 const PS63_DEFAULT_ANTIPHON =
-  'Аяа Тэнгэрбурхан минь, би өнөөдөр Таныг Өөрийнхөө хүч болгохын тулд эртлэн хайх болно. Аллэлуяа!'
+  'Аяа, Тэнгэрбурхан минь, би өнөөдөр Таныг Өөрийнхөө хүч болгохын тулд эртлэн хайх болно. Аллэлуяа!'
 
 const PSALTER_TEXTS = 'src/data/loth/psalter-texts.json'
 const PSALTER_TEXTS_RICH =
