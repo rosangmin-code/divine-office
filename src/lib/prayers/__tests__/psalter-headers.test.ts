@@ -355,13 +355,6 @@ describe('FR-160-C psalter-headers catalog', () => {
           pdfTitle: 'Эзэн бол миний өв юм',
           inCatalog: true,
         },
-        {
-          ref: 'Psalm 88:2-10',
-          page: 539,
-          attribution: 'Лук 22:53',
-          pdfTitle: 'Өвчтэй хүний даатгал залбирал',
-          inCatalog: true,
-        },
         // Unmatched (no canonical key in psalter-texts.json — documented
         // for completeness; not asserted because the catalog never carries
         // these refs):
@@ -391,6 +384,15 @@ describe('FR-160-C psalter-headers catalog', () => {
           page: 517,
           attribution: 'Лук 10:19',
           pdfTitle: 'Тэнгэрбурханы ивээл доорх аюулгүй байдал',
+          inCatalog: false,
+        },
+        // Compline Psalm 88:2-19 — the header was keyed to the orphan
+        // `Psalm 88:2-10`, deleted 2026-10-22, so the catalog carries none.
+        {
+          ref: 'Psalm 88',
+          page: 539,
+          attribution: 'Лук 22:53',
+          pdfTitle: 'Өвчтэй хүний даатгал залбирал',
           inCatalog: false,
         },
       ]
