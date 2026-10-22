@@ -36,8 +36,8 @@
 
 ## 2. 사용자 액션 대기
 
-1. **Vercel Deployment Checks 등록** (이것만 하면 배포 게이트 완성 — 지금은 CI 실패해도 push 즉시 배포)
-   - `vercel.com/…/divine-office/settings/build-and-deployment` → Deployment Checks → GitHub provider
+1. ⏸ **보류 (사용자 판단 2026-10-22)** — ~~Vercel Deployment Checks 등록~~. push 전 로컬 테스트·검증기가 이미 관례이고 빌드 실패는 Vercel 이 막으므로 실익이 작다고 판단. 기여자가 늘면 재검토. 시도 기록: "Select checks to add" 에 SHA `2c6de12` 를 넣어도 GitHub 에는 있는 check run 2개가 "No configured checks found" 로 안 보였다(Show All Checks 스위치 비활성) — Vercel GitHub App 의 Checks 읽기 권한 미승인으로 추정, 미확인. 재개 시 `github.com/settings/installations` → Vercel → 권한 요청부터.
+   - `vercel.com/rosangmin-3807s-projects/divine-office/settings/build-and-deployment` → Deployment Checks → GitHub provider
    - job 2개 **둘 다** Required: `Lint · Typecheck · Unit tests`, `Playwright · API smoke + core UI`
    - (quality 실패 시 e2e 는 skipped → 하나만 걸면 통과로 셀 수 있음)
    - 전제: Settings → Environments → Production 의 "Auto-assign Custom Production Domains" ON

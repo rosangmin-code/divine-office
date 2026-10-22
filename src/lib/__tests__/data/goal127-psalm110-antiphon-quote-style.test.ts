@@ -32,8 +32,6 @@ import week3 from '@/data/loth/psalter/week-3.json'
 import type { PsalmEntry } from '@/lib/types'
 
 const STRAIGHT = '"' // U+0022
-const OPEN = '“' // U+201C
-const CLOSE = '”' // U+201D
 
 function findPsalm110Entry(root: unknown): PsalmEntry {
   let found: PsalmEntry | undefined

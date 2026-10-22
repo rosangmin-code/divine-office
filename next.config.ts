@@ -15,6 +15,9 @@ const nextConfig: NextConfig = {
   images: { unoptimized: true },
   // Do not advertise the framework via `x-powered-by: Next.js`.
   poweredByHeader: false,
+  // `next dev` otherwise appends a generated agent-rules block to CLAUDE.md
+  // on every start, dirtying the user-maintained instructions file.
+  agentRules: false,
   async headers() {
     return [
       {

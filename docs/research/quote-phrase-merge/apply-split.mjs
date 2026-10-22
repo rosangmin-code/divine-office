@@ -11,7 +11,6 @@
  * --write 없이는 쓰지 않는다.
  */
 import fs from 'node:fs'
-import { regroupPhrasesByCapitalStart } from '../../../scripts/build-phrases-into-rich.mjs'
 
 const RICH = 'src/data/loth/prayers/commons/psalter-texts.rich.json'
 const PLAIN = 'src/data/loth/psalter-texts.json'
