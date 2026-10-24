@@ -6,6 +6,7 @@ import week3 from '@/data/loth/psalter/week-3.json'
 import week4 from '@/data/loth/psalter/week-4.json'
 import psalterTexts from '@/data/loth/psalter-texts.json'
 import psalterTextsRich from '@/data/loth/prayers/commons/psalter-texts.rich.json'
+import psalterHeaders from '@/data/loth/prayers/commons/psalter-headers.rich.json'
 
 // 2026-08-08 회귀 방지 — docs/bug-reports/2026-08-08-split-psalm-part2-missing.md
 //
@@ -33,7 +34,7 @@ const WEEKS: [number, WeekFile][] = [
   [4, week4 as WeekFile],
 ]
 
-const plainTexts = psalterTexts as Record<string, { stanzas?: string[][] }>
+const plainTexts = psalterTexts as Record<string, { stanzas?: string[][]; psalmPrayer?: string }>
 const richTexts = psalterTextsRich as Record<
   string,
   { stanzasRich?: { blocks?: unknown[] } }
@@ -92,13 +93,16 @@ describe('split psalm Part II data invariants', () => {
   })
 
   // @fr NFR-009c
-  it('분할 시편 5건의 II부가 I부와 다른 본문을 가진다', () => {
+  it('분할 시편 7건의 II부가 I부와 다른 본문을 가진다', () => {
     const PAIRS: [string, string][] = [
       ['Psalm 45:2-10', 'Psalm 45:11-18'],
       ['Psalm 49:1-13', 'Psalm 49:14-21'],
       ['Psalm 72:1-11', 'Psalm 72:12-19'],
       ['Psalm 132:1-10', 'Psalm 132:11-18'],
       ['Psalm 145:1-13', 'Psalm 145:14-21'],
+      // 2026-10-24 — docs/bug-reports/2026-10-24-psalter-139-missing-144-duplicate-verses.md
+      ['Psalm 139:1-12', 'Psalm 139:13-18, 23-24'],
+      ['Psalm 144:1-8', 'Psalm 144:9-15'],
     ]
     const flat = (ref: string) => (plainTexts[ref]?.stanzas ?? []).flat().join('\n')
     for (const [one, two] of PAIRS) {
@@ -108,5 +112,59 @@ describe('split psalm Part II data invariants', () => {
       // II부는 인쇄면의 부 마커로 시작한다 (I부는 "I")
       expect(plainTexts[two]?.stanzas?.[0]?.[0]).toBe('II')
     }
+  })
+
+  // @fr NFR-009c
+  it('한 시간전례 안의 두 시편이 같은 본문 행을 갖지 않는다', () => {
+    // 2026-10-24: 제4주간 목요일 저녁 시편 144 I부가 화요일 키(1–10절)를 써서
+    // 9–10절이 II부와 겹쳤고, 화요일 아침 시편 101 끝에는 같은 날 성경찬가
+    // (다니엘 3) 첫 연이 붙어 있었다. 한 엔트리 안에서 되풀이되는 행(후렴형)과
+    // 짧은 행(`ЭЗЭНийг магтагтун!` 등)은 빼고 본다.
+    const bodyLines = (ref: string) => {
+      const all = (plainTexts[ref]?.stanzas ?? []).flat().map((l) => l.trim().replace(/\s+/g, ' '))
+      const count = new Map<string, number>()
+      for (const l of all) count.set(l, (count.get(l) ?? 0) + 1)
+      return new Set(all.filter((l) => l.length > 20 && count.get(l) === 1))
+    }
+    const shared: string[] = []
+    for (const { week, day, hour, psalms } of eachHour()) {
+      const refs = psalms.map((p) => p?.ref).filter((r): r is string => !!r)
+      for (let i = 0; i < refs.length; i++) {
+        for (let j = i + 1; j < refs.length; j++) {
+          const other = bodyLines(refs[j])
+          for (const l of bodyLines(refs[i])) {
+            if (other.has(l)) shared.push(`week-${week} ${day} ${hour}: ${refs[i]} ∩ ${refs[j]} — ${l}`)
+          }
+        }
+      }
+    }
+    expect(shared).toEqual([])
+  })
+
+  // @fr NFR-009c
+  it('시편 139 II부는 13–18·23–24절, 시편 144 목요일 I부는 1–8절이다', () => {
+    const flat = (ref: string) => (plainTexts[ref]?.stanzas ?? []).flat()
+    const ps139 = flat('Psalm 139:13-18, 23-24')
+    expect(ps139[1]).toBe('Учир нь Та гэдэс дотрыг минь хэлбэржүүлж') // 13절 (책 p.466)
+    expect(ps139).toContain('Аяа, Тэнгэрбурхан, надад хандсан бодлууд тань хэчнээн нандин бэ!') // 17절
+    expect(ps139.at(-1)).toBe('Мөнхийн замаар намайг удирдаач!') // 24절
+    expect(flat('Psalm 139:1-12').at(-1)).toBe('Гэрэл харанхуй хоёр хоёулаа адилхан юм.') // 12절
+    expect(flat('Psalm 144:1-8').at(-1)).toBe('Баруун гар нь худлын баруун гар юм.') // 8절 (책 p.481)
+    expect(flat('Psalm 101:1-8').at(-1)?.trim()).toBe('Бүх хорон муу хүнийг устгана.') // 8절 (책 p.442)
+
+    const week4Days = (week4 as WeekFile).days as Record<string, Day>
+    const refs = (day: string, hour: string) => (week4Days[day][hour].psalms ?? []).map((p) => p.ref)
+    expect(refs('WED', 'vespers').slice(0, 2)).toEqual(['Psalm 139:1-12', 'Psalm 139:13-18, 23-24'])
+    expect(refs('THU', 'vespers').slice(0, 2)).toEqual(['Psalm 144:1-8', 'Psalm 144:9-15'])
+    expect(refs('TUE', 'lauds')[2]).toBe('Psalm 144:1-10') // 화요일 아침은 책도 1–10절
+
+    // 책은 머리말을 I부 앞에, 마침 기도를 II부 뒤에 한 번만 인쇄한다
+    expect(plainTexts['Psalm 139:1-12'].psalmPrayer).toBeUndefined()
+    expect(plainTexts['Psalm 144:1-8'].psalmPrayer).toBeUndefined()
+    expect(plainTexts['Psalm 139:13-18, 23-24'].psalmPrayer).toBeTruthy()
+    expect(plainTexts['Psalm 144:9-15'].psalmPrayer).toBeTruthy()
+    const headers = (psalterHeaders as { refs: Record<string, { entries: { attribution?: string }[] }> }).refs
+    expect(headers['Psalm 139:13-18, 23-24']).toBeUndefined()
+    expect(headers['Psalm 144:1-8'].entries[0].attribution).toBe('Гэгээн Хилайр') // p.480, 화요일과 다름
   })
 })

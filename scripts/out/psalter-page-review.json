@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-08-08T02:23:11.835Z",
+  "generated": "2026-10-24T15:22:03.059Z",
   "entries": [
     {
       "file": "src/data/loth/psalter/week-1.json",
@@ -2042,14 +2042,14 @@
     {
       "file": "src/data/loth/psalter/week-4.json",
       "locator": "days.WED.vespers.psalms[1]",
-      "ref": "Psalm 139:23-24",
+      "ref": "Psalm 139:13-18, 23-24",
       "declared": 466,
       "reason": "part-II-skipped"
     },
     {
       "file": "src/data/loth/psalter/week-4.json",
       "locator": "days.THU.vespers.psalms[1]",
-      "ref": "Psalm 144:11-15",
+      "ref": "Psalm 144:9-15",
       "declared": 481,
       "reason": "part-II-skipped"
     },

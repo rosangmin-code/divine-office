@@ -1002,6 +1002,21 @@
         }
       ]
     },
+    "Psalm 144:1-8": {
+      "entries": [
+        {
+          "kind": "patristic_preface",
+          "attribution": "Гэгээн Хилайр",
+          "preface_text": "“Би ертөнцийг ялсан” гэж айлдсанчлан Христ ертөнцийг ялахдаа дайтах урлагийг сурч авсан",
+          "page": 480,
+          "source": "manual",
+          "evidence_line_range": [
+            16622,
+            16624
+          ]
+        }
+      ]
+    },
     "Psalm 108:2-7": {
       "entries": [
         {
@@ -1032,22 +1047,7 @@
         }
       ]
     },
-    "Psalm 139:1-18": {
-      "entries": [
-        {
-          "kind": "nt_typological",
-          "attribution": "Ром 11:34",
-          "preface_text": "Тэнгэрбурханы оюун ухааныг хэн мэдсэн бэ? Хэн Түүний зөвлөгч нь болсон бэ?",
-          "page": 464,
-          "source": "extracted",
-          "evidence_line_range": [
-            16067,
-            16069
-          ]
-        }
-      ]
-    },
-    "Psalm 139:23-24": {
+    "Psalm 139:1-12": {
       "entries": [
         {
           "kind": "nt_typological",

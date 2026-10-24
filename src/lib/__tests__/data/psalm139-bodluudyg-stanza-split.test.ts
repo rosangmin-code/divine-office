@@ -47,7 +47,8 @@ const RICH_PATH = path.join(
   'src/data/loth/prayers/commons/psalter-texts.rich.json',
 )
 
-const PSALM_KEY = 'Psalm 139:1-18'
+// Renamed from `Psalm 139:1-18` on 2026-10-24 — Part I holds vv. 1-12.
+const PSALM_KEY = 'Psalm 139:1-12'
 const COLON_HEAD = 'Та хаа холоос миний санаа бодлуудыг'
 const COLON_TAIL = 'ойлгодог.'
 const MERGED_PLAIN = '  Та хаа холоос миний санаа бодлуудыг ойлгодог.'

@@ -88,8 +88,10 @@ const PART_II_SKIPS = new Set([
   // sits between header and Part II body — beyond the verifier's ±1
   // window). Body text content verified manually against PDF.
   'week-4|MON|vespers|Psalm 136:10-26',     // header on 432, body on 434 (Part II)
-  'week-4|WED|vespers|Psalm 139:23-24',     // header on 464, body on 466 (tail verses of split Psalm 139)
-  'week-4|THU|vespers|Psalm 144:11-15',     // header on 480, body on 481-482 (Part II)
+  // 2026-10-24: keys renamed to the verses each part really holds
+  // (`139:23-24` gained vv. 13-18; `144:11-15` always held vv. 9-15).
+  'week-4|WED|vespers|Psalm 139:13-18, 23-24', // header on 464, body on 466-467 (Part II)
+  'week-4|THU|vespers|Psalm 144:9-15',      // header on 480, body on 481-482 (Part II)
 ])
 
 function weekKey(weekNum, day, hour, ref) {

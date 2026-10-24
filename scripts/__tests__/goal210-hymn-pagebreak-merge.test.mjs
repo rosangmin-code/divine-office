@@ -353,8 +353,11 @@ const AREA_HASHES = {
   // 2026-10-21: 2026-10-19 revised edition of the book (Fr. Pierre's corrected PDF) —
   // carried over only the characters the revision changed (mostly «Аяа» → «Аяа,»;
   // word-level audit of every changed string: nothing else moved).
+  // 2026-10-24: «Аяа» → «Аяа,» at the places the revised edition left without the
+  // comma (the editor kept them to preserve the layout; the app has no layout
+  // constraint — user decision). Only that one character per occurrence moved.
   'src/data/loth/propers/advent.json':
-    '44fa7f4dd292c3c67c96e3f17c810b41a33fb428e82ad27f5b845730247924c5',
+    '7d4d37e294bc88a711891518362f81a44929c2c185e74e6715d118f14b12f176',
   // WI-88 (#87): dec25.SUN.vespers2 proper psalmody wiring (Ps 110:1-5,7 /
   // Ps 130 / Col 1:12-20, full_pdf p.592-596).
   // 2026-09-14 (GOAL #128 §3b B3, requested as STC-005 — fidelity restore,
@@ -375,8 +378,11 @@ const AREA_HASHES = {
   // 2026-10-21: 2026-10-19 revised edition of the book (Fr. Pierre's corrected PDF) —
   // carried over only the characters the revision changed (mostly «Аяа» → «Аяа,»;
   // word-level audit of every changed string: nothing else moved).
+  // 2026-10-24: «Аяа» → «Аяа,» at the places the revised edition left without the
+  // comma (the editor kept them to preserve the layout; the app has no layout
+  // constraint — user decision). Only that one character per occurrence moved.
   'src/data/loth/propers/christmas.json':
-    'adf898bf7fbc577f6c4c32e6369864e9deae6c5d7198a24d25e38e87db38b1f0',
+    '6cfb3c3179a93a920aaa952e3320030c85da41e976b3da4028a37306dd633f6d',
   // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
   // space-split correction (owctononuudiig tailvshruulzh, easter:540/865).
   // P0-6 A (2026-09-14): ascension lauds/vespers2 conditionalRubrics[0]
@@ -385,15 +391,21 @@ const AREA_HASHES = {
   // 2026-10-21: 2026-10-19 revised edition of the book (Fr. Pierre's corrected PDF) —
   // carried over only the characters the revision changed (mostly «Аяа» → «Аяа,»;
   // word-level audit of every changed string: nothing else moved).
+  // 2026-10-24: «Аяа» → «Аяа,» at the places the revised edition left without the
+  // comma (the editor kept them to preserve the layout; the app has no layout
+  // constraint — user decision). Only that one character per occurrence moved.
   'src/data/loth/propers/easter.json':
-    '9cc9a0ce27ab8f5eed69a5a133d58a5c3da5aeb72f7af389f5778ab05c3be830',
+    'e6b6598c000b2718231b6af829ace25158cb094a68c34744c636628b90e6eb2c',
   // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
   // space-split correction (owctononuudiig tailvshruulzh, lent:618).
   // 2026-10-21: 2026-10-19 revised edition of the book (Fr. Pierre's corrected PDF) —
   // carried over only the characters the revision changed (mostly «Аяа» → «Аяа,»;
   // word-level audit of every changed string: nothing else moved).
+  // 2026-10-24: «Аяа» → «Аяа,» at the places the revised edition left without the
+  // comma (the editor kept them to preserve the layout; the app has no layout
+  // constraint — user decision). Only that one character per occurrence moved.
   'src/data/loth/propers/lent.json':
-    '3694b89c9d0ae6f2eba43ef10b81b84ccb52d5c615942c7df51358eabba69ad1',
+    'ec3607ed3c241dbf456336544155b1f01eac5318ba199103c50d3c8a01e7ac5a',
   // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
   // space-split correction (owctononuudiig tailvshruulzh, ordinary-time x8).
   // P0-6 A (2026-09-14): trinitySunday / corpusChristi / sacredHeart /
@@ -409,8 +421,11 @@ const AREA_HASHES = {
   // 2026-10-21: 2026-10-19 revised edition of the book (Fr. Pierre's corrected PDF) —
   // carried over only the characters the revision changed (mostly «Аяа» → «Аяа,»;
   // word-level audit of every changed string: nothing else moved).
+  // 2026-10-24: «Аяа» → «Аяа,» at the places the revised edition left without the
+  // comma (the editor kept them to preserve the layout; the app has no layout
+  // constraint — user decision). Only that one character per occurrence moved.
   'src/data/loth/propers/ordinary-time.json':
-    '634499b2b5396aca00fe335234f9d30e33252b5f5dc16ab6cb24be397e0f9970',
+    '2ad0e54261883ff6a58edd61bcb0c28a83ed7f7cfa1fdc94f148230716cd6021',
   // g-36 (WI-50/51): sanctoral 추출오타 35건 PDF-fidelity 교정 (full_pdf.txt L28000+ 대조)
   // g-41 (WI-60): 08-06 Transfiguration held-divergence restore — vespers antiphon
   // (минь ангижруулдаг…) + vespers/lauds/vespers2 concludingPrayer Эцгүүдийг +
@@ -471,8 +486,11 @@ const AREA_HASHES = {
   // 2026-10-21: 2026-10-19 revised edition of the book (Fr. Pierre's corrected PDF) —
   // carried over only the characters the revision changed (mostly «Аяа» → «Аяа,»;
   // word-level audit of every changed string: nothing else moved).
+  // 2026-10-24: «Аяа» → «Аяа,» at the places the revised edition left without the
+  // comma (the editor kept them to preserve the layout; the app has no layout
+  // constraint — user decision). Only that one character per occurrence moved.
   'src/data/loth/sanctoral/solemnities.json':
-    '99d5758a1e703db634f7510c3296d822d6165a79087429dd804f632f40538b62',
+    '55992d053e216f789fd72b834ff75f61fa4d0340ae464d22dab57655dce2741d',
 }
 
 function readJson(path) {

@@ -39887,7 +39887,7 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "“Аяа ЭЗЭН, би гуйя, амийг минь авраач!” гэв."
+                  "text": "“Аяа, ЭЗЭН, би гуйя, амийг минь авраач!” гэв."
                 }
               ],
               "indent": 0
@@ -48005,7 +48005,7 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Аяа, ЭЗЭН Та Өөрийн нутагт ивээлээ үзүүлсэн."
+                  "text": "Аяа, ЭЗЭН, Та Өөрийн нутагт ивээлээ үзүүлсэн."
                 }
               ],
               "indent": 1
@@ -48059,7 +48059,7 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Аяа бидний авралын Тэнгэрбурхан,"
+                  "text": "Аяа, бидний авралын Тэнгэрбурхан,"
                 }
               ],
               "indent": 0
@@ -54215,7 +54215,7 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Аяа ЭЗЭН, Таны тухай дурсгал бүх үеүдэд хүрнэ."
+                  "text": "Аяа, ЭЗЭН, Таны тухай дурсгал бүх үеүдэд хүрнэ."
                 }
               ],
               "indent": 0
@@ -57064,7 +57064,7 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Аяа, ЭЗЭН Танд би магтан дуулна."
+                  "text": "Аяа, ЭЗЭН, Танд би магтан дуулна."
                 }
               ],
               "indent": 0
@@ -57514,78 +57514,6 @@
                 3
               ],
               "indent": 1
-            }
-          ]
-        },
-        {
-          "kind": "stanza",
-          "lines": [
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Эзэн, бидний өвөг дээдсийн Тэнгэрбурхан"
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Та ерөөлтэй, магтагдах болтугай."
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Таны нэр алдрыг"
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Үүрд мөнхөд магтан алдаршуулах болтугай."
-                }
-              ],
-              "indent": 0
-            }
-          ],
-          "phrases": [
-            {
-              "lineRange": [
-                0,
-                0
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                1,
-                1
-              ],
-              "indent": 0,
-              "role": "continuation"
-            },
-            {
-              "lineRange": [
-                2,
-                2
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                3,
-                3
-              ],
-              "indent": 0
             }
           ]
         }
@@ -58684,7 +58612,7 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Аяа Тэнгэрбурхан, би Танд шинэ дуу дуулна."
+                  "text": "Аяа, Тэнгэрбурхан, би Танд шинэ дуу дуулна."
                 }
               ],
               "indent": 0
@@ -58909,6 +58837,415 @@
       "source": {
         "kind": "common",
         "id": "psalter-text-psalm-144-1-10-psalm-prayer"
+      }
+    }
+  },
+  "Psalm 144:1-8": {
+    "stanzasRich": {
+      "blocks": [
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "I"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Гарыг минь дайтахад,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хурууг минь тулалдахад бэлтгэдэг,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Миний хад ЭЗЭН магтагдах болтугай!"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Миний хайр энэрэл ба миний цайз,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Миний бэхлэлт ба миний аврагч,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Миний бамбай ба миний хоргоддог Нэгэн,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Ард түмнийг минь миний дор захируулагч."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Аяа, ЭЗЭН, хүн гэгч нь юу болоод"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Та түүнийг мэддэг юм бэ?"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хүний хүү гэгч нь юу болоод"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Та түүний тухай боддог юм бэ?"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хүн амьсгалтай адил бөгөөд"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Өдрүүд нь улирч буй сүүдэр шиг билээ."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Аяа, ЭЗЭН, тэнгэрсээ бөхийлгөн"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "доош бууж ирээч!"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Утаа уугиулахаар уулсад хүрээч!"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Аянга цахилгаан цахиулан тараагаач!"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Сумнуудаа харваж,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "тэднийг бут цохиоч!"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Өндөр дээрээс мутраа сунган"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Намайг их уснаас,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Харийн хөвгүүдийн гараас салган чөлөөлөөч!"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Тэдний ам хоосон хуурмаг ярьдаг бөгөөд"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Баруун гар нь худлын баруун гар юм."
+                }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                4,
+                4
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                5,
+                5
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                6,
+                6
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                7,
+                7
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                8,
+                8
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                9,
+                9
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                10,
+                10
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                11,
+                11
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                12,
+                12
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                13,
+                13
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                14,
+                15
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                16,
+                16
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                17,
+                17
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                18,
+                19
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                20,
+                20
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                21,
+                21
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                22,
+                22
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                23,
+                23
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                24,
+                24
+              ],
+              "indent": 0
+            }
+          ],
+          "paragraphBoundaries": [
+            4,
+            8,
+            14,
+            20
+          ]
+        }
+      ],
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-Psalm 144:1-8"
       }
     }
   },
@@ -59242,7 +59579,7 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Аяа ЭЗЭН, Таны амнаас гарах үгийг сонсохдоо"
+                  "text": "Аяа, ЭЗЭН, Таны амнаас гарах үгийг сонсохдоо"
                 }
               ],
               "indent": 0
@@ -60713,7 +61050,7 @@
       }
     }
   },
-  "Psalm 139:1-18": {
+  "Psalm 139:1-12": {
     "stanzasRich": {
       "blocks": [
         {
@@ -61183,6 +61520,7 @@
             }
           ],
           "paragraphBoundaries": [
+            9,
             15,
             21,
             25
@@ -61191,7 +61529,7 @@
       ],
       "source": {
         "kind": "common",
-        "id": "psalter-text-Psalm 139:1-18"
+        "id": "psalter-text-Psalm 139:1-12"
       }
     }
   },
@@ -62458,12 +62796,21 @@
       }
     }
   },
-  "Psalm 144:11-15": {
+  "Psalm 144:9-15": {
     "stanzasRich": {
       "blocks": [
         {
           "kind": "stanza",
           "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "II"
+                }
+              ],
+              "indent": 0
+            },
             {
               "spans": [
                 {
@@ -62715,13 +63062,13 @@
             {
               "lineRange": [
                 3,
-                4
+                3
               ],
               "indent": 0
             },
             {
               "lineRange": [
-                5,
+                4,
                 5
               ],
               "indent": 0
@@ -62743,27 +63090,27 @@
             {
               "lineRange": [
                 8,
-                9
+                8
               ],
               "indent": 0
             },
             {
               "lineRange": [
-                10,
-                12
+                9,
+                10
               ],
               "indent": 0
             },
             {
               "lineRange": [
-                13,
-                14
+                11,
+                13
               ],
               "indent": 0
             },
             {
               "lineRange": [
-                15,
+                14,
                 15
               ],
               "indent": 0
@@ -62792,36 +63139,43 @@
             {
               "lineRange": [
                 19,
-                20
+                19
               ],
               "indent": 0
             },
             {
               "lineRange": [
-                21,
-                22
+                20,
+                21
               ],
               "indent": 0
             },
             {
               "lineRange": [
-                23,
-                24
+                22,
+                23
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                24,
+                25
               ],
               "indent": 0
             }
           ],
           "paragraphBoundaries": [
-            5,
-            8,
-            13,
-            18
+            6,
+            9,
+            14,
+            19
           ]
         }
       ],
       "source": {
         "kind": "common",
-        "id": "psalter-text-Psalm 144:11-15"
+        "id": "psalter-text-Psalm 144:9-15"
       }
     },
     "psalmPrayerRich": {
@@ -64012,12 +64366,201 @@
       }
     }
   },
-  "Psalm 139:23-24": {
+  "Psalm 139:13-18, 23-24": {
     "stanzasRich": {
       "blocks": [
         {
           "kind": "stanza",
           "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "II"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Учир нь Та гэдэс дотрыг минь хэлбэржүүлж"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эхийн минь хэвлийд намайг бүрдүүлжээ."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Би аймшигтай болоод"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "гайхамшигтай бүтээгдсэн тул"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Танд талархал өргөнө."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Таны үйлс гайхалтай бөгөөд"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Сэтгэл минь ч сайн мэднэ."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Намайг нууц дотор бүрэлдэж,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Газрын гүнд урнаар шаглагдаж байхад ч"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Яс минь Танаас нууцлагдаагүй."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Төрхөө олоогүй хөврөл байхад минь"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Таны нүд харж л байсан."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Надад тогтоогдсон өдрүүд болоогүй байхад"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Энэ бүгд номд тань бичигдсэн байжээ."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Аяа, Тэнгэрбурхан, надад хандсан бодлууд тань"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "хэчнээн нандин бэ!"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Нийлбэр нь хэчнээн их вэ!"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Би тэдгээрийг тоолбол"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "тэд элсний ширхгээс ч даван гарна."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Сэрэхдээ ч би Тантай хамт билээ."
+                }
+              ],
+              "indent": 0
+            },
             {
               "spans": [
                 {
@@ -64068,6 +64611,13 @@
             {
               "lineRange": [
                 0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
                 1
               ],
               "indent": 0
@@ -64082,23 +64632,148 @@
             {
               "lineRange": [
                 3,
-                3
+                4
               ],
               "indent": 0
             },
             {
               "lineRange": [
-                4,
-                4
+                5,
+                5
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                6,
+                6
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                7,
+                7
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                8,
+                8
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                9,
+                9
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                10,
+                10
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                11,
+                11
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                12,
+                12
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                13,
+                13
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                14,
+                14
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                15,
+                16
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                17,
+                17
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                18,
+                19
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                20,
+                20
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                21,
+                22
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                23,
+                23
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                24,
+                24
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                25,
+                25
               ],
               "indent": 0
             }
+          ],
+          "paragraphBoundaries": [
+            6,
+            11,
+            15,
+            21
           ]
         }
       ],
       "source": {
         "kind": "common",
-        "id": "psalter-text-Psalm 139:23-24"
+        "id": "psalter-text-Psalm 139:13-18, 23-24"
       }
     }
   },

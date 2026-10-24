@@ -50,7 +50,8 @@ describe('GOAL #128 D3 source-typo and fidelity correction guards', () => {
     expect(ledger).toContain('STC-007')
     expect(ledger).toContain('Тиймийн / туд')
     // B2 stays a fidelity restore — the book prints «Харагтун» (pp.833, 842).
-    expect(ledger).not.toContain('solemnities.json')
+    // (The file name `solemnities.json` is no proxy for B2 any more: STC-019
+    // records a different deviation in that file.)
     expect(ledger).not.toContain('Харагтүн')
   })
 

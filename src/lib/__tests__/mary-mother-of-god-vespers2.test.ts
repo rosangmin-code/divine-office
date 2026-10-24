@@ -30,7 +30,8 @@ const JAN1 = '2026-01-01' // Solemnity of Mary, Mother of God (Thursday)
 const WEEK1_SUN_VESPERS = ['Psalm 110:1-5, 7', 'Psalm 114:1-8', 'Revelation 19:1-7']
 
 // EP-II (Second Vespers) Magnificat antiphon — salvaged WI-25 audit §10.
-const EP2_MAGNIFICAT = 'Аяа Христ минь, дэлхий ертөнцийн Аврагч ба Эзэн минь'
+// The book (p.608) prints «Аяа» without the comma; the app adds it (2026-10-24).
+const EP2_MAGNIFICAT = 'Аяа, Христ минь, дэлхий ертөнцийн Аврагч ба Эзэн минь'
 // EP-I (First Vespers) Magnificat antiphon — must NOT leak into EP-II.
 const EP1_MAGNIFICAT = 'Бидний төлөө гэсэн агуу хайраар'
 // The day's proper collect (Төгсгөлийн даатгал залбирал, 264 chars).

@@ -50,7 +50,7 @@ const targets = [
   { ref: 'Psalm 67:2-8', week: 3, day: 'TUE', hour: 'lauds', expect: 334 },
   { ref: 'Psalm 8:2-10', week: 4, day: 'SAT', hour: 'lauds', expect: 509 },
   { ref: 'Psalm 135:1-12', week: 4, day: 'MON', hour: 'lauds', expect: 429 },
-  { ref: 'Psalm 144:1-10', week: 4, day: 'THU', hour: 'vespers', expect: 482 },
+  { ref: 'Psalm 144:9-15', week: 4, day: 'THU', hour: 'vespers', expect: 482 },
   { ref: 'Psalm 147:12-20', week: 4, day: 'FRI', hour: 'lauds', expect: 493 },
 ]
 

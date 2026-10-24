@@ -36,7 +36,14 @@ function run() {
     stdio: ['ignore', 'ignore', 'inherit'],
   })
 
-  const extracted = JSON.parse(fs.readFileSync(EXTRACT_PATH, 'utf8'))
+  // The app writes the vocative «Аяа» with a comma throughout. The book drops
+  // it in a few places to keep its layout (editor, 2026-10-23); the app puts
+  // it back (user decision 2026-10-24, source-typo-ledger STC-019).
+  const toAppForm = (v) =>
+    typeof v === 'string'
+      ? v.replace(/Аяа(?=\s)/g, 'Аяа,')
+      : Object.fromEntries(Object.entries(v).map(([k, x]) => [k, toAppForm(x)]))
+  const extracted = toAppForm(JSON.parse(fs.readFileSync(EXTRACT_PATH, 'utf8')))
 
   // 2. Load every psalter entry's injected seasonal_antiphons.
   const injected = {}

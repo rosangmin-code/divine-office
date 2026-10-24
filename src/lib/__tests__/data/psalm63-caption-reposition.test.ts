@@ -125,9 +125,9 @@ describe('GOAL #130 — Psalm 63 caption reposition · data assertions', () => {
       expect(data['Revelation 19:1-7'].stanzas[0][0]).toBe('Аллэлуяа!')
     })
 
-    it('Psalm 139:1-18 stanzas[0][0] === "I" (Roman-numeral part marker body start unchanged)', () => {
+    it('Psalm 139:1-12 stanzas[0][0] === "I" (Roman-numeral part marker body start unchanged)', () => {
       const data = read(PSALTER_TEXTS)
-      expect(data['Psalm 139:1-18'].stanzas[0][0]).toBe('I')
+      expect(data['Psalm 139:1-12'].stanzas[0][0]).toBe('I')
     })
 
     it('week-1.json SUN Lauds first psalm ref/title/default_antiphon are invariant (antiphon routing untouched)', () => {
