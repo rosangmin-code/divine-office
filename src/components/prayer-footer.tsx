@@ -138,7 +138,13 @@ export function PrayerFooter({ expanded: expandedProp }: PrayerFooterProps) {
     document.addEventListener('pointerdown', onPointerDown, true)
     document.addEventListener('pointerup', onPointerUp, true)
     document.addEventListener('click', onDocClick)
+    // 리스너가 붙었다는 표지. SSR 마크업에는 없고 이 effect 가 돈 뒤에만
+    // 생긴다 — 그 전의 스크롤·탭은 위 판정이 보지 못한다. e2e 는 이 표지를
+    // 기다린 뒤 제스처를 시작한다 (D10 불안정 원인, bug-reports 2026-10-25).
+    const root = rootRef.current
+    root?.setAttribute('data-tap-armed', 'true')
     return () => {
+      root?.removeAttribute('data-tap-armed')
       window.removeEventListener('scroll', onScroll, true)
       document.removeEventListener('pointerdown', onPointerDown, true)
       document.removeEventListener('pointerup', onPointerUp, true)

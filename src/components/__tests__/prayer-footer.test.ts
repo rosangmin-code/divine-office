@@ -263,4 +263,17 @@ describe('PrayerFooter — interaction code path (source-grep)', () => {
     expect(code).toMatch(/onPanelKeyDown/)
     expect(code).toMatch(/['"]Tab['"]/)
   })
+
+  // 2026-10-25 — e2e D10 은 리스너가 붙기 전에 스크롤해 절반 넘게 실패했다.
+  // `data-tap-armed` 는 effect 가 리스너를 붙인 뒤에만 생겨야 e2e 의 대기가
+  // 의미가 있다: SSR 마크업에 있으면 대기가 즉시 통과해 버린다.
+  it('marks data-tap-armed only after the body-tap listeners attach (not in SSR)', () => {
+    expect(collapsedHtml()).not.toContain('data-tap-armed')
+    const code = sourceCode()
+    const click = code.search(/document\.addEventListener\(\s*['"]click['"]/)
+    const armed = code.search(/setAttribute\(\s*['"]data-tap-armed['"]/)
+    expect(click).toBeGreaterThan(-1)
+    expect(armed).toBeGreaterThan(click)
+    expect(code).toMatch(/removeAttribute\(\s*['"]data-tap-armed['"]/)
+  })
 })

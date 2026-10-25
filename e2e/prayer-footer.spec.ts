@@ -22,11 +22,22 @@ type ViewportName = keyof typeof VIEWPORTS
 
 const PRAY_URL = `/pray/${DATES.ordinaryWeekday}/lauds`
 
+// 본문 탭 제스처 리스너가 붙을 때까지 기다린다. page.goto 는 하이드레이션
+// 전에 돌아오므로, 그 사이의 스크롤·탭은 판정에 잡히지 않는다 — D10 이
+// 절반 넘게 실패하던 원인 (docs/bug-reports/2026-10-25-e2e-d10-scroll-tap-flaky.md).
+async function waitForTapArmed(page: import('@playwright/test').Page) {
+  await expect(page.locator('[data-role="prayer-footer-root"]')).toHaveAttribute(
+    'data-tap-armed',
+    'true',
+  )
+}
+
 // Helper — 본문(제목 텍스트) 가벼운 탭으로 패널 오픈. h1(시간전례명)은
 // 비인터랙티브 텍스트라 document click 리스너가 패널을 연다.
 async function openPanelByBodyTap(page: import('@playwright/test').Page) {
   const panel = page.locator('[data-role="prayer-footer-content"]')
   await expect(panel).toHaveAttribute('data-expanded', 'false')
+  await waitForTapArmed(page)
   await page.getByRole('heading', { level: 1 }).click()
   await expect(panel).toHaveAttribute('data-expanded', 'true')
 }
@@ -43,6 +54,7 @@ for (const variant of Object.keys(VIEWPORTS) as ViewportName[]) {
       await expect(panel).toHaveAttribute('data-expanded', 'false')
       await expect(page.locator('[data-role="prayer-footer-strip"]')).toHaveCount(0)
       // 본문 탭 → 오픈 + 첫 메뉴(설정 링크) auto-focus.
+      await waitForTapArmed(page)
       await page.getByRole('heading', { level: 1 }).click()
       await expect(panel).toHaveAttribute('data-expanded', 'true')
       await expect(page.locator('[data-role="prayer-footer-menu-settings"]')).toBeFocused()
@@ -181,6 +193,9 @@ for (const variant of Object.keys(VIEWPORTS) as ViewportName[]) {
       const tapX = 8
       const tapY = Math.round(VIEWPORTS[variant].height / 2)
 
+      // 리스너가 붙기 전에 굴리면 스크롤이 기록되지 않아 다음 탭이 '조용할
+      // 때의 탭'으로 열린다 (2026-10-25 실측: 실패 6/6 이 그 순서였다).
+      await waitForTapArmed(page)
       await page.mouse.wheel(0, 600)
       // mouse.wheel 은 스크롤 완료를 기다리지 않는다 — 실제 scroll 이
       // 일어난 것을 확인한 직후에 탭해야 '스크롤 직후' 시나리오가 된다.
