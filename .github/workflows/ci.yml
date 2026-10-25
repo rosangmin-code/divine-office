@@ -36,7 +36,9 @@ jobs:
       # 16.3.5) 로 critical 0, pdfjs-dist 6.3.289 이관(라이브러리 + public/
       # pdf.worker.min.mjs legacy worker 사본 동시 교체 + sw.js CACHE_VERSION
       # v84) 으로 GHSA-hq66-cqwq-w95j 가 해소되어 high 도 0 이다.
-      # 잔여 moderate/low 는 devDeps 뿐이라 `--omit=dev` 로 제외된다.
+      # 2026-10-25 next 16.4.3 · zod 4.6.7 로 새 권고(next critical, zod
+      # high) 해소 — 다시 0. 잔여 권고는 devDeps(vitest·vite·brace-expansion)
+      # 뿐이라 `--omit=dev` 로 제외된다.
       - name: npm audit (runtime deps, high)
         run: npm audit --omit=dev --audit-level=high
 
