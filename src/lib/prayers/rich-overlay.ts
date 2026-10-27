@@ -395,18 +395,32 @@ function loadPsalterHeadersCatalog(): PsalterHeadersCatalog | null {
 
 /**
  * Look up the FR-160-C psalter-header preface metadata for a given
- * canonical psalter ref (e.g. "Psalm 149:1-9"). Returns the first
- * recorded entry (patristic Father preface or NT typological citation)
- * or null when no header is authored. The catalog can have multiple
- * entries per ref when the same psalm appears in different liturgical
- * positions; the loader currently surfaces the first.
+ * canonical psalter ref (e.g. "Psalm 149:1-9"). Returns the recorded entry
+ * (patristic Father preface, NT typological citation or uncited caption)
+ * or null when no header is authored.
+ *
+ * Each catalog entry is one printing: the same psalm appears in different
+ * liturgical positions and the book prints a header at some of them and
+ * not at others (Part II of a split psalm, the Christmas / Pentecost EP I
+ * propers). With `page` (the occurrence's `PsalmEntry.page`) the loader
+ * picks the entry printed at that place — the nearest one within ±1 page,
+ * since a header can sit at the foot of the page before the body — and
+ * returns null when there is none. Without `page` it returns the first
+ * entry. 2026-10-27, docs/bug-reports/2026-10-27-psalm-header-audit.md
  */
-export function loadPsalterHeaderRich(ref: string): PsalterHeaderRich | null {
+export function loadPsalterHeaderRich(ref: string, page?: number): PsalterHeaderRich | null {
   const catalog = loadPsalterHeadersCatalog()
   if (!catalog?.refs) return null
   const entry = catalog.refs[ref]
   if (!entry?.entries || entry.entries.length === 0) return null
-  return entry.entries[0]
+  if (page == null) return entry.entries[0]
+  let best: PsalterHeaderRich | null = null
+  for (const e of entry.entries) {
+    if (e.page == null) continue
+    const d = Math.abs(e.page - page)
+    if (d <= 1 && (best?.page == null || d < Math.abs(best.page - page))) best = e
+  }
+  return best
 }
 
 export function __resetRichOverlayCache(): void {

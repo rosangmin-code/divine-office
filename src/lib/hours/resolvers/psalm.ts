@@ -84,7 +84,7 @@ export async function resolvePsalm(
       psalmPrayerOverride != null
         ? undefined
         : (loadPsalterTextPsalmPrayerRich(entry.ref) ?? undefined)
-    const headerRich = loadPsalterHeaderRich(entry.ref) ?? undefined
+    const headerRich = loadPsalterHeaderRich(entry.ref, entry.page) ?? undefined
     return {
       psalmType: entry.type,
       reference: entry.ref,
@@ -164,7 +164,7 @@ export async function resolvePsalm(
     psalmPrayerPage: entry.psalmPrayerPage ?? psalmText?.psalmPrayerPage,
     page: entry.page,
     antiphonPage: entry.antiphonPage,
-    headerRich: loadPsalterHeaderRich(entry.ref) ?? undefined,
+    headerRich: loadPsalterHeaderRich(entry.ref, entry.page) ?? undefined,
     ...(entry.continuesInNextPart ? CONTINUES_IN_NEXT_PART : {}),
   }
 }

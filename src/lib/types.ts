@@ -934,7 +934,8 @@ export interface PageRedirectBodyMeta {
 // typological citation pointing to a NT verse that prefigures the psalm
 // (Үйлс / Матай / Иохан / Лук / Марк / Ром / Еврей / Ефес / Галат /
 // Илчлэл / Филиппой). Catalog: src/data/loth/prayers/commons/
-// psalter-headers.rich.json. Loader: loadPsalterHeaderRich(ref).
+// psalter-headers.rich.json. Loader: loadPsalterHeaderRich(ref, page) — one entry
+// per printing, picked by the occurrence page (±1).
 //
 // GOAL #130 — a third kind `uncited_caption` was added for the Psalm 63 Lauds
 // caption (`Гэм нүглийн … тэмүүлнэ.`): a 2-line caption that carries NO

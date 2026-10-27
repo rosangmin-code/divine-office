@@ -108,14 +108,13 @@ describe('FR-160-C psalter-headers catalog', () => {
     expect(header).toBeNull()
   })
 
-  // FR-160-C peer R1 finding: loader returns entries[0] without
-  // occurrence-context disambiguation. The schema permits multiple
-  // entries per ref (same psalm at different liturgical pages), so
-  // until we add page-aware lookup, the catalog MUST keep all entries
-  // for a single ref semantically equivalent (same kind + attribution).
-  // This invariant is asserted in tests so a future audit that adds a
-  // divergent header for the same ref fails CI loudly instead of
-  // silently rendering the wrong metadata.
+  // FR-160-C peer R1 finding: the loader used to return entries[0] without
+  // occurrence-context disambiguation, so all entries of a ref had to be
+  // semantically equivalent (same kind + attribution). Since 2026-10-27 the
+  // loader is page-aware (one entry per printing, picked by the occurrence
+  // page — see the page-aware tests below), so this is now a data sanity
+  // check: every printing of a psalm in the book cites the same source
+  // (the wording may differ — Psalm 67 p.333 drops «Иймээс»).
   it('multi-entry refs have semantically equivalent attribution+kind', () => {
     const raw = JSON.parse(readFileSync(CATALOG_PATH, 'utf-8'))
     const violations: Array<{
@@ -158,6 +157,48 @@ describe('FR-160-C psalter-headers catalog', () => {
       'Тэнгэрбурханыг хүсэн тэмүүлнэ.',
     )
     expect(header!.attribution).toBeUndefined()
+  })
+
+  // 2026-10-27 — page-aware lookup: one entry per printing, picked by the
+  // occurrence page (±1). docs/bug-reports/2026-10-27-psalm-header-audit.md
+  describe('page-aware lookup (occurrence page)', () => {
+    // @fr FR-160-C
+    it('picks the printing at that page — Psalm 67 p.333 drops «Иймээс», p.239 keeps it', () => {
+      expect(loadPsalterHeaderRich('Psalm 67:2-8', 333)!.preface_text).toMatch(/^Тэнгэрбурханы энэхүү аврал/)
+      expect(loadPsalterHeaderRich('Psalm 67:2-8', 239)!.preface_text).toMatch(/^Иймээс Тэнгэрбурханы/)
+    })
+
+    // @fr FR-160-C
+    it('accepts a header printed one page before or after the body page', () => {
+      // Psalm 110 W3 SUN vespers: header at the foot of p.304, body from p.305
+      const h = loadPsalterHeaderRich('Psalm 110:1-5, 7', 305)
+      expect(h?.page).toBe(304)
+      expect(h?.attribution).toBe('1 Коринт 15:25')
+    })
+
+    // @fr FR-160-C
+    it('returns null where the book prints no header for that printing', () => {
+      // Christmas EP I proper (p.582) and Pentecost EP I (p.732) print Psalm 113 bare;
+      // the W3 SAT vespers printing (p.287) carries Лук 1:52
+      expect(loadPsalterHeaderRich('Psalm 113:1-9', 287)?.attribution).toBe('Лук 1:52')
+      expect(loadPsalterHeaderRich('Psalm 113:1-9', 582)).toBeNull()
+      expect(loadPsalterHeaderRich('Psalm 113:1-9', 732)).toBeNull()
+      // Part II of a split psalm: no copy of the Part I header
+      expect(loadPsalterHeaderRich('Psalm 136:10-26', 434)).toBeNull()
+      expect(loadPsalterHeaderRich('Psalm 135:13-21', 385)).toBeNull()
+    })
+
+    // @fr FR-160-C
+    it('Psalm 27 Part II carries its own header (p.118), not the Part I one', () => {
+      const h = loadPsalterHeaderRich('Psalm 27:7-14', 118)
+      expect(h?.attribution).toBe('Марк 14:57')
+      expect(h?.preface_text).toBe('Зарим нь босоод, Есүсийн эсрэг хуурамчаар гэрчлэв')
+    })
+
+    // @fr FR-160-C
+    it('without a page returns the first entry (unchanged callers)', () => {
+      expect(loadPsalterHeaderRich('Psalm 67:2-8')).toEqual(loadPsalterHeaderRich('Psalm 67:2-8', 30))
+    })
   })
 
   // F-X9 (#362) invariant — preface_text must NOT carry the PDF title prefix

@@ -1,5 +1,5 @@
 {
-  "_doc": "FR-160-C psalter-headers catalog. Patristic Father preface + NT typological citation that appear at psalm-header position in the Mongolian LOTH PDF (between \"Дуулал N\" title and the first verse). Loader: src/lib/prayers/rich-overlay.ts::loadPsalterHeaderRich(ref). Renderer: src/components/psalm-block.tsx — PsalterHeaderRich block above the psalm body. Multiple entries per ref are possible because the same psalm reappears in different liturgical positions (different PDF pages) with different patristic/typological prefaces. Source: scripts/extract-psalter-headers.js (raw-text pattern match against parsed_data/full_pdf.txt) → scripts/build-psalter-headers-catalog.js. PDF evidence: page + evidence_line_range[start,end] line numbers in parsed_data/full_pdf.txt. See PRD §12.1 FR-160-C, NFR-009h.",
+  "_doc": "FR-160-C psalter-headers catalog. Patristic Father preface + NT typological citation that appear at psalm-header position in the Mongolian LOTH PDF (between \"Дуулал N\" title and the first verse). Loader: src/lib/prayers/rich-overlay.ts::loadPsalterHeaderRich(ref, page) — one entry per printing; the loader picks the entry printed at the occurrence page (±1), and no entry near that page means the book prints no header there (2026-10-27, docs/bug-reports/2026-10-27-psalm-header-audit.md). Renderer: src/components/psalm-block.tsx — PsalterHeaderRich block above the psalm body. Multiple entries per ref are possible because the same psalm reappears in different liturgical positions (different PDF pages) with different patristic/typological prefaces. Source: scripts/extract-psalter-headers.js (raw-text pattern match against parsed_data/full_pdf.txt) → scripts/build-psalter-headers-catalog.js. PDF evidence: page + evidence_line_range[start,end] line numbers in parsed_data/full_pdf.txt. See PRD §12.1 FR-160-C, NFR-009h.",
   "refs": {
     "Psalm 63:2-9": {
       "entries": [
@@ -187,21 +187,6 @@
       ]
     },
     "Psalm 27:1-6": {
-      "entries": [
-        {
-          "kind": "nt_typological",
-          "attribution": "Илчлэл 21:3",
-          "preface_text": "Одоо Тэнгэрбурхан үнэхээр миний дотор оршдог",
-          "page": 116,
-          "source": "extracted",
-          "evidence_line_range": [
-            3824,
-            3827
-          ]
-        }
-      ]
-    },
-    "Psalm 27:7-14": {
       "entries": [
         {
           "kind": "nt_typological",
@@ -568,9 +553,9 @@
         {
           "kind": "nt_typological",
           "attribution": "Илчлэл 22:20",
-          "preface_text": ": Ирээрэй, Эзэн Есүс ээ!",
+          "preface_text": "Ирээрэй, Эзэн Есүс ээ!",
           "page": 246,
-          "source": "extracted",
+          "source": "manual",
           "evidence_line_range": [
             8338,
             8340
@@ -874,10 +859,10 @@
       "entries": [
         {
           "kind": "nt_typological",
-          "attribution": "1 Петр 2:9",
+          "attribution": "харьцуул. 1 Петр 2:9",
           "preface_text": "Тэрээр Өөрийнхөө төлөө бид нарыг Өөртөө авсан бөгөөд [...] та нарын төлөө Түүний хүчирхэг үйлдлийг тунхаглах ёстой. Тэрээр харанхуйгаас та нарыг Өөрийн гайхамшигт гэрэл рүү дуудсан",
           "page": 383,
-          "source": "extracted",
+          "source": "manual",
           "evidence_line_range": [
             13217,
             13223
@@ -885,28 +870,13 @@
         },
         {
           "kind": "nt_typological",
-          "attribution": "1 Петр 2:9",
+          "attribution": "харьцуул. 1 Петр 2:9",
           "preface_text": "Тэрээр Өөрийнхөө төлөө бид нарыг Өөртөө авсан бөгөөд [...] та нарын төлөө Түүний хүчирхэг үйлдлийг тунхаглах ёстой. Тэрээр харанхуйгаас та нарыг Өөрийн гайхамшигт гэрэл рүү дуудсан",
           "page": 428,
-          "source": "extracted",
+          "source": "manual",
           "evidence_line_range": [
             14784,
             14790
-          ]
-        }
-      ]
-    },
-    "Psalm 135:13-21": {
-      "entries": [
-        {
-          "kind": "nt_typological",
-          "attribution": "1 Петр 2:9",
-          "preface_text": "Тэрээр Өөрийнхөө төлөө бид нарыг Өөртөө авсан бөгөөд [...] та нарын төлөө Түүний хүчирхэг үйлдлийг тунхаглах ёстой. Тэрээр харанхуйгаас та нарыг Өөрийн гайхамшигт гэрэл рүү дуудсан",
-          "page": 383,
-          "source": "extracted",
-          "evidence_line_range": [
-            13217,
-            13223
           ]
         }
       ]
@@ -957,21 +927,6 @@
       ]
     },
     "Psalm 136:1-9": {
-      "entries": [
-        {
-          "kind": "patristic_preface",
-          "attribution": "Кассиодор",
-          "preface_text": "Бид Тэнгэрбуханы гайхамшгуудыг дурсан санаснаараа Түүнийг магтдаг",
-          "page": 432,
-          "source": "extracted",
-          "evidence_line_range": [
-            14951,
-            14953
-          ]
-        }
-      ]
-    },
-    "Psalm 136:10-26": {
       "entries": [
         {
           "kind": "patristic_preface",
@@ -1051,9 +1006,9 @@
         {
           "kind": "patristic_preface",
           "attribution": "Арнобиус",
-          "preface_text": "аз жаргалтай болох гэдэг нь ямар утгатай вэ гэдгээ мэддэг Энэ насандаа Эзэнийг магтах гэдэг нь бидний бүх хийх үйлс Түүний сүр жавхланд зориулагдах байх хэрэгтэй гэсэн утгатай",
+          "preface_text": "Энэ насандаа Эзэнийг магтах гэдэг нь бидний бүх хийх үйлс Түүний сүр жавхланд зориулагдах байх хэрэгтэй гэсэн утгатай",
           "page": 460,
-          "source": "extracted",
+          "source": "manual",
           "evidence_line_range": [
             15929,
             15934
@@ -1116,6 +1071,943 @@
           ]
         }
       ]
+    },
+    "Psalm 142:1-7": {
+      "entries": [
+        {
+          "kind": "patristic_preface",
+          "attribution": "Гэгээн Хилайр",
+          "preface_text": "Энэхүү дуулал дээр бичсэн нь бидний Эзэний тарчлалтаар биелэгдэж байжээ",
+          "page": 52,
+          "source": "manual",
+          "evidence_line_range": [
+            1650,
+            1652
+          ]
+        }
+      ]
+    },
+    "Daniel 3:57-88, 56": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Илчлэл 19:5",
+          "preface_text": "Эзэний бүх боолууд аа, Түүндээ магтаалыг өргөгтүн",
+          "page": 60,
+          "source": "manual",
+          "evidence_line_range": [
+            1938,
+            1939
+          ]
+        },
+        {
+          "kind": "nt_typological",
+          "attribution": "Илчлэл 19:5",
+          "preface_text": "Эзэний бүх боолууд аа, Түүндээ магтаалыг өргөгтүн",
+          "page": 296,
+          "source": "manual",
+          "evidence_line_range": [
+            10403,
+            10404
+          ]
+        }
+      ]
+    },
+    "Psalm 110:1-5, 7": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "1 Коринт 15:25",
+          "preface_text": "Учир нь бүх дайснаа хөл дороо оруулах хүртэл Христийн хаанчлал ноёрхох ёстой",
+          "page": 68,
+          "source": "manual",
+          "evidence_line_range": [
+            2216,
+            2218
+          ]
+        },
+        {
+          "kind": "nt_typological",
+          "attribution": "1 Коринт 15:25",
+          "preface_text": "Учир нь бүх дайснаа хөл дороо оруулах хүртэл Христийн хаанчлал ноёрхох ёстой",
+          "page": 185,
+          "source": "manual",
+          "evidence_line_range": [
+            6390,
+            6392
+          ]
+        },
+        {
+          "kind": "nt_typological",
+          "attribution": "1 Коринт 15:25",
+          "preface_text": "Учир нь бүх дайснаа хөл дороо оруулах хүртэл Христийн хаанчлал ноёрхох ёстой",
+          "page": 304,
+          "source": "manual",
+          "evidence_line_range": [
+            10699,
+            10701
+          ]
+        },
+        {
+          "kind": "nt_typological",
+          "attribution": "1 Коринт 15:25",
+          "preface_text": "Учир нь бүх дайснаа хөл дороо оруулах хүртэл Христийн хаанчлал ноёрхох ёстой",
+          "page": 415,
+          "source": "manual",
+          "evidence_line_range": [
+            14740,
+            14742
+          ]
+        }
+      ]
+    },
+    "Psalm 5:2-10, 12-13": {
+      "entries": [
+        {
+          "kind": "uncited_caption",
+          "preface_text": "Үгийг зүрх сэтгэлийнхээ зочин болгон, хүлээн авдаг тэдгээр нь цаглашгүй баяр баясгаланг эдлэх болно",
+          "page": 77,
+          "source": "manual",
+          "evidence_line_range": [
+            2532,
+            2534
+          ]
+        }
+      ]
+    },
+    "1 Chronicles 29:10-13": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Ефес 1:3",
+          "preface_text": "Бидний Эзэн Есүс Христийн Эцэг Тэнгэрбурхан магтагдах болтугай.",
+          "page": 79,
+          "source": "manual",
+          "evidence_line_range": [
+            2604,
+            2605
+          ]
+        }
+      ]
+    },
+    "Psalm 15:1-5": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Еврей 12:22",
+          "preface_text": "Та нар Сион уул, амьд Тэнгэрбурханы хот, тэнгэрлэг Йерусалим руу ирсэн билээ",
+          "page": 86,
+          "source": "manual",
+          "evidence_line_range": [
+            2857,
+            2859
+          ]
+        }
+      ]
+    },
+    "Psalm 24:1-10": {
+      "entries": [
+        {
+          "kind": "patristic_preface",
+          "attribution": "Гэгээн Иреней",
+          "preface_text": "Христ Өөртөө авсан хүний мөн чанар дотор бидний төлөө тэнгэрийг нээсэн",
+          "page": 92,
+          "source": "manual",
+          "evidence_line_range": [
+            3068,
+            3069
+          ]
+        }
+      ]
+    },
+    "Tobit 13:1-8": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "1 Петр 1:3",
+          "preface_text": "Эзэн Есүс Христийн маань Тэнгэрбурхан ба Эцэг магтагдах болтугай. Учир нь Тэнгэрбурхан бидний төлөөх Өөрийн агуу өршөөлөөр биднийг дахин төрүүлсэн.",
+          "page": 94,
+          "source": "manual",
+          "evidence_line_range": [
+            3133,
+            3136
+          ]
+        }
+      ]
+    },
+    "Psalm 21:2-8, 14": {
+      "entries": [
+        {
+          "kind": "patristic_preface",
+          "attribution": "Гэгээн Хилайр",
+          "preface_text": "Тэр амилах ба мөнхөд амьдрахын тулд амьдралыг хүлээн зөвшөөрсөн",
+          "page": 103,
+          "source": "manual",
+          "evidence_line_range": [
+            3460,
+            3461
+          ]
+        }
+      ]
+    },
+    "Judith 16:2-3a, 13-15": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Илчлэл 5:9",
+          "preface_text": "Тэд шинэ дуу дуулж байсан",
+          "page": 111,
+          "source": "manual",
+          "evidence_line_range": [
+            3747,
+            3747
+          ]
+        }
+      ]
+    },
+    "Psalm 27:7-14": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Марк 14:57",
+          "preface_text": "Зарим нь босоод, Есүсийн эсрэг хуурамчаар гэрчлэв",
+          "page": 118,
+          "source": "manual",
+          "evidence_line_range": [
+            3997,
+            3998
+          ]
+        }
+      ]
+    },
+    "Jeremiah 31:10-14": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Иохан 11:51, 52",
+          "preface_text": "Есүс зөвхөн үндэстнийхээ төлөө бус харин Тэнгэрбурханы тарсан хүүхдүүдийг бөөгнүүлж нэгтгэхийн төлөө үхэх ёстой",
+          "page": 127,
+          "source": "manual",
+          "evidence_line_range": [
+            4312,
+            4314
+          ]
+        }
+      ]
+    },
+    "Isaiah 45:15-26": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Филиппой 2:10",
+          "preface_text": "Есүсийн нэрд бүгд өвдөг сөгдөх болно",
+          "page": 144,
+          "source": "manual",
+          "evidence_line_range": [
+            4949,
+            4950
+          ]
+        }
+      ]
+    },
+    "Psalm 100:1-5": {
+      "entries": [
+        {
+          "kind": "patristic_preface",
+          "attribution": "Гэгээн Атаназ",
+          "preface_text": "Эзэн Өөрийн цагаадсан ард түмэндээ ялалтын дуунуудыг дуулахаар дуудаж байна",
+          "page": 147,
+          "source": "manual",
+          "evidence_line_range": [
+            5039,
+            5041
+          ]
+        },
+        {
+          "kind": "patristic_preface",
+          "attribution": "Гэгээн Атаназ",
+          "preface_text": "Эзэн Өөрийн цагаадсан ард түмэндээ ялалтын дуунуудыг дуулахаар дуудаж байна",
+          "page": 379,
+          "source": "manual",
+          "evidence_line_range": [
+            13456,
+            13458
+          ]
+        }
+      ]
+    },
+    "Exodus 15:1-4a, 8-13, 17-18": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "харьцуул. Илчлэл 15:2-3",
+          "preface_text": "Араатныг хөрөгтэй нь, нэрийн тоотой нь тэмцэн ялсан хүмүүс Тэнгэрбурханы зарц Мосегийн дууг дуулав",
+          "page": 160,
+          "source": "manual",
+          "evidence_line_range": [
+            5511,
+            5513
+          ]
+        }
+      ]
+    },
+    "Daniel 3:52-57": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Ром 1:25",
+          "preface_text": "Тэнгэрбурхан бол үүрд магтагдах Бүтээгч мөн",
+          "page": 179,
+          "source": "manual",
+          "evidence_line_range": [
+            6174,
+            6175
+          ]
+        },
+        {
+          "kind": "nt_typological",
+          "attribution": "Ром 1:25",
+          "preface_text": "Тэнгэрбурхан бол үүрд магтагдах Бүтээгч мөн",
+          "page": 409,
+          "source": "manual",
+          "evidence_line_range": [
+            14520,
+            14521
+          ]
+        }
+      ]
+    },
+    "Psalm 115:1-13": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "1 Тесалоник 1:9",
+          "preface_text": "Та нар үнэн бөгөөд амьд Тэнгэрбурханд үйлчлэхийн тулд шүтээнүүдээсээ татгалзсан",
+          "page": 186,
+          "source": "manual",
+          "evidence_line_range": [
+            6452,
+            6454
+          ]
+        }
+      ]
+    },
+    "Sirach 36:1-7, 13-16": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Иохан 17:3",
+          "preface_text": "Цорын ганц үнэн Тэнгэрбурхан Таныг болон Таны илгээсэн Есүс Христийг мэдэх нь мөнхийн амь мөн",
+          "page": 197,
+          "source": "manual",
+          "evidence_line_range": [
+            6845,
+            6847
+          ]
+        }
+      ]
+    },
+    "Psalm 19:2-7": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Лук 1:78, 79",
+          "preface_text": "Дорнын гэгээ дээрээс бидэнд айлчлан ирэх нь харанхуй хийгээд үхлийн сүүдэрт суугсдын дээр гийхийн тулд юм",
+          "page": 199,
+          "source": "manual",
+          "evidence_line_range": [
+            6901,
+            6903
+          ]
+        }
+      ]
+    },
+    "Isaiah 38:10-14, 17-20": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Илчлэл 1:17, 18",
+          "preface_text": "Эхэн ба эцэс нь Би бөгөөд амьд Нэгэн мөн. Би үхсэн байсан. Гэвч харагтун! Би үеийн үед амьд бөгөөд Надад үхлийн ба Үхэгсдийн орны түлхүүр бий.",
+          "page": 212,
+          "source": "manual",
+          "evidence_line_range": [
+            7382,
+            7385
+          ]
+        }
+      ]
+    },
+    "Psalm 77:2-13": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "2 Коринт 4:8",
+          "preface_text": "Бид бүх талаар дарамтлагдавч няцардаггүй, сандардаг ч цөхөрдөггүй",
+          "page": 227,
+          "source": "manual",
+          "evidence_line_range": [
+            7902,
+            7903
+          ]
+        }
+      ]
+    },
+    "1 Samuel 2:1-10": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Лук 1:52-53",
+          "preface_text": "Удирдагчдыг сэнтийгээс нь буулган даруу байгсдыг Тэр өргөмжлөв. Өлссөн хүмүүсийг сайнаар бялхуулав",
+          "page": 229,
+          "source": "manual",
+          "evidence_line_range": [
+            7996,
+            7998
+          ]
+        }
+      ]
+    },
+    "Psalm 97:1-12": {
+      "entries": [
+        {
+          "kind": "patristic_preface",
+          "attribution": "Гэгээн Атаназ",
+          "preface_text": "Энэ дуулал даян дэлхийн авралыг, мөн түүнчлэн хамаг үндэстнүүдийн ард түмнүүд Есүс Христэд итгэх болохуйг зөгнөдөг",
+          "page": 232,
+          "source": "manual",
+          "evidence_line_range": [
+            8081,
+            8083
+          ]
+        }
+      ]
+    },
+    "Isaiah 12:1-6": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Иохан 7:37",
+          "preface_text": "Цангасан хүн байвал Над руу ирж, уугтун.",
+          "page": 248,
+          "source": "manual",
+          "evidence_line_range": [
+            8680,
+            8681
+          ]
+        }
+      ]
+    },
+    "Habakkuk 3:2-4, 13a, 15-19": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Лук 21:28",
+          "preface_text": "Тэргүүнээ өргө. Учир нь та нарын золилт айсуй гэв",
+          "page": 265,
+          "source": "manual",
+          "evidence_line_range": [
+            9286,
+            9287
+          ]
+        }
+      ]
+    },
+    "Psalm 92:2-9": {
+      "entries": [
+        {
+          "kind": "patristic_preface",
+          "attribution": "Гэгээн Атаназ",
+          "preface_text": "Христийн цагаатгалын их үйлсийг магтан дуулцгаая",
+          "page": 279,
+          "source": "manual",
+          "evidence_line_range": [
+            9764,
+            9765
+          ]
+        },
+        {
+          "kind": "patristic_preface",
+          "attribution": "Гэгээн Атаназ",
+          "preface_text": "Христийн цагаатгалын их үйлсийг магтан дуулцгаая",
+          "page": 505,
+          "source": "manual",
+          "evidence_line_range": [
+            17982,
+            17983
+          ]
+        }
+      ]
+    },
+    "Deuteronomy 32:1-12": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Матай 23:37",
+          "preface_text": "Тахиа дэгдээхэйнүүдээ далавчин дороо бөөгнүүлдэг шиг Би хүүхдүүдийг чинь цуглуулахыг хэчнээн ч удаа хүслээ дээ",
+          "page": 281,
+          "source": "manual",
+          "evidence_line_range": [
+            9838,
+            9840
+          ]
+        }
+      ]
+    },
+    "Isaiah 2:2-5": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Илчлэл 15,4",
+          "preface_text": "Бүх үндэстэн Таны өмнө ирж, мөргөнө",
+          "page": 316,
+          "source": "manual",
+          "evidence_line_range": [
+            11125,
+            11126
+          ]
+        }
+      ]
+    },
+    "Psalm 96:1-13": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "харьцуул. Илчлэл 14:3",
+          "preface_text": "Одоо шинэ сэдэв тэдний тэнгэрлэг магтаалыг сэрээж байна, тэд Хурганыхан болсон",
+          "page": 317,
+          "source": "manual",
+          "evidence_line_range": [
+            11167,
+            11169
+          ]
+        }
+      ]
+    },
+    "Isaiah 26:1-6": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Илчлэл 21:14",
+          "preface_text": "Хотын хэрэм нь арван хоёр суурьтай",
+          "page": 332,
+          "source": "manual",
+          "evidence_line_range": [
+            11705,
+            11706
+          ]
+        }
+      ]
+    },
+    "Psalm 131:1-3": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Матай 11:29",
+          "preface_text": "Надаас сур. Би дөлгөөн, зүрхэндээ даруу",
+          "page": 338,
+          "source": "manual",
+          "evidence_line_range": [
+            11947,
+            11948
+          ]
+        }
+      ]
+    },
+    "Psalm 86:1-17": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "2 Коринт 1:3, 4",
+          "preface_text": "Бүх сорилтод биднийг тайвшруулдаг Тэнгэрбурхан ерөөлтэй еэ",
+          "page": 344,
+          "source": "manual",
+          "evidence_line_range": [
+            12150,
+            12151
+          ]
+        },
+        {
+          "kind": "nt_typological",
+          "attribution": "2 Коринт 1:3, 4",
+          "preface_text": "Бүх сорилтод биднийг тайвшруулдаг Тэнгэрбурхан ерөөлтэй еэ",
+          "page": 523,
+          "source": "manual",
+          "evidence_line_range": [
+            18615,
+            18616
+          ]
+        }
+      ]
+    },
+    "Isaiah 33:13-16": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Үйлс 2:39",
+          "preface_text": "Учир нь уг амлалт та нар болон та нарын хүүхдүүдийнх төдийгүй бас алсад байх бүгдийнх бөгөөд манай Тэнгэрбурхан Эзэнээр дуудагдсан болгоных билээ гэв",
+          "page": 346,
+          "source": "manual",
+          "evidence_line_range": [
+            12244,
+            12247
+          ]
+        }
+      ]
+    },
+    "Psalm 98:1-9": {
+      "entries": [
+        {
+          "kind": "patristic_preface",
+          "attribution": "Гэгээн Атаназ",
+          "preface_text": "Энэ дуулал Эзэнийг анх ирэхэд бүх улс үндэстнүүдийн ард түмнүүд Түүнд итгэх болно гэдгийн тухай өгүүлдэг",
+          "page": 348,
+          "source": "manual",
+          "evidence_line_range": [
+            12300,
+            12302
+          ]
+        }
+      ]
+    },
+    "Psalm 126:1-6": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "2 Коринт 1:7",
+          "preface_text": "Та нар зовлонг маань хуваалцдаг шигээ тайвшралыг маань ч хуваалцдагийг бид мэднэ",
+          "page": 352,
+          "source": "manual",
+          "evidence_line_range": [
+            12450,
+            12451
+          ]
+        }
+      ]
+    },
+    "Psalm 127:1-5": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "1 Коринт 3:9",
+          "preface_text": "Та нар Тэнгэрбурханы барилга мөн",
+          "page": 353,
+          "source": "manual",
+          "evidence_line_range": [
+            12499,
+            12500
+          ]
+        }
+      ]
+    },
+    "Isaiah 40:10-17": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Илчлэл 22, 12",
+          "preface_text": "Харагтун, Би удахгүй ирнэ. Буцаан төлөх шагнал минь Надтай хамт байгаа",
+          "page": 361,
+          "source": "manual",
+          "evidence_line_range": [
+            12797,
+            12798
+          ]
+        }
+      ]
+    },
+    "Psalm 99:1-9": {
+      "entries": [
+        {
+          "kind": "patristic_preface",
+          "attribution": "Гэгээн Атаназ",
+          "preface_text": "Херубуудын дээр заларсан Христ Та бидний сул дорой байдлыг Өөртөө авахдаа нүгэлт хорвоог маань өөрчилсөн",
+          "page": 363,
+          "source": "manual",
+          "evidence_line_range": [
+            12859,
+            12861
+          ]
+        }
+      ]
+    },
+    "Jeremiah 14:17-21": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Марк 1:15",
+          "preface_text": "Тэр цаг биелэлээ оллоо. Тэнгэрбурханы хаанчлал айсуй. Гэмшиж, сайнмэдээнд итгэгтүн гэж байлаа",
+          "page": 378,
+          "source": "manual",
+          "evidence_line_range": [
+            13402,
+            13404
+          ]
+        }
+      ]
+    },
+    "Wisdom 9:1-6, 9-11": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Лук 21:15",
+          "preface_text": "Та нарыг эсэргүүцэгчдээс нэг нь ч эсэргүүцэж, хориглож чадахааргүй үг болоод мэргэн ухааныг Би та нарт өгөх болно",
+          "page": 392,
+          "source": "manual",
+          "evidence_line_range": [
+            13918,
+            13920
+          ]
+        }
+      ]
+    },
+    "Psalm 130:1-8": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Матай 1:21",
+          "preface_text": "Тэр ард түмнээ нүглээс нь аврах болно",
+          "page": 400,
+          "source": "manual",
+          "evidence_line_range": [
+            14186,
+            14187
+          ]
+        },
+        {
+          "kind": "nt_typological",
+          "attribution": "Матай 1:21",
+          "preface_text": "Тэр ард түмнээ нүглээс нь аврах болно",
+          "page": 532,
+          "source": "manual",
+          "evidence_line_range": [
+            18955,
+            18956
+          ]
+        }
+      ]
+    },
+    "Isaiah 42:10-16": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Илчлэл 14:3",
+          "preface_text": "Тэд Тэнгэрбурханы сэнтийн өмнө шинэ дуу дуулав",
+          "page": 426,
+          "source": "manual",
+          "evidence_line_range": [
+            15152,
+            15153
+          ]
+        }
+      ]
+    },
+    "Daniel 3:26-27, 29, 34-41": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Үйлс 3:19",
+          "preface_text": "Та бүх зүрх сэтгэлээрээ Тэнгэрбурханд хандвал тэр бүх нүглийг чинь арилгах болно",
+          "page": 442,
+          "source": "manual",
+          "evidence_line_range": [
+            15740,
+            15741
+          ]
+        }
+      ]
+    },
+    "Psalm 137:1-6": {
+      "entries": [
+        {
+          "kind": "patristic_preface",
+          "attribution": "Гэгээн Хилайр",
+          "preface_text": "Вавилоны олзлолт бол бидний сүнслэг олзлолтын нэг хэлбэр мөн",
+          "page": 449,
+          "source": "manual",
+          "evidence_line_range": [
+            15977,
+            15978
+          ]
+        }
+      ]
+    },
+    "Psalm 138:1-8": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "харьцуул. Илчлэл 21-24",
+          "preface_text": "Газар дэлхийн хаад Түүнд алдраа авчирна",
+          "page": 450,
+          "source": "manual",
+          "evidence_line_range": [
+            16030,
+            16031
+          ]
+        }
+      ]
+    },
+    "Isaiah 61:10-62:5": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Илчлэл 21:2",
+          "preface_text": "Ариун хот, шинэ Йерусалим нь нөхөртөө зориулан гоёсон сүйт бүсгүй мэт бэлтгэгдэн Тэнгэрбурханаас гарч, тэнгэрээс буун ирэхийг би харлаа",
+          "page": 459,
+          "source": "manual",
+          "evidence_line_range": [
+            16329,
+            16332
+          ]
+        }
+      ]
+    },
+    "Isaiah 66:10-14a": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Галат 4:26",
+          "preface_text": "Тэнгэрлэг Йерусалим бол эрх чөлөөтэй эмэгтэй ба бидний Эх мөн",
+          "page": 475,
+          "source": "manual",
+          "evidence_line_range": [
+            16911,
+            16912
+          ]
+        }
+      ]
+    },
+    "Psalm 147:1-11": {
+      "entries": [
+        {
+          "kind": "uncited_caption",
+          "preface_text": "Та бол Тэнгэрбурхан, бид Таныг магтъя, Та бол Эзэн, бид Таныг магтан дуулъя.",
+          "page": 476,
+          "source": "manual",
+          "evidence_line_range": [
+            16953,
+            16954
+          ]
+        }
+      ]
+    },
+    "Tobit 13:8-11, 13-15": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Илчлэл 21:10-11",
+          "preface_text": "Тэр намайг сүрлэг өндөр уулан дээр Сүнс дотор аваачаад Тэнгэрбурханаас гарч, тэнгэрээс буун ирж буй ариун хот Йерусалимыг үзүүллээ. Түүнд Тэнгэрбурханы алдар байлаа",
+          "page": 491,
+          "source": "manual",
+          "evidence_line_range": [
+            17485,
+            17488
+          ]
+        }
+      ]
+    },
+    "Ezekiel 36:24-28": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Илчлэл 21:3",
+          "preface_text": "Тэд Түүний ард түмэн болж,Тэнгэрбурхан Өөрөө тэдний дунд байж Тэнгэрбурхан нь болно",
+          "page": 507,
+          "source": "manual",
+          "evidence_line_range": [
+            18057,
+            18059
+          ]
+        }
+      ]
+    },
+    "Psalm 4": {
+      "entries": [
+        {
+          "kind": "patristic_preface",
+          "attribution": "Гэгээн Августин",
+          "preface_text": "Христийн амилалт Тэнгэрбурханы дээдийн бөгөөд туйлын гайхамшигтай их үйл байжээ",
+          "page": 512,
+          "source": "manual",
+          "evidence_line_range": [
+            18242,
+            18244
+          ]
+        }
+      ]
+    },
+    "Psalm 134": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Илчлэл 19:5",
+          "preface_text": "Түүний бүх боолууд аа, Түүнээс эмээгч их, бага бүгд ээ, Тэнгэрбурханд маань магтаалыг өргөгтүн",
+          "page": 514,
+          "source": "manual",
+          "evidence_line_range": [
+            18294,
+            18296
+          ]
+        }
+      ]
+    },
+    "Psalm 91:1-16": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Лук 10:19",
+          "preface_text": "Могой ба хилэнцэт хорхойнуудад халдах, дайсны хамаг хүчээс дээгүүрх эрх мэдлийг Би та нарт өгсөн",
+          "page": 517,
+          "source": "manual",
+          "evidence_line_range": [
+            18417,
+            18419
+          ]
+        }
+      ]
+    },
+    "Psalm 31:2-6": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Лук 23:46",
+          "preface_text": "Эцэг минь ээ, Таны гарт Би сүнсээ даатгая",
+          "page": 531,
+          "source": "manual",
+          "evidence_line_range": [
+            18926,
+            18927
+          ]
+        }
+      ]
+    },
+    "Psalm 16:1-11": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Үйлс 2:24",
+          "preface_text": "Тэнгэрбурхан үхлийн шаналлыг устгаж, Есүсийг амилуулав",
+          "page": 535,
+          "source": "manual",
+          "evidence_line_range": [
+            19080,
+            19081
+          ]
+        }
+      ]
+    },
+    "Psalm 88:2-19": {
+      "entries": [
+        {
+          "kind": "nt_typological",
+          "attribution": "Лук 22:53",
+          "preface_text": "Энэ цаг болоод харанхуйн хүч нь та нарынх юм",
+          "page": 539,
+          "source": "manual",
+          "evidence_line_range": [
+            19226,
+            19227
+          ]
+        }
+      ]
     }
   },
   "unmatched": {
@@ -1124,27 +2016,6 @@
         "kind": "nt_typological",
         "attribution": "Еврей 3:13",
         "page": 28
-      }
-    ],
-    "Psalm 4": [
-      {
-        "kind": "patristic_preface",
-        "attribution": "Гэгээн Августин",
-        "page": 512
-      }
-    ],
-    "Psalm 134": [
-      {
-        "kind": "nt_typological",
-        "attribution": "Илчлэл 19:5",
-        "page": 514
-      }
-    ],
-    "Psalm 91": [
-      {
-        "kind": "nt_typological",
-        "attribution": "Лук 10:19",
-        "page": 517
       }
     ]
   }
