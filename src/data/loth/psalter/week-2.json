@@ -286,7 +286,8 @@
             "antiphon_key": "w2-mon-vesp-ps1",
             "default_antiphon": "Та бол мөнх бус гоо үзэсгэлэнгээс ч илүү юм. Таны ярьсан үг бүр хишиг ивээлээр дүүрэн байдаг.",
             "title": "Хааны хуримын магтаал",
-            "gloria_patri": true,
+            "gloria_patri": false,
+            "continuesInNextPart": true,
             "page": 203,
             "antiphonPage": 203,
             "seasonal_antiphons": {
@@ -447,7 +448,8 @@
             "antiphon_key": "w2-tue-vesp-ps1",
             "default_antiphon": "Та нар Тэнгэрбурхан болоод эд баялагт хоёуланд нь зэрэг үйлчилж чадахгүй.",
             "title": "Эд баялгийн хоосон чанар",
-            "gloria_patri": true,
+            "gloria_patri": false,
+            "continuesInNextPart": true,
             "page": 219,
             "antiphonPage": 219,
             "seasonal_antiphons": {
@@ -766,7 +768,8 @@
             "antiphon_key": "w2-thu-vesp-ps1",
             "default_antiphon": "Авралыг минь газрын хязгаарт хүргэхийн тулд Би чамайг үндэстнүүдийн гэрэл болгосон.",
             "title": "Мессиагийн хааны эрх мэдэл",
-            "gloria_patri": true,
+            "gloria_patri": false,
+            "continuesInNextPart": true,
             "page": 255,
             "antiphonPage": 254,
             "seasonal_antiphons": {

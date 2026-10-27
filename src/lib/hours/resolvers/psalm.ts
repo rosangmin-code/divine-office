@@ -9,10 +9,13 @@ import {
 } from '../../prayers/rich-overlay'
 import { applySeasonalAntiphon, pickSeasonalVariant } from '../seasonal-antiphon'
 
-// 2026-10-25: `entry.omitPsalmPrayer` — 분할 시편 I부 자리에서 마침 기도를
-// 끈다 (책은 II부 뒤에만 인쇄). 두 return site 끝에 펼쳐 카탈로그·override
+// 2026-10-25/27: `entry.continuesInNextPart` — 분할 시편 앞 부(I부) 자리.
+// 책은 영광송과 마침 기도를 마지막 부 뒤에만 인쇄한다. 영광송은 자리의
+// `gloria_patri: false` 가 끄고, 여기서는 마침 기도를 지우고 표시를 넘겨 UI 가
+// 생략 루브릭을 띄우지 않게 한다. 두 return site 끝에 펼쳐 카탈로그·override
 // 값을 덮는다. docs/bug-reports/2026-10-25-split-psalm-prayer-placement.md
-const NO_PSALM_PRAYER = {
+const CONTINUES_IN_NEXT_PART = {
+  continuesInNextPart: true,
   psalmPrayer: undefined,
   psalmPrayerRich: undefined,
   psalmPrayerPage: undefined,
@@ -106,7 +109,7 @@ export async function resolvePsalm(
       psalmPrayerPage: entry.psalmPrayerPage ?? psalmText.psalmPrayerPage,
       page: entry.page,
       antiphonPage: entry.antiphonPage,
-      ...(entry.omitPsalmPrayer ? NO_PSALM_PRAYER : {}),
+      ...(entry.continuesInNextPart ? CONTINUES_IN_NEXT_PART : {}),
     }
   }
 
@@ -162,6 +165,6 @@ export async function resolvePsalm(
     page: entry.page,
     antiphonPage: entry.antiphonPage,
     headerRich: loadPsalterHeaderRich(entry.ref) ?? undefined,
-    ...(entry.omitPsalmPrayer ? NO_PSALM_PRAYER : {}),
+    ...(entry.continuesInNextPart ? CONTINUES_IN_NEXT_PART : {}),
   }
 }

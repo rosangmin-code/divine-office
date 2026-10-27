@@ -287,11 +287,14 @@ export interface PsalmEntry {
   // docs/archive/handoff-fx2-phase3-audit-2026-05-08.md §1-3 for verbatim PDF
   // sources and peer-locked R-1 consensus.
   psalmPrayer?: string           // Override for catalog psalmPrayer text (occurrence-specific)
-  // 2026-10-25: 분할 시편의 I부 자리에서 마침 기도를 끈다. 책은 기도를
-  // II부 뒤에 한 번만 인쇄하는데, 같은 ref 가 다른 자리에서 단독 시편으로
-  // 쓰이면 카탈로그 기도를 뗄 수 없다 (Psalm 135:1-12 = W3-FRI-vespers I부
-  // / W4-MON-lauds 단독 p.429). docs/bug-reports/2026-10-25-split-psalm-prayer-placement.md
-  omitPsalmPrayer?: boolean
+  // 2026-10-25/27: 분할 시편의 앞 부(I부) 자리. 책은 영광송과 마침 기도를
+  // 마지막 부 뒤에 한 번만 인쇄하고, 앞 부 끝에는 «영광송을 하지 않는다»
+  // 루브릭도 싣지 않는다. 이 자리는 `gloria_patri: false` 와 함께 쓰며,
+  // resolver 가 마침 기도를 지우고 UI 는 생략 루브릭을 띄우지 않는다.
+  // 기도를 카탈로그가 아니라 자리에서 끄는 까닭: 같은 ref 가 다른 자리에서
+  // 단독 시편으로 쓰인다 (Psalm 135:1-12 = W3-FRI-vespers I부 / W4-MON-lauds
+  // 단독 p.429). docs/bug-reports/2026-10-25-split-psalm-prayer-placement.md
+  continuesInNextPart?: boolean
   // PDF 의 각 시편 엔트리는 default 후렴 아래 rubric 행으로 시즌/날짜/주차별
   // variant 를 수록한다. Phase 2 (task #14) 에서 실제 PDF 텍스트를 주입하며,
   // 본 필드가 존재하면 resolver 가 이를 default_antiphon 보다 우선 선택한다
@@ -962,6 +965,7 @@ export interface AssembledPsalm {
   stanzasRich?: PrayerText       // FR-153f: rich AST overlay for stanzas (indent 0/1/2 + refrain role)
   headerRich?: PsalterHeaderRich // FR-160-C: psalm-header preface (patristic Father / NT typological citation)
   gloriaPatri: boolean
+  continuesInNextPart?: boolean  // 분할 시편 앞 부 — 영광송·생략 루브릭·마침 기도 모두 없음 (PsalmEntry 참고)
   psalmPrayer?: string           // Дууллыг төгсгөх залбирал — post-Gloria Patri oratio
   psalmPrayerRich?: PrayerText   // FR-153h: rich AST overlay for psalmPrayer (prose blocks + rubric spans)
   psalmPrayerPage?: number       // Source PDF page number of the psalmPrayer

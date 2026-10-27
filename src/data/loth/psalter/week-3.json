@@ -785,7 +785,8 @@
             "antiphon_key": "w3-thu-vesp-ps1",
             "default_antiphon": "Аяа, Эзэн минь, Таны орших газарт очихдоо Таны ариун ард түмэн баярлан цэнгэх болтугай.",
             "title": "Тэнгэрбурханы Давидын гэрт амласан амлалтууд",
-            "gloria_patri": true,
+            "gloria_patri": false,
+            "continuesInNextPart": true,
             "page": 367,
             "antiphonPage": 367,
             "seasonal_antiphons": {
@@ -954,14 +955,14 @@
             "antiphon_key": "w3-fri-vesp-ps1",
             "default_antiphon": "Тэнгэрбурхан Эзэн маань аугаа бөгөөд хамаг бурхдаас илүү дээгүүр юм.",
             "title": "Тэнгэрбурханы бидний төлөө үйлдсэн гайхамшигтай үйлсэд зориулсан магтаал",
-            "gloria_patri": true,
+            "gloria_patri": false,
+            "continuesInNextPart": true,
             "page": 383,
             "antiphonPage": 383,
             "seasonal_antiphons": {
               "easter": "Эзэн, Миний бие бол та нарын цагаатгагч ба аврагч юм. Аллэлуяа!",
               "adventDec17_23": "Бидний Хаан Сионоос ирнэ. “Эзэн Тэнгэрбурхан-бидэнтэй-хамт-байна” гэдэг бол Түүний агуу хүчирхэг нэр алдар мөн."
-            },
-            "omitPsalmPrayer": true
+            }
           },
           {
             "type": "psalm",

@@ -401,12 +401,13 @@ export function PsalmBlock({ psalm, antiphonNumber }: { psalm: AssembledPsalm; a
         </div>
       )}
 
-      {/* Gloria Patri */}
+      {/* Gloria Patri — 분할 시편 앞 부(`continuesInNextPart`)는 책이 영광송도
+          생략 루브릭도 싣지 않으므로 둘 다 그리지 않는다 (2026-10-27). */}
       {psalm.gloriaPatri ? (
         <p className="mt-2 font-reading text-sm italic text-stone-500 dark:text-stone-400">
           Эцэг, Хүү, Ариун Сүнсэнд жавхланг Эхэн цагт байсан мэт аливаа цагт болготугай. Амэн.
         </p>
-      ) : psalm.gloriaPatri === false && (
+      ) : psalm.gloriaPatri === false && !psalm.continuesInNextPart && (
         <p className="mt-2 text-xs italic text-stone-500 dark:text-stone-400">
           Эцэг, Хүү, Ариун Сүнсэнд жавхланг... уншихгүй
         </p>

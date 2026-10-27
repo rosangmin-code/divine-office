@@ -1064,6 +1064,7 @@ export async function assembleHour(
         : applySeasonalAntiphon(fallbackAntiphon, effectiveSeason),
       verses: [],
       gloriaPatri: entry.gloria_patri,
+      ...(entry.continuesInNextPart ? { continuesInNextPart: true } : {}),
       ...(entry.page != null ? { page: entry.page } : {}),
     }
   })

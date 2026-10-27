@@ -320,9 +320,11 @@ test.describe('Prayer section detail rendering', () => {
     })
 
     test('Gloria Patri omission rubric applies only to the Benedicite (Daniel 3:57-88, 56)', async ({ request }) => {
-      // Contract: only the Sunday Lauds Benedicite (weeks 1/3) has gloriaPatri=false,
+      // Contract: on Sunday Lauds only the Benedicite (weeks 1/3) has gloriaPatri=false,
       // because the canticle's text already ends with a trinitarian doxology (GILH §123).
-      // All other psalms and canticles have gloriaPatri=true.
+      // All other psalms and canticles here have gloriaPatri=true. (Split-psalm Part I
+      // slots — weekday vespers only — are also false but carry continuesInNextPart and
+      // show no rubric; see src/lib/__tests__/data/split-psalm-part2.test.ts.)
       const sundayDates = [DATES.ordinarySunday, DATES.easter3rdSunday, DATES.firstAdventSunday]
       for (const date of sundayDates) {
         const res = await request.get(`/api/loth/${date}/lauds`)

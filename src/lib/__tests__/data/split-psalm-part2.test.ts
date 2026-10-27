@@ -27,7 +27,8 @@ type PsalmEntry = {
   ref?: string
   psalmPrayer?: string
   psalmPrayerPage?: number
-  omitPsalmPrayer?: boolean
+  gloria_patri?: boolean
+  continuesInNextPart?: boolean
 }
 type Hour = { psalms?: PsalmEntry[] }
 type Day = Record<string, Hour>
@@ -184,9 +185,9 @@ describe('split psalm Part II data invariants', () => {
     // 45·49·132·145 를 I부에, 135 를 두 부 모두에 붙였고 27·72 는 기도가 없었다.
     // resolver 와 같은 우선순위로 자리별 실효 기도를 계산한다.
     const prayerOf = (p: PsalmEntry) =>
-      p.omitPsalmPrayer ? undefined : (p.psalmPrayer ?? plainTexts[p.ref!]?.psalmPrayer)
+      p.continuesInNextPart ? undefined : (p.psalmPrayer ?? plainTexts[p.ref!]?.psalmPrayer)
     const richPrayerOf = (p: PsalmEntry) =>
-      p.omitPsalmPrayer || p.psalmPrayer != null ? undefined : richTexts[p.ref!]?.psalmPrayerRich
+      p.continuesInNextPart || p.psalmPrayer != null ? undefined : richTexts[p.ref!]?.psalmPrayerRich
     const pageOf = (p: PsalmEntry) => p.psalmPrayerPage ?? plainTexts[p.ref!]?.psalmPrayerPage
     const psalmNo = (ref?: string) => ref?.match(/^Psalm (\d+):/)?.[1]
 
@@ -220,5 +221,40 @@ describe('split psalm Part II data invariants', () => {
     const ps135 = w4mon.find((p) => p.ref === 'Psalm 135:1-12')!
     expect(prayerOf(ps135)).toBeTruthy()
     expect(pageOf(ps135)).toBe(429)
+  })
+
+  // @fr FR-037
+  it('분할 시편의 영광송은 마지막 부 뒤에만 — 앞 부는 영광송도 생략 루브릭도 없다', () => {
+    // 2026-10-27 — 같은 bug report §6. 책은 10건 모두 I부 끝에서 영광송 없이
+    // 바로 II부 후렴으로 넘어간다 (scan-gloria.py, 인쇄면 확인). 앞 부 자리는
+    // `gloria_patri: false` + `continuesInNextPart: true`, 마지막 부는 둘 다 아니다.
+    // `continuesInNextPart` 는 분할 시편 앞 부 밖에서는 쓰지 않는다.
+    const psalmNo = (ref?: string) => ref?.match(/^Psalm (\d+):/)?.[1]
+    const wrong: string[] = []
+    let partOnes = 0
+    for (const { week, day, hour, psalms } of eachHour()) {
+      psalms.forEach((p, i) => {
+        const where = `week-${week} ${day} ${hour} ${p.ref}`
+        const n = psalmNo(p.ref)
+        const continues = Boolean(n) && psalmNo(psalms[i + 1]?.ref) === n
+        if (continues) {
+          partOnes++
+          if (p.gloria_patri !== false) wrong.push(`${where} — 앞 부인데 영광송`)
+          if (!p.continuesInNextPart) wrong.push(`${where} — 앞 부 표시 없음`)
+        } else if (p.continuesInNextPart) {
+          wrong.push(`${where} — 앞 부가 아닌데 continuesInNextPart`)
+        } else if (n && psalmNo(psalms[i - 1]?.ref) === n && p.gloria_patri !== true) {
+          wrong.push(`${where} — 마지막 부에 영광송 없음`)
+        }
+      })
+    }
+    expect(wrong).toEqual([])
+    expect(partOnes).toBe(10)
+
+    // 135:1-12 단독 자리(제4주간 월 아침)는 영광송이 그대로다
+    const w4mon = ((week4 as WeekFile).days as Record<string, Day>).MON.lauds.psalms ?? []
+    const ps135 = w4mon.find((p) => p.ref === 'Psalm 135:1-12')!
+    expect(ps135.gloria_patri).toBe(true)
+    expect(ps135.continuesInNextPart).toBeUndefined()
   })
 })

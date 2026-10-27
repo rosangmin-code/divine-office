@@ -603,7 +603,8 @@
             "antiphon_key": "w1-wed-vesp-ps1",
             "default_antiphon": "Эзэн миний гэрэл хийгээд аврал минь болой. Хэнээс би эмээх юм бэ?",
             "title": "Аюулын үед Тэнгэрбурхан бидний дэргэд зогсдог",
-            "gloria_patri": true,
+            "gloria_patri": false,
+            "continuesInNextPart": true,
             "page": 116,
             "antiphonPage": 116,
             "seasonal_antiphons": {
