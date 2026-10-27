@@ -287,6 +287,11 @@ export interface PsalmEntry {
   // docs/archive/handoff-fx2-phase3-audit-2026-05-08.md §1-3 for verbatim PDF
   // sources and peer-locked R-1 consensus.
   psalmPrayer?: string           // Override for catalog psalmPrayer text (occurrence-specific)
+  // 2026-10-25: 분할 시편의 I부 자리에서 마침 기도를 끈다. 책은 기도를
+  // II부 뒤에 한 번만 인쇄하는데, 같은 ref 가 다른 자리에서 단독 시편으로
+  // 쓰이면 카탈로그 기도를 뗄 수 없다 (Psalm 135:1-12 = W3-FRI-vespers I부
+  // / W4-MON-lauds 단독 p.429). docs/bug-reports/2026-10-25-split-psalm-prayer-placement.md
+  omitPsalmPrayer?: boolean
   // PDF 의 각 시편 엔트리는 default 후렴 아래 rubric 행으로 시즌/날짜/주차별
   // variant 를 수록한다. Phase 2 (task #14) 에서 실제 PDF 텍스트를 주입하며,
   // 본 필드가 존재하면 resolver 가 이를 default_antiphon 보다 우선 선택한다

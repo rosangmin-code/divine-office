@@ -9,6 +9,15 @@ import {
 } from '../../prayers/rich-overlay'
 import { applySeasonalAntiphon, pickSeasonalVariant } from '../seasonal-antiphon'
 
+// 2026-10-25: `entry.omitPsalmPrayer` — 분할 시편 I부 자리에서 마침 기도를
+// 끈다 (책은 II부 뒤에만 인쇄). 두 return site 끝에 펼쳐 카탈로그·override
+// 값을 덮는다. docs/bug-reports/2026-10-25-split-psalm-prayer-placement.md
+const NO_PSALM_PRAYER = {
+  psalmPrayer: undefined,
+  psalmPrayerRich: undefined,
+  psalmPrayerPage: undefined,
+} as const
+
 /**
  * Resolve a psalm entry into an AssembledPsalm with actual verse text.
  * Prefers psalter-texts.json (PDF source with stanza structure) over Bible JSONL.
@@ -97,6 +106,7 @@ export async function resolvePsalm(
       psalmPrayerPage: entry.psalmPrayerPage ?? psalmText.psalmPrayerPage,
       page: entry.page,
       antiphonPage: entry.antiphonPage,
+      ...(entry.omitPsalmPrayer ? NO_PSALM_PRAYER : {}),
     }
   }
 
@@ -152,5 +162,6 @@ export async function resolvePsalm(
     page: entry.page,
     antiphonPage: entry.antiphonPage,
     headerRich: loadPsalterHeaderRich(entry.ref) ?? undefined,
+    ...(entry.omitPsalmPrayer ? NO_PSALM_PRAYER : {}),
   }
 }

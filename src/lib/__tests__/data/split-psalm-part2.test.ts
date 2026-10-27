@@ -22,7 +22,13 @@ import psalterHeaders from '@/data/loth/prayers/commons/psalter-headers.rich.jso
 //   (2) 참조된 모든 `ref` 는 plain·rich 본문이 실제로 존재한다
 //       — ref 중복이 "본문 없음" 을 가려 왔으므로 (1) 만으로는 부족하다.
 
-type PsalmEntry = { type?: string; ref?: string }
+type PsalmEntry = {
+  type?: string
+  ref?: string
+  psalmPrayer?: string
+  psalmPrayerPage?: number
+  omitPsalmPrayer?: boolean
+}
 type Hour = { psalms?: PsalmEntry[] }
 type Day = Record<string, Hour>
 type WeekFile = { days?: Record<string, Day> } & Record<string, unknown>
@@ -34,10 +40,13 @@ const WEEKS: [number, WeekFile][] = [
   [4, week4 as WeekFile],
 ]
 
-const plainTexts = psalterTexts as Record<string, { stanzas?: string[][]; psalmPrayer?: string }>
+const plainTexts = psalterTexts as Record<
+  string,
+  { stanzas?: string[][]; psalmPrayer?: string; psalmPrayerPage?: number }
+>
 const richTexts = psalterTextsRich as Record<
   string,
-  { stanzasRich?: { blocks?: unknown[] } }
+  { stanzasRich?: { blocks?: unknown[] }; psalmPrayerRich?: unknown }
 >
 
 /** 모든 (week, day, hour) 의 psalms[] 를 평평하게 훑는다. */
@@ -166,5 +175,50 @@ describe('split psalm Part II data invariants', () => {
     const headers = (psalterHeaders as { refs: Record<string, { entries: { attribution?: string }[] }> }).refs
     expect(headers['Psalm 139:13-18, 23-24']).toBeUndefined()
     expect(headers['Psalm 144:1-8'].entries[0].attribution).toBe('Гэгээн Хилайр') // p.480, 화요일과 다름
+  })
+
+  // @fr FR-035
+  it('분할 시편의 마침 기도는 마지막 부 뒤에 한 번만 나온다', () => {
+    // 2026-10-25 — docs/bug-reports/2026-10-25-split-psalm-prayer-placement.md
+    // 책은 분할 시편 10건 모두 기도를 II부 뒤에 한 번만 인쇄한다. 데이터는
+    // 45·49·132·145 를 I부에, 135 를 두 부 모두에 붙였고 27·72 는 기도가 없었다.
+    // resolver 와 같은 우선순위로 자리별 실효 기도를 계산한다.
+    const prayerOf = (p: PsalmEntry) =>
+      p.omitPsalmPrayer ? undefined : (p.psalmPrayer ?? plainTexts[p.ref!]?.psalmPrayer)
+    const richPrayerOf = (p: PsalmEntry) =>
+      p.omitPsalmPrayer || p.psalmPrayer != null ? undefined : richTexts[p.ref!]?.psalmPrayerRich
+    const pageOf = (p: PsalmEntry) => p.psalmPrayerPage ?? plainTexts[p.ref!]?.psalmPrayerPage
+    const psalmNo = (ref?: string) => ref?.match(/^Psalm (\d+):/)?.[1]
+
+    const groups: string[] = []
+    const wrong: string[] = []
+    for (const { week, day, hour, psalms } of eachHour()) {
+      for (let i = 0; i < psalms.length; ) {
+        const n = psalmNo(psalms[i]?.ref)
+        let j = i
+        while (n && j + 1 < psalms.length && psalmNo(psalms[j + 1]?.ref) === n) j++
+        if (j > i) {
+          const where = `week-${week} ${day} ${hour} Psalm ${n}`
+          groups.push(where)
+          for (let k = i; k < j; k++) {
+            if (prayerOf(psalms[k]) || richPrayerOf(psalms[k])) {
+              wrong.push(`${where} — 앞 부 ${psalms[k].ref} 에 기도`)
+            }
+          }
+          const last = psalms[j]
+          if (!prayerOf(last)) wrong.push(`${where} — 마지막 부 ${last.ref} 에 기도 없음`)
+          else if (!pageOf(last)) wrong.push(`${where} — 마지막 부 ${last.ref} 기도 쪽수 없음`)
+        }
+        i = j + 1
+      }
+    }
+    expect(wrong).toEqual([])
+    expect(groups).toHaveLength(10) // 27·45·49·72·132·135·136·139·144·145
+
+    // 135:1-12 는 제4주간 월 아침에 단독 시편 — 거기선 기도가 남아야 한다 (p.429)
+    const w4mon = ((week4 as WeekFile).days as Record<string, Day>).MON.lauds.psalms ?? []
+    const ps135 = w4mon.find((p) => p.ref === 'Psalm 135:1-12')!
+    expect(prayerOf(ps135)).toBeTruthy()
+    expect(pageOf(ps135)).toBe(429)
   })
 })

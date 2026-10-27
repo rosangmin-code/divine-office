@@ -68,6 +68,7 @@ const PsalmEntrySchema = z
     title: z.string().optional(),
     gloria_patri: z.boolean(),
     page: PageSchema,
+    omitPsalmPrayer: z.boolean().optional(),
     seasonal_antiphons: z
       .object({
         easter: z.string().optional(),

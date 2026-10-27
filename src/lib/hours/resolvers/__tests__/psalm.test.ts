@@ -560,3 +560,39 @@ describe('resolvePsalm — F-X2 Phase 3 psalmPrayer text override (Option A + R-
     expect(result.psalmPrayerRich).toBe(SENTINEL_RICH_AST)
   })
 })
+
+// 2026-10-25 — 분할 시편 I부 자리에서 마침 기도를 끄는 `omitPsalmPrayer`.
+// 책은 기도를 II부 뒤에만 인쇄한다. Psalm 135:1-12 는 W3-FRI-vespers 에선
+// I부, W4-MON-lauds 에선 단독이라 카탈로그 기도를 남긴 채 자리별로 끈다.
+// docs/bug-reports/2026-10-25-split-psalm-prayer-placement.md
+describe('resolvePsalm — omitPsalmPrayer (split psalm Part I)', () => {
+  const base = { type: 'psalm', antiphon_key: 'omit-test', default_antiphon: '', gloria_patri: true } as const
+
+  // @fr FR-035
+  it('catalog path: drops text, rich and page — even over a page override', async () => {
+    const shown = await resolvePsalm({ ...base, ref: 'Psalm 100:1-5', page: 1 }, undefined)
+    expect(shown.psalmPrayer).toBeTruthy()
+    expect(shown.psalmPrayerRich).toBe(SENTINEL_RICH_AST)
+
+    const omitted = await resolvePsalm(
+      { ...base, ref: 'Psalm 100:1-5', page: 1, psalmPrayerPage: 380, omitPsalmPrayer: true },
+      undefined,
+    )
+    expect(omitted.stanzas?.length).toBeGreaterThan(0)
+    expect(omitted.psalmPrayer).toBeUndefined()
+    expect(omitted.psalmPrayerRich).toBeUndefined()
+    expect(omitted.psalmPrayerPage).toBeUndefined()
+  })
+
+  // @fr FR-035
+  it('Bible-fallback path: drops text, rich and page', async () => {
+    const omitted = await resolvePsalm(
+      { ...base, ref: 'Psalm 200:1-3', page: 1, omitPsalmPrayer: true },
+      undefined,
+    )
+    expect(omitted.verses?.length).toBeGreaterThan(0) // confirms fallback branch
+    expect(omitted.psalmPrayer).toBeUndefined()
+    expect(omitted.psalmPrayerRich).toBeUndefined()
+    expect(omitted.psalmPrayerPage).toBeUndefined()
+  })
+})
