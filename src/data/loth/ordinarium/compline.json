@@ -11,6 +11,7 @@
           "ref": "Psalm 91:1-16",
           "antiphon_key": "compline-sun",
           "default_antiphon": "Тэнгэрбурханы жигүүр дор унтаж байхдаа би шөнийн аймшгаас эс айна.",
+          "title": "Тэнгэрбурханы ивээл доорх аюулгүй байдал",
           "gloria_patri": true,
           "page": 517
         }
@@ -33,6 +34,7 @@
           "ref": "Psalm 86:1-17",
           "antiphon_key": "compline-mon",
           "default_antiphon": "Эзэн, Тэнгэрбурхан минь, бидний төлөө Таны хайр шантрашгүй юм.",
+          "title": "Зовлон зүдүүрт нэрвэгдсэн ядуу хүний даатгал залбирал",
           "gloria_patri": true,
           "page": 523
         }
@@ -54,6 +56,7 @@
           "ref": "Psalm 143:1-11",
           "antiphon_key": "compline-tue",
           "default_antiphon": "Надаас нүүрээ бүү нуугаач, Танд л би итгэдэг билээ.",
+          "title": "Зовлон шаналангийн дундах даатгал залбирал",
           "gloria_patri": true,
           "page": 527
         }
@@ -75,6 +78,7 @@
           "ref": "Psalm 31:2-6",
           "antiphon_key": "compline-wed-ps1",
           "default_antiphon": "Эзэн Тэнгэрбурхан, Та миний хоргодох газар, миний хүч чадал бологтун.",
+          "title": "Зовлонгийн үе дэх итгэмжит даатгал залбирал",
           "gloria_patri": true,
           "page": 531
         },
@@ -83,6 +87,7 @@
           "ref": "Psalm 130:1-8",
           "antiphon_key": "compline-wed-ps2",
           "default_antiphon": "Эзэн, би гүнээс Тан руу хашхирна!",
+          "title": "Гүнээс гарсан хашхиралт",
           "gloria_patri": true,
           "page": 532
         }
@@ -104,6 +109,7 @@
           "ref": "Psalm 16:1-11",
           "antiphon_key": "compline-thu",
           "default_antiphon": "Тэнгэрбурхан минь, Таны дотор бие махбод минь ч аюулгүй оршино.",
+          "title": "Эзэн бол миний өв юм",
           "gloria_patri": true,
           "page": 535
         }
@@ -125,6 +131,7 @@
           "ref": "Psalm 88:2-19",
           "antiphon_key": "compline-fri",
           "default_antiphon": "Тэнгэрбурхан минь, би өдрөөр болон шөнөөр ч Таны өмнө хашхирч байна.",
+          "title": "Өвчтэй хүний даатгал залбирал",
           "gloria_patri": true,
           "page": 539
         }
@@ -146,6 +153,7 @@
           "ref": "Psalm 4",
           "antiphon_key": "compline-sat-ps1",
           "default_antiphon": "Намайгаа өршөөн, залбирал юуг минь сонсооч.",
+          "title": "Талархал магтаал",
           "gloria_patri": true,
           "page": 512
         },
@@ -154,6 +162,7 @@
           "ref": "Psalm 134",
           "antiphon_key": "compline-sat-ps2",
           "default_antiphon": "Шөнийн аниргүй цагаар Эзэнийг магтагтун.",
+          "title": "Сүм хийдийн доторх үдшийн даатгал залбирал",
           "gloria_patri": true,
           "page": 514
         }

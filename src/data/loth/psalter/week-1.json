@@ -278,7 +278,7 @@
             "ref": "Psalm 11:1-7",
             "antiphon_key": "w1-mon-vesp-ps1",
             "default_antiphon": "Эзэн ядуу хүмүүсийг таалан үздэг.",
-            "title": "Тэнгэрбурхан бол зөв шударга хүний хөрвөшгүй бат түшиг мөн",
+            "title": "Тэнгэрбурхан бол зөв шударга хүний хөрвөшгүй бат түшиг мөн.",
             "gloria_patri": true,
             "page": 84,
             "antiphonPage": 84,
@@ -616,7 +616,6 @@
             "ref": "Psalm 27:7-14",
             "antiphon_key": "w1-wed-vesp-ps2",
             "default_antiphon": "Аяа, Эзэн минь, би Таныг харахыг хүсэн тэмүүлнэ. Өөрийнхөө нүүрийг надаас бүү буруулаач.",
-            "title": "Аюулын үед Тэнгэрбурхан бидний дэргэд зогсдог",
             "gloria_patri": true,
             "page": 118,
             "seasonal_antiphons": {
@@ -1085,7 +1084,7 @@
             "ref": "Psalm 113:1-9",
             "antiphon_key": "w1-sat-vesp-ps1",
             "default_antiphon": "Нар мандахаас жаргах хүртэл Эзэний нэр магтагдах болтугай.",
-            "title": "Эзэний нэрийг магтан дуулагтун",
+            "title": "Эзэний нэр алдрыг магтан дуулагтун",
             "gloria_patri": true,
             "page": 288,
             "seasonal_antiphons": {

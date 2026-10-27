@@ -799,7 +799,6 @@
             "ref": "Psalm 132:11-18",
             "antiphon_key": "w3-thu-vesp-ps2",
             "default_antiphon": "Эзэн Сионыг Өөрийн шүтээний газраа болгохоор сонгосон юм.",
-            "title": "Тэнгэрбурханы Давидын гэрт амласан амлалтууд",
             "gloria_patri": true,
             "page": 369,
             "antiphonPage": 368,
@@ -969,7 +968,6 @@
             "ref": "Psalm 135:13-21",
             "antiphon_key": "w3-fri-vesp-ps2",
             "default_antiphon": "Израилийн гэр ээ, Эзэнийг магтагтун. Тэрээр өршөөнгүй тул Түүнд магтан дуулагтун.",
-            "title": "Тэнгэрбурханы бидний төлөө үйлдсэн гайхамшигтай үйлсэд зориулсан магтаал",
             "gloria_patri": true,
             "page": 385,
             "seasonal_antiphons": {
@@ -1123,7 +1121,7 @@
             "ref": "Psalm 113:1-9",
             "antiphon_key": "w3-sat-vesp-ps1",
             "default_antiphon": "Нар мандахаас жаргах хүртэл Эзэний нэр магтагдах болтугай.",
-            "title": "Эзэний нэрийг магтан дуулагтун",
+            "title": "Эзэний нэр алдрыг магтан дуулагтун",
             "gloria_patri": true,
             "page": 288,
             "seasonal_antiphons": {

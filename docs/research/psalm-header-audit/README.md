@@ -1,4 +1,4 @@
-# 시편 머리말 전수 대조 (2026-10-27)
+# 시편 머리말·제목 전수 대조 (2026-10-27)
 
 증상·원인·검증은 `docs/bug-reports/2026-10-27-psalm-header-audit.md`.
 
@@ -10,12 +10,17 @@
 | `emit-headers.py` | 자리마다 책 머리말 → `header-book.json` + 회귀 테스트 fixture(`src/lib/__tests__/data/psalm-book-headers.fixture.json`). 행 나눔은 pdfplumber, 띄어쓰기는 `parsed_data/full_pdf.txt` (pdfplumber 가 «Та нар оюун» 을 «Та нароюун» 으로 붙여 낸다) |
 | `header-book.json` | 자리별 책 머리말 (검토용 중간 산출물) |
 | `build-headers.mjs` | `psalter-headers.rich.json` 반영 + 시편 146 제목 (`--write`, 한 번만) |
+| `emit-titles.py` | 데이터 항목마다(342) 책 제목(빨간 부제) 비교 → `title-book.json` + 회귀 테스트 fixture(`psalm-book-titles.fixture.json`). 제목 글자는 인쇄 행 — full_pdf.txt 는 짧은 제목을 같은 글자의 다른 행(시편 150 → 다니엘 3장 후렴)에 짝지어 쓰지 않는다 |
+| `title-book.json` | 항목별 책 제목·앱 제목·상태 (검토용 중간 산출물 — 저장된 것은 수정 뒤에 다시 만든 것이라 상태가 ok/ok~/none 뿐) |
+| `build-titles.mjs` | 주일 제1저녁 고유부·끝기도 제목 추가, II부·시락 36 제목 삭제, 시편 113·11·80 (`--write`; 수정 뒤의 `title-book.json` 으로 다시 돌리면 바꿀 것이 없다). 손으로 접은 객체가 있는 고유부 3개 파일은 `"title"` 행만 텍스트로 끼워 넣는다 |
 
 ```
 S=/tmp/stream.json   # ../psalm-omission-audit/stream.py 로 만든다
 python3 docs/research/psalm-header-audit/audit_headers.py $S
 python3 docs/research/psalm-header-audit/emit-headers.py $S
 node    docs/research/psalm-header-audit/build-headers.mjs        # dry-run
+python3 docs/research/psalm-header-audit/emit-titles.py $S
+node    docs/research/psalm-header-audit/build-titles.mjs         # dry-run
 ```
 
 `build-headers.mjs` 는 끝에서 로더 규칙을 흉내 내 모든 자리(191곳)가 책과 같은 머리말을, 책에 없는 자리는 없음을 고르는지 점검한다. 새 항목 65개는 인쇄면 PNG 로 글자를 대조했다.
@@ -24,7 +29,7 @@ node    docs/research/psalm-header-audit/build-headers.mjs        # dry-run
 
 ```
 머리말: 자리 195 — none 51, ok 144
-제목:   자리 195 — DIFF 1, EXTRA 11, MISSING 18, none 11, ok 154
+제목 (항목 단위): 342 — none 22, ok 304, ok~ 16
 ```
 
-제목(빨간 부제)은 이번 범위 밖 — bug report §6.
+제목 `ok~` 16 은 의도한 차이다: 시편 113 «алдрыг магтан» 띄어쓰기(STC-021) 15, 이사야 40 «Хоньчин» 대문자(STC-009) 1. 제목은 `docs/bug-reports/2026-10-27-psalm-title-audit.md`.

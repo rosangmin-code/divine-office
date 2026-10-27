@@ -299,7 +299,6 @@
             "ref": "Psalm 136:10-26",
             "antiphon_key": "w4-mon-vesp-ps2",
             "default_antiphon": "Төгс хүчит Эзэн Тэнгэрбурхан минь, Таны үйлс агуу бөгөөд гайхалтай.",
-            "title": "Дээгүүр өнгөрөх баярын магтаал",
             "gloria_patri": true,
             "page": 434,
             "seasonal_antiphons": {
@@ -631,7 +630,6 @@
             "ref": "Psalm 139:13-18, 23-24",
             "antiphon_key": "w4-wed-vesp-ps2",
             "default_antiphon": "ЭЗЭН Би зүрхийг эрэлхийлж, цээж дотрыг шалгадаг нь хүн бүрд замуудынх нь дагуу, үйлсийнх нь үр дүнгийн дагуу өгөхийн тулд юм.",
-            "title": "Тэнгэрбурхан бий бүгдийг харж байна",
             "gloria_patri": true,
             "page": 466,
             "seasonal_antiphons": {
@@ -802,7 +800,6 @@
             "ref": "Psalm 144:9-15",
             "antiphon_key": "w4-thu-vesp-ps2",
             "default_antiphon": "Эзэнийг Тэнгэрбурханаа болгодог ард түмэн юутай ерөөлтэй еэ!",
-            "title": "Ялалт ба энх тайвны төлөө даатгал залбирал",
             "gloria_patri": true,
             "page": 481,
             "seasonal_antiphons": {
@@ -971,7 +968,6 @@
             "ref": "Psalm 145:14-21",
             "antiphon_key": "w4-fri-vesp-ps2",
             "default_antiphon": "Эзэн минь, зөвхөн Танд л бид итгэдэг. Та Өөрийг тань үнэнээр дуудагч бүхэнд цаг ямагт ойр байдаг.",
-            "title": "Тэнгэрбурханы сүр хүчийг магтахуй",
             "gloria_patri": true,
             "page": 498,
             "antiphonPage": 498,

@@ -346,8 +346,10 @@ const AREA_HASHES = {
   // 2026-10-21: 2026-10-19 revised edition of the book (Fr. Pierre's corrected PDF) —
   // carried over only the characters the revision changed (mostly «Аяа» → «Аяа,»;
   // word-level audit of every changed string: nothing else moved).
+  // 2026-10-27: psalm titles from the book added (Sunday EP I propers psalms / compline psalms) —
+  // only `"title"` lines inserted (docs/bug-reports/2026-10-27-psalm-title-audit.md).
   'src/data/loth/ordinarium/compline.json':
-    '6bb9fb7711d26e6d2c6822e8461744dce5ad47059d97a0daba8e699f99b29338',
+    'ff628cfc586c3e496da86ba0e4ab29bdbc68c097977c23034cbfc632f733630e',
   // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
   // space-split correction (owctononuudiig tailvshruulzh, advent:633).
   // 2026-10-21: 2026-10-19 revised edition of the book (Fr. Pierre's corrected PDF) —
@@ -356,8 +358,10 @@ const AREA_HASHES = {
   // 2026-10-24: «Аяа» → «Аяа,» at the places the revised edition left without the
   // comma (the editor kept them to preserve the layout; the app has no layout
   // constraint — user decision). Only that one character per occurrence moved.
+  // 2026-10-27: psalm titles from the book added (Sunday EP I propers psalms / compline psalms) —
+  // only `"title"` lines inserted (docs/bug-reports/2026-10-27-psalm-title-audit.md).
   'src/data/loth/propers/advent.json':
-    '7d4d37e294bc88a711891518362f81a44929c2c185e74e6715d118f14b12f176',
+    'fb3a10de374537e0df522c0327189cbe1b4ad1e8d6ce3190ef56019d9a329e0f',
   // WI-88 (#87): dec25.SUN.vespers2 proper psalmody wiring (Ps 110:1-5,7 /
   // Ps 130 / Col 1:12-20, full_pdf p.592-596).
   // 2026-09-14 (GOAL #128 §3b B3, requested as STC-005 — fidelity restore,
@@ -381,8 +385,10 @@ const AREA_HASHES = {
   // 2026-10-24: «Аяа» → «Аяа,» at the places the revised edition left without the
   // comma (the editor kept them to preserve the layout; the app has no layout
   // constraint — user decision). Only that one character per occurrence moved.
+  // 2026-10-27: psalm titles from the book added (Sunday EP I propers psalms / compline psalms) —
+  // only `"title"` lines inserted (docs/bug-reports/2026-10-27-psalm-title-audit.md).
   'src/data/loth/propers/christmas.json':
-    '6cfb3c3179a93a920aaa952e3320030c85da41e976b3da4028a37306dd633f6d',
+    'f8a0e172c3b28dc2b2fbf6edfde7be89ed03ca2f91ff3762b05f5967df8720d0',
   // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
   // space-split correction (owctononuudiig tailvshruulzh, easter:540/865).
   // P0-6 A (2026-09-14): ascension lauds/vespers2 conditionalRubrics[0]
@@ -394,8 +400,10 @@ const AREA_HASHES = {
   // 2026-10-24: «Аяа» → «Аяа,» at the places the revised edition left without the
   // comma (the editor kept them to preserve the layout; the app has no layout
   // constraint — user decision). Only that one character per occurrence moved.
+  // 2026-10-27: psalm titles from the book added (Sunday EP I propers psalms / compline psalms) —
+  // only `"title"` lines inserted (docs/bug-reports/2026-10-27-psalm-title-audit.md).
   'src/data/loth/propers/easter.json':
-    'e6b6598c000b2718231b6af829ace25158cb094a68c34744c636628b90e6eb2c',
+    'fb4c7594ed9f759000425f4aa65f56be4f586dc1f7b9536fd57533b89471fa84',
   // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
   // space-split correction (owctononuudiig tailvshruulzh, lent:618).
   // 2026-10-21: 2026-10-19 revised edition of the book (Fr. Pierre's corrected PDF) —
@@ -404,8 +412,10 @@ const AREA_HASHES = {
   // 2026-10-24: «Аяа» → «Аяа,» at the places the revised edition left without the
   // comma (the editor kept them to preserve the layout; the app has no layout
   // constraint — user decision). Only that one character per occurrence moved.
+  // 2026-10-27: psalm titles from the book added (Sunday EP I propers psalms / compline psalms) —
+  // only `"title"` lines inserted (docs/bug-reports/2026-10-27-psalm-title-audit.md).
   'src/data/loth/propers/lent.json':
-    'ec3607ed3c241dbf456336544155b1f01eac5318ba199103c50d3c8a01e7ac5a',
+    'f09fce5566c8e1b9a2828b4b9c73b26addb0d7a55226bcab2d0e4d2a9b9b6d5c',
   // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
   // space-split correction (owctononuudiig tailvshruulzh, ordinary-time x8).
   // P0-6 A (2026-09-14): trinitySunday / corpusChristi / sacredHeart /
@@ -424,8 +434,10 @@ const AREA_HASHES = {
   // 2026-10-24: «Аяа» → «Аяа,» at the places the revised edition left without the
   // comma (the editor kept them to preserve the layout; the app has no layout
   // constraint — user decision). Only that one character per occurrence moved.
+  // 2026-10-27: psalm titles from the book added (Sunday EP I propers psalms / compline psalms) —
+  // only `"title"` lines inserted (docs/bug-reports/2026-10-27-psalm-title-audit.md).
   'src/data/loth/propers/ordinary-time.json':
-    '2ad0e54261883ff6a58edd61bcb0c28a83ed7f7cfa1fdc94f148230716cd6021',
+    'f6d14cc2a7fbc59e9f112f97f5515e01295eca21bfdf753909515f48e7859292',
   // g-36 (WI-50/51): sanctoral 추출오타 35건 PDF-fidelity 교정 (full_pdf.txt L28000+ 대조)
   // g-41 (WI-60): 08-06 Transfiguration held-divergence restore — vespers antiphon
   // (минь ангижруулдаг…) + vespers/lauds/vespers2 concludingPrayer Эцгүүдийг +
