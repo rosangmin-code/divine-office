@@ -1,0 +1,797 @@
+{
+  "_about": "시편·찬가 본문 자리마다 책(public/psalter.pdf)에 인쇄된 본문의 지문. docs/research/psalm-omission-audit/audit.py --emit-fixture 가 만든다 — 책이 바뀌면 다시 만든다. 글자: 소문자, 라틴 동형 글자→키릴, 문장부호 제거, 단어를 띄어쓰기 없이 이음 (PDF 의 붙은 낱말과 행 나눔 차이를 지우려고). 검사: psalm-book-text.test.ts",
+  "entries": {
+    "canticles:benedictus@34": {
+      "chars": 843,
+      "sha1": "79c12848910fb704b6f5a6eaff44d8c8febc8aeb"
+    },
+    "canticles:magnificat@40": {
+      "chars": 574,
+      "sha1": "8280bf53be3a70b331961a108a4ef138f30e4154"
+    },
+    "canticles:nuncDimittis@515": {
+      "chars": 221,
+      "sha1": "72cd9c5b483d43c7cdfa9de5ad28a6daf3738a18"
+    },
+    "invitatory:Psalm 100:1-5@30": {
+      "chars": 403,
+      "sha1": "99235bda7efeab0657a594e3eb65e663b3ae6e53"
+    },
+    "invitatory:Psalm 24:1-10@31": {
+      "chars": 727,
+      "sha1": "1f087e6f324875098d7d3d36e938ac9c5036da68"
+    },
+    "invitatory:Psalm 67:2-8@30": {
+      "chars": 518,
+      "sha1": "139bf8f7357bd9714ce79065ddec203afa0396de"
+    },
+    "invitatory:Psalm 95:1-11@28": {
+      "chars": 829,
+      "sha1": "00c2ad7f4fe691062a76458847427436d4f6316c"
+    },
+    "psalter-texts:1 Chronicles 29:10-13@79": {
+      "chars": 447,
+      "sha1": "d124bfda944b63384a0bc7f85446021a1e4b85ca"
+    },
+    "psalter-texts:1 Samuel 2:1-10@229": {
+      "chars": 1184,
+      "sha1": "16ba2d742d1802b02b5937c8a69663d0820cbe09"
+    },
+    "psalter-texts:Colossians 1:12-20@119": {
+      "chars": 839,
+      "sha1": "4f9b363275f671a18bfbba80ad162c0fd3940026"
+    },
+    "psalter-texts:Colossians 1:12-20@240": {
+      "chars": 839,
+      "sha1": "4f9b363275f671a18bfbba80ad162c0fd3940026"
+    },
+    "psalter-texts:Colossians 1:12-20@355": {
+      "chars": 839,
+      "sha1": "4f9b363275f671a18bfbba80ad162c0fd3940026"
+    },
+    "psalter-texts:Colossians 1:12-20@467": {
+      "chars": 839,
+      "sha1": "4f9b363275f671a18bfbba80ad162c0fd3940026"
+    },
+    "psalter-texts:Colossians 1:12-20@594": {
+      "chars": 839,
+      "sha1": "4f9b363275f671a18bfbba80ad162c0fd3940026"
+    },
+    "psalter-texts:Daniel 3:26-27, 29, 34-41@443": {
+      "chars": 1045,
+      "sha1": "a9bec8ae89b8af463818f9def5b49098d83e6acc"
+    },
+    "psalter-texts:Daniel 3:52-57@179": {
+      "chars": 730,
+      "sha1": "951fbda5e7529ebad44a5435f4d073d44ae1c2a9"
+    },
+    "psalter-texts:Daniel 3:52-57@409": {
+      "chars": 730,
+      "sha1": "951fbda5e7529ebad44a5435f4d073d44ae1c2a9"
+    },
+    "psalter-texts:Daniel 3:57-88, 56@296": {
+      "chars": 1572,
+      "sha1": "07b9a8704f5fd8f48d9a1c66cb2f3936e861a593"
+    },
+    "psalter-texts:Daniel 3:57-88, 56@60": {
+      "chars": 1572,
+      "sha1": "07b9a8704f5fd8f48d9a1c66cb2f3936e861a593"
+    },
+    "psalter-texts:Deuteronomy 32:1-12@281": {
+      "chars": 1091,
+      "sha1": "560175d427208d50f4fb14c4b35ad203bdb7d3fe"
+    },
+    "psalter-texts:Ephesians 1:3-10@206": {
+      "chars": 800,
+      "sha1": "5d38f40ddfdafccfe78fc1f1497d7bbe2815ee6b"
+    },
+    "psalter-texts:Ephesians 1:3-10@325": {
+      "chars": 800,
+      "sha1": "5d38f40ddfdafccfe78fc1f1497d7bbe2815ee6b"
+    },
+    "psalter-texts:Ephesians 1:3-10@436": {
+      "chars": 800,
+      "sha1": "5d38f40ddfdafccfe78fc1f1497d7bbe2815ee6b"
+    },
+    "psalter-texts:Ephesians 1:3-10@87": {
+      "chars": 800,
+      "sha1": "5d38f40ddfdafccfe78fc1f1497d7bbe2815ee6b"
+    },
+    "psalter-texts:Exodus 15:1-4a, 8-13, 17-18@160": {
+      "chars": 1032,
+      "sha1": "0b753a37ad69bbb9dd125d3446e11f2b5c0ccf93"
+    },
+    "psalter-texts:Ezekiel 36:24-28@507": {
+      "chars": 478,
+      "sha1": "0db255b4f424600da43c192b793ff129580daa70"
+    },
+    "psalter-texts:Habakkuk 3:2-4, 13a, 15-19@265": {
+      "chars": 967,
+      "sha1": "278139310123b9a545bdbf7c1ef43327437dee4f"
+    },
+    "psalter-texts:Isaiah 12:1-6@249": {
+      "chars": 485,
+      "sha1": "901ab92723552203b99ead0b92371dbda2086768"
+    },
+    "psalter-texts:Isaiah 26:1-6@332": {
+      "chars": 589,
+      "sha1": "94f80bfe8d1010f8be52462d6718aee2f75c1fe1"
+    },
+    "psalter-texts:Isaiah 2:2-5@316": {
+      "chars": 488,
+      "sha1": "c611ca44dd00b8da02ec5bff5216dc25d65a38b3"
+    },
+    "psalter-texts:Isaiah 33:13-16@346": {
+      "chars": 430,
+      "sha1": "9db1785be560a7d715062892c9ef9085c5f44ef1"
+    },
+    "psalter-texts:Isaiah 38:10-14, 17-20@212": {
+      "chars": 875,
+      "sha1": "2ed58a6b7c94798e3520d4e900110a3f01c00691"
+    },
+    "psalter-texts:Isaiah 40:10-17@361": {
+      "chars": 731,
+      "sha1": "5a44551a309207e34317f29212f2f3662ccc6919"
+    },
+    "psalter-texts:Isaiah 42:10-16@426": {
+      "chars": 724,
+      "sha1": "7a43813d1b66b62b04cc79553b6a4ee034794a5e"
+    },
+    "psalter-texts:Isaiah 45:15-26@144": {
+      "chars": 1127,
+      "sha1": "ce10c565cdffb6dcaa13ddea9e3b6c567b90b2f2"
+    },
+    "psalter-texts:Isaiah 61:10-62:5@459": {
+      "chars": 885,
+      "sha1": "6d62447c9a4b61dfb7a35ffe8bdd44dd5c718264"
+    },
+    "psalter-texts:Isaiah 66:10-14a@475": {
+      "chars": 430,
+      "sha1": "4ff2c781b7a3639474bba282a931112fe8c13945"
+    },
+    "psalter-texts:Jeremiah 14:17-21@378": {
+      "chars": 645,
+      "sha1": "950e1e9f94a2ff96f5fe6ab5f8c6f6f78a6212fa"
+    },
+    "psalter-texts:Jeremiah 31:10-14@127": {
+      "chars": 655,
+      "sha1": "dffc1475a993a079921a3889b89d303918a3db33"
+    },
+    "psalter-texts:Judith 16:2-3a, 13-15@111": {
+      "chars": 549,
+      "sha1": "ce7cecd529b4f63ac5ddfeef375c245b43cd4fe5"
+    },
+    "psalter-texts:Philippians 2:6-11@170": {
+      "chars": 434,
+      "sha1": "ff4e3438d78f256c4887fcd1ac76a93eef45c766"
+    },
+    "psalter-texts:Philippians 2:6-11@290": {
+      "chars": 434,
+      "sha1": "ff4e3438d78f256c4887fcd1ac76a93eef45c766"
+    },
+    "psalter-texts:Philippians 2:6-11@291": {
+      "chars": 434,
+      "sha1": "ff4e3438d78f256c4887fcd1ac76a93eef45c766"
+    },
+    "psalter-texts:Philippians 2:6-11@401": {
+      "chars": 434,
+      "sha1": "ff4e3438d78f256c4887fcd1ac76a93eef45c766"
+    },
+    "psalter-texts:Philippians 2:6-11@402": {
+      "chars": 434,
+      "sha1": "ff4e3438d78f256c4887fcd1ac76a93eef45c766"
+    },
+    "psalter-texts:Philippians 2:6-11@53": {
+      "chars": 434,
+      "sha1": "ff4e3438d78f256c4887fcd1ac76a93eef45c766"
+    },
+    "psalter-texts:Philippians 2:6-11@54": {
+      "chars": 434,
+      "sha1": "ff4e3438d78f256c4887fcd1ac76a93eef45c766"
+    },
+    "psalter-texts:Philippians 2:6-11@585": {
+      "chars": 434,
+      "sha1": "ff4e3438d78f256c4887fcd1ac76a93eef45c766"
+    },
+    "psalter-texts:Psalm 100:1-5@147": {
+      "chars": 403,
+      "sha1": "99235bda7efeab0657a594e3eb65e663b3ae6e53"
+    },
+    "psalter-texts:Psalm 100:1-5@379": {
+      "chars": 403,
+      "sha1": "99235bda7efeab0657a594e3eb65e663b3ae6e53"
+    },
+    "psalter-texts:Psalm 101:1-8@441": {
+      "chars": 649,
+      "sha1": "e4eb410fc06297c1c6351eda140a7daac6a7cba6"
+    },
+    "psalter-texts:Psalm 108:2-7@457": {
+      "chars": 920,
+      "sha1": "2900ff20c14ad5b935db9122a4e0af0ed2bc9e03"
+    },
+    "psalter-texts:Psalm 110:1-5, 7@185": {
+      "chars": 478,
+      "sha1": "d00e9ed91957c2b85110001e935df04391b93a5b"
+    },
+    "psalter-texts:Psalm 110:1-5, 7@305": {
+      "chars": 478,
+      "sha1": "d00e9ed91957c2b85110001e935df04391b93a5b"
+    },
+    "psalter-texts:Psalm 110:1-5, 7@415": {
+      "chars": 478,
+      "sha1": "d00e9ed91957c2b85110001e935df04391b93a5b"
+    },
+    "psalter-texts:Psalm 110:1-5, 7@592": {
+      "chars": 478,
+      "sha1": "d00e9ed91957c2b85110001e935df04391b93a5b"
+    },
+    "psalter-texts:Psalm 110:1-5, 7@68": {
+      "chars": 478,
+      "sha1": "d00e9ed91957c2b85110001e935df04391b93a5b"
+    },
+    "psalter-texts:Psalm 111:1-10@306": {
+      "chars": 722,
+      "sha1": "ce5d280f522fd6154ff2d6fb7572646db8363fcc"
+    },
+    "psalter-texts:Psalm 112:1-10@416": {
+      "chars": 634,
+      "sha1": "59baa3f6cd9c8d26d375bab950f8d21a94be22c8"
+    },
+    "psalter-texts:Psalm 113:1-9@287": {
+      "chars": 484,
+      "sha1": "4ed17e9852372cdc9d34b7bae23bf2318ae98ee6"
+    },
+    "psalter-texts:Psalm 113:1-9@288": {
+      "chars": 484,
+      "sha1": "4ed17e9852372cdc9d34b7bae23bf2318ae98ee6"
+    },
+    "psalter-texts:Psalm 113:1-9@582": {
+      "chars": 484,
+      "sha1": "4ed17e9852372cdc9d34b7bae23bf2318ae98ee6"
+    },
+    "psalter-texts:Psalm 113:1-9@732": {
+      "chars": 484,
+      "sha1": "4ed17e9852372cdc9d34b7bae23bf2318ae98ee6"
+    },
+    "psalter-texts:Psalm 114:1-8@70": {
+      "chars": 380,
+      "sha1": "636fb0a3f478d59ffac5d18a847702802dc7fd58"
+    },
+    "psalter-texts:Psalm 115:1-13@187": {
+      "chars": 987,
+      "sha1": "d6484eadcb8addcb04860e929aba4c41366f17fb"
+    },
+    "psalter-texts:Psalm 116:1-9@271": {
+      "chars": 522,
+      "sha1": "fbb220091dbceca869f5ea63b5db3e15679c3a2a"
+    },
+    "psalter-texts:Psalm 116:10-19@289": {
+      "chars": 484,
+      "sha1": "f17ff4e1b2c3924d80dca09adb76043b2a7e108e"
+    },
+    "psalter-texts:Psalm 117:1-2@162": {
+      "chars": 132,
+      "sha1": "1bf34bda26a1e776ed0e4454e87723c199516d7f"
+    },
+    "psalter-texts:Psalm 117:1-2@394": {
+      "chars": 132,
+      "sha1": "1bf34bda26a1e776ed0e4454e87723c199516d7f"
+    },
+    "psalter-texts:Psalm 118:1-16@175": {
+      "chars": 1775,
+      "sha1": "2e0f9adb290fb6d0cea2e28bb5e9f96693758cc7"
+    },
+    "psalter-texts:Psalm 118:1-16@406": {
+      "chars": 1775,
+      "sha1": "2e0f9adb290fb6d0cea2e28bb5e9f96693758cc7"
+    },
+    "psalter-texts:Psalm 119:105-112@166": {
+      "chars": 547,
+      "sha1": "0631a8fc5972812d9b778e68f0c6a8ed84adc86a"
+    },
+    "psalter-texts:Psalm 119:145-152@159": {
+      "chars": 531,
+      "sha1": "0b73e7834532ed8bf9b59bf0fdb3337702aeef6e"
+    },
+    "psalter-texts:Psalm 119:145-152@391": {
+      "chars": 531,
+      "sha1": "0b73e7834532ed8bf9b59bf0fdb3337702aeef6e"
+    },
+    "psalter-texts:Psalm 11:1-7@84": {
+      "chars": 610,
+      "sha1": "d7b8ee8b0b3032f9063010b0a8d052b44d6e5c0b"
+    },
+    "psalter-texts:Psalm 121:1-8@273": {
+      "chars": 403,
+      "sha1": "87b81aa818afd2464509594e76bf2e6d17e37aee"
+    },
+    "psalter-texts:Psalm 122:1-9@398": {
+      "chars": 569,
+      "sha1": "86e82310507296117bedb7225b314179efa6a21d"
+    },
+    "psalter-texts:Psalm 122:1-9@399": {
+      "chars": 569,
+      "sha1": "86e82310507296117bedb7225b314179efa6a21d"
+    },
+    "psalter-texts:Psalm 123:1-4@323": {
+      "chars": 335,
+      "sha1": "cf1f99a7429f192d6594afe5dc4853575249c867"
+    },
+    "psalter-texts:Psalm 124:1-8@324": {
+      "chars": 470,
+      "sha1": "554746593519f5a528567930ed8209248023d01e"
+    },
+    "psalter-texts:Psalm 125:1-5@337": {
+      "chars": 417,
+      "sha1": "df2864ab17cc729a64f9ead35013ab161295d962"
+    },
+    "psalter-texts:Psalm 126:1-6@352": {
+      "chars": 467,
+      "sha1": "e8363c4804cc304763f6b966b672b5cdae1fba10"
+    },
+    "psalter-texts:Psalm 127:1-5@353": {
+      "chars": 465,
+      "sha1": "faf09121d6038ee916a78b19fdc29fb2f60b30ae"
+    },
+    "psalter-texts:Psalm 130:1-8@400": {
+      "chars": 474,
+      "sha1": "3fe28a0236d23874d160eb0cd6ac320d9350d038"
+    },
+    "psalter-texts:Psalm 130:1-8@532": {
+      "chars": 474,
+      "sha1": "3fe28a0236d23874d160eb0cd6ac320d9350d038"
+    },
+    "psalter-texts:Psalm 130:1-8@593": {
+      "chars": 474,
+      "sha1": "3fe28a0236d23874d160eb0cd6ac320d9350d038"
+    },
+    "psalter-texts:Psalm 131:1-3@338": {
+      "chars": 242,
+      "sha1": "7c6cd83001061c8372315287defe6b4c9d16c5de"
+    },
+    "psalter-texts:Psalm 132:1-10@367": {
+      "chars": 595,
+      "sha1": "1985212072417efe2c2becd24c3860cab5a06c9c"
+    },
+    "psalter-texts:Psalm 132:11-18@369": {
+      "chars": 572,
+      "sha1": "6be0850c9c27e9773401272dee31032105b47950"
+    },
+    "psalter-texts:Psalm 134@514": {
+      "chars": 178,
+      "sha1": "8284339b5c835703362f242c9c163ff8a7633775"
+    },
+    "psalter-texts:Psalm 135:1-12@383": {
+      "chars": 887,
+      "sha1": "1bd028fcb598c39214862fd812835506e1b7e951"
+    },
+    "psalter-texts:Psalm 135:1-12@428": {
+      "chars": 887,
+      "sha1": "1bd028fcb598c39214862fd812835506e1b7e951"
+    },
+    "psalter-texts:Psalm 135:13-21@385": {
+      "chars": 536,
+      "sha1": "0e425895bd45a9eaaa0109d654b17b6b6110c4bc"
+    },
+    "psalter-texts:Psalm 136:1-9@433": {
+      "chars": 620,
+      "sha1": "af32769b457990dcac7fc44449fa84c0e48ce109"
+    },
+    "psalter-texts:Psalm 136:10-26@434": {
+      "chars": 1272,
+      "sha1": "eabaa5fa1e61114badbf6fe343996ab3835b9981"
+    },
+    "psalter-texts:Psalm 137:1-6@449": {
+      "chars": 436,
+      "sha1": "1c9cb8b2758a2168ee0b52528b4d68e2384e5e68"
+    },
+    "psalter-texts:Psalm 138:1-8@450": {
+      "chars": 706,
+      "sha1": "7287a7825cb599bd267b4e7e539d32ae5a7e65b4"
+    },
+    "psalter-texts:Psalm 139:1-12@464": {
+      "chars": 793,
+      "sha1": "98d043165cb44caae872356204e569dccb043d9b"
+    },
+    "psalter-texts:Psalm 139:13-18, 23-24@466": {
+      "chars": 644,
+      "sha1": "4d13ab526adb9505fb22b446857a7653c6950b8d"
+    },
+    "psalter-texts:Psalm 141:1-9@49": {
+      "chars": 801,
+      "sha1": "2e80a82394db9916a040eec489b7ad313e3be850"
+    },
+    "psalter-texts:Psalm 142:1-7@51": {
+      "chars": 641,
+      "sha1": "3e5cb9be9b407b00ecd5cbb6ab4385873a7e2237"
+    },
+    "psalter-texts:Psalm 143:1-11@473": {
+      "chars": 901,
+      "sha1": "2a4b1a0d9b956036a76b8585f525065a4688ac2e"
+    },
+    "psalter-texts:Psalm 143:1-11@527": {
+      "chars": 901,
+      "sha1": "2a4b1a0d9b956036a76b8585f525065a4688ac2e"
+    },
+    "psalter-texts:Psalm 144:1-10@444": {
+      "chars": 725,
+      "sha1": "906dcbb146cc3fcd64587e23f0ffa56fe47ba8a2"
+    },
+    "psalter-texts:Psalm 144:1-8@480": {
+      "chars": 595,
+      "sha1": "026ccb2865a9e42b12354a85c140eea623630929"
+    },
+    "psalter-texts:Psalm 144:9-15@481": {
+      "chars": 595,
+      "sha1": "c8b7ef36b6e967dbcd7ce5fa1b53639c2a10a909"
+    },
+    "psalter-texts:Psalm 145:1-13@497": {
+      "chars": 837,
+      "sha1": "1450c30e243801555d070f8225a03061e9891c1a"
+    },
+    "psalter-texts:Psalm 145:14-21@498": {
+      "chars": 539,
+      "sha1": "9575663c61912496722e2e84cfb2d04343bc00d0"
+    },
+    "psalter-texts:Psalm 146:1-10@460": {
+      "chars": 638,
+      "sha1": "a796a2f5ae726a2fbe685a25b464ca6773b8a1c3"
+    },
+    "psalter-texts:Psalm 147:1-11@476": {
+      "chars": 698,
+      "sha1": "0e4db81ac0aa7b169735e8a9df200cff4755a0f7"
+    },
+    "psalter-texts:Psalm 147:1-11@734": {
+      "chars": 698,
+      "sha1": "0e4db81ac0aa7b169735e8a9df200cff4755a0f7"
+    },
+    "psalter-texts:Psalm 147:12-20@267": {
+      "chars": 538,
+      "sha1": "e13d647af9f72136b4829d76651c06e8f7be99e8"
+    },
+    "psalter-texts:Psalm 147:12-20@492": {
+      "chars": 538,
+      "sha1": "e13d647af9f72136b4829d76651c06e8f7be99e8"
+    },
+    "psalter-texts:Psalm 147:12-20@584": {
+      "chars": 538,
+      "sha1": "e13d647af9f72136b4829d76651c06e8f7be99e8"
+    },
+    "psalter-texts:Psalm 148:1-14@300": {
+      "chars": 836,
+      "sha1": "1d7aabee4e190b196288e4c0d6968f516db5ae60"
+    },
+    "psalter-texts:Psalm 149:1-9@64": {
+      "chars": 623,
+      "sha1": "513dff60f5f2ed434d456eb0ad11c843eaaa0e00"
+    },
+    "psalter-texts:Psalm 150:1-6@181": {
+      "chars": 401,
+      "sha1": "388dbecc46b0a53999a9df09d7e7b0b16554c2ec"
+    },
+    "psalter-texts:Psalm 150:1-6@411": {
+      "chars": 401,
+      "sha1": "388dbecc46b0a53999a9df09d7e7b0b16554c2ec"
+    },
+    "psalter-texts:Psalm 15:1-5@86": {
+      "chars": 394,
+      "sha1": "922b5bb089c0e93b5ee17d810b2b2d8383b6e971"
+    },
+    "psalter-texts:Psalm 16:1-11@535": {
+      "chars": 821,
+      "sha1": "9847e4a15bb333334a493eb0b47c935cc52ad20d"
+    },
+    "psalter-texts:Psalm 16:1-6@168": {
+      "chars": 821,
+      "sha1": "9847e4a15bb333334a493eb0b47c935cc52ad20d"
+    },
+    "psalter-texts:Psalm 19:2-7@199": {
+      "chars": 425,
+      "sha1": "4dfc18ae9d59e352eccdd320a05d695e5b7cbbdd"
+    },
+    "psalter-texts:Psalm 20:2-8@101": {
+      "chars": 679,
+      "sha1": "795967368e5ed0ba69d872504e95e9105ef5a2c3"
+    },
+    "psalter-texts:Psalm 21:2-8, 14@103": {
+      "chars": 551,
+      "sha1": "713a2e185eef26d6ef2783b28995cf91d1cf086f"
+    },
+    "psalter-texts:Psalm 24:1-10@92": {
+      "chars": 727,
+      "sha1": "1f087e6f324875098d7d3d36e938ac9c5036da68"
+    },
+    "psalter-texts:Psalm 27:1-6@116": {
+      "chars": 674,
+      "sha1": "267affbb28327d64aacc14903caf0d333c97cb79"
+    },
+    "psalter-texts:Psalm 27:7-14@118": {
+      "chars": 633,
+      "sha1": "e95bf046daa3d6e49e12df201bef86f89957250d"
+    },
+    "psalter-texts:Psalm 29:1-10@80": {
+      "chars": 727,
+      "sha1": "660eca14b444d2b66338e1535601da3b65fa32e0"
+    },
+    "psalter-texts:Psalm 30:2-13@132": {
+      "chars": 956,
+      "sha1": "12f096040575f4935f09b09676db00b0e8d64540"
+    },
+    "psalter-texts:Psalm 31:2-6@531": {
+      "chars": 378,
+      "sha1": "f2a6d96493e93e54ded70222b1000105207cbb3d"
+    },
+    "psalter-texts:Psalm 32:1-11@135": {
+      "chars": 897,
+      "sha1": "7493d2a72364982f3379c97ec90e2f5dab680549"
+    },
+    "psalter-texts:Psalm 33:1-9@96": {
+      "chars": 1385,
+      "sha1": "9f8b111cf6a1577dcebaae464d95504c61e0d3c5"
+    },
+    "psalter-texts:Psalm 36:6-13@109": {
+      "chars": 917,
+      "sha1": "6d7f8c9533745738b70854904478aa3f55da0bdf"
+    },
+    "psalter-texts:Psalm 41:2-14@151": {
+      "chars": 935,
+      "sha1": "5253abd99af0f66880d552ec03cad906a260a7f6"
+    },
+    "psalter-texts:Psalm 42:2-6@195": {
+      "chars": 1156,
+      "sha1": "ba4acd2d8511422d6576968cd34bdc4775c492b3"
+    },
+    "psalter-texts:Psalm 43:1-5@211": {
+      "chars": 552,
+      "sha1": "fc2d695ae27803708641a5c5f167db42e8a80565"
+    },
+    "psalter-texts:Psalm 45:11-18@204": {
+      "chars": 500,
+      "sha1": "181da3a845c997ce155848f144a11392c9c567d4"
+    },
+    "psalter-texts:Psalm 45:2-10@203": {
+      "chars": 755,
+      "sha1": "2b1c3c8318453783a79504843dcb8ec8ab48f8fd"
+    },
+    "psalter-texts:Psalm 46:2-12@153": {
+      "chars": 827,
+      "sha1": "8a14d4a12bfe67678c8f2c729fd01d6017fabcdc"
+    },
+    "psalter-texts:Psalm 47:2-10@112": {
+      "chars": 637,
+      "sha1": "fd22fe4ba4132d774d8053a18f392c87bdc128a6"
+    },
+    "psalter-texts:Psalm 48:2-12@128": {
+      "chars": 859,
+      "sha1": "7177305685c2aa50675f44ac1cc6a99eca0bdf28"
+    },
+    "psalter-texts:Psalm 49:1-13@219": {
+      "chars": 736,
+      "sha1": "7414213d291f9744e60e627134d076254fb2a37c"
+    },
+    "psalter-texts:Psalm 49:14-21@220": {
+      "chars": 558,
+      "sha1": "3b857992094510a07876e4e4003518f3a474dca0"
+    },
+    "psalter-texts:Psalm 4@512": {
+      "chars": 654,
+      "sha1": "a4fb50e12b7d890856b4c0b0d046ca14c70abafd"
+    },
+    "psalter-texts:Psalm 51:3-19@142": {
+      "chars": 1369,
+      "sha1": "d236d8ebc3aded1e87dc3d89cc211c9ca50ebd9b"
+    },
+    "psalter-texts:Psalm 51:3-19@263": {
+      "chars": 1369,
+      "sha1": "d236d8ebc3aded1e87dc3d89cc211c9ca50ebd9b"
+    },
+    "psalter-texts:Psalm 51:3-19@375": {
+      "chars": 1369,
+      "sha1": "d236d8ebc3aded1e87dc3d89cc211c9ca50ebd9b"
+    },
+    "psalter-texts:Psalm 51:3-19@488": {
+      "chars": 1369,
+      "sha1": "d236d8ebc3aded1e87dc3d89cc211c9ca50ebd9b"
+    },
+    "psalter-texts:Psalm 57:2-12@125": {
+      "chars": 926,
+      "sha1": "3e17c299b0f898034b9f299fbeb9db4725398db1"
+    },
+    "psalter-texts:Psalm 5:2-10, 12-13@77": {
+      "chars": 843,
+      "sha1": "bc27738c620c869855629eb537ae5942556f5d1b"
+    },
+    "psalter-texts:Psalm 62:2-9@236": {
+      "chars": 876,
+      "sha1": "621d3cc9042caab8dc6121648e7226ae3ee83394"
+    },
+    "psalter-texts:Psalm 63:2-9@58": {
+      "chars": 552,
+      "sha1": "ea3ca436a9f5e360cd35f690cb8761d701e7eff3"
+    },
+    "psalter-texts:Psalm 65:2-9@214": {
+      "chars": 994,
+      "sha1": "f1a810681fa582e97587688726c65495c56627c4"
+    },
+    "psalter-texts:Psalm 67:2-8@239": {
+      "chars": 518,
+      "sha1": "139bf8f7357bd9714ce79065ddec203afa0396de"
+    },
+    "psalter-texts:Psalm 67:2-8@333": {
+      "chars": 575,
+      "sha1": "164a44d7a6106faf7a0dee7122aaa65cef098491"
+    },
+    "psalter-texts:Psalm 72:1-11@255": {
+      "chars": 668,
+      "sha1": "5f328284a370f5f664c3fa417356bc9247d3a358"
+    },
+    "psalter-texts:Psalm 72:12-19@256": {
+      "chars": 700,
+      "sha1": "da41f5bc68300340a8b4caf92c9460e54369e016"
+    },
+    "psalter-texts:Psalm 77:2-13@227": {
+      "chars": 1291,
+      "sha1": "0df377ca54e754fbfd819a5ce84e26d82a605236"
+    },
+    "psalter-texts:Psalm 80:2-8, 15-20@246": {
+      "chars": 1341,
+      "sha1": "b9e3b1028f65a601281aa233a92f27932e72c044"
+    },
+    "psalter-texts:Psalm 81:2-11@250": {
+      "chars": 1068,
+      "sha1": "b8449d66e264bb44e272621637c4194a95b2cc79"
+    },
+    "psalter-texts:Psalm 84:2-13@314": {
+      "chars": 973,
+      "sha1": "d4f0c72da3b6ddfe19981c58324415dc28d5c38d"
+    },
+    "psalter-texts:Psalm 85:2-14@330": {
+      "chars": 853,
+      "sha1": "37a603de38e44295fa1b3ad71c5b83dbd0cf1509"
+    },
+    "psalter-texts:Psalm 86:1-17@344": {
+      "chars": 1313,
+      "sha1": "661012c1f0bd64b6fe720a44fd3ee080f9c8e90e"
+    },
+    "psalter-texts:Psalm 86:1-17@523": {
+      "chars": 1313,
+      "sha1": "661012c1f0bd64b6fe720a44fd3ee080f9c8e90e"
+    },
+    "psalter-texts:Psalm 87:1-7@360": {
+      "chars": 461,
+      "sha1": "cce7dd653555e10fbba0d79657aa7c11a8fff3b6"
+    },
+    "psalter-texts:Psalm 88:2-19@539": {
+      "chars": 1182,
+      "sha1": "6758cec1cd8df1c162d49d0f7a228ffe582cabae"
+    },
+    "psalter-texts:Psalm 8:2-10@283": {
+      "chars": 627,
+      "sha1": "d6fc1a0d75b1fa7e2775dc0210420f1ec181caef"
+    },
+    "psalter-texts:Psalm 8:2-10@508": {
+      "chars": 627,
+      "sha1": "d6fc1a0d75b1fa7e2775dc0210420f1ec181caef"
+    },
+    "psalter-texts:Psalm 90:1-12@424": {
+      "chars": 1373,
+      "sha1": "64eb7525e0f22315c756b9398da8ed9b459ec2e0"
+    },
+    "psalter-texts:Psalm 91:1-16@517": {
+      "chars": 1053,
+      "sha1": "8ff3ed3c2f01f8427d7a07fc1eaf8dbd7423abb5"
+    },
+    "psalter-texts:Psalm 92:2-9@279": {
+      "chars": 952,
+      "sha1": "c4ae8c60b6e2c821f513b87e35c9e7023a2b9da5"
+    },
+    "psalter-texts:Psalm 92:2-9@505": {
+      "chars": 952,
+      "sha1": "c4ae8c60b6e2c821f513b87e35c9e7023a2b9da5"
+    },
+    "psalter-texts:Psalm 93:1-5@295": {
+      "chars": 371,
+      "sha1": "0dca3e846312b47f4eb46ccbcdb634e1b0851439"
+    },
+    "psalter-texts:Psalm 96:1-13@317": {
+      "chars": 1010,
+      "sha1": "a8c67b804cba6582994dec7fd030aff86b579a5a"
+    },
+    "psalter-texts:Psalm 97:1-12@231": {
+      "chars": 828,
+      "sha1": "a78f9cd9236fdf21d2f1846ea8e8e8c6d0014a9c"
+    },
+    "psalter-texts:Psalm 98:1-9@348": {
+      "chars": 687,
+      "sha1": "b0f09f46b02b06c7219c6095d48b774d947c5148"
+    },
+    "psalter-texts:Psalm 99:1-9@363": {
+      "chars": 764,
+      "sha1": "a3563affcf4e300ca188c0d02b7ca127a1e71549"
+    },
+    "psalter-texts:Revelation 11:17-18; 12:10b-12a@137": {
+      "chars": 670,
+      "sha1": "e3cdd024325b7207bd4fb620db8070b47a621849"
+    },
+    "psalter-texts:Revelation 11:17-18; 12:10b-12a@257": {
+      "chars": 670,
+      "sha1": "e3cdd024325b7207bd4fb620db8070b47a621849"
+    },
+    "psalter-texts:Revelation 11:17-18; 12:10b-12a@370": {
+      "chars": 670,
+      "sha1": "e3cdd024325b7207bd4fb620db8070b47a621849"
+    },
+    "psalter-texts:Revelation 11:17-18; 12:10b-12a@483": {
+      "chars": 670,
+      "sha1": "e3cdd024325b7207bd4fb620db8070b47a621849"
+    },
+    "psalter-texts:Revelation 15:3-4@154": {
+      "chars": 319,
+      "sha1": "b61276ad01e90030f3232123a58d1f832bfa1fc3"
+    },
+    "psalter-texts:Revelation 15:3-4@274": {
+      "chars": 319,
+      "sha1": "b61276ad01e90030f3232123a58d1f832bfa1fc3"
+    },
+    "psalter-texts:Revelation 15:3-4@386": {
+      "chars": 319,
+      "sha1": "b61276ad01e90030f3232123a58d1f832bfa1fc3"
+    },
+    "psalter-texts:Revelation 15:3-4@500": {
+      "chars": 319,
+      "sha1": "b61276ad01e90030f3232123a58d1f832bfa1fc3"
+    },
+    "psalter-texts:Revelation 15:3-4@735": {
+      "chars": 319,
+      "sha1": "b61276ad01e90030f3232123a58d1f832bfa1fc3"
+    },
+    "psalter-texts:Revelation 19:1-7@189": {
+      "chars": 452,
+      "sha1": "ced14afec45c4f1f773407d1391e129630a9963d"
+    },
+    "psalter-texts:Revelation 19:1-7@308": {
+      "chars": 452,
+      "sha1": "ced14afec45c4f1f773407d1391e129630a9963d"
+    },
+    "psalter-texts:Revelation 19:1-7@418": {
+      "chars": 452,
+      "sha1": "ced14afec45c4f1f773407d1391e129630a9963d"
+    },
+    "psalter-texts:Revelation 19:1-7@71": {
+      "chars": 452,
+      "sha1": "ced14afec45c4f1f773407d1391e129630a9963d"
+    },
+    "psalter-texts:Revelation 4:11; 5:9-10, 12@104": {
+      "chars": 512,
+      "sha1": "39fb9a2f10c81f84b7e5f212325f04139a956b73"
+    },
+    "psalter-texts:Revelation 4:11; 5:9-10, 12@222": {
+      "chars": 512,
+      "sha1": "39fb9a2f10c81f84b7e5f212325f04139a956b73"
+    },
+    "psalter-texts:Revelation 4:11; 5:9-10, 12@339": {
+      "chars": 512,
+      "sha1": "39fb9a2f10c81f84b7e5f212325f04139a956b73"
+    },
+    "psalter-texts:Revelation 4:11; 5:9-10, 12@452": {
+      "chars": 512,
+      "sha1": "39fb9a2f10c81f84b7e5f212325f04139a956b73"
+    },
+    "psalter-texts:Sirach 36:1-7, 13-16@198": {
+      "chars": 614,
+      "sha1": "7ff73ca49625fec0fc0c18ea883400e602e6fdf7"
+    },
+    "psalter-texts:Tobit 13:1-8@94": {
+      "chars": 1189,
+      "sha1": "f9201ebbff0e1f2bfc591465822824b162358ab1"
+    },
+    "psalter-texts:Tobit 13:8-11, 13-15@491": {
+      "chars": 962,
+      "sha1": "2c20026003f43653192198f08bfe26651885f21e"
+    },
+    "psalter-texts:Wisdom 9:1-6, 9-11@392": {
+      "chars": 1008,
+      "sha1": "e31b1bf378b0c145ecf8ef7ae459c8a871a487d8"
+    }
+  }
+}

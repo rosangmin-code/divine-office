@@ -6090,6 +6090,166 @@
               "indent": 0
             }
           ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Түүний хишиг ивээлийн"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "баялаг уурхай оюун ба"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Билиг ухаанаар бидэн руу бялхдаг юм."
+                }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Тэрээр Христ дотор"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "урьдчилсан өгөөмөр билгээрээ"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Өөрийн дур тааллын нууцыг"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "бидэнд илчилсэн юм."
+                }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                3
+              ],
+              "indent": 0
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Энэ нь цаг хугацааг биелүүлэхийн тулд"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Тэнгэр дэх юмс ба газар дээрх бүх юмсыг"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Христ дотор нэгтгэх зорилго юм."
+                }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            }
+          ]
         }
       ],
       "source": {
@@ -8297,6 +8457,33 @@
                 }
               ],
               "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "ЭЗЭН, Танд бидний найдсан ёсоор"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хайр энэрэл тань"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "бидний дээр байх болтугай!"
+                }
+              ],
+              "indent": 0
             }
           ],
           "phrases": [
@@ -8334,7 +8521,24 @@
                 4
               ],
               "indent": 1
+            },
+            {
+              "lineRange": [
+                5,
+                5
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                6,
+                7
+              ],
+              "indent": 0
             }
+          ],
+          "paragraphBoundaries": [
+            5
           ]
         }
       ],
@@ -11022,24 +11226,6 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Тэр Эцэгийн баруун баруунтаа суудаг бөгөөд"
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "түүний хаанчлал хаанчлал эцэс төгсгөлгүй билээ."
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
                   "text": "Бүх хүмүүс ээ, алгаа ташаарай."
                 }
               ],
@@ -11206,12 +11392,73 @@
                 }
               ],
               "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Улс үндэстнүүдийн ноёд"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Абрахамын Тэнгэрбурханы хүмүүс мэт"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "цугларсан."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Учир нь газар дэлхийн бамбайнууд бол"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Тэнгэрбурханых."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Тэр өндөрт өргөмжлөгдсөн."
+                }
+              ],
+              "indent": 0
             }
           ],
           "phrases": [
             {
               "lineRange": [
                 0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
                 1
               ],
               "indent": 0
@@ -11247,13 +11494,6 @@
             {
               "lineRange": [
                 6,
-                6
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                7,
                 7
               ],
               "indent": 0
@@ -11261,6 +11501,13 @@
             {
               "lineRange": [
                 8,
+                8
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                9,
                 9
               ],
               "indent": 0
@@ -11275,13 +11522,6 @@
             {
               "lineRange": [
                 11,
-                11
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                12,
                 12
               ],
               "indent": 0
@@ -11296,6 +11536,13 @@
             {
               "lineRange": [
                 15,
+                15
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                16,
                 16
               ],
               "indent": 0
@@ -11324,16 +11571,37 @@
             {
               "lineRange": [
                 20,
-                20
+                21
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                22,
+                22
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                23,
+                23
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                24,
+                24
               ],
               "indent": 0
             }
           ],
           "paragraphBoundaries": [
-            2,
-            6,
-            11,
-            17
+            4,
+            9,
+            15,
+            19
           ]
         }
       ],
@@ -14652,6 +14920,79 @@
               "indent": 0
             }
           ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Би тахилч нарын сэтгэлийг"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "тос нүнжигээр дүүргэж,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Ард түмэн минь Миний сайн сайхнаар"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "хангалуун байх болно” гэж"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "ЭЗЭН тунхаглаж байна."
+                }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                3
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                4,
+                4
+              ],
+              "indent": 0
+            }
+          ]
         }
       ],
       "source": {
@@ -15861,29 +16202,6 @@
                 3
               ],
               "indent": 1
-            }
-          ]
-        },
-        {
-          "kind": "stanza",
-          "lines": [
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Тэнгэрбурхантай эвлэрүүлэгдсэн. Аллэлуяа!"
-                }
-              ],
-              "indent": 0
-            }
-          ],
-          "phrases": [
-            {
-              "lineRange": [
-                0,
-                0
-              ],
-              "indent": 0
             }
           ]
         },
@@ -18083,6 +18401,24 @@
                 }
               ],
               "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Шүтээн хийгчид бүгд ичгүүрт орж,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Гутамшиг болон хамтдаа ичиж зовно."
+                }
+              ],
+              "indent": 0
             }
           ],
           "phrases": [
@@ -18104,6 +18440,20 @@
               "lineRange": [
                 2,
                 2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                4,
+                4
               ],
               "indent": 0
             }
@@ -20611,6 +20961,51 @@
               "spans": [
                 {
                   "kind": "text",
+                  "text": "Аяа, ЭЗЭН, зүрх минь дээгүүр бус."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Нүд минь ч ихэмсэг биш."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Их үйлс, өөрт минь хэт хүнд зүйлсэд ч."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Би эс оролцоно."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хөхнөөс гарсан хүүхэд эхтэйгээ байх мэт."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
                   "text": "Өөрийгөө би тогтуун, нам гүм байлгав."
                 }
               ],
@@ -20688,10 +21083,46 @@
                 4
               ],
               "indent": 0
+            },
+            {
+              "lineRange": [
+                5,
+                5
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                6,
+                6
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                7,
+                7
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                8,
+                8
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                9,
+                9
+              ],
+              "indent": 0
             }
           ],
           "paragraphBoundaries": [
-            3
+            4,
+            8
           ]
         }
       ],
@@ -27991,79 +28422,6 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Яагаад чи дотор минь гасална вэ?"
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Тэнгэрбурханд найд!"
-                }
-              ],
-              "indent": 0,
-              "role": "refrain"
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Учир нь би миний Тэнгэрбурхан, миний тусламж"
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Түүнийгээ л магтах болно."
-                }
-              ],
-              "indent": 0
-            }
-          ],
-          "phrases": [
-            {
-              "lineRange": [
-                0,
-                0
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                1,
-                1
-              ],
-              "indent": 0,
-              "role": "refrain"
-            },
-            {
-              "lineRange": [
-                2,
-                2
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                3,
-                3
-              ],
-              "indent": 0
-            }
-          ]
-        },
-        {
-          "kind": "stanza",
-          "lines": [
-            {
-              "spans": [
-                {
-                  "kind": "text",
                   "text": "Сэтгэл минь миний дотор цөхөрсөн байна"
                 }
               ],
@@ -28391,6 +28749,79 @@
             11,
             15,
             19
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Яагаад чи дотор минь гасална вэ?"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Тэнгэрбурханд найд!"
+                }
+              ],
+              "indent": 0,
+              "role": "refrain"
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Учир нь би миний Тэнгэрбурхан, миний тусламж"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Түүнийгээ л магтах болно."
+                }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0,
+              "role": "refrain"
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
+              ],
+              "indent": 0
+            }
           ]
         }
       ],
@@ -30805,6 +31236,228 @@
               "spans": [
                 {
                   "kind": "text",
+                  "text": "Тэнгэрбурхан, Таны өмнө"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Сион дахь магтаал байх болно."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Танд ам өчгийг ч биелүүлнэ."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Та залбирлыг сонсдог."
+                }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
+              ],
+              "indent": 0
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Танд бүх махбод очдог."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хилэнц нүгэл намайг дийлэхэд"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Гэмт үйлдлийг маань"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Та уучилсан."
+                }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
+              ],
+              "indent": 0
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хашаандаа суулгахаар"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Таны сонгож, ойртуулсан хүн ерөөлтэй еэ!"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Бид Таны ариун сүм болох"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Таны өргөөний сайн сайханд хангалуун байна."
+                }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
+              ],
+              "indent": 0
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Бидний авралын Тэнгэрбурхан,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
                   "text": "Газар дэлхийн бүх хязгаар,"
                 }
               ],
@@ -30962,82 +31615,18 @@
                 9
               ],
               "indent": 0
-            }
-          ],
-          "paragraphBoundaries": [
-            3,
-            6
-          ]
-        },
-        {
-          "kind": "stanza",
-          "lines": [
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Тэнгэрбурхан, Таны өмнө"
-                }
-              ],
-              "indent": 0
             },
             {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Сион дахь магтаал байх болно."
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Танд ам өчгийг ч биелүүлнэ."
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Та залбирлыг сонсдог."
-                }
+              "lineRange": [
+                10,
+                10
               ],
               "indent": 0
             }
           ],
-          "phrases": [
-            {
-              "lineRange": [
-                0,
-                0
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                1,
-                1
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                2,
-                2
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                3,
-                3
-              ],
-              "indent": 0
-            }
+          "paragraphBoundaries": [
+            4,
+            7
           ]
         },
         {
@@ -31134,77 +31723,6 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Танд бүх махбод очдог."
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Хилэнц нүгэл намайг дийлэхэд"
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Гэмт үйлдлийг маань"
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Та уучилсан."
-                }
-              ],
-              "indent": 0
-            }
-          ],
-          "phrases": [
-            {
-              "lineRange": [
-                0,
-                0
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                1,
-                1
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                2,
-                2
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                3,
-                3
-              ],
-              "indent": 0
-            }
-          ]
-        },
-        {
-          "kind": "stanza",
-          "lines": [
-            {
-              "spans": [
-                {
-                  "kind": "text",
                   "text": "Та түүний шанг арвинаар услан"
                 }
               ],
@@ -31233,77 +31751,6 @@
                 {
                   "kind": "text",
                   "text": "Ургахыг нь ч ерөөнө."
-                }
-              ],
-              "indent": 0
-            }
-          ],
-          "phrases": [
-            {
-              "lineRange": [
-                0,
-                0
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                1,
-                1
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                2,
-                2
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                3,
-                3
-              ],
-              "indent": 0
-            }
-          ]
-        },
-        {
-          "kind": "stanza",
-          "lines": [
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Хашаандаа суулгахаар"
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Таны сонгож, ойртуулсан хүн ерөөлтэй еэ!"
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Бид Таны ариун сүм болох"
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Таны өргөөний сайн сайханд хангалуун байна."
                 }
               ],
               "indent": 0
@@ -31406,29 +31853,6 @@
               "lineRange": [
                 3,
                 3
-              ],
-              "indent": 0
-            }
-          ]
-        },
-        {
-          "kind": "stanza",
-          "lines": [
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Бидний авралын Тэнгэрбурхан,"
-                }
-              ],
-              "indent": 0
-            }
-          ],
-          "phrases": [
-            {
-              "lineRange": [
-                0,
-                0
               ],
               "indent": 0
             }
@@ -34793,6 +35217,24 @@
                 }
               ],
               "indent": 1
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Ганцхан Тэр л миний хад, миний аврал,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Миний бат цайз, би ихээр ганхахгүй."
+                }
+              ],
+              "indent": 0
             }
           ],
           "phrases": [
@@ -34809,6 +35251,20 @@
                 2
               ],
               "indent": 1
+            },
+            {
+              "lineRange": [
+                3,
+                3
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                4,
+                4
+              ],
+              "indent": 0
             }
           ]
         },
@@ -36649,77 +37105,6 @@
               "role": "refrain"
             }
           ]
-        },
-        {
-          "kind": "stanza",
-          "lines": [
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Эзэн минь ээ,"
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Талархалаа Тандаа өргөе."
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Надад уурласан хэдий ч уураа Та татаж,"
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Намайг тайвшрууллаа."
-                }
-              ],
-              "indent": 0
-            }
-          ],
-          "phrases": [
-            {
-              "lineRange": [
-                0,
-                0
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                1,
-                1
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                2,
-                2
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                3,
-                3
-              ],
-              "indent": 0
-            }
-          ]
         }
       ],
       "source": {
@@ -36788,6 +37173,78 @@
         {
           "kind": "stanza",
           "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэн минь ээ,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Талархалаа Тандаа өргөе."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Надад уурласан хэдий ч уураа Та татаж,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Намайг тайвшрууллаа."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Үзэгтүн, Тэнгэрбурхан бол миний аврал"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Би итгэнэ, би үл айна."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Эзэн Тэнгэрбурхан бол миний хүч, миний дуу."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Тэр надад аврал болов."
+                }
+              ],
+              "indent": 0
+            },
             {
               "spans": [
                 {
@@ -36981,11 +37438,69 @@
                 11
               ],
               "indent": 0
+            },
+            {
+              "lineRange": [
+                12,
+                12
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                13,
+                13
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                14,
+                14
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                15,
+                15
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                16,
+                16
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                17,
+                17
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                18,
+                18
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                19,
+                19
+              ],
+              "indent": 0
             }
           ],
           "paragraphBoundaries": [
-            6,
-            8
+            4,
+            8,
+            14,
+            16
           ]
         }
       ],
@@ -36998,93 +37513,6 @@
   "Psalm 81:2-11": {
     "stanzasRich": {
       "blocks": [
-        {
-          "kind": "stanza",
-          "lines": [
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Дунд чинь гаднын бурхан бүү байг."
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Харийн бурханд та нар бүү мөргө."
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Египет нутгаас та нарыг удирдан гаргасан"
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "ЭЗЭН Тэнгэрбурхан чинь Би юм."
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Амаа том ангайлга, Би дүүргэе."
-                }
-              ],
-              "indent": 0
-            }
-          ],
-          "phrases": [
-            {
-              "lineRange": [
-                0,
-                0
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                1,
-                1
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                2,
-                2
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                3,
-                3
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                4,
-                4
-              ],
-              "indent": 0
-            }
-          ]
-        },
         {
           "kind": "stanza",
           "lines": [
@@ -37128,77 +37556,6 @@
               "lineRange": [
                 2,
                 2
-              ],
-              "indent": 0
-            }
-          ]
-        },
-        {
-          "kind": "stanza",
-          "lines": [
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Гэвч Миний хүмүүс дууг минь сонссонгүй"
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Израил ч Намайг дагасангүй."
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Иймээс Би тэднийг зоргоор нь явуулахын тулд"
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Зүрхнийх нь зөрүүдлэлд тушаасан."
-                }
-              ],
-              "indent": 0
-            }
-          ],
-          "phrases": [
-            {
-              "lineRange": [
-                0,
-                0
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                1,
-                1
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                2,
-                2
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                3,
-                3
               ],
               "indent": 0
             }
@@ -37282,77 +37639,6 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Хүмүүс минь Намайг сонсож,"
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Израил Миний замаар явсан ч болоосой!"
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Тэгсэн бол Би дайснуудыг нь хурдан дарж,"
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Мутраа өстнүүдийнх нь эсрэг эргүүлэх байсан."
-                }
-              ],
-              "indent": 0
-            }
-          ],
-          "phrases": [
-            {
-              "lineRange": [
-                0,
-                0
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                1,
-                1
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                2,
-                2
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                3,
-                3
-              ],
-              "indent": 0
-            }
-          ]
-        },
-        {
-          "kind": "stanza",
-          "lines": [
-            {
-              "spans": [
-                {
-                  "kind": "text",
                   "text": "Учир нь Израилд зориулсан зарлиг,"
                 }
               ],
@@ -37414,93 +37700,6 @@
                 3
               ],
               "indent": 1
-            }
-          ]
-        },
-        {
-          "kind": "stanza",
-          "lines": [
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "ЭЗЭНийг үзэн ядагсад"
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Түүнд сөхрөн бөхийх байсан"
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Тэдний цаг мөнхөд үргэлжлэх байсан."
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Дээд зэргийн буудайгаар тэднийг хооллож,"
-                }
-              ],
-              "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Хаднаас гарсан балаар Би хангах байсан”."
-                }
-              ],
-              "indent": 0
-            }
-          ],
-          "phrases": [
-            {
-              "lineRange": [
-                0,
-                0
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                1,
-                1
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                2,
-                2
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                3,
-                3
-              ],
-              "indent": 0
-            },
-            {
-              "lineRange": [
-                4,
-                4
-              ],
-              "indent": 0
             }
           ]
         },
@@ -37689,6 +37888,322 @@
           ],
           "paragraphBoundaries": [
             6
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Дунд чинь гаднын бурхан бүү байг."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Харийн бурханд та нар бүү мөргө."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Египет нутгаас та нарыг удирдан гаргасан"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "ЭЗЭН Тэнгэрбурхан чинь Би юм."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Амаа том ангайлга, Би дүүргэе."
+                }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                4,
+                4
+              ],
+              "indent": 0
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Гэвч Миний хүмүүс дууг минь сонссонгүй"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Израил ч Намайг дагасангүй."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Иймээс Би тэднийг зоргоор нь явуулахын тулд"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Зүрхнийх нь зөрүүдлэлд тушаасан."
+                }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
+              ],
+              "indent": 0
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хүмүүс минь Намайг сонсож,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Израил Миний замаар явсан ч болоосой!"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Тэгсэн бол Би дайснуудыг нь хурдан дарж,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Мутраа өстнүүдийнх нь эсрэг эргүүлэх байсан."
+                }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
+              ],
+              "indent": 0
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "ЭЗЭНийг үзэн ядагсад"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Түүнд сөхрөн бөхийх байсан"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Тэдний цаг мөнхөд үргэлжлэх байсан."
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Дээд зэргийн буудайгаар тэднийг хооллож,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хаднаас гарсан балаар Би хангах байсан”."
+                }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                4,
+                4
+              ],
+              "indent": 0
+            }
           ]
         }
       ],
@@ -39359,6 +39874,24 @@
               "spans": [
                 {
                   "kind": "text",
+                  "text": "ЭЗЭНийг магтагтун!"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Тэнгэрбурханыгаа магтан дуулах нь"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
                   "text": "Юутай сайн бэ!"
                 }
               ],
@@ -39488,28 +40021,28 @@
                 0,
                 0
               ],
-              "indent": 1
+              "indent": 0
             },
             {
               "lineRange": [
                 1,
-                2
+                1
               ],
               "indent": 0
             },
             {
               "lineRange": [
-                3,
-                3
+                2,
+                2
               ],
               "indent": 1
             },
             {
               "lineRange": [
-                4,
+                3,
                 4
               ],
-              "indent": 1
+              "indent": 0
             },
             {
               "lineRange": [
@@ -39573,12 +40106,26 @@
                 13
               ],
               "indent": 1
+            },
+            {
+              "lineRange": [
+                14,
+                14
+              ],
+              "indent": 1
+            },
+            {
+              "lineRange": [
+                15,
+                15
+              ],
+              "indent": 1
             }
           ],
           "paragraphBoundaries": [
-            3,
-            9,
-            13
+            5,
+            11,
+            15
           ]
         },
         {
@@ -42575,7 +43122,7 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Түүний хүүхэд биш, нүгэлтэй толбо болов."
+                  "text": "Түүний хүүхэд биш, ичгүүрт толбо болов."
                 }
               ],
               "indent": 0
@@ -44956,6 +45503,42 @@
               "spans": [
                 {
                   "kind": "text",
+                  "text": "Газар дээрээс ЭЗЭНийг магтагтун!"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Далайн амьтад, оёоргүй гүнүүд,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Гал, мөндөр, цас, манан,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Үгийг нь гүйцэтгэдэг салхи шуурга,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
                   "text": "Уулс, хамаг толгод,"
                 }
               ],
@@ -45209,12 +45792,41 @@
                 15
               ],
               "indent": 0
+            },
+            {
+              "lineRange": [
+                16,
+                16
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                17,
+                17
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                18,
+                18
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                19,
+                19
+              ],
+              "indent": 0
             }
           ],
           "paragraphBoundaries": [
             4,
             8,
-            12
+            12,
+            16
           ]
         }
       ],
@@ -59429,6 +60041,157 @@
               "indent": 0
             }
           ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Бид ЭЗЭНий дууг"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Харь нутагт яаж дуулах вэ?"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Йерусалим аа, хэрэв би чамайг мартсансан бол"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Миний баруун гар чадвараа алдах болтугай."
+                }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                2
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                3,
+                3
+              ],
+              "indent": 0
+            }
+          ]
+        },
+        {
+          "kind": "stanza",
+          "lines": [
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хэрвээ би чамайг санахгүй бол,"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хэрвээ би Йерусалимыг"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хамгийн дээд баясгалангаасаа илүүгээр"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "үл өргөмжилвөөс"
+                }
+              ],
+              "indent": 0
+            },
+            {
+              "spans": [
+                {
+                  "kind": "text",
+                  "text": "Хэл минь тагнайнд минь наалдаг."
+                }
+              ],
+              "indent": 0
+            }
+          ],
+          "phrases": [
+            {
+              "lineRange": [
+                0,
+                0
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                1,
+                1
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                2,
+                3
+              ],
+              "indent": 0
+            },
+            {
+              "lineRange": [
+                4,
+                4
+              ],
+              "indent": 0
+            }
+          ]
         }
       ],
       "source": {
@@ -63325,7 +64088,7 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Хамаг шүтээнээс та нарыг арилгах болно."
+                  "text": "Хамаг шүтээнээс чинь цэвэрлэх болно."
                 }
               ],
               "indent": 0

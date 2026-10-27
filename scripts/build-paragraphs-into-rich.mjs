@@ -19,9 +19,10 @@
  *     diagnostic JSON.
  *   - `--dry-run`: report the plan + diff, do not write.
  *
- * Pilot manifest (in-script) — 4 stanza blocks for Psalm 42:2-6 (only
- * block 0 carries paragraph content; blocks 1-2 are refrains and block
- * 3 is the long second body), 2 stanza blocks for Psalm 63:2-9. Page
+ * Pilot manifest (in-script) — 4 stanza blocks for Psalm 42:2-6 (block 1
+ * and the tail block 3 are refrains, block 2 is the long second body;
+ * blocks 2·3 were swapped into book order on 2026-10-27), 2 stanza blocks
+ * for Psalm 63:2-9. Page
  * indices were verified via `scripts/lib/probe-pdf-page.py`. Refrain
  * blocks are included so the extractor's PB output (always empty for
  * them) can be sanity-checked against the existing PB value.
@@ -60,10 +61,12 @@ export const PILOT_MANIFEST = [
   { ref: 'Psalm 42:2-6', blockIndex: 0, pages: [97], column: 'right' },
   // Refrain ("Сэтгэл минь ээ...") on page 196 left
   { ref: 'Psalm 42:2-6', blockIndex: 1, pages: [98], column: 'left' },
-  // Refrain repeat ("Яагаад чи дотор минь...") on page 197 right
-  { ref: 'Psalm 42:2-6', blockIndex: 2, pages: [98], column: 'right' },
   // Body part 2 ("Сэтгэл минь миний дотор...") on page 196 left
-  { ref: 'Psalm 42:2-6', blockIndex: 3, pages: [98], column: 'left' },
+  { ref: 'Psalm 42:2-6', blockIndex: 2, pages: [98], column: 'left' },
+  // Refrain repeat tail ("Яагаад чи дотор минь...") on page 197 right.
+  // 2026-10-27: blocks 2·3 swapped into book order — the p.197 lines had been
+  // stored before body part 2 (docs/bug-reports/2026-10-27-psalm-omission-audit.md).
+  { ref: 'Psalm 42:2-6', blockIndex: 3, pages: [98], column: 'right' },
 ]
 
 function extractBlockLines(block) {

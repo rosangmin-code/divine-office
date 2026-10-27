@@ -118,8 +118,8 @@ describe('Pilot snapshot — rich.json post-inject', () => {
     'Psalm 42:2-6': {
       0: [4, 8, 12], // R-1 PoC: body idx 4/8/13, wrap-join at idx 9 → rich 4/8/12
       1: [], // refrain — no within-block paragraph
-      2: [], // refrain repeat — no within-block paragraph
-      3: [3, 7, 11, 15, 19], // 5 paragraphs across 20 rich lines
+      2: [3, 7, 11, 15, 19], // 5 paragraphs across 20 rich lines (book order since 2026-10-27)
+      3: [], // refrain repeat tail (p.197) — no within-block paragraph
     },
   }
 
