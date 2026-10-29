@@ -89,6 +89,9 @@ jobs:
 
   e2e:
     # ⚠ Vercel Deployment Checks 등록 문자열 #2. (기존 "Playwright API smoke" 에서 개명)
+    # 2026-10-29 부터 핵심 6 spec 이 아니라 전체 e2e 를 돈다 — 변경이 들어오는
+    # push/PR 때만. 매일 밤 전체를 돌던 e2e-nightly.yml 은 같은 날 삭제(코드가
+    # 그대로면 결과도 그대로). 이름은 위 등록 때문에 그대로 둔다.
     name: Playwright · API smoke + core UI
     runs-on: ubuntu-latest
     needs: quality
@@ -114,10 +117,9 @@ jobs:
           path: .next
 
       # playwright.config.ts 가 CI 에서는 `next start --port 3200` 를 webServer 로
-      # 띄운다 (프로덕션과 동일 경로). api.spec + 핵심 UI 5 spec
-      # (prayer-sections · page-references · pwa · calendar-list-month · prayer-footer).
-      - name: Core e2e (API smoke + 5 UI specs, chromium + mobile-chrome)
-        run: npm run test:e2e:core
+      # 띄운다 (프로덕션과 동일 경로). 전체 e2e (1,122 케이스, 약 4분).
+      - name: Full e2e (chromium + mobile-chrome)
+        run: npx playwright test
 
       - name: Upload Playwright report
         if: always()
