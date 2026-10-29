@@ -12,11 +12,6 @@ import Link from 'next/link'
 // /ordinarium, /pray/...) still mount their own SettingsLink; only the
 // home header drops it here.
 
-// NOTE: `loadCalendarWindowAction` (src/app/actions/calendar.ts) is no
-// longer referenced — wi-005 removed the consuming infinite-scroll prop
-// from `LiturgicalCalendarList`. The action file itself is left in place
-// as an orphan for a separate cleanup follow-up (outside wi-002 scope).
-
 // FR-145 (#8 / GOAL #4) — Liturgical-calendar first screen.
 //
 // 3-tier searchParams resolution (highest-priority first):

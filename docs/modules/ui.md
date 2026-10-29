@@ -20,7 +20,7 @@
 - `src/components/footer.tsx` — 하단 정보
 - **FR-145 (#8)**: `src/components/liturgical-calendar-list.tsx` — `'use client'` 무한 스크롤 컨테이너 (IntersectionObserver + user-scroll gate). 첫 화면 image.png 형식 전례력 리스트.
 - **FR-145 (#8)**: `src/components/liturgical-calendar-row.tsx` — 단일 행 (헤더 + default celebration + 'or' alternative + 인라인 펼침 시 CelebrationPicker/HourCardList)
-- **FR-145 (#8)**: `src/app/actions/calendar.ts` — `loadCalendarWindowAction` server action (RSC-driven 윈도우 확장)
+- ~~**FR-145 (#8)**: `src/app/actions/calendar.ts` — `loadCalendarWindowAction` server action (RSC-driven 윈도우 확장)~~ — 2026-10-29 삭제. GOAL #4(월 단위 보기)에서 무한 스크롤을 없앤 뒤 쓰는 곳이 없었다.
 - **FR-145 (#8)**: `src/components/celebration-picker.tsx` — optional `onSelectAction` prop (인라인 모드에서 URL mutation 대신 콜백)
 
 ## 관련 데이터 파일

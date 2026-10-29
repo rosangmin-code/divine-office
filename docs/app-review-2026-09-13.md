@@ -111,7 +111,7 @@
 | 3 | 높음 | `mappings.ts:34`, `calendar.ts:54-58`, `loth-service.ts:559-564` | P0-3 주일 sanctoral 덮어쓰기 |
 | 4 | 높음 | `loth-service.ts:151-165`, `hours/loaders.ts:20-28`, `resolvers/psalm.ts:103-111`, `propers-loader.ts:36,332,373,421,439`, `schemas.ts:141-147` | 무음 fallback 정책 불일치: 시편집 로드 실패 → 빈 시편 무로그; psalter-texts 실패 → 전 시편이 성경 JSONL 번역으로 대체; `safeParse` 결과 버림; sanctoral 스키마 `record<unknown>`. 반면 `page-redirect-resolver.ts:128-137` 은 키 오타 1개에 throw → `assembleHour` try 없음(`:817-821`) → 페이지 500 |
 | 5 | 중간 | `propers-loader.ts:202,215-219,279,286-289` | week-1 무조건 폴백이 잘못된 주차 키를 은폐 (재의수요일 주 wos=0 → 1주 propers) |
-| 6 | 중간 | `app/actions/calendar.ts:12-22` | `anchorDate` 미검증 → `shiftDate` RangeError 500(실측); before/after 3650 허용 → 7,301행 1.1 s/호출 — 공개 Server Action DoS 표면 |
+| 6 | 중간 | `app/actions/calendar.ts:12-22` | `anchorDate` 미검증 → `shiftDate` RangeError 500(실측); before/after 3650 허용 → 7,301행 1.1 s/호출 — 공개 Server Action DoS 표면. **2026-10-29 해소**: 쓰는 곳이 없어 파일 삭제 |
 | 7 | 중간 | `psalter-loader.ts:181-213`, `hours/loaders.ts:47`, `resolvers/psalm.ts:31-38` | 캐스트 벽; `compline.json` 중복 파싱(`Ordinarium.complineData` 소비자 없음); 위치 인자 6개 |
 | 8 | 중간 | `loth-service.ts` 전반 | `assembleHour` 4중 First-Vespers 경로, "내일 MM-DD" 계산 6곳 복제, DOW 배열 4곳, `first-vespers-identity.ts` 는 항등함수 |
 | 9 | 낮음 | `hours/builders/invitatory.ts:30-58` | 몽골어 name 비교는 `day.name` 이 영어라 죽은 분기; `'Good Friday'` substring 매직 문자열 |

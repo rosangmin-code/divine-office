@@ -699,7 +699,7 @@ export interface CelebrationOption {
   - 신설: `src/components/liturgical-calendar-list.tsx` — `'use client'`, 무한 스크롤 컨테이너 (IntersectionObserver 기반 sentinel). 사용자 스크롤 후에만 sentinel 발화 — 초기 렌더 시 top sentinel 무한 재귀 방지.
   - 신설: `src/components/liturgical-calendar-row.tsx` — 단일 행 렌더. 토글 클릭 시 인라인 펼침 (CelebrationPicker + HourCardList).
   - 수정: `src/components/celebration-picker.tsx` — optional `onSelectAction` prop 추가. 캘린더 리스트 인라인 컨텍스트에서는 URL mutation 대신 콜백으로 선택 처리.
-- **서버 액션**: `src/app/actions/calendar.ts` — `loadCalendarWindowAction(anchorDate, before, after)`. 클라이언트 가시 범위 확장용.
+- **서버 액션**: ~~`src/app/actions/calendar.ts` — `loadCalendarWindowAction(anchorDate, before, after)`. 클라이언트 가시 범위 확장용.~~ 2026-10-29 삭제 — GOAL #4 에서 무한 스크롤을 월 단위 보기로 바꾼 뒤 쓰는 곳이 없었다(공개 Server Action 이라 app-review 2026-09-13 §3 #6 의 DoS 표면이기도 했다).
 - **첫 화면 페이지**: `src/app/(home)/page.tsx` — 단일 날짜 카드 제거, `LiturgicalCalendarList` 렌더링. 초기 ±60일 윈도우.
 - **라우팅 일치**: `/pray/[date]/[hour]` 라우트는 그대로 유지. 시간 카드 클릭 → 기존 prayer 페이지 진입. Prayer 페이지의 뒤로가기 링크 `/?date=&celebration=` 는 첫 화면 anchor + celebration 선택 동시 보존.
 
