@@ -8,9 +8,12 @@ export type PsalterTextEntry = {
   psalmPrayerPage?: number
 }
 
-function loadJsonFile(relativePath: string) {
+// `dataPath` is relative to src/data/loth. Joining it onto that fixed folder
+// lets the bundler trace just the data; a bare `process.cwd()` join made
+// Turbopack ship the whole repository with the server functions.
+function loadJsonFile(dataPath: string) {
   return JSON.parse(
-    fs.readFileSync(path.join(process.cwd(), relativePath), 'utf-8'),
+    fs.readFileSync(path.join(process.cwd(), 'src/data/loth', dataPath), 'utf-8'),
   )
 }
 
@@ -20,7 +23,7 @@ let _psalterTexts: Record<string, PsalterTextEntry> | null = null
 export function loadPsalterTexts(): Record<string, PsalterTextEntry> {
   if (_psalterTexts) return _psalterTexts
   try {
-    _psalterTexts = loadJsonFile('src/data/loth/psalter-texts.json')
+    _psalterTexts = loadJsonFile('psalter-texts.json')
   } catch {
     _psalterTexts = {}
   }
@@ -29,7 +32,7 @@ export function loadPsalterTexts(): Record<string, PsalterTextEntry> {
 
 export function loadOrdinarium(): Ordinarium {
   if (!_ordinarium) {
-    const invData = loadJsonFile('src/data/loth/ordinarium/invitatory.json')
+    const invData = loadJsonFile('ordinarium/invitatory.json')
     _ordinarium = {
       invitatory: {
         openingVersicle: invData.openingVersicle,
@@ -37,14 +40,10 @@ export function loadOrdinarium(): Ordinarium {
         gloryBe: invData.gloryBe,
         rubric: invData.rubric,
       },
-      invitatoryAntiphons: loadJsonFile(
-        'src/data/loth/ordinarium/invitatory-antiphons.json',
-      ),
-      canticles: loadJsonFile('src/data/loth/ordinarium/canticles.json'),
-      commonPrayers: loadJsonFile(
-        'src/data/loth/ordinarium/common-prayers.json',
-      ),
-      complineData: loadJsonFile('src/data/loth/ordinarium/compline.json'),
+      invitatoryAntiphons: loadJsonFile('ordinarium/invitatory-antiphons.json'),
+      canticles: loadJsonFile('ordinarium/canticles.json'),
+      commonPrayers: loadJsonFile('ordinarium/common-prayers.json'),
+      complineData: loadJsonFile('ordinarium/compline.json'),
     }
   }
   return _ordinarium

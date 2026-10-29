@@ -61,21 +61,19 @@ interface BodyCacheEntry {
 let _catalogCache: CatalogCacheEntry | null = null
 const _bodyFileCache = new Map<string, BodyCacheEntry>()
 
-const REPO_ROOT = process.cwd()
-const CATALOG_PATH = path.join(
-  REPO_ROOT,
-  'src',
-  'data',
-  'loth',
-  'ordinarium-key-catalog.json',
-)
+// Catalog `sourcePath`s are repo-root relative and all live here. File paths
+// are built from fixed literals so the bundler traces only this data; a
+// repo-root join with a variable part made Turbopack ship the whole
+// repository with the server functions.
+const ORDINARIUM_DIR = 'src/data/loth/ordinarium/'
 
 /**
  * Load and cache the ordinarium-key-catalog. Throws on schema failure
  * so build-time gates (`scripts/verify-page-redirects.js`) and runtime
  * hydration share the same fail-hard contract.
  */
-export function loadOrdinariumKeyCatalog(catalogPath: string = CATALOG_PATH): OrdinariumIndex {
+export function loadOrdinariumKeyCatalog(): OrdinariumIndex {
+  const catalogPath = path.join(process.cwd(), 'src/data/loth/ordinarium-key-catalog.json')
   let stat: fs.Stats
   try {
     stat = fs.statSync(catalogPath)
@@ -183,11 +181,18 @@ function resolvePointer(root: unknown, pointer: string[], context: string): unkn
 
 /**
  * Load and (mtime-aware) cache the JSON content of an ordinarium source
- * file. Repo-root relative paths only (catalog convention). Throws on
- * missing file or parse failure.
+ * file. Repo-root relative paths under src/data/loth/ordinarium/ only
+ * (catalog convention). Throws on a path outside it, a missing file or a
+ * parse failure.
  */
 function loadOrdinariumFile(relativeFile: string): unknown {
-  const absPath = path.join(REPO_ROOT, relativeFile)
+  const rest = relativeFile.startsWith(ORDINARIUM_DIR) ? relativeFile.slice(ORDINARIUM_DIR.length) : null
+  if (rest === null || rest.split('/').includes('..')) {
+    throw new Error(
+      `[page-redirect-resolver] ordinarium body path must be under ${ORDINARIUM_DIR}: ${relativeFile}`,
+    )
+  }
+  const absPath = path.join(process.cwd(), 'src/data/loth/ordinarium', rest)
   let stat: fs.Stats
   try {
     stat = fs.statSync(absPath)
