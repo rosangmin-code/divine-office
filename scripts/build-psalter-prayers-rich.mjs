@@ -81,6 +81,14 @@ const END_OF_BLOCK = new RegExp(
   'u',
 )
 
+// PDF 원문 오탈자 (psalmPrayerPage 별). 앱이 책과 일부러 다르게 쓰는 자리
+// (docs/data/source-typo-ledger.md) — PDF 에서 다시 만든 본문에도 같은 교정을
+// 적용해야 수용 게이트(plain 과 normalised byte-equal)를 통과한다.
+const PDF_CORRECTIONS_BY_PAGE = {
+  // p238 시편 62 기도문: `Эзэн,Та` — comma 다음 공백 손실 (STC-028).
+  238: [{ from: 'Эзэн,Та', to: 'Эзэн, Та' }],
+}
+
 function refSlug(ref) {
   return ref
     .normalize('NFKC')
@@ -152,6 +160,7 @@ async function main() {
         // 2단 조판의 psalter 에서 페이지 역진행 시 continuation 이 3+ 페이지 필요한
         // edge case 관찰됨.
         maxExtraPages: 4,
+        pdfCorrections: PDF_CORRECTIONS_BY_PAGE[page] ?? [],
       })
       if (result.pass === true) {
         const existing = catalog[ref] ?? {}

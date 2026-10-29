@@ -236,7 +236,8 @@ const PROTECTED_BOUNDARIES = [
     hymnId: '19',
     headBlockIdx: 4,
     prevLine: 'Амар амгаланг бидэнд дахин өгөөч',
-    nextLine: 'Дахилт:Үнэн итгэл хайрын Эзэн',
+    // 2026-10-29: «Дахилт:Үнэн» → «Дахилт: Үнэн» (오식 장부 STC-028).
+    nextLine: 'Дахилт: Үнэн итгэл хайрын Эзэн',
   },
   {
     hymnId: '25',
@@ -501,8 +502,11 @@ const AREA_HASHES = {
   // 2026-10-24: «Аяа» → «Аяа,» at the places the revised edition left without the
   // comma (the editor kept them to preserve the layout; the app has no layout
   // constraint — user decision). Only that one character per occurrence moved.
+  // 2026-10-29: «Ааба,Аав аа» → «Ааба, Аав аа» in 12-25 first-vespers short
+  // reading (p.586, ledger STC-028; the Christmas propers copy already had the
+  // space). One space added, nothing else moved.
   'src/data/loth/sanctoral/solemnities.json':
-    '55992d053e216f789fd72b834ff75f61fa4d0340ae464d22dab57655dce2741d',
+    'f29ab695a1f415add5d9a4f84b6d8f6897fa6e6e3e5673eb3321cbed0120098e',
 }
 
 function readJson(path) {
@@ -597,7 +601,7 @@ describe('GOAL210 protected legitimate page-break-adjacent boundaries', () => {
     }
 
     expect(Object.fromEntries(actual)).toEqual({
-      '19|Амар амгаланг бидэнд дахин өгөөч|Дахилт:Үнэн итгэл хайрын Эзэн': 1,
+      '19|Амар амгаланг бидэнд дахин өгөөч|Дахилт: Үнэн итгэл хайрын Эзэн': 1,
       '25|Эзэнийг магтан дуулж байна|Бидний Эзэний Ариун Сүнс надад оршин': 1,
       '31|Бурханы царайг харвал амьдарна|Дахилт:': 1,
       '52|Ариун замаар хөтлөн дагуулаач|Итгэмжтэйгээр үнэн зүрхээр': 1,

@@ -22,6 +22,13 @@ const invitatory: { invitatoryPsalms: { ref: string; page: number; epigraph?: st
 type BookHeader = { preface: string; attribution: string | null } | null
 const book = headerFixture.entries as Record<string, BookHeader>
 
+// 책과 일부러 다르게 두는 자리(오식 장부) — 같아지면 아래 테스트가 지우라고 알린다.
+const KNOWN_DIFFERENCES: Record<string, string> = {
+  'psalter-texts:Psalm 47:2-10@112':
+    '책은 «баруун баруунтаа», «хаанчлал хаанчлал» 로 낱말을 두 번 찍는다. 앱은 한 번 — ' +
+    'STC-026, 사용자 지시 2026-10-29 (3차 오식 목록 LH-051)',
+}
+
 /** 소문자·라틴 동형 글자→키릴·문장부호와 공백 제거 — PDF 의 붙은 낱말(«Та нароюун»)은 차이로 보지 않는다 */
 const HOMOGLYPH_FROM = 'ABCEHKMOPTXYaceopxy'
 const HOMOGLYPH_TO = 'АВСЕНКМОРТХУасеорху'
@@ -61,6 +68,7 @@ describe('시편 머리말 = 책 (모든 자리)', () => {
     for (const [key, b] of Object.entries(book)) {
       const a = appHeader(key)
       if (!b && !a) continue
+      if (key in KNOWN_DIFFERENCES) continue
       if (!b) wrong.push(`${key} — 책에 없는 머리말 «${a!.preface}»`)
       else if (!a) wrong.push(`${key} — 머리말 없음 (책 «${b.preface}»)`)
       else if (squash(a.preface) !== squash(b.preface) || squash(a.attribution) !== squash(b.attribution)) {
@@ -68,5 +76,15 @@ describe('시편 머리말 = 책 (모든 자리)', () => {
       }
     }
     expect(wrong).toEqual([])
+  })
+
+  // @fr FR-160-C
+  it('일부러 다르게 둔 자리는 아직 다르다 (같아졌으면 KNOWN_DIFFERENCES 에서 지운다)', () => {
+    for (const key of Object.keys(KNOWN_DIFFERENCES)) {
+      const a = appHeader(key)
+      const b = book[key]
+      expect(a, key).not.toBeNull()
+      expect(squash(a!.preface), key).not.toBe(squash(b!.preface))
+    }
   })
 })

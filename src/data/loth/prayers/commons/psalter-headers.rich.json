@@ -176,7 +176,7 @@
       "entries": [
         {
           "kind": "uncited_caption",
-          "preface_text": "Тэр Эцэгийн баруун баруунтаа суудаг бөгөөд түүний хаанчлал хаанчлал эцэс төгсгөлгүй билээ.",
+          "preface_text": "Тэр Эцэгийн баруунтаа суудаг бөгөөд түүний хаанчлал эцэс төгсгөлгүй билээ.",
           "page": 112,
           "source": "manual",
           "evidence_line_range": [
@@ -1557,7 +1557,7 @@
       "entries": [
         {
           "kind": "nt_typological",
-          "attribution": "Илчлэл 15,4",
+          "attribution": "Илчлэл 15:4",
           "preface_text": "Бүх үндэстэн Таны өмнө ирж, мөргөнө",
           "page": 316,
           "source": "manual",
@@ -1703,7 +1703,7 @@
       "entries": [
         {
           "kind": "nt_typological",
-          "attribution": "Илчлэл 22, 12",
+          "attribution": "Илчлэл 22:12",
           "preface_text": "Харагтун, Би удахгүй ирнэ. Буцаан төлөх шагнал минь Надтай хамт байгаа",
           "page": 361,
           "source": "manual",
@@ -1909,7 +1909,7 @@
         {
           "kind": "nt_typological",
           "attribution": "Илчлэл 21:3",
-          "preface_text": "Тэд Түүний ард түмэн болж,Тэнгэрбурхан Өөрөө тэдний дунд байж Тэнгэрбурхан нь болно",
+          "preface_text": "Тэд Түүний ард түмэн болж, Тэнгэрбурхан Өөрөө тэдний дунд байж Тэнгэрбурхан нь болно",
           "page": 507,
           "source": "manual",
           "evidence_line_range": [

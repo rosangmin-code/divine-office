@@ -139,3 +139,49 @@ describe('GOAL #191 PDF-origin space-drop concatenation guards', () => {
     expect(ledger).toContain('чамайг ойлгох')
   })
 })
+
+describe('2026-10-29 book typos corrected in the app (STC-025 to STC-028)', () => {
+  // The 2026-10-28 errata sheet to the book's editor listed these; the user
+  // had the app fixed without waiting for the next printing.
+  function collectJsonText(dir: string): string {
+    let out = ''
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const full = resolve(dir, entry.name)
+      if (entry.isDirectory()) out += collectJsonText(full)
+      else if (entry.name.endsWith('.json')) out += readFileSync(full, 'utf-8')
+    }
+    return out
+  }
+  const allData = collectJsonText(resolve(repoRoot, 'src/data/loth'))
+  const countOf = (needle: string) => allData.split(needle).length - 1
+
+  const FIXES: [typo: string, fixed: string, count: number][] = [
+    // STC-025 — canticle Rev 11–12, one shared copy (plain + rich)
+    ['Тандаа бид бид талархал', 'Тандаа бид талархал өргөе', 2],
+    // STC-026 — Psalm 47 header (p.112)
+    ['баруун баруунтаа', 'Эцэгийн баруунтаа суудаг', 1],
+    ['хаанчлал хаанчлал', 'түүний хаанчлал эцэс', 1],
+    // STC-027 — Bible references in two headers (pp.316, 361)
+    ['Илчлэл 15,4', 'Илчлэл 15:4', 1],
+    ['Илчлэл 22, 12', 'Илчлэл 22:12', 1],
+    // STC-028 — missing space after a comma or colon
+    ['Есүс Христ,Та', 'Сүр жавхлангийн Хаан Есүс Христ, Та бидний', 1],
+    ['Тэнгэрбурхан Эзэн,Та', 'Тэнгэрбурхан Эзэн, Та', 2],
+    ['Эзэн минь,Та', 'үл татгалзсан тул - Эзэн минь, Та ерөөлтэй', 1],
+    ['болж,Тэнгэрбурхан', 'болж, Тэнгэрбурхан', 1],
+    // the Christmas propers (plain + rich) already had the space
+    ['Ааба,Аав', 'Ааба, Аав', 3],
+    ['Дахилт:Үнэн', 'Дахилт: Үнэн', 6],
+    ['Дахилт:Их Эзэн', 'Дахилт: Их Эзэн', 6],
+  ]
+
+  it.each(FIXES)('«%s» is gone and «%s» appears %i×', (typo, fixed, count) => {
+    expect(countOf(typo)).toBe(0)
+    expect(countOf(fixed)).toBe(count)
+  })
+
+  it('records the four rows in the ledger', () => {
+    const ledger = readFileSync(resolve(repoRoot, 'docs/data/source-typo-ledger.md'), 'utf-8')
+    for (const id of ['STC-025', 'STC-026', 'STC-027', 'STC-028']) expect(ledger).toContain(`| ${id} |`)
+  })
+})
