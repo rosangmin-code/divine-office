@@ -244,9 +244,9 @@ components:
 - **Section title (제목)**: 섹션 제목(예: Магтуу, Дуулал, Уншлага, Гуйлтын залбирал 등)은 **전례 빨강**(`--color-liturgical-red` = #c1121f / 다크 #ef4444)으로 **통일** — 미사경본·전례서의 루브릭 빨강 전통. 화면 전반에서 동일 색·동일 위계로. 접이식 섹션만 우측 `chevron-right`. (WCAG AA 대비 확인 필수.)
 - **Prayer / Response / Verse**: body-reading. 응답구는 primary, 절번호는 faint·tabular.
 - **Reference item**: surface 카드, 좌측 아이콘 글리프(primary-container) + 텍스트 + 우측 `chevron-right`.
-- **Calendar day**: surface 카드 행. today=primary-container 배경, 축일=제목 primary(**대문자 골드 강조 금지** — 두께+색으로). 좌측 날짜 블록 + 우측 정보. 날짜 줄 오른쪽 끝에 **«Өнөөдөр» 표시**(today-badge: primary 바탕 + on-primary 글자, full) — 금빛 칸이 왜 강조됐는지 글로 말한다. 펼친 줄은 날짜 줄에 `· Дуулалтын N`(on-surface-variant)을 붙인다(구분선·별도 캡션 없음). 큰 글씨에서는 조각이 통째로 다음 줄로 넘어간다.
+- **Calendar day**: surface 카드 행. today=primary-container 배경, 축일=제목 primary(**대문자 골드 강조 금지** — 두께+색으로). 좌측 날짜 블록 + 우측 정보. 날짜 줄은 on-surface-variant 계열 짙은 회색(stone-600), **금색 날짜 줄은 오늘 하나** — 31개 날짜가 모두 금색이면 오늘 칸과 축일 이름이 묻힌다. 날짜 줄 오른쪽 끝에 **«Өнөөдөр» 표시**(today-badge: primary 바탕 + on-primary 글자, full) — 금빛 칸이 왜 강조됐는지 글로 말한다. 펼친 줄은 날짜 줄에 `· Дуулалтын N`(on-surface-variant)을 붙인다(구분선·별도 캡션 없음). 큰 글씨에서는 조각이 통째로 다음 줄로 넘어간다.
 - **Hour buttons (시간경 버튼 묶음)**: 흰 카드(surface, border, md 12px) **한 장** 안에 시간경을 행으로 넣고 행 사이는 헤어라인. **그림자·떠오르는 hover 금지** — hover/누름은 surface-container-high 틴트. 행: 좌측 Lucide 시간경 아이콘(primary, 22px) + 이름. 이름은 공통 꼬리 «даатгал залбирал» 앞부분(«Өглөөний», «1 дүгээр Оройн» …)만 굵게 — 3초 안에 구분되는 말이 눈에 걸리게. 우측 `chevron-right` 는 md 이상만(#361). 키보드 포커스 링은 행 안쪽(-2px)에 그린다(카드가 overflow-hidden). 다크: 카드는 칸보다 한 단 밝게(white/5) — 어두우면 움푹 꺼져 보인다.
-- **Footer**: surface-container, sticky(홈). 컨트롤은 **Өнөөдөр / Тохиргоо 2개뿐**(아이콘+라벨). **토글 화살표(chevron) 제거** — 교회 출처표시 2줄은 항상 작게(caption) 노출.
+- **Footer**: surface-container. 홈은 **버튼 줄만 화면 아래 고정(sticky)** — 컨트롤은 **Өнөөдөр / Тохиргоо 2개뿐**, 아이콘 위 라벨(탭 바)이라 200% 글씨에서도 두 버튼이 한 줄에 들어간다(높이 기본 55px · 200% 89px). **교회 출처표시 2줄은 고정 영역 밖, 페이지 끝에 항상 작게(caption) 렌더** — 함께 고정하면 화면의 14%(200%에선 3분의 1)를 덮었다. **토글 화살표(chevron) 제거**. «Өнөөдөр» = 오늘 칸으로 이동해 펼친다(다른 달이면 이번 달로 가서).
 - **Font-size stepper**: [Aa−][Aa · 현재단계][Aa+], min 44×44 터치타깃, primary 테두리, 양끝 단계서 disabled.
 
 ## Do's and Don'ts

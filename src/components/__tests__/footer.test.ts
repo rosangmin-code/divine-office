@@ -142,3 +142,23 @@ describe('Footer — home variant (#51/#53: two controls + always-on credits)', 
     expect(settingsIdx).toBeGreaterThan(todayIdx)
   })
 })
+
+// @fr FR-186
+describe('Footer — home variant pins only the button row', () => {
+  it('renders the credit lines before the sticky <footer>, not inside it', () => {
+    const html = renderFooter(true)
+    const footerStart = html.indexOf('<footer')
+    const footerEnd = html.indexOf('</footer>')
+    expect(html.indexOf('data-role="footer-content"')).toBeGreaterThan(-1)
+    expect(html.indexOf('data-role="footer-content"')).toBeLessThan(footerStart)
+    const pinned = html.slice(footerStart, footerEnd)
+    expect(pinned).not.toContain(CREDIT_LINE_1)
+    expect(pinned).not.toContain(CREDIT_LINE_2)
+  })
+
+  it('lays each control out icon-over-label so both fit at 200% text', () => {
+    const html = renderFooter(true)
+    expect(html).toMatch(/data-role="footer-today"[^>]*\bflex-col\b/)
+    expect(html).toMatch(/data-role="settings-link"[^>]*\bflex-col\b/)
+  })
+})

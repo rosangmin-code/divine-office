@@ -1,7 +1,7 @@
 # 홈 첫 화면 — 큰 글씨에서 오늘로 안 내려감 · 아래 메뉴가 안 붙음 · «(Автомат)» 줄 무반응
 
 - **발견**: 2026-10-28, 첫 화면 버튼 디자인 리뷰(3초 룰) 중
-- **상태**: §1 수정 2026-10-28 (사용자 지시 "1, 2번부터 고쳐줘", FR-184 — §4). §2·§3 미수정
+- **상태**: 모두 수정. §1 2026-10-28 (사용자 지시 "1, 2번부터 고쳐줘", FR-184 — §4). §2·§3 2026-10-29 (사용자 지시 "앱에서 할 수 있는 거 해", FR-186·FR-187 — §6), 그 작업 중 찾은 §5 도 함께(FR-187)
 - **재현 환경**: 로컬 `npm run dev`(:3200)와 운영 `https://divine-office.vercel.app/` 둘 다. Playwright Chromium, 390×844, isMobile
 - **스크립트**: 세션 scratchpad `design/` (`fontsize-trace2.mjs`, `prod-fontsize.mjs`, `sticky-check.mjs`, `prod-sticky.mjs`, `anchor-check.mjs`)
 
@@ -131,3 +131,45 @@ $ npx playwright test e2e/home-first-screen.spec.ts -g "font"     # settings.tsx
   Locator:  locator('[data-testid="calendar-row"][data-today="true"]').getByTestId('calendar-row-header')
   Received: viewport ratio 0
 ```
+
+## 5. «Өнөөдөр» 버튼이 오늘로 데려가지 않는다 (§2 를 고치다 찾음)
+
+아래 메뉴를 늘 보이게 고정하면 «Өнөөдөр» 를 더 자주 누르게 된다. 고치기 전에 눌러 봤다(로컬, 390×844).
+
+```
+$ node design/today-btn.mjs
+{"label":"A load /","url":"/","scrollY":2006,"todayTop":309,"todayExpanded":"true","expandedRows":["2026-10-29"]}
+{"label":"C /?month=2026-12","url":"/?month=2026-12","scrollY":0,"todayTop":null,"todayExpanded":null,"expandedRows":[]}
+{"label":"D → footer Өнөөдөр","url":"/","scrollY":0,"todayTop":2315,"todayExpanded":"true","expandedRows":["2026-10-29"]}
+{"label":"E next→prev back to this month","url":"/?month=2026-10","scrollY":0,"todayTop":2315,"todayExpanded":"true","expandedRows":["2026-10-29"]}
+```
+
+- 다른 달에서 누르면(D) 주소는 `/` 로 바뀌지만 화면은 이번 달 1일에 머문다. 오늘 칸은 2315px 아래에 있다.
+- 원인: 목록 컴포넌트가 달이 바뀌어도 그대로 남아서, 마운트 때 한 번만 도는 오늘 스크롤이 다시 돌지 않는다.
+- 이미 이번 달을 보고 있을 때 누르면 같은 주소로 `router.push('/')` 만 하고 끝나서 아무 일도 없다. 위 로그의 B 줄은 Playwright 가 버튼을 보이게 하려고 스크롤한 값이라 뺐다.
+
+## 6. §2·§3·§5 수정 (FR-186 · FR-187)
+
+**§2 아래 메뉴 고정 (FR-186).** `globals.css` 의 `html, body` 를 `overflow-x: hidden` → `hidden` + `clip` 으로 바꿨다. 뒤의 `clip` 이 이기고, `clip` 을 모르는 브라우저는 `hidden` 을 쓴다. 출처 2줄까지 고정하면 위 §2 의 높이가 되므로, 버튼 줄만 고정하고 출처 2줄은 고정 영역 밖 페이지 끝에 둔다. 출처는 항상 렌더되고 토글이 없어서 #51/#53 결정은 그대로다. 버튼은 아이콘 위 라벨로 바꿨다. 홈 컨테이너의 `pb-24` 는 메뉴가 내용을 덮는다는 가정의 여백이었고 실제로는 끝에 빈칸만 남겨서 뺐다.
+
+```
+$ node design/verify2.mjs
+footer md {"h":55,"bottom":844,"vh":844,"pinned":true,"settingsRight":328,"vw":390,"hOverflow":0}
+footer xl {"h":63,"bottom":844,"vh":844,"pinned":true,"settingsRight":337,"vw":390,"hOverflow":0}
+footer x5l {"h":89,"bottom":844,"vh":844,"pinned":true,"settingsRight":363,"vw":390,"hOverflow":0}
+page end {"creditsBottom":773,"footerTop":789,"footerBottom":844,"vh":844}
+pray page hOverflow 0
+```
+
+**§3·§5 오늘로 가기 (FR-187).**
+- 목록을 달 단위로 key 했다(`page.tsx`). 달이 바뀌면 목록이 새로 마운트되어 오늘(또는 `?date=`)로 스크롤한다.
+- 아래 메뉴 «Өнөөдөр» 와 맨 위 동기 행이 같은 '오늘로 가기'(`src/lib/jump-to-today.ts`)를 쓴다. 오늘 칸이 목록에 있으면 펼치고 그 자리로 스크롤하고, 없으면 `/` 로 이동한다.
+- 동기 행 문구는 FR-145 사용자 결정 원문("Today (Автомат)")대로 «Өнөөдөр (Автомат)» 로 바꿨다.
+
+```
+anchor → today {"top":309,"bottom":542,"vh":844,"open":true} Өнөөдөр (Автомат)
+footer on / → today {"top":309,"bottom":542,"vh":844,"open":true} http://localhost:3200/
+footer from Dec → today {"top":309,"bottom":542,"vh":844,"open":true} http://localhost:3200/
+```
+
+회귀 테스트는 `e2e/home-first-screen.spec.ts` 의 `@fr FR-186`(3)·`FR-187`(3)·`FR-188`(1) 과 `src/components/__tests__/footer.test.ts` 의 `@fr FR-186`(2) 이다. 홈 spec 을 `--repeat-each=3` 으로 돌려 72/72 통과했다.

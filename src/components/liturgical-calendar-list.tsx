@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { CalendarListRow } from '@/lib/calendar-list-types'
+import { JUMP_TO_TODAY_EVENT, revealRow } from '@/lib/jump-to-today'
 import { LiturgicalCalendarRow } from './liturgical-calendar-row'
 
 // FR-145 + GOAL #4 (WI #17 / wi-005) — Month-mode calendar list.
@@ -55,39 +56,84 @@ export function LiturgicalCalendarList({
     return {}
   })
 
+  const listRef = useRef<HTMLDivElement | null>(null)
   const focusRowRef = useRef<HTMLLIElement | null>(null)
+  const todayRowRef = useRef<HTMLLIElement | null>(null)
   const hasScrolledToFocus = useRef(false)
+  // Bumped by each "go to today" (FR-187); the scroll runs after the row
+  // has re-rendered open.
+  const [todayJumps, setTodayJumps] = useState(0)
 
-  // FR-145 iter 2 NIT #5 — stable ref callback so React doesn't see a
-  // fresh function identity on every render.
+  // FR-145 iter 2 NIT #5 — stable ref callbacks so React doesn't see a
+  // fresh function identity on every render. The focus row and today's
+  // row are usually the same <li>, hence the combined setter.
   const setFocusRowEl = useCallback((el: HTMLLIElement | null) => {
     focusRowRef.current = el
+  }, [])
+  const setTodayRowEl = useCallback((el: HTMLLIElement | null) => {
+    todayRowRef.current = el
+  }, [])
+  const setFocusAndTodayRowEl = useCallback((el: HTMLLIElement | null) => {
+    focusRowRef.current = el
+    todayRowRef.current = el
   }, [])
 
   // Auto-scroll on mount: bring focus row (initialDate ?? today) into
   // view exactly once. focusRowRef 가 어떤 row 에도 attach 되지 않은
   // 경우 (focusDate 가 현재 표시 rows 에 없음) early-return 으로 no-op.
+  // The page keys this list by month, so switching months mounts it anew.
   useEffect(() => {
-    if (hasScrolledToFocus.current) return
     const el = focusRowRef.current
-    if (!el) return
-    // FR-184 — at large font sizes the open row can be taller than the
-    // screen; centring it would cut off its date line and today tag at the
-    // top, so start it at the top instead.
-    const block = el.getBoundingClientRect().height > window.innerHeight ? 'start' : 'center'
-    el.scrollIntoView({ block, behavior: 'auto' })
-    hasScrolledToFocus.current = true
+    if (el && !hasScrolledToFocus.current) {
+      revealRow(el, 'auto')
+      hasScrolledToFocus.current = true
+    }
+    // `data-ready` — the list is hydrated and its one-time scroll is done.
+    // e2e waits for it: a click sent ~350ms after load used to land on
+    // whatever that scroll had just moved under the pointer
+    // (docs/bug-reports/2026-10-29-e2e-preexisting-failures.md). Set on
+    // the node directly; nothing renders from it.
+    listRef.current?.setAttribute('data-ready', 'true')
   }, [])
+
+  // FR-187 — «Өнөөдөр» (footer) and the «Өнөөдөр (Автомат)» row: open
+  // today's row and bring it into view. The footer reaches this list
+  // through JUMP_TO_TODAY_EVENT; cancelling the event tells it that today
+  // is here, so it does not navigate.
+  const jumpToToday = useCallback(() => {
+    setExpandedDate(todayStr)
+    setTodayJumps((n) => n + 1)
+  }, [todayStr])
+
+  useEffect(() => {
+    const onJump = (e: Event) => {
+      if (!todayRowRef.current) return
+      e.preventDefault()
+      jumpToToday()
+    }
+    window.addEventListener(JUMP_TO_TODAY_EVENT, onJump)
+    return () => window.removeEventListener(JUMP_TO_TODAY_EVENT, onJump)
+  }, [jumpToToday])
+
+  useEffect(() => {
+    if (todayJumps === 0 || !todayRowRef.current) return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    revealRow(todayRowRef.current, reduce ? 'auto' : 'smooth')
+  }, [todayJumps])
 
   // FR-145 iter 2 MAJOR #2 — `today-anchor` row 가 today 의 `date` 를
   // 공유하므로 (`getTodayAnchorRow` 가 레이아웃 연속성용으로 합성),
   // 안커 row 의 토글이 아래 today row 를 접지 않도록 kind 가드.
+  // FR-187 — the anchor itself jumps to today's row instead of doing nothing.
   const handleToggle = useCallback(
     (date: string, kind: CalendarListRow['kind']) => {
-      if (kind !== 'date') return
+      if (kind === 'today-anchor') {
+        jumpToToday()
+        return
+      }
       setExpandedDate((prev) => (prev === date ? null : date))
     },
-    [],
+    [jumpToToday],
   )
 
   const handleSelectCelebration = useCallback((date: string, id: string) => {
@@ -95,7 +141,7 @@ export function LiturgicalCalendarList({
   }, [])
 
   return (
-    <div data-testid="liturgical-calendar-list">
+    <div ref={listRef} data-testid="liturgical-calendar-list">
       {/* space-y-2 — 행 간 여백을 늘려 빽빽함 완화(DESIGN.md: 홈 달력 호흡). */}
       <ul className="space-y-2">
         {initialRows.map((row) => {
@@ -109,7 +155,14 @@ export function LiturgicalCalendarList({
           // 어떤 row 도 isFocusRow=true 가 되지 않아 ref 는 attach 안 되고
           // mount useEffect 의 scrollIntoView 도 no-op.
           const isFocusRow = row.kind === 'date' && row.date === focusDate
-          const ref = isFocusRow ? setFocusRowEl : undefined
+          const isTodayRow = row.kind === 'date' && row.isToday
+          const ref = isFocusRow && isTodayRow
+            ? setFocusAndTodayRowEl
+            : isFocusRow
+              ? setFocusRowEl
+              : isTodayRow
+                ? setTodayRowEl
+                : undefined
           return (
             <LiturgicalCalendarRow
               key={`${row.kind}-${row.date}`}

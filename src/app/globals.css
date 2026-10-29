@@ -54,9 +54,15 @@ html[data-font-size="x5l"] { font-size: 200%; }
 
 /* Horizontal swipe 시 오른쪽에 노출되는 흰 여백 제거. 모바일 Safari/Chrome
    에서 viewport 밖으로 미는 터치 제스처가 body 를 오버스크롤해 배경이
-   드러나는 문제를 차단. overscroll-behavior-x 는 chained scroll 차단. */
+   드러나는 문제를 차단. overscroll-behavior-x 는 chained scroll 차단.
+   FR-186 — `clip`, not `hidden`: `hidden` on both html and body made body
+   its own scroll container, and `position: sticky` (the home footer) then
+   stuck to a body that never scrolls, i.e. never stuck at all. `clip` cuts
+   the overflow without creating a scroll container. `hidden` stays first
+   as the fallback for browsers without `clip` (Safari < 16). */
 html, body {
   overflow-x: hidden;
+  overflow-x: clip;
   overscroll-behavior-x: none;
 }
 

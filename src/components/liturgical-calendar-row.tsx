@@ -55,10 +55,12 @@ export const LiturgicalCalendarRow = forwardRef<HTMLLIElement, LiturgicalCalenda
     ? null
     : `${row.dayLabel} ${row.dayOfMonth} ${row.month}-р сар`
 
-  // Today (Automatic): synthetic body — "(Автомат)"
+  // Today (Automatic): synthetic body — "Өнөөдөр (Автомат)", the "Today
+  // (Автомат)" of FR-145 user decision 3. Tapping it goes to today's row
+  // (FR-187).
   // Date rows: defaultCelebration.nameMn (uppercase + red when fitted)
   const defaultBody = isAnchor
-    ? '(Автомат)'
+    ? 'Өнөөдөр (Автомат)'
     : row.defaultCelebration.nameMn
 
   return (
@@ -81,7 +83,9 @@ export const LiturgicalCalendarRow = forwardRef<HTMLLIElement, LiturgicalCalenda
       <button
         type="button"
         onClick={onToggle}
-        aria-expanded={expanded}
+        // The anchor opens today's row rather than toggling a body of its
+        // own, so it is not a disclosure; aria-controls still names that row.
+        aria-expanded={isAnchor ? undefined : expanded}
         aria-controls={`calendar-row-body-${row.date}`}
         data-testid="calendar-row-toggle"
         className="block w-full px-2 py-3 text-left"
@@ -96,7 +100,15 @@ export const LiturgicalCalendarRow = forwardRef<HTMLLIElement, LiturgicalCalenda
           <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
             <span
               data-testid="calendar-row-header"
-              className="whitespace-nowrap text-sm font-semibold text-liturgical-gold dark:text-liturgical-gold-dark"
+              className={
+                'whitespace-nowrap text-sm font-semibold ' +
+                // FR-188 — gold only on today's date line. Gold on all ~31
+                // date lines drowned out today's row and the feast names
+                // (DESIGN.md: the accent goes on one thing per screen).
+                (row.isToday
+                  ? 'text-liturgical-gold dark:text-liturgical-gold-dark'
+                  : 'text-stone-600 dark:text-stone-400')
+              }
             >
               {headerLabel}
             </span>

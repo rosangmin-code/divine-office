@@ -111,11 +111,11 @@ export default async function HomePage({
   const window = getCalendarMonth(yearMonth, { todayStr })
 
   return (
-    // pb-24 reserves room for the sticky home-variant Footer so the
-    // last calendar row / reference-link strip never disappears behind
-    // the footer at scroll-end (wi-006 / #18). The footer's own padding
-    // additionally adds env(safe-area-inset-bottom) on iOS notch.
-    <div className="mx-auto max-w-2xl px-1 md:px-3 pt-6 pb-24">
+    // No bottom padding: the home Footer is `sticky`, so it keeps its own
+    // place in the flow and nothing ends up hidden behind it at scroll-end
+    // (the old pb-24 assumed an overlaying footer and only left a gap).
+    // The footer's own padding adds env(safe-area-inset-bottom) on iOS.
+    <div className="mx-auto max-w-2xl px-1 md:px-3 pt-6">
       {/* Header — image.png style month-navigation. MonthNav itself
           serves as the page's primary title (its label shows the
           current month, e.g. '2026 оны 5-р сар'). The previous
@@ -140,7 +140,11 @@ export default async function HomePage({
           Өгөгдөл олдсонгүй: {window.anchorDate}
         </p>
       ) : (
+        // Keyed by month so a month change mounts the list anew and its
+        // one-time scroll to today / ?date= runs again — otherwise «Өнөөдөр»
+        // from another month landed on the 1st, far above today (FR-187).
         <LiturgicalCalendarList
+          key={yearMonth}
           initialRows={window.rows}
           todayStr={todayStr}
           initialDate={initialDate}
