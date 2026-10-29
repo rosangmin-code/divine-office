@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { waitForHomeReady } from './fixtures/home'
 
 test.describe('Ordinarium page (дэг жаяг)', () => {
   test('renders title and TOC with both major sections', async ({ page }) => {
@@ -61,6 +62,9 @@ test.describe('Ordinarium page (дэг жаяг)', () => {
 
   test('homepage has ordinarium link that navigates to /ordinarium', async ({ page }) => {
     await page.goto('/')
+    // The list's one-time scroll to today must be over, or the click can
+    // land on whatever that scroll moves under the pointer.
+    await waitForHomeReady(page)
 
     const link = page.getByRole('link', { name: /Залбиралт цагийн ёслолын дэг жаяг/ })
     await expect(link).toBeVisible()

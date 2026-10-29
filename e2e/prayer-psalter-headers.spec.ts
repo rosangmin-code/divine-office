@@ -49,15 +49,33 @@ test.describe('Psalter header preface rendering (FR-160-C)', () => {
   })
 
   // @fr FR-160
-  // Negative regression — psalms with no authored header should not
-  // render the data-role marker. Daniel 3 (canticle) currently has no
-  // header in the catalog (extractor scope = "Дуулал N" only).
-  test('Daniel 3 canticle has no psalm-header-rich element (catalog gap)', async ({
+  // Negative regression — a psalm the book prints without a header must
+  // not render the data-role marker. The Sunday Vespers canticle
+  // Revelation 19:1-7 has none in the book (`header: null` at pp.71/189 in
+  // docs/research/psalm-header-audit/header-book.json). Daniel 3 used to
+  // be the example here, but the 2026-10-27 header audit (`30558f6`)
+  // added the headers the book prints for the Daniel 3 canticles.
+  test('Revelation 19 canticle has no psalm-header-rich element (none in the book)', async ({
     page,
   }) => {
+    await page.goto(`/pray/${DATES.easterW4Sunday}/vespers`)
+    const rev19 = page.locator('[data-role="psalm-block"][data-ref^="Revelation 19:"]').first()
+    await expect(rev19).toBeVisible()
+    expect(await rev19.locator('[data-role="psalm-header-rich"]').count()).toBe(0)
+  })
+
+  // @fr FR-160
+  test('Daniel 3:52-57 shows the header the book prints (Easter Wk4 SUN Lauds)', async ({
+    page,
+  }) => {
+    // Printed p.409 (psalter week 4 Sunday); checked on the page render in
+    // the 2026-10-27 header audit.
     await page.goto(`/pray/${DATES.easterW4Sunday}/lauds`)
-    const dan3 = page.locator('[data-role="psalm-block"][data-ref^="Daniel 3:"]').first()
-    const header = dan3.locator('[data-role="psalm-header-rich"]')
-    expect(await header.count()).toBe(0)
+    const header = page
+      .locator('[data-role="psalm-block"][data-ref="Daniel 3:52-57"]')
+      .locator('[data-role="psalm-header-rich"]')
+    await expect(header).toHaveCount(1)
+    await expect(header).toContainText('Тэнгэрбурхан бол үүрд магтагдах Бүтээгч мөн')
+    await expect(header).toContainText('Ром 1:25')
   })
 })

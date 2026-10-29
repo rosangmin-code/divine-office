@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { waitForHomeReady } from './fixtures/home'
 
 // Dates derived from the romcal 2026 output used in unit tests.
 const OT_SATURDAY = '2026-05-30'   // FERIA, OT Saturday → default + saturday-mary
@@ -34,6 +35,9 @@ test.describe('Feast / memorial selection', () => {
     // hrefs (`?celebration=<id>`), and the prayer page's back link then
     // restores it on `/?date=&celebration=` (see the back-link test below).
     await page.goto(`/?date=${OT_SATURDAY}`)
+    // The list's one-time scroll to the date must be over, or the click
+    // can land on whatever that scroll moves under the pointer.
+    await waitForHomeReady(page)
 
     const picker = page.getByTestId('celebration-picker').first()
     const maryOption = picker.locator('[data-celebration-id="saturday-mary"]').first()

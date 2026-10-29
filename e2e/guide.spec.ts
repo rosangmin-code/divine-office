@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { waitForHomeReady } from './fixtures/home'
 
 test.describe('Guide page (GILH)', () => {
   test('renders table of contents with all major sections', async ({ page }) => {
@@ -110,6 +111,9 @@ test.describe('Guide page (GILH)', () => {
 
   test('homepage has link to guide page', async ({ page }) => {
     await page.goto('/')
+    // The list's one-time scroll to today must be over, or the click can
+    // land on whatever that scroll moves under the pointer.
+    await waitForHomeReady(page)
 
     // Target by accessible name to avoid matching Next.js Link prefetch DOM
     const guideLink = page.getByRole('link', { name: /Залбиралт цагийн заавар/ })

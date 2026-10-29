@@ -22,8 +22,10 @@ test.describe('01-01 Mary Mother of God — Second Vespers EP-II (GOAL #27)', ()
     const magnificat = page.locator('section[aria-label="Мариагийн магтаал"]')
     await expect(magnificat).toBeVisible()
     // EP-II Magnificat antiphon (salvaged) — Mongolian phrase accuracy.
+    // «Аяа,» takes the comma the 2026-10-19 revision dropped for layout
+    // (user decision 2026-10-24, ledger STC-019, `5a33955`).
     await expect(magnificat).toContainText(
-      'Аяа Христ минь, дэлхий ертөнцийн Аврагч ба Эзэн минь',
+      'Аяа, Христ минь, дэлхий ертөнцийн Аврагч ба Эзэн минь',
     )
     // The EP-I (First Vespers) antiphon must NOT be the Second Vespers
     // Magnificat antiphon (the pre-fix bug).

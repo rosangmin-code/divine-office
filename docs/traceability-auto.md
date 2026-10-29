@@ -4,7 +4,7 @@
 > and FR/NFR IDs in test titles. **Do not edit by hand.**
 > The curated matrix lives in [`docs/traceability-matrix.md`](./traceability-matrix.md).
 
-Scan: 116 test files contributed 64 unique IDs.
+Scan: 116 test files contributed 67 unique IDs.
 
 | ID | Test file | Test title(s) |
 |---|---|---|
@@ -96,7 +96,7 @@ Scan: 116 test files contributed 64 unique IDs.
 | FR-160 | `e2e/page-redirect.spec.ts` | catalog declares all 9 ordinariumKey enum values with kind + page + label<br>every PageRedirect across data files validates against catalog (fixed-kind byte-equal page)<br>Pentecost Sunday lauds (2 pageRedirects: invitatory + dismissal) renders without fail-hard<br>dismissal-blessing variable-kind entry surfaces in multiple seasons with different pages<br>Pentecost lauds: PageRedirect hydrate surfaces audit metadata + sourcePath byte-equal (AC-4 MET)<br>No-redirect day: AssembledHour omits pageRedirectBodies (regression guard)<br>Mongolian Cyrillic labels: catalog labels are PDF-original (NFR-002) |
 | FR-160 | `e2e/prayer-psalm-refrain-allowlist.spec.ts` | Refrain allowlist false-negative cleanup (FR-160-A4)<br>(tagged, title unknown)<br>Psalm 24:1-10 refrain lines do NOT carry red colour (2026-05-14 black-text policy)<br>Psalm 67:2-8 forced lines tagged role=refrain (psalterWeek 3 TUE Lauds)<br>Psalm 150:1-6 still has 0 refrain lines (denylist precedence) |
 | FR-160 | `e2e/prayer-psalm-refrain-denylist.spec.ts` | Refrain denylist false-positive cleanup (FR-160-A1)<br>Psalm 150:1-6 stanza has 0 role=refrain lines<br>Psalm 150:1-6 stanza body has no rubric red span<br>Daniel 3 canticle refrains preserved on OT Wk1 SUN Lauds (regression guard)<br>Psalm 29:1-10 stanza has 0 role=refrain lines (psalterWeek 1 MON Lauds)<br>Psalm 29:1-10 stanza body has no rubric red span |
-| FR-160 | `e2e/prayer-psalter-headers.spec.ts` | Psalter header preface rendering (FR-160-C)<br>Psalm 150:1-6 has a patristic preface header (Easter Wk4 SUN Lauds)<br>Psalm 150:1-6 header carries muted preface colour (WI-62: 빨강→stone-500)<br>Psalm 67:2-8 has an NT typological citation header (psalterWeek 3 TUE Lauds)<br>Daniel 3 canticle has no psalm-header-rich element (catalog gap) |
+| FR-160 | `e2e/prayer-psalter-headers.spec.ts` | Psalter header preface rendering (FR-160-C)<br>Psalm 150:1-6 has a patristic preface header (Easter Wk4 SUN Lauds)<br>Psalm 150:1-6 header carries muted preface colour (WI-62: 빨강→stone-500)<br>Psalm 67:2-8 has an NT typological citation header (psalterWeek 3 TUE Lauds)<br>Revelation 19 canticle has no psalm-header-rich element (none in the book)<br>Daniel 3:52-57 shows the header the book prints (Easter Wk4 SUN Lauds) |
 | FR-160 | `e2e/psalm63-caption-reposition.spec.ts` | GOAL #130 — Psalm 63 Lauds caption reposition (screen order)<br>[D2] caption renders in the post-title header slot (preserved, not deleted)<br>[D1] caption does NOT render as a psalm body line<br>[D1] first psalm body line is the real body first line<br>[D1] vertical screen order is title → caption(header) → body first line<br>[D3] /ordinarium has no Psalm 63 caption side effect |
 | FR-160 | `src/components/__tests__/psalm-block-header-guard.test.ts` | sanitizePsalmHeaderPreface — F-X9 defensive guard (unit)<br>PsalmBlock renderer — F-X9 fix B integration (#373) |
 | FR-160 | `src/components/__tests__/psalm63-caption-reposition.test.ts` | GOAL #130 — Psalm 63 caption reposition · component render |
@@ -157,6 +157,10 @@ Scan: 116 test files contributed 64 unique IDs.
 | FR-184 | `e2e/home-first-screen.spec.ts` | font ${size} — first screen shows today |
 | FR-185 | `e2e/home-first-screen.spec.ts` | today row explains its highlight with an «Өнөөдөр» tag<br>hours are rows of one flat card; the psalter week sits on the date line |
 | FR-185 | `src/components/__tests__/hour-card-list.test.ts` | splitHourName — bold only the part that tells the hours apart<br>HourCardList — one flat card of rows |
+| FR-186 | `e2e/home-first-screen.spec.ts` | font ${size} — the footer buttons are pinned to the bottom and fit the screen<br>the church credit lines sit at the page end, above the pinned buttons |
+| FR-186 | `src/components/__tests__/footer.test.ts` | Footer — home variant pins only the button row |
+| FR-187 | `e2e/home-first-screen.spec.ts` | footer «Өнөөдөр» from another month lands on today, open<br>footer «Өнөөдөр» on today’s month scrolls back to today<br>the «Өнөөдөр (Автомат)» row opens today’s row |
+| FR-188 | `e2e/home-first-screen.spec.ts` | only today’s date line is gold |
 | NFR-002 | `e2e/footer-toggle.spec.ts` | no English aria-label fallback on footer controls (NFR-002) |
 | NFR-002 | `e2e/gospel-canticle-verse-division.spec.ts` | lauds Benedictus: 이전 병합 절이 별개 절로 분리 (NFR-002 문구)<br>vespers Magnificat: 이전 병합 절이 별개 절로 분리 (NFR-002 문구) |
 | NFR-002 | `e2e/homepage.spec.ts` | hour cards do not leak the English HourType enum caption (NFR-002) |
