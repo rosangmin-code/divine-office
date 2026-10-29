@@ -194,6 +194,12 @@ function subscribe(callback: () => void) {
   }
 }
 
+// `false` while React hydrates (server snapshot), `true` from the next
+// render on. Plain client renders (no SSR markup) see `true` immediately.
+const subscribeNever = () => () => {}
+const getHydratedClient = () => true
+const getHydratedServer = () => false
+
 interface SettingsContextValue {
   settings: Settings
   updateSettings: (patch: Partial<Settings>) => void
@@ -219,13 +225,25 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     getClientSnapshot,
     getServerSnapshot,
   )
+  const hydrated = useSyncExternalStore(
+    subscribeNever,
+    getHydratedClient,
+    getHydratedServer,
+  )
 
   useEffect(() => {
+    // FR-184 — the hydration render carries the server snapshot (DEFAULTS),
+    // not the stored settings. The inline script in layout.tsx has already
+    // put the stored values on <html>; writing DEFAULTS here undid them for
+    // a moment, and the home list's one-time scroll to today ran inside that
+    // window at the default font size, so large-font users landed weeks
+    // above today. Only apply once the client snapshot is in.
+    if (!hydrated) return
     const root = document.documentElement
     root.dataset.fontSize = settings.fontSize
     root.dataset.fontFamily = settings.fontFamily
     applyTheme(settings.theme)
-  }, [settings.fontSize, settings.fontFamily, settings.theme])
+  }, [hydrated, settings.fontSize, settings.fontFamily, settings.theme])
 
   useEffect(() => {
     if (settings.theme !== 'system') return

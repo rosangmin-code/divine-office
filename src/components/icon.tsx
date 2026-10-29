@@ -22,6 +22,9 @@ import {
   ArrowLeft,
   Settings,
   Sunrise,
+  Sunset,
+  MoonStar,
+  CalendarCheck,
   CalendarDays,
   BookOpen,
   ScrollText,
@@ -45,7 +48,10 @@ import {
 const ICONS = {
   back: ArrowLeft, // 뒤로
   settings: Settings, // 설정 (Тохиргоо)
-  today: Sunrise, // 오늘 (Өнөөдөр)
+  today: CalendarCheck, // 오늘 (Өнөөдөр) — FR-185: sunrise 는 아침기도 몫
+  morning: Sunrise, // 아침기도 (Өглөөний)
+  evening: Sunset, // 저녁기도 (Оройн) · 제1저녁기도
+  night: MoonStar, // 끝기도 (Шөнийн) · 제1끝기도
   calendar: CalendarDays, // 달력 / 날짜
   guide: BookOpen, // 기도 안내 (заавар)
   order: ScrollText, // 예식 순서 (дэг жаяг)
@@ -83,6 +89,9 @@ export {
   ArrowLeft,
   Settings,
   Sunrise,
+  Sunset,
+  MoonStar,
+  CalendarCheck,
   CalendarDays,
   BookOpen,
   ScrollText,

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { HourIcon } from './hour-icon'
+import { Icon } from './icon'
 import type { HourType } from '@/lib/types'
 
 interface HourCardListProps {
@@ -8,9 +9,28 @@ interface HourCardListProps {
   celebrationId?: string
 }
 
+// FR-185 — every hour name ends in this phrase. What tells the hours apart
+// is the part before it («Өглөөний», «Оройн», «1 дүгээр Оройн», …), so only
+// that part is set bold. Names without the phrase stay bold as a whole.
+const SHARED_TAIL = ' даатгал залбирал'
+
+export function splitHourName(name: string): { lead: string; tail: string } {
+  if (name.length > SHARED_TAIL.length && name.endsWith(SHARED_TAIL)) {
+    return { lead: name.slice(0, -SHARED_TAIL.length), tail: SHARED_TAIL }
+  }
+  return { lead: name, tail: '' }
+}
+
 export function HourCardList({ hours, dateStr, celebrationId }: HourCardListProps) {
   return (
-    <section aria-label="Цагийн залбирлууд" className="space-y-2">
+    // FR-185 — one flat card with hairline-divided rows instead of separate
+    // shadowed slabs (DESIGN.md Elevation: hairlines, not shadows).
+    // overflow-hidden clips the row hover tint to the rounded corners.
+    <section
+      aria-label="Цагийн залбирлууд"
+      data-role="hour-list"
+      className="divide-y divide-stone-200 overflow-hidden rounded-xl border border-stone-200 bg-white dark:divide-white/10 dark:border-white/10 dark:bg-white/5"
+    >
       {hours.map((hour) => (
         <HourCard key={hour.type} hour={hour} dateStr={dateStr} celebrationId={celebrationId} />
       ))}
@@ -30,15 +50,18 @@ function HourCard({
   const suffix = celebrationId && celebrationId !== 'default'
     ? `?celebration=${encodeURIComponent(celebrationId)}`
     : ''
+  const { lead, tail } = splitHourName(hour.nameMn)
   return (
+    // The focus ring is drawn inset so the card's overflow-hidden does not
+    // clip it. `!` is needed: the global `:focus-visible` rule in
+    // globals.css is unlayered and so beats any Tailwind utility.
     <Link
       href={`/pray/${dateStr}/${hour.type}${suffix}`}
-      className="group flex min-h-[44px] items-center gap-3 rounded-xl bg-white p-3 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] dark:bg-neutral-900 dark:shadow-none dark:ring-1 dark:ring-stone-800"
+      className="flex min-h-[44px] items-center gap-3.5 px-3.5 py-3.5 transition-colors hover:bg-stone-100 focus-visible:-outline-offset-2! active:bg-stone-100 dark:hover:bg-white/5 dark:active:bg-white/5"
     >
-      {/* Icon */}
       <HourIcon
         hour={hour.type}
-        className="h-6 w-6 shrink-0 text-stone-500 dark:text-stone-400"
+        className="h-5.5 w-5.5 shrink-0 text-liturgical-gold dark:text-liturgical-gold-dark"
       />
 
       {/* Content — Mongolian hour name only. The raw English HourType enum
@@ -46,17 +69,16 @@ function HourCard({
           which violated NFR-002 (no English text in the Mongolian-only UI).
           `hour.nameMn` already carries the full Mongolian label, so no
           secondary caption is needed (#64 fix-H3). */}
-      <div className="flex-1">
-        <h3 className="font-semibold text-stone-800 dark:text-stone-200">
-          {hour.nameMn}
-        </h3>
-      </div>
+      <h3 className="flex-1 text-stone-700 dark:text-stone-300">
+        <span className="font-semibold text-stone-800 dark:text-stone-100">{lead}</span>
+        {tail}
+      </h3>
 
-      {/* Arrow — desktop only (#361). 모바일에서는 카드 자체가 click
+      {/* Chevron — desktop only (#361). 모바일에서는 행 자체가 click
           affordance 이고, 좁은 화면에서 라벨 옆 화살표가 시각적 노이즈 +
           horizontal real-estate 손실을 일으킨다는 사용자 피드백. md (≥768px)
-          이상에서만 노출. aria-hidden 으로 AT 노출 제거 (Link 자체가 nav). */}
-      <span aria-hidden="true" className="hidden text-stone-300 md:inline dark:text-stone-600">→</span>
+          이상에서만 노출. Link 자체가 nav 라 AT 에는 숨긴다. */}
+      <Icon name="next" aria-hidden className="hidden shrink-0 text-stone-400 md:block" />
     </Link>
   )
 }

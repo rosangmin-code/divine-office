@@ -69,7 +69,8 @@ export const LiturgicalCalendarRow = forwardRef<HTMLLIElement, LiturgicalCalenda
       data-date={row.date}
       data-today={row.isToday ? 'true' : undefined}
       className={
-        'group rounded-xl transition-colors ' +
+        // FR-185 — 20px = 안쪽 시간경 카드 12px + 간격 8px (겹친 모서리 동심원).
+        'group scroll-mt-2 rounded-[1.25rem] transition-colors ' +
         // today = primary-container(골드 연한 배경, DESIGN.md calendar-day-today).
         // 이전 stone gradient → gold-container 단색.
         (row.isToday
@@ -86,12 +87,34 @@ export const LiturgicalCalendarRow = forwardRef<HTMLLIElement, LiturgicalCalenda
         className="block w-full px-2 py-3 text-left"
       >
         {headerLabel && (
-          <p
-            data-testid="calendar-row-header"
-            className="text-sm font-semibold text-liturgical-gold dark:text-liturgical-gold-dark"
-          >
-            {headerLabel}
-          </p>
+          // FR-185 — date line. When the row is open it also carries the
+          // psalter week (formerly a caption above the hour cards, behind a
+          // divider); today's row gets an «Өнөөдөр» tag so the highlight
+          // explains itself.
+          // Pieces wrap as whole units at large font sizes instead of being
+          // squeezed letter-column thin.
+          <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
+            <span
+              data-testid="calendar-row-header"
+              className="whitespace-nowrap text-sm font-semibold text-liturgical-gold dark:text-liturgical-gold-dark"
+            >
+              {headerLabel}
+            </span>
+            {expanded && (
+              <span className="whitespace-nowrap text-sm text-stone-500 dark:text-stone-400">
+                <span aria-hidden>· </span>
+                <span>Дуулалтын {romanNumeral(row.psalterWeek)}</span>
+              </span>
+            )}
+            {row.isToday && (
+              <span
+                data-role="today-badge"
+                className="ml-auto whitespace-nowrap rounded-full bg-liturgical-gold px-2.5 py-1 text-xs font-semibold leading-none text-white dark:bg-liturgical-gold-dark dark:text-neutral-950"
+              >
+                Өнөөдөр
+              </span>
+            )}
+          </span>
         )}
         <p
           data-testid="calendar-row-default"
@@ -122,12 +145,8 @@ export const LiturgicalCalendarRow = forwardRef<HTMLLIElement, LiturgicalCalenda
         <div
           id={`calendar-row-body-${row.date}`}
           data-testid="calendar-row-body"
-          className="border-t border-stone-200 px-2 pb-3 pt-2 dark:border-stone-800"
+          className="px-2 pb-2"
         >
-          {/* Psalter week — small caption, matches existing hour-page layout */}
-          <p className="mb-3 text-xs text-stone-500 dark:text-stone-400">
-            Дуулалтын {romanNumeral(row.psalterWeek)}
-          </p>
           {/* Inline celebration picker (only when >1 options) */}
           {row.alternatives.length > 0 && (
             <div className="mb-4">

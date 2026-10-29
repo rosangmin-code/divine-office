@@ -126,6 +126,14 @@ components:
     textColor: "{colors.primary}"
   calendar-day-feast:
     textColor: "{colors.primary}"
+  hour-list:
+    backgroundColor: "{colors.surface}"
+    rounded: "{rounded.md}"
+    padding: 14px
+  today-badge:
+    backgroundColor: "{colors.primary}"
+    textColor: "{colors.on-primary}"
+    rounded: "{rounded.full}"
   button-primary:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
@@ -200,7 +208,7 @@ components:
 
 ## Shapes
 
-부드럽되 장난스럽지 않게. 카드 **rounded-lg(16px)**, 작은 표면 **md(12px)**, 칩·아이콘버튼 **full**. **한 화면에서 둥근/각진 모서리를 섞지 않는다.**
+부드럽되 장난스럽지 않게. 카드 **rounded-lg(16px)**, 작은 표면 **md(12px)**, 칩·아이콘버튼 **full**. **한 화면에서 둥근/각진 모서리를 섞지 않는다.** 둥근 표면이 겹치면 **바깥 = 안쪽 + 간격**으로 맞춘다 — 홈 오늘 칸 20px = 안쪽 시간경 카드 12px + 간격 8px (같은 둥글기를 겹치면 모서리가 어긋나 보인다).
 
 ## Iconography
 
@@ -216,7 +224,10 @@ components:
 |---|---|
 | 뒤로 | `arrow-left` |
 | 설정 (Тохиргоо) | `settings` |
-| 오늘 (Өнөөдөр) | `sunrise` |
+| 오늘 (Өнөөдөр) | `calendar-check` |
+| 아침기도 (Өглөөний) | `sunrise` |
+| 저녁기도·제1저녁기도 (Оройн) | `sunset` |
+| 끝기도·제1끝기도 (Шөнийн) | `moon-star` |
 | 달력/날짜 | `calendar-days` |
 | 기도 안내(заавар) | `book-open` |
 | 예식 순서(дэг жаяг) | `scroll-text` |
@@ -233,7 +244,8 @@ components:
 - **Section title (제목)**: 섹션 제목(예: Магтуу, Дуулал, Уншлага, Гуйлтын залбирал 등)은 **전례 빨강**(`--color-liturgical-red` = #c1121f / 다크 #ef4444)으로 **통일** — 미사경본·전례서의 루브릭 빨강 전통. 화면 전반에서 동일 색·동일 위계로. 접이식 섹션만 우측 `chevron-right`. (WCAG AA 대비 확인 필수.)
 - **Prayer / Response / Verse**: body-reading. 응답구는 primary, 절번호는 faint·tabular.
 - **Reference item**: surface 카드, 좌측 아이콘 글리프(primary-container) + 텍스트 + 우측 `chevron-right`.
-- **Calendar day**: surface 카드 행. today=primary-container 배경, 축일=제목 primary(**대문자 골드 강조 금지** — 두께+색으로). 좌측 날짜 블록 + 우측 정보.
+- **Calendar day**: surface 카드 행. today=primary-container 배경, 축일=제목 primary(**대문자 골드 강조 금지** — 두께+색으로). 좌측 날짜 블록 + 우측 정보. 날짜 줄 오른쪽 끝에 **«Өнөөдөр» 표시**(today-badge: primary 바탕 + on-primary 글자, full) — 금빛 칸이 왜 강조됐는지 글로 말한다. 펼친 줄은 날짜 줄에 `· Дуулалтын N`(on-surface-variant)을 붙인다(구분선·별도 캡션 없음). 큰 글씨에서는 조각이 통째로 다음 줄로 넘어간다.
+- **Hour buttons (시간경 버튼 묶음)**: 흰 카드(surface, border, md 12px) **한 장** 안에 시간경을 행으로 넣고 행 사이는 헤어라인. **그림자·떠오르는 hover 금지** — hover/누름은 surface-container-high 틴트. 행: 좌측 Lucide 시간경 아이콘(primary, 22px) + 이름. 이름은 공통 꼬리 «даатгал залбирал» 앞부분(«Өглөөний», «1 дүгээр Оройн» …)만 굵게 — 3초 안에 구분되는 말이 눈에 걸리게. 우측 `chevron-right` 는 md 이상만(#361). 키보드 포커스 링은 행 안쪽(-2px)에 그린다(카드가 overflow-hidden). 다크: 카드는 칸보다 한 단 밝게(white/5) — 어두우면 움푹 꺼져 보인다.
 - **Footer**: surface-container, sticky(홈). 컨트롤은 **Өнөөдөр / Тохиргоо 2개뿐**(아이콘+라벨). **토글 화살표(chevron) 제거** — 교회 출처표시 2줄은 항상 작게(caption) 노출.
 - **Font-size stepper**: [Aa−][Aa · 현재단계][Aa+], min 44×44 터치타깃, primary 테두리, 양끝 단계서 disabled.
 

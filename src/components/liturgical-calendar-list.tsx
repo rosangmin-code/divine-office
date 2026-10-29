@@ -69,8 +69,13 @@ export function LiturgicalCalendarList({
   // 경우 (focusDate 가 현재 표시 rows 에 없음) early-return 으로 no-op.
   useEffect(() => {
     if (hasScrolledToFocus.current) return
-    if (!focusRowRef.current) return
-    focusRowRef.current.scrollIntoView({ block: 'center', behavior: 'auto' })
+    const el = focusRowRef.current
+    if (!el) return
+    // FR-184 — at large font sizes the open row can be taller than the
+    // screen; centring it would cut off its date line and today tag at the
+    // top, so start it at the top instead.
+    const block = el.getBoundingClientRect().height > window.innerHeight ? 'start' : 'center'
+    el.scrollIntoView({ block, behavior: 'auto' })
     hasScrolledToFocus.current = true
   }, [])
 
