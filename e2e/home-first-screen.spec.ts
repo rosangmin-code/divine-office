@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { DATES } from './fixtures/dates'
+import { waitForHomeReady } from './fixtures/home'
 
 // Home first screen — design review by the "3 second rule" (2026-10-28,
 // docs/bug-reports/2026-10-28-home-first-screen.md).
@@ -92,6 +93,7 @@ for (const size of ['md', 'x5l'] as const) {
       localStorage.setItem('loth-settings', JSON.stringify({ fontSize: stored }))
     }, size)
     await page.goto('/')
+    await waitForHomeReady(page)
     await expect(page.locator(TODAY_ROW)).toBeInViewport()
     const box = await page.locator('[data-role="footer"][data-variant="home"]').evaluate((el) => {
       const r = el.getBoundingClientRect()
@@ -108,6 +110,9 @@ for (const size of ['md', 'x5l'] as const) {
 // @fr FR-186
 test('the church credit lines sit at the page end, above the pinned buttons', async ({ page }) => {
   await page.goto('/')
+  // Scroll only after the list's own scroll to today, or that scroll
+  // pulls the page back up (failed this way in CI on 2026-10-29).
+  await waitForHomeReady(page)
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
   const credits = page.locator('[data-role="footer-content"]')
   await expect(credits).toBeInViewport()
@@ -126,6 +131,7 @@ test('the church credit lines sit at the page end, above the pinned buttons', as
 // @fr FR-187
 test('footer «Өнөөдөр» from another month lands on today, open', async ({ page }) => {
   await page.goto('/?month=2026-08')
+  await waitForHomeReady(page)
   await page.locator('[data-role="footer-today"]').click()
   await expect(page).toHaveURL(/\/$/)
   const today = page.locator(TODAY_ROW)
@@ -136,6 +142,7 @@ test('footer «Өнөөдөр» from another month lands on today, open', async 
 // @fr FR-187
 test('footer «Өнөөдөр» on today’s month scrolls back to today', async ({ page }) => {
   await page.goto('/')
+  await waitForHomeReady(page)
   await expect(page.locator(TODAY_ROW)).toBeInViewport()
   await page.evaluate(() => window.scrollTo(0, 0))
   await expect(page.locator(TODAY_ROW)).not.toBeInViewport()
@@ -151,6 +158,7 @@ test('the «Өнөөдөр (Автомат)» row opens today’s row', async ({
   // The scroll to today runs after hydration — wait for it so the clicks
   // below reach React. Then close today's row so the jump has something
   // to open.
+  await waitForHomeReady(page)
   const today = page.locator(TODAY_ROW)
   await expect(today).toBeInViewport()
   await today.getByTestId('calendar-row-toggle').click()

@@ -108,11 +108,18 @@ test.describe('Mobile layout', () => {
     const count = await antiphon.count()
     if (count === 0) test.skip(true, 'No antiphon rendered on this page')
 
-    const contentWidth = await antiphon.evaluate((el) => {
-      const s = getComputedStyle(el)
-      return el.clientWidth - parseFloat(s.paddingLeft) - parseFloat(s.paddingRight)
-    })
-    expect(contentWidth).toBeGreaterThanOrEqual(320)
+    // Poll rather than measure once: on the production build a single read
+    // right after load once returned 0 (CI 2026-10-29, passed on retry) —
+    // the node was being re-rendered at that instant.
+    await expect(antiphon).toBeVisible()
+    await expect
+      .poll(() =>
+        antiphon.evaluate((el) => {
+          const s = getComputedStyle(el)
+          return el.clientWidth - parseFloat(s.paddingLeft) - parseFloat(s.paddingRight)
+        }),
+      )
+      .toBeGreaterThanOrEqual(320)
   })
 
   // @fr FR-178
