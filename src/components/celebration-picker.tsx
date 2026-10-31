@@ -19,9 +19,15 @@ interface CelebrationPickerProps {
    * `useState` per expanded row.
    */
   onSelectAction?: (id: string) => void
+  /**
+   * FR-189 — called after an option is clicked (pointer, Enter or Space),
+   * not when the arrow keys move the selection. The folded picker on the
+   * home list closes on it, so arrow-key browsing keeps the list open.
+   */
+  onPickAction?: () => void
 }
 
-export function CelebrationPicker({ dateStr, options, selectedId, onSelectAction }: CelebrationPickerProps) {
+export function CelebrationPicker({ dateStr, options, selectedId, onSelectAction, onPickAction }: CelebrationPickerProps) {
   const router = useRouter()
 
   const handleChange = useCallback(
@@ -71,10 +77,15 @@ export function CelebrationPicker({ dateStr, options, selectedId, onSelectAction
         </span>
         {options.map((opt, index) => {
           const isSelected = opt.id === selectedId
+          const radio = group.getRadioProps(index)
           return (
             <button
               key={opt.id}
-              {...group.getRadioProps(index)}
+              {...radio}
+              onClick={() => {
+                radio.onClick()
+                onPickAction?.()
+              }}
               data-celebration-id={opt.id}
               className={
                 'flex items-start gap-3 rounded-lg border px-3 py-2 text-left text-sm transition-colors min-h-[44px] ' +

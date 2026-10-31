@@ -4,7 +4,7 @@
 > and FR/NFR IDs in test titles. **Do not edit by hand.**
 > The curated matrix lives in [`docs/traceability-matrix.md`](./traceability-matrix.md).
 
-Scan: 116 test files contributed 67 unique IDs.
+Scan: 116 test files contributed 68 unique IDs.
 
 | ID | Test file | Test title(s) |
 |---|---|---|
@@ -161,6 +161,7 @@ Scan: 116 test files contributed 67 unique IDs.
 | FR-186 | `src/components/__tests__/footer.test.ts` | Footer — home variant pins only the button row |
 | FR-187 | `e2e/home-first-screen.spec.ts` | footer «Өнөөдөр» from another month lands on today, open<br>footer «Өнөөдөр» on today’s month scrolls back to today<br>the «Өнөөдөр (Автомат)» row opens today’s row |
 | FR-188 | `e2e/home-first-screen.spec.ts` | only today’s date line is gold |
+| FR-189 | `e2e/home-first-screen.spec.ts` | font xl — the choice is one line; picking from it folds it again<br>font xl — arrow keys move the choice without folding; Escape folds<br>font md — the full picker shows and the one-line form does not |
 | NFR-002 | `e2e/footer-toggle.spec.ts` | no English aria-label fallback on footer controls (NFR-002) |
 | NFR-002 | `e2e/gospel-canticle-verse-division.spec.ts` | lauds Benedictus: 이전 병합 절이 별개 절로 분리 (NFR-002 문구)<br>vespers Magnificat: 이전 병합 절이 별개 절로 분리 (NFR-002 문구) |
 | NFR-002 | `e2e/homepage.spec.ts` | hour cards do not leak the English HourType enum caption (NFR-002) |

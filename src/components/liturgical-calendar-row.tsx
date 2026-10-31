@@ -1,10 +1,11 @@
 'use client'
 
-import { forwardRef } from 'react'
+import { forwardRef, useRef, useState } from 'react'
 import type { CalendarListRow } from '@/lib/calendar-list-types'
 import { shouldRowUseRedAccent } from '@/lib/calendar-list-types'
 import { HourCardList } from './hour-card-list'
 import { CelebrationPicker } from './celebration-picker'
+import { Icon } from './icon'
 import { romanNumeral } from '@/lib/mappings'
 
 // FR-145 (#8) — Single row in the liturgical-calendar-list first screen.
@@ -21,8 +22,9 @@ import { romanNumeral } from '@/lib/mappings'
 //   - The "Today (Automatic)" anchor row uses a synthetic layout with
 //     only the body text "(Автомат)" — no weekday/date header.
 //   - When expanded, the row inlines the celebration picker (if >1
-//     options) + hour cards underneath. The expand/collapse affordance
-//     itself is owned by the parent list container.
+//     options; folded to one line at font size L and above, FR-189) +
+//     hour cards underneath. The expand/collapse affordance itself is
+//     owned by the parent list container.
 
 interface LiturgicalCalendarRowProps {
   row: CalendarListRow
@@ -187,6 +189,13 @@ export const LiturgicalCalendarRow = forwardRef<HTMLLIElement, LiturgicalCalenda
  * component is preserved unchanged on the prayer page; this inline version
  * suits the calendar-list flow where multiple rows can be expanded and
  * each manages its own selection without polluting the global URL.
+ *
+ * FR-189 — at font size L and above (`font-large`) the full picker (a
+ * heading and one card per option, 710px of an 839px phone screen at 5XL)
+ * pushed the row's hour buttons off the first screen. There it folds into
+ * one line, the current choice and «Солих», which opens the picker;
+ * clicking an option folds it again. At M and below the line is never
+ * shown and the picker always is.
  */
 function InlineCelebrationPicker({
   dateStr,
@@ -199,16 +208,61 @@ function InlineCelebrationPicker({
   selectedId: string
   onSelect: (id: string) => void
 }) {
-  // Reuse the design tokens / a11y story of the existing picker by
-  // delegating to it visually; the inline form sets `dateStr` only for
-  // the data-testid wiring continuity with the existing component.
+  const [open, setOpen] = useState(false)
+  const lineRef = useRef<HTMLButtonElement>(null)
+  const selected = options.find((o) => o.id === selectedId) ?? options[0]
+  const pickerId = `celebration-options-${dateStr}`
+
+  const fold = () => {
+    setOpen(false)
+    // Folding hides the option that has focus, but only where the line is
+    // shown (large text); hand focus to the line there.
+    const line = lineRef.current
+    if (line && getComputedStyle(line).display !== 'none') line.focus()
+  }
+
   return (
-    <CelebrationPicker
-      dateStr={dateStr}
-      options={options}
-      selectedId={selectedId}
-      onSelectAction={onSelect}
-    />
+    <>
+      <button
+        ref={lineRef}
+        type="button"
+        data-role="celebration-summary"
+        data-celebration-id={selected.id}
+        aria-expanded={open}
+        aria-controls={pickerId}
+        onClick={() => setOpen((v) => !v)}
+        // «Солих» drops to its own line when the name would otherwise be
+        // squeezed to a word per line (5XL on a phone).
+        className="hidden min-h-[44px] w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-stone-200 bg-white px-3.5 py-3 text-left text-sm transition-colors hover:bg-stone-100 active:bg-stone-100 font-large:flex dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10 dark:active:bg-white/10"
+      >
+        <span className="flex min-w-0 flex-1 basis-48 items-start gap-3">
+          <span aria-hidden className="mt-1 h-3 w-3 shrink-0 rounded-full bg-liturgical-gold" />
+          <span className="font-medium text-stone-800 dark:text-stone-100">
+            <span className="sr-only">Залбирлын сонголт: </span>
+            {selected.nameMn}
+          </span>
+        </span>
+        <span className="ml-auto flex shrink-0 items-center gap-1 text-stone-500 dark:text-stone-400">
+          Солих
+          <Icon name={open ? 'chevronUp' : 'chevronDown'} size={18} aria-hidden />
+        </span>
+      </button>
+      <div
+        id={pickerId}
+        className={open ? 'font-large:mt-2' : 'font-large:hidden'}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape' && open) fold()
+        }}
+      >
+        <CelebrationPicker
+          dateStr={dateStr}
+          options={options}
+          selectedId={selectedId}
+          onSelectAction={onSelect}
+          onPickAction={fold}
+        />
+      </div>
+    </>
   )
 }
 

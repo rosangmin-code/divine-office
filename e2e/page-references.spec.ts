@@ -94,9 +94,11 @@ test.describe('PDF page references', () => {
     await page.goto(LAUDS_URL)
     await page.waitForSelector('article')
 
+    // The refs appear after hydration (the setting is read from localStorage),
+    // and count() does not wait — on a busy dev server it read 0
+    // (docs/bug-reports/2026-10-31-e2e-picker-day-and-page-ref-count.md).
     const allPageRefs = page.getByText(/\(х\.\s*\d+\)/)
-    const count = await allPageRefs.count()
-    expect(count).toBeGreaterThanOrEqual(3)
+    await expect.poll(() => allPageRefs.count()).toBeGreaterThanOrEqual(3)
   })
 
   test('pray page header no longer renders a page-refs toggle button', async ({ page }) => {

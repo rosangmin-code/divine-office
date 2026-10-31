@@ -179,3 +179,74 @@ test('only today’s date line is gold', async ({ page }) => {
   )
   expect(goldOutsideToday).toBe(0)
 })
+
+// FR-189: at font size L and above the celebration picker (heading + a card
+// per option) pushed the hour buttons off a phone's first screen on days with
+// a choice — 710px of 839px at 5XL (docs/bug-reports/2026-10-31-e2e-picker-
+// day-and-page-ref-count.md §3). It folds into one line there.
+const PICKER_DAY = '2026-05-30' // OT Saturday: default + saturday-mary (feast-selection.spec.ts)
+const pickerDayRow = `[data-testid="calendar-row"][data-date="${PICKER_DAY}"]`
+
+function withFont(page: import('@playwright/test').Page, fontSize: string) {
+  return page.addInitScript((size) => {
+    localStorage.setItem('loth-settings', JSON.stringify({ fontSize: size }))
+  }, fontSize)
+}
+
+// @fr FR-189
+test('font xl — the choice is one line; picking from it folds it again', async ({ page }) => {
+  await withFont(page, 'xl')
+  await page.goto(`/?date=${PICKER_DAY}`)
+  await waitForHomeReady(page)
+
+  const row = page.locator(pickerDayRow)
+  const line = row.locator('[data-role="celebration-summary"]')
+  const picker = row.getByTestId('celebration-picker')
+  await expect(line).toBeVisible()
+  await expect(line).toHaveAttribute('aria-expanded', 'false')
+  await expect(line).toHaveAttribute('data-celebration-id', 'default')
+  await expect(picker).toBeHidden()
+  await expect(row.locator('[data-role="hour-list"] a').first()).toBeInViewport()
+
+  await line.click()
+  await expect(line).toHaveAttribute('aria-expanded', 'true')
+  await expect(picker).toBeVisible()
+  await picker.locator('[data-celebration-id="saturday-mary"]').click()
+
+  await expect(picker).toBeHidden()
+  await expect(line).toBeFocused()
+  await expect(line).toHaveAttribute('data-celebration-id', 'saturday-mary')
+  await expect(row.locator('[data-role="hour-list"] a').first()).toHaveAttribute('href', /celebration=saturday-mary/)
+})
+
+// @fr FR-189
+test('font xl — arrow keys move the choice without folding; Escape folds', async ({ page }) => {
+  await withFont(page, 'xl')
+  await page.goto(`/?date=${PICKER_DAY}`)
+  await waitForHomeReady(page)
+
+  const row = page.locator(pickerDayRow)
+  const line = row.locator('[data-role="celebration-summary"]')
+  const picker = row.getByTestId('celebration-picker')
+  await line.click()
+  await picker.locator('[data-celebration-id="default"]').focus()
+  await page.keyboard.press('ArrowDown')
+
+  await expect(picker.locator('[data-celebration-id="saturday-mary"]')).toHaveAttribute('aria-checked', 'true')
+  await expect(picker).toBeVisible()
+
+  await page.keyboard.press('Escape')
+  await expect(picker).toBeHidden()
+  await expect(line).toBeFocused()
+  await expect(line).toHaveAttribute('data-celebration-id', 'saturday-mary')
+})
+
+// @fr FR-189
+test('font md — the full picker shows and the one-line form does not', async ({ page }) => {
+  await page.goto(`/?date=${PICKER_DAY}`)
+  await waitForHomeReady(page)
+
+  const row = page.locator(pickerDayRow)
+  await expect(row.getByTestId('celebration-picker')).toBeVisible()
+  await expect(row.locator('[data-role="celebration-summary"]')).toBeHidden()
+})

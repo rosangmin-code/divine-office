@@ -2,6 +2,11 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* FR-189 — "large text": the user's font size is L or above (the scale below,
+   default M). The head inline script puts data-font-size on <html> before the
+   first paint, so styles under this variant never jump after hydration. */
+@custom-variant font-large (&:where([data-font-size="lg"] *, [data-font-size="xl"] *, [data-font-size="xxl"] *, [data-font-size="xxxl"] *, [data-font-size="x4l"] *, [data-font-size="x5l"] *));
+
 @theme inline {
   --color-liturgical-green: #2d6a4f;
   --color-liturgical-violet: #7b2d8b;
