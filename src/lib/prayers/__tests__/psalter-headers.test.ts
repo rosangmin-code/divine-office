@@ -163,9 +163,12 @@ describe('FR-160-C psalter-headers catalog', () => {
   // occurrence page (±1). docs/bug-reports/2026-10-27-psalm-header-audit.md
   describe('page-aware lookup (occurrence page)', () => {
     // @fr FR-160-C
-    it('picks the printing at that page — Psalm 67 p.333 drops «Иймээс», p.239 keeps it', () => {
-      expect(loadPsalterHeaderRich('Psalm 67:2-8', 333)!.preface_text).toMatch(/^Тэнгэрбурханы энэхүү аврал/)
-      expect(loadPsalterHeaderRich('Psalm 67:2-8', 239)!.preface_text).toMatch(/^Иймээс Тэнгэрбурханы/)
+    it('picks the printing at that page — Psalm 67 has one entry each on pp.30, 239, 333', () => {
+      // Until the 2026-10-30 revision p.333 dropped «Иймээс»; now all three
+      // printings carry the same quote, so only the page tells them apart.
+      expect(loadPsalterHeaderRich('Psalm 67:2-8', 333)!.page).toBe(333)
+      expect(loadPsalterHeaderRich('Psalm 67:2-8', 239)!.page).toBe(239)
+      expect(loadPsalterHeaderRich('Psalm 67:2-8', 333)!.preface_text).toMatch(/^Иймээс Тэнгэрбурханы/)
     })
 
     // @fr FR-160-C

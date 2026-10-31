@@ -36,8 +36,8 @@
    "attribution": "Гэгээн Атаназ",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    948,
-    950
+    947,
+    949
    ],
    "full_pdf_matches": 3
   }
@@ -58,10 +58,10 @@
    "attribution": "Үйлс 28:28",
    "kind": "nt_typological",
    "evidence_line_range": [
-    970,
-    972
+    969,
+    971
    ],
-   "full_pdf_matches": 2
+   "full_pdf_matches": 3
   }
  },
  {
@@ -79,8 +79,8 @@
    "attribution": "Гэгээн Иреней",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    1002,
-    1003
+    1003,
+    1004
    ],
    "full_pdf_matches": 1
   }
@@ -103,8 +103,8 @@
    "attribution": "Илчлэл 8:4",
    "kind": "nt_typological",
    "evidence_line_range": [
-    1556,
-    1560
+    1557,
+    1561
    ],
    "full_pdf_matches": 1
   }
@@ -125,8 +125,8 @@
    "attribution": "Гэгээн Хилайр",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    1650,
-    1652
+    1651,
+    1653
    ],
    "full_pdf_matches": 1
   }
@@ -158,8 +158,8 @@
    "attribution": null,
    "kind": "uncited_caption",
    "evidence_line_range": [
-    1869,
-    1870
+    1870,
+    1871
    ],
    "full_pdf_matches": 1
   }
@@ -179,8 +179,8 @@
    "attribution": "Илчлэл 19:5",
    "kind": "nt_typological",
    "evidence_line_range": [
-    1938,
-    1939
+    1939,
+    1940
    ],
    "full_pdf_matches": 2
   }
@@ -200,8 +200,8 @@
    "attribution": "Хэсихиус",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    2068,
-    2069
+    2069,
+    2070
    ],
    "full_pdf_matches": 1
   }
@@ -222,8 +222,8 @@
    "attribution": "1 Коринт 15:25",
    "kind": "nt_typological",
    "evidence_line_range": [
-    2216,
-    2218
+    2217,
+    2219
    ],
    "full_pdf_matches": 4
   }
@@ -244,8 +244,8 @@
    "attribution": "Гэгээн Августин",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    2282,
-    2284
+    2283,
+    2285
    ],
    "full_pdf_matches": 1
   }
@@ -272,8 +272,8 @@
    "attribution": null,
    "kind": "uncited_caption",
    "evidence_line_range": [
-    2532,
-    2534
+    2533,
+    2535
    ],
    "full_pdf_matches": 1
   }
@@ -293,8 +293,8 @@
    "attribution": "Ефес 1:3",
    "kind": "nt_typological",
    "evidence_line_range": [
-    2604,
-    2605
+    2605,
+    2606
    ],
    "full_pdf_matches": 1
   }
@@ -314,8 +314,8 @@
    "attribution": "Матай 3:17",
    "kind": "nt_typological",
    "evidence_line_range": [
-    2641,
-    2642
+    2642,
+    2643
    ],
    "full_pdf_matches": 1
   }
@@ -335,8 +335,8 @@
    "attribution": "Матай 5:6",
    "kind": "nt_typological",
    "evidence_line_range": [
-    2796,
-    2797
+    2797,
+    2798
    ],
    "full_pdf_matches": 1
   }
@@ -357,8 +357,8 @@
    "attribution": "Еврей 12:22",
    "kind": "nt_typological",
    "evidence_line_range": [
-    2857,
-    2859
+    2858,
+    2860
    ],
    "full_pdf_matches": 1
   }
@@ -384,8 +384,8 @@
    "attribution": "Гэгээн Иреней",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    3068,
-    3069
+    3069,
+    3070
    ],
    "full_pdf_matches": 1
   }
@@ -407,8 +407,8 @@
    "attribution": "1 Петр 1:3",
    "kind": "nt_typological",
    "evidence_line_range": [
-    3133,
-    3136
+    3134,
+    3137
    ],
    "full_pdf_matches": 1
   }
@@ -427,8 +427,8 @@
    "attribution": "Иохан 1:3",
    "kind": "nt_typological",
    "evidence_line_range": [
-    3207,
-    3207
+    3208,
+    3208
    ],
    "full_pdf_matches": 1
   }
@@ -448,8 +448,8 @@
    "attribution": "Үйлс 2:21",
    "kind": "nt_typological",
    "evidence_line_range": [
-    3396,
-    3397
+    3397,
+    3398
    ],
    "full_pdf_matches": 1
   }
@@ -469,8 +469,8 @@
    "attribution": "Гэгээн Хилайр",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    3460,
-    3461
+    3461,
+    3462
    ],
    "full_pdf_matches": 1
   }
@@ -496,8 +496,8 @@
    "attribution": "Иохан 8:12",
    "kind": "nt_typological",
    "evidence_line_range": [
-    3676,
-    3677
+    3677,
+    3678
    ],
    "full_pdf_matches": 1
   }
@@ -516,8 +516,8 @@
    "attribution": "Илчлэл 5:9",
    "kind": "nt_typological",
    "evidence_line_range": [
-    3747,
-    3747
+    3748,
+    3748
    ],
    "full_pdf_matches": 1
   }
@@ -529,16 +529,16 @@
   "header": {
    "page": 112,
    "pdf_lines": [
-    "Тэр Эцэгийн баруун баруунтаа суудаг бөгөөд",
-    "түүний хаанчлал хаанчлал эцэс төгсгөлгүй билээ."
+    "Тэр Эцэгийн баруунтаа суудаг бөгөөд түүний",
+    "хаанчлал эцэс төгсгөлгүй билээ."
    ],
-   "text": "Тэр Эцэгийн баруун баруунтаа суудаг бөгөөд түүний хаанчлал хаанчлал эцэс төгсгөлгүй билээ.",
-   "preface": "Тэр Эцэгийн баруун баруунтаа суудаг бөгөөд түүний хаанчлал хаанчлал эцэс төгсгөлгүй билээ.",
+   "text": "Тэр Эцэгийн баруунтаа суудаг бөгөөд түүний хаанчлал эцэс төгсгөлгүй билээ.",
+   "preface": "Тэр Эцэгийн баруунтаа суудаг бөгөөд түүний хаанчлал эцэс төгсгөлгүй билээ.",
    "attribution": null,
    "kind": "uncited_caption",
    "evidence_line_range": [
-    3788,
-    3789
+    3789,
+    3790
    ],
    "full_pdf_matches": 1
   }
@@ -558,8 +558,8 @@
    "attribution": "Илчлэл 21:3",
    "kind": "nt_typological",
    "evidence_line_range": [
-    3940,
-    3941
+    3941,
+    3942
    ],
    "full_pdf_matches": 1
   }
@@ -579,8 +579,8 @@
    "attribution": "Марк 14:57",
    "kind": "nt_typological",
    "evidence_line_range": [
-    3997,
-    3998
+    3998,
+    3999
    ],
    "full_pdf_matches": 1
   }
@@ -606,8 +606,8 @@
    "attribution": "Гэгээн Августин",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    4237,
-    4238
+    4238,
+    4239
    ],
    "full_pdf_matches": 1
   }
@@ -628,8 +628,8 @@
    "attribution": "Иохан 11:51, 52",
    "kind": "nt_typological",
    "evidence_line_range": [
-    4312,
-    4314
+    4313,
+    4315
    ],
    "full_pdf_matches": 1
   }
@@ -650,8 +650,8 @@
    "attribution": "Илчлэл 21:10",
    "kind": "nt_typological",
    "evidence_line_range": [
-    4358,
-    4360
+    4359,
+    4361
    ],
    "full_pdf_matches": 1
   }
@@ -671,8 +671,8 @@
    "attribution": "Кацен",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    4520,
-    4521
+    4521,
+    4522
    ],
    "full_pdf_matches": 1
   }
@@ -694,8 +694,8 @@
    "attribution": "Ром 4:6",
    "kind": "nt_typological",
    "evidence_line_range": [
-    4607,
-    4612
+    4608,
+    4613
    ],
    "full_pdf_matches": 1
   }
@@ -723,8 +723,8 @@
    "attribution": "Ефес 4:23-24",
    "kind": "nt_typological",
    "evidence_line_range": [
-    4849,
-    4852
+    4850,
+    4853
    ],
    "full_pdf_matches": 4
   }
@@ -744,8 +744,8 @@
    "attribution": "Филиппой 2:10",
    "kind": "nt_typological",
    "evidence_line_range": [
-    4949,
-    4950
+    4950,
+    4951
    ],
    "full_pdf_matches": 1
   }
@@ -766,8 +766,8 @@
    "attribution": "Гэгээн Атаназ",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    5039,
-    5041
+    5040,
+    5042
    ],
    "full_pdf_matches": 3
   }
@@ -788,8 +788,8 @@
    "attribution": "Марк 14:18",
    "kind": "nt_typological",
    "evidence_line_range": [
-    5168,
-    5170
+    5169,
+    5171
    ],
    "full_pdf_matches": 1
   }
@@ -810,8 +810,8 @@
    "attribution": "Матай 1:23",
    "kind": "nt_typological",
    "evidence_line_range": [
-    5242,
-    5244
+    5243,
+    5245
    ],
    "full_pdf_matches": 1
   }
@@ -844,8 +844,8 @@
    "attribution": "харьцуул. Илчлэл 15:2-3",
    "kind": "nt_typological",
    "evidence_line_range": [
-    5511,
-    5513
+    5512,
+    5514
    ],
    "full_pdf_matches": 1
   }
@@ -866,8 +866,8 @@
    "attribution": "Ром 15:8-9",
    "kind": "nt_typological",
    "evidence_line_range": [
-    5590,
-    5592
+    5591,
+    5593
    ],
    "full_pdf_matches": 2
   }
@@ -887,8 +887,8 @@
    "attribution": "Иохан 15:12",
    "kind": "nt_typological",
    "evidence_line_range": [
-    5735,
-    5736
+    5736,
+    5737
    ],
    "full_pdf_matches": 1
   }
@@ -908,8 +908,8 @@
    "attribution": "Үйлс 2:24",
    "kind": "nt_typological",
    "evidence_line_range": [
-    5792,
-    5793
+    5793,
+    5794
    ],
    "full_pdf_matches": 2
   }
@@ -935,8 +935,8 @@
    "attribution": "Үйлс 4:11",
    "kind": "nt_typological",
    "evidence_line_range": [
-    6034,
-    6035
+    6035,
+    6036
    ],
    "full_pdf_matches": 2
   }
@@ -956,8 +956,8 @@
    "attribution": "Ром 1:25",
    "kind": "nt_typological",
    "evidence_line_range": [
-    6174,
-    6175
+    6175,
+    6176
    ],
    "full_pdf_matches": 2
   }
@@ -979,8 +979,8 @@
    "attribution": "Хэсихиус",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    6234,
-    6237
+    6235,
+    6238
    ],
    "full_pdf_matches": 2
   }
@@ -1001,8 +1001,8 @@
    "attribution": "1 Коринт 15:25",
    "kind": "nt_typological",
    "evidence_line_range": [
-    6390,
-    6392
+    6391,
+    6393
    ],
    "full_pdf_matches": 4
   }
@@ -1023,8 +1023,8 @@
    "attribution": "1 Тесалоник 1:9",
    "kind": "nt_typological",
    "evidence_line_range": [
-    6452,
-    6454
+    6453,
+    6455
    ],
    "full_pdf_matches": 1
   }
@@ -1050,8 +1050,8 @@
    "attribution": "Илчлэл 22:17",
    "kind": "nt_typological",
    "evidence_line_range": [
-    6751,
-    6752
+    6752,
+    6753
    ],
    "full_pdf_matches": 1
   }
@@ -1072,8 +1072,8 @@
    "attribution": "Иохан 17:3",
    "kind": "nt_typological",
    "evidence_line_range": [
-    6845,
-    6847
+    6846,
+    6848
    ],
    "full_pdf_matches": 1
   }
@@ -1094,8 +1094,8 @@
    "attribution": "Лук 1:78, 79",
    "kind": "nt_typological",
    "evidence_line_range": [
-    6901,
-    6903
+    6902,
+    6904
    ],
    "full_pdf_matches": 1
   }
@@ -1116,8 +1116,8 @@
    "attribution": "Матай 25:6",
    "kind": "nt_typological",
    "evidence_line_range": [
-    7050,
-    7052
+    7051,
+    7053
    ],
    "full_pdf_matches": 1
   }
@@ -1148,8 +1148,8 @@
    "attribution": "Иохан 12:46",
    "kind": "nt_typological",
    "evidence_line_range": [
-    7332,
-    7332
+    7333,
+    7333
    ],
    "full_pdf_matches": 1
   }
@@ -1171,8 +1171,8 @@
    "attribution": "Илчлэл 1:17, 18",
    "kind": "nt_typological",
    "evidence_line_range": [
-    7382,
-    7385
+    7383,
+    7386
    ],
    "full_pdf_matches": 1
   }
@@ -1192,8 +1192,8 @@
    "attribution": "Ориген",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    7451,
-    7452
+    7452,
+    7453
    ],
    "full_pdf_matches": 1
   }
@@ -1213,8 +1213,8 @@
    "attribution": "Матай 19:23",
    "kind": "nt_typological",
    "evidence_line_range": [
-    7630,
-    7631
+    7631,
+    7632
    ],
    "full_pdf_matches": 1
   }
@@ -1246,8 +1246,8 @@
    "attribution": "2 Коринт 4:8",
    "kind": "nt_typological",
    "evidence_line_range": [
-    7902,
-    7903
+    7903,
+    7904
    ],
    "full_pdf_matches": 1
   }
@@ -1268,8 +1268,8 @@
    "attribution": "Лук 1:52-53",
    "kind": "nt_typological",
    "evidence_line_range": [
-    7996,
-    7998
+    7997,
+    7999
    ],
    "full_pdf_matches": 1
   }
@@ -1290,8 +1290,8 @@
    "attribution": "Гэгээн Атаназ",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    8081,
-    8083
+    8082,
+    8084
    ],
    "full_pdf_matches": 1
   }
@@ -1312,8 +1312,8 @@
    "attribution": "Ром 15:13",
    "kind": "nt_typological",
    "evidence_line_range": [
-    8247,
-    8249
+    8248,
+    8250
    ],
    "full_pdf_matches": 1
   }
@@ -1334,10 +1334,10 @@
    "attribution": "Үйлс 28:28",
    "kind": "nt_typological",
    "evidence_line_range": [
-    8336,
-    8338
+    8337,
+    8339
    ],
-   "full_pdf_matches": 2
+   "full_pdf_matches": 3
   }
  },
  {
@@ -1360,8 +1360,8 @@
    "attribution": "Илчлэл 22:20",
    "kind": "nt_typological",
    "evidence_line_range": [
-    8583,
-    8583
+    8584,
+    8584
    ],
    "full_pdf_matches": 1
   }
@@ -1381,8 +1381,8 @@
    "attribution": "Иохан 7:37",
    "kind": "nt_typological",
    "evidence_line_range": [
-    8680,
-    8681
+    8681,
+    8682
    ],
    "full_pdf_matches": 1
   }
@@ -1403,8 +1403,8 @@
    "attribution": "Еврей 3:12",
    "kind": "nt_typological",
    "evidence_line_range": [
-    8729,
-    8731
+    8730,
+    8732
    ],
    "full_pdf_matches": 1
   }
@@ -1426,8 +1426,8 @@
    "attribution": "Матай 2:11",
    "kind": "nt_typological",
    "evidence_line_range": [
-    8894,
-    8897
+    8895,
+    8898
    ],
    "full_pdf_matches": 1
   }
@@ -1461,8 +1461,8 @@
    "attribution": "Ефес 4:23-24",
    "kind": "nt_typological",
    "evidence_line_range": [
-    9184,
-    9187
+    9185,
+    9188
    ],
    "full_pdf_matches": 4
   }
@@ -1482,8 +1482,8 @@
    "attribution": "Лук 21:28",
    "kind": "nt_typological",
    "evidence_line_range": [
-    9286,
-    9287
+    9287,
+    9288
    ],
    "full_pdf_matches": 1
   }
@@ -1503,8 +1503,8 @@
    "attribution": "Илчлэл 21:9",
    "kind": "nt_typological",
    "evidence_line_range": [
-    9348,
-    9349
+    9349,
+    9350
    ],
    "full_pdf_matches": 2
   }
@@ -1524,8 +1524,8 @@
    "attribution": "Үйлс 14:21",
    "kind": "nt_typological",
    "evidence_line_range": [
-    9502,
-    9503
+    9503,
+    9504
    ],
    "full_pdf_matches": 1
   }
@@ -1546,8 +1546,8 @@
    "attribution": "Илчлэл 7:16",
    "kind": "nt_typological",
    "evidence_line_range": [
-    9562,
-    9564
+    9563,
+    9565
    ],
    "full_pdf_matches": 1
   }
@@ -1573,8 +1573,8 @@
    "attribution": "Гэгээн Атаназ",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    9764,
-    9765
+    9765,
+    9766
    ],
    "full_pdf_matches": 2
   }
@@ -1595,8 +1595,8 @@
    "attribution": "Матай 23:37",
    "kind": "nt_typological",
    "evidence_line_range": [
-    9838,
-    9840
+    9839,
+    9841
    ],
    "full_pdf_matches": 1
   }
@@ -1617,8 +1617,8 @@
    "attribution": "Ефес 1:22",
    "kind": "nt_typological",
    "evidence_line_range": [
-    9897,
-    9899
+    9898,
+    9900
    ],
    "full_pdf_matches": 2
   }
@@ -1638,8 +1638,8 @@
    "attribution": "Лук 1:52",
    "kind": "nt_typological",
    "evidence_line_range": [
-    10071,
-    10080
+    10072,
+    10081
    ],
    "full_pdf_matches": 1
   }
@@ -1659,8 +1659,8 @@
    "attribution": "Лук 1:52",
    "kind": "nt_typological",
    "evidence_line_range": [
-    10071,
-    10080
+    10072,
+    10081
    ],
    "full_pdf_matches": 1
   }
@@ -1680,8 +1680,8 @@
    "attribution": "Еврей 13:15",
    "kind": "nt_typological",
    "evidence_line_range": [
-    10134,
-    10135
+    10135,
+    10136
    ],
    "full_pdf_matches": 1
   }
@@ -1714,8 +1714,8 @@
    "attribution": "Илчлэл 19:6-7",
    "kind": "nt_typological",
    "evidence_line_range": [
-    10349,
-    10351
+    10350,
+    10352
    ],
    "full_pdf_matches": 1
   }
@@ -1735,8 +1735,8 @@
    "attribution": "Илчлэл 19:5",
    "kind": "nt_typological",
    "evidence_line_range": [
-    10403,
-    10404
+    10404,
+    10405
    ],
    "full_pdf_matches": 2
   }
@@ -1757,8 +1757,8 @@
    "attribution": "Илчлэл 5:13",
    "kind": "nt_typological",
    "evidence_line_range": [
-    10537,
-    10539
+    10538,
+    10540
    ],
    "full_pdf_matches": 1
   }
@@ -1779,8 +1779,8 @@
    "attribution": "1 Коринт 15:25",
    "kind": "nt_typological",
    "evidence_line_range": [
-    10699,
-    10701
+    10700,
+    10702
    ],
    "full_pdf_matches": 4
   }
@@ -1800,8 +1800,8 @@
    "attribution": "Илчлэл 15:3",
    "kind": "nt_typological",
    "evidence_line_range": [
-    10764,
-    10765
+    10765,
+    10766
    ],
    "full_pdf_matches": 1
   }
@@ -1827,8 +1827,8 @@
    "attribution": "Еврей 13:14",
    "kind": "nt_typological",
    "evidence_line_range": [
-    11046,
-    11047
+    11047,
+    11048
    ],
    "full_pdf_matches": 1
   }
@@ -1841,15 +1841,15 @@
    "page": 316,
    "pdf_lines": [
     "Бүх үндэстэн Таны өмнө ирж, мөргөнө (Илчлэл",
-    "15,4)."
+    "15:4)."
    ],
-   "text": "Бүх үндэстэн Таны өмнө ирж, мөргөнө (Илчлэл 15,4).",
+   "text": "Бүх үндэстэн Таны өмнө ирж, мөргөнө (Илчлэл 15:4).",
    "preface": "Бүх үндэстэн Таны өмнө ирж, мөргөнө",
-   "attribution": "Илчлэл 15,4",
+   "attribution": "Илчлэл 15:4",
    "kind": "nt_typological",
    "evidence_line_range": [
-    11125,
-    11126
+    11126,
+    11127
    ],
    "full_pdf_matches": 1
   }
@@ -1870,8 +1870,8 @@
    "attribution": "харьцуул. Илчлэл 14:3",
    "kind": "nt_typological",
    "evidence_line_range": [
-    11167,
-    11169
+    11168,
+    11170
    ],
    "full_pdf_matches": 1
   }
@@ -1893,8 +1893,8 @@
    "attribution": "Матай 20:30",
    "kind": "nt_typological",
    "evidence_line_range": [
-    11368,
-    11371
+    11369,
+    11372
    ],
    "full_pdf_matches": 1
   }
@@ -1914,8 +1914,8 @@
    "attribution": "Үйлс 18:9-10",
    "kind": "nt_typological",
    "evidence_line_range": [
-    11417,
-    11418
+    11418,
+    11419
    ],
    "full_pdf_matches": 1
   }
@@ -1942,8 +1942,8 @@
    "attribution": "Ориген",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    11635,
-    11637
+    11636,
+    11638
    ],
    "full_pdf_matches": 1
   }
@@ -1963,8 +1963,8 @@
    "attribution": "Илчлэл 21:14",
    "kind": "nt_typological",
    "evidence_line_range": [
-    11705,
-    11706
+    11706,
+    11707
    ],
    "full_pdf_matches": 1
   }
@@ -1976,19 +1976,19 @@
   "header": {
    "page": 333,
    "pdf_lines": [
-    "Тэнгэрбурханы энэхүү аврал харь үндэстнүүдэд",
-    "илгээгдсэн бөгөөд тэд ч сонсох болно гэдгийг та",
-    "нар мэдэгтүн (Үйлс 28:28)."
+    "Иймээс Тэнгэрбурханы энэхүү аврал харь",
+    "үндэстнүүдэд илгээгдсэн бөгөөд тэд ч сонсох",
+    "болно гэдгийг та нар мэдэгтүн (Үйлс 28:28)."
    ],
-   "text": "Тэнгэрбурханы энэхүү аврал харь үндэстнүүдэд илгээгдсэн бөгөөд тэд ч сонсох болно гэдгийг та нар мэдэгтүн (Үйлс 28:28).",
-   "preface": "Тэнгэрбурханы энэхүү аврал харь үндэстнүүдэд илгээгдсэн бөгөөд тэд ч сонсох болно гэдгийг та нар мэдэгтүн",
+   "text": "Иймээс Тэнгэрбурханы энэхүү аврал харь үндэстнүүдэд илгээгдсэн бөгөөд тэд ч сонсох болно гэдгийг та нар мэдэгтүн (Үйлс 28:28).",
+   "preface": "Иймээс Тэнгэрбурханы энэхүү аврал харь үндэстнүүдэд илгээгдсэн бөгөөд тэд ч сонсох болно гэдгийг та нар мэдэгтүн",
    "attribution": "Үйлс 28:28",
    "kind": "nt_typological",
    "evidence_line_range": [
-    11755,
-    11757
+    11756,
+    11758
    ],
-   "full_pdf_matches": 1
+   "full_pdf_matches": 3
   }
  },
  {
@@ -2006,8 +2006,8 @@
    "attribution": "Галат 6:16",
    "kind": "nt_typological",
    "evidence_line_range": [
-    11900,
-    11901
+    11901,
+    11902
    ],
    "full_pdf_matches": 1
   }
@@ -2027,8 +2027,8 @@
    "attribution": "Матай 11:29",
    "kind": "nt_typological",
    "evidence_line_range": [
-    11947,
-    11948
+    11948,
+    11949
    ],
    "full_pdf_matches": 1
   }
@@ -2054,8 +2054,8 @@
    "attribution": "2 Коринт 1:3, 4",
    "kind": "nt_typological",
    "evidence_line_range": [
-    12150,
-    12151
+    12151,
+    12152
    ],
    "full_pdf_matches": 2
   }
@@ -2077,8 +2077,8 @@
    "attribution": "Үйлс 2:39",
    "kind": "nt_typological",
    "evidence_line_range": [
-    12244,
-    12247
+    12245,
+    12248
    ],
    "full_pdf_matches": 1
   }
@@ -2099,8 +2099,8 @@
    "attribution": "Гэгээн Атаназ",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    12300,
-    12302
+    12301,
+    12303
    ],
    "full_pdf_matches": 1
   }
@@ -2120,8 +2120,8 @@
    "attribution": "2 Коринт 1:7",
    "kind": "nt_typological",
    "evidence_line_range": [
-    12450,
-    12451
+    12451,
+    12452
    ],
    "full_pdf_matches": 1
   }
@@ -2141,8 +2141,8 @@
    "attribution": "1 Коринт 3:9",
    "kind": "nt_typological",
    "evidence_line_range": [
-    12499,
-    12500
+    12500,
+    12501
    ],
    "full_pdf_matches": 1
   }
@@ -2168,8 +2168,8 @@
    "attribution": "Галат 4:26",
    "kind": "nt_typological",
    "evidence_line_range": [
-    12742,
-    12743
+    12743,
+    12744
    ],
    "full_pdf_matches": 1
   }
@@ -2182,15 +2182,15 @@
    "page": 361,
    "pdf_lines": [
     "Харагтун, Би удахгүй ирнэ. Буцаан төлөх шагнал",
-    "минь Надтай хамт байгаа (Илчлэл 22, 12)."
+    "минь Надтай хамт байгаа (Илчлэл 22: 12)."
    ],
-   "text": "Харагтун, Би удахгүй ирнэ. Буцаан төлөх шагнал минь Надтай хамт байгаа (Илчлэл 22, 12).",
+   "text": "Харагтун, Би удахгүй ирнэ. Буцаан төлөх шагнал минь Надтай хамт байгаа (Илчлэл 22: 12).",
    "preface": "Харагтун, Би удахгүй ирнэ. Буцаан төлөх шагнал минь Надтай хамт байгаа",
-   "attribution": "Илчлэл 22, 12",
+   "attribution": "Илчлэл 22: 12",
    "kind": "nt_typological",
    "evidence_line_range": [
-    12797,
-    12798
+    12798,
+    12799
    ],
    "full_pdf_matches": 1
   }
@@ -2211,8 +2211,8 @@
    "attribution": "Гэгээн Атаназ",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    12859,
-    12861
+    12860,
+    12862
    ],
    "full_pdf_matches": 1
   }
@@ -2232,8 +2232,8 @@
    "attribution": "Лук 1:32",
    "kind": "nt_typological",
    "evidence_line_range": [
-    13022,
-    13023
+    13023,
+    13024
    ],
    "full_pdf_matches": 1
   }
@@ -2267,8 +2267,8 @@
    "attribution": "Ефес 4:23-24",
    "kind": "nt_typological",
    "evidence_line_range": [
-    13296,
-    13299
+    13297,
+    13300
    ],
    "full_pdf_matches": 4
   }
@@ -2289,8 +2289,8 @@
    "attribution": "Марк 1:15",
    "kind": "nt_typological",
    "evidence_line_range": [
-    13402,
-    13404
+    13403,
+    13405
    ],
    "full_pdf_matches": 1
   }
@@ -2311,8 +2311,8 @@
    "attribution": "Гэгээн Атаназ",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    13456,
-    13458
+    13457,
+    13459
    ],
    "full_pdf_matches": 3
   }
@@ -2335,8 +2335,8 @@
    "attribution": "харьцуул. 1 Петр 2:9",
    "kind": "nt_typological",
    "evidence_line_range": [
-    13599,
-    13603
+    13600,
+    13604
    ],
    "full_pdf_matches": 2
   }
@@ -2375,8 +2375,8 @@
    "attribution": "Лук 21:15",
    "kind": "nt_typological",
    "evidence_line_range": [
-    13918,
-    13920
+    13919,
+    13921
    ],
    "full_pdf_matches": 1
   }
@@ -2397,8 +2397,8 @@
    "attribution": "Ром 15:8-9",
    "kind": "nt_typological",
    "evidence_line_range": [
-    13987,
-    13989
+    13988,
+    13990
    ],
    "full_pdf_matches": 2
   }
@@ -2418,8 +2418,8 @@
    "attribution": "Еврей 12:22",
    "kind": "nt_typological",
    "evidence_line_range": [
-    14124,
-    14133
+    14125,
+    14134
    ],
    "full_pdf_matches": 1
   }
@@ -2439,8 +2439,8 @@
    "attribution": "Еврей 12:22",
    "kind": "nt_typological",
    "evidence_line_range": [
-    14124,
-    14133
+    14125,
+    14134
    ],
    "full_pdf_matches": 1
   }
@@ -2460,8 +2460,8 @@
    "attribution": "Матай 1:21",
    "kind": "nt_typological",
    "evidence_line_range": [
-    14186,
-    14187
+    14187,
+    14188
    ],
    "full_pdf_matches": 2
   }
@@ -2493,8 +2493,8 @@
    "attribution": "Үйлс 4:11",
    "kind": "nt_typological",
    "evidence_line_range": [
-    14385,
-    14386
+    14386,
+    14387
    ],
    "full_pdf_matches": 2
   }
@@ -2514,8 +2514,8 @@
    "attribution": "Ром 1:25",
    "kind": "nt_typological",
    "evidence_line_range": [
-    14520,
-    14521
+    14521,
+    14522
    ],
    "full_pdf_matches": 2
   }
@@ -2537,8 +2537,8 @@
    "attribution": "Хэсихиус",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    14585,
-    14588
+    14586,
+    14589
    ],
    "full_pdf_matches": 2
   }
@@ -2559,8 +2559,8 @@
    "attribution": "1 Коринт 15:25",
    "kind": "nt_typological",
    "evidence_line_range": [
-    14740,
-    14742
+    14741,
+    14743
    ],
    "full_pdf_matches": 4
   }
@@ -2580,8 +2580,8 @@
    "attribution": "Ефес 5:8-9",
    "kind": "nt_typological",
    "evidence_line_range": [
-    14797,
-    14798
+    14798,
+    14799
    ],
    "full_pdf_matches": 1
   }
@@ -2608,8 +2608,8 @@
    "attribution": "2 Петр 3:8",
    "kind": "nt_typological",
    "evidence_line_range": [
-    15058,
-    15060
+    15059,
+    15061
    ],
    "full_pdf_matches": 1
   }
@@ -2629,8 +2629,8 @@
    "attribution": "Илчлэл 14:3",
    "kind": "nt_typological",
    "evidence_line_range": [
-    15152,
-    15153
+    15153,
+    15154
    ],
    "full_pdf_matches": 1
   }
@@ -2653,8 +2653,8 @@
    "attribution": "харьцуул. 1 Петр 2:9",
    "kind": "nt_typological",
    "evidence_line_range": [
-    15210,
-    15214
+    15211,
+    15215
    ],
    "full_pdf_matches": 2
   }
@@ -2674,8 +2674,8 @@
    "attribution": "Кассиодор",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    15380,
-    15381
+    15381,
+    15382
    ],
    "full_pdf_matches": 1
   }
@@ -2707,8 +2707,8 @@
    "attribution": "Иох 14:15",
    "kind": "nt_typological",
    "evidence_line_range": [
-    15677,
-    15678
+    15678,
+    15679
    ],
    "full_pdf_matches": 1
   }
@@ -2728,8 +2728,8 @@
    "attribution": "Үйлс 3:19",
    "kind": "nt_typological",
    "evidence_line_range": [
-    15740,
-    15741
+    15741,
+    15742
    ],
    "full_pdf_matches": 1
   }
@@ -2749,8 +2749,8 @@
    "attribution": "Филиппой 4:13",
    "kind": "nt_typological",
    "evidence_line_range": [
-    15811,
-    15812
+    15812,
+    15813
    ],
    "full_pdf_matches": 1
   }
@@ -2770,8 +2770,8 @@
    "attribution": "Гэгээн Хилайр",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    15977,
-    15978
+    15978,
+    15979
    ],
    "full_pdf_matches": 1
   }
@@ -2791,8 +2791,8 @@
    "attribution": "харьцуул. Илчлэл 21-24",
    "kind": "nt_typological",
    "evidence_line_range": [
-    16030,
-    16031
+    16031,
+    16032
    ],
    "full_pdf_matches": 1
   }
@@ -2819,8 +2819,8 @@
    "attribution": "Арнобиус",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    16255,
-    16257
+    16256,
+    16258
    ],
    "full_pdf_matches": 1
   }
@@ -2842,8 +2842,8 @@
    "attribution": "Илчлэл 21:2",
    "kind": "nt_typological",
    "evidence_line_range": [
-    16329,
-    16332
+    16330,
+    16333
    ],
    "full_pdf_matches": 1
   }
@@ -2864,8 +2864,8 @@
    "attribution": "Арнобиус",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    16388,
-    16390
+    16389,
+    16391
    ],
    "full_pdf_matches": 1
   }
@@ -2885,8 +2885,8 @@
    "attribution": "Ром 11:34",
    "kind": "nt_typological",
    "evidence_line_range": [
-    16528,
-    16529
+    16529,
+    16530
    ],
    "full_pdf_matches": 1
   }
@@ -2919,8 +2919,8 @@
    "attribution": "Галат 2:16",
    "kind": "nt_typological",
    "evidence_line_range": [
-    16836,
-    16838
+    16837,
+    16839
    ],
    "full_pdf_matches": 2
   }
@@ -2940,8 +2940,8 @@
    "attribution": "Галат 4:26",
    "kind": "nt_typological",
    "evidence_line_range": [
-    16911,
-    16912
+    16912,
+    16913
    ],
    "full_pdf_matches": 1
   }
@@ -2961,8 +2961,8 @@
    "attribution": null,
    "kind": "uncited_caption",
    "evidence_line_range": [
-    16953,
-    16954
+    16954,
+    16955
    ],
    "full_pdf_matches": 1
   }
@@ -2983,8 +2983,8 @@
    "attribution": "Гэгээн Хилайр",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    17102,
-    17104
+    17103,
+    17105
    ],
    "full_pdf_matches": 1
   }
@@ -3018,8 +3018,8 @@
    "attribution": "Ефес 4:23-24",
    "kind": "nt_typological",
    "evidence_line_range": [
-    17377,
-    17380
+    17378,
+    17381
    ],
    "full_pdf_matches": 4
   }
@@ -3041,8 +3041,8 @@
    "attribution": "Илчлэл 21:10-11",
    "kind": "nt_typological",
    "evidence_line_range": [
-    17485,
-    17488
+    17486,
+    17489
    ],
    "full_pdf_matches": 1
   }
@@ -3062,8 +3062,8 @@
    "attribution": "Илчлэл 21:9",
    "kind": "nt_typological",
    "evidence_line_range": [
-    17545,
-    17546
+    17546,
+    17547
    ],
    "full_pdf_matches": 2
   }
@@ -3083,8 +3083,8 @@
    "attribution": "Илчлэл 16:5",
    "kind": "nt_typological",
    "evidence_line_range": [
-    17714,
-    17715
+    17715,
+    17716
    ],
    "full_pdf_matches": 1
   }
@@ -3116,8 +3116,8 @@
    "attribution": "Гэгээн Атаназ",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    17982,
-    17983
+    17983,
+    17984
    ],
    "full_pdf_matches": 2
   }
@@ -3129,17 +3129,17 @@
   "header": {
    "page": 507,
    "pdf_lines": [
-    "Тэд Түүний ард түмэн болж,Тэнгэрбурхан",
+    "Тэд Түүний ард түмэн болж, Тэнгэрбурхан",
     "Өөрөө тэдний дунд байж Тэнгэрбурхан нь болно",
     "(Илчлэл 21:3)."
    ],
-   "text": "Тэд Түүний ард түмэн болж,Тэнгэрбурхан Өөрөө тэдний дунд байж Тэнгэрбурхан нь болно (Илчлэл 21:3).",
-   "preface": "Тэд Түүний ард түмэн болж,Тэнгэрбурхан Өөрөө тэдний дунд байж Тэнгэрбурхан нь болно",
+   "text": "Тэд Түүний ард түмэн болж, Тэнгэрбурхан Өөрөө тэдний дунд байж Тэнгэрбурхан нь болно (Илчлэл 21:3).",
+   "preface": "Тэд Түүний ард түмэн болж, Тэнгэрбурхан Өөрөө тэдний дунд байж Тэнгэрбурхан нь болно",
    "attribution": "Илчлэл 21:3",
    "kind": "nt_typological",
    "evidence_line_range": [
-    18057,
-    18059
+    18058,
+    18060
    ],
    "full_pdf_matches": 1
   }
@@ -3160,8 +3160,8 @@
    "attribution": "Ефес 1:22",
    "kind": "nt_typological",
    "evidence_line_range": [
-    18099,
-    18101
+    18100,
+    18102
    ],
    "full_pdf_matches": 2
   }
@@ -3182,8 +3182,8 @@
    "attribution": "Гэгээн Августин",
    "kind": "patristic_preface",
    "evidence_line_range": [
-    18242,
-    18244
+    18243,
+    18245
    ],
    "full_pdf_matches": 1
   }
@@ -3204,8 +3204,8 @@
    "attribution": "Илчлэл 19:5",
    "kind": "nt_typological",
    "evidence_line_range": [
-    18294,
-    18296
+    18295,
+    18297
    ],
    "full_pdf_matches": 1
   }
@@ -3226,8 +3226,8 @@
    "attribution": "Лук 10:19",
    "kind": "nt_typological",
    "evidence_line_range": [
-    18417,
-    18419
+    18418,
+    18420
    ],
    "full_pdf_matches": 1
   }
@@ -3247,8 +3247,8 @@
    "attribution": "2 Коринт 1:3, 4",
    "kind": "nt_typological",
    "evidence_line_range": [
-    18615,
-    18616
+    18616,
+    18617
    ],
    "full_pdf_matches": 2
   }
@@ -3269,8 +3269,8 @@
    "attribution": "Галат 2:16",
    "kind": "nt_typological",
    "evidence_line_range": [
-    18776,
-    18778
+    18777,
+    18779
    ],
    "full_pdf_matches": 2
   }
@@ -3290,8 +3290,8 @@
    "attribution": "Лук 23:46",
    "kind": "nt_typological",
    "evidence_line_range": [
-    18926,
-    18927
+    18927,
+    18928
    ],
    "full_pdf_matches": 1
   }
@@ -3311,8 +3311,8 @@
    "attribution": "Матай 1:21",
    "kind": "nt_typological",
    "evidence_line_range": [
-    18955,
-    18956
+    18956,
+    18957
    ],
    "full_pdf_matches": 2
   }
@@ -3332,8 +3332,8 @@
    "attribution": "Үйлс 2:24",
    "kind": "nt_typological",
    "evidence_line_range": [
-    19080,
-    19081
+    19081,
+    19082
    ],
    "full_pdf_matches": 2
   }
@@ -3353,8 +3353,8 @@
    "attribution": "Лук 22:53",
    "kind": "nt_typological",
    "evidence_line_range": [
-    19226,
-    19227
+    19227,
+    19228
    ],
    "full_pdf_matches": 1
   }

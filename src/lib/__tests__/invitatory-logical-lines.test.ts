@@ -52,7 +52,8 @@ describe('FR-183 — 초대송 시편의 논리 행', () => {
   it.each([
     { ref: 'Psalm 95:1-11', page: 28, stanzas: [2, 3, 2, 4, 3], lines: 14 },
     { ref: 'Psalm 100:1-5', page: 30, stanzas: [4, 5, 4, 4], lines: 17 },
-    { ref: 'Psalm 67:2-8', page: 30, stanzas: [5, 2, 3, 2, 4], lines: 16 },
+    // 시편 67 끝의 후렴 반복 연은 2026-10-30 개정판이 넣었다(p.31, 빈 줄로 띄운 문단).
+    { ref: 'Psalm 67:2-8', page: 30, stanzas: [5, 2, 3, 2, 4, 2], lines: 18 },
     { ref: 'Psalm 24:1-10', page: 31, stanzas: [4, 5, 6, 3, 3, 3, 3], lines: 27 },
   ])('$ref — 연 $stanzas, 논리 행 $lines', ({ ref, page, stanzas, lines }) => {
     const p = psalm(ref)
@@ -62,11 +63,12 @@ describe('FR-183 — 초대송 시편의 논리 행', () => {
   })
 
   // 후렴 반복 횟수 가드 — 연 개수 = 후렴 횟수(영광송 뒤 1회는 별도).
-  // 시편 67 은 4→5, 시편 24 는 4→7 로 책 문단 수에 맞췄다.
+  // 시편 67 은 4→5, 시편 24 는 4→7 로 책 문단 수에 맞췄다. 시편 67 은 2026-10-30
+  // 개정판이 끝 반복 연을 넣어 6 이다.
   it.each([
     { ref: 'Psalm 95:1-11', stanzaCount: 5 },
     { ref: 'Psalm 100:1-5', stanzaCount: 4 },
-    { ref: 'Psalm 67:2-8', stanzaCount: 5 },
+    { ref: 'Psalm 67:2-8', stanzaCount: 6 },
     { ref: 'Psalm 24:1-10', stanzaCount: 7 },
   ])('$ref — 연 개수 $stanzaCount (= 후렴 반복 횟수)', ({ ref, stanzaCount }) => {
     expect(psalm(ref).stanzas).toHaveLength(stanzaCount)
@@ -103,6 +105,7 @@ describe('FR-183 — 초대송 시편의 논리 행', () => {
         'Үндэстнүүд баярлан, баяр хөөрөөр дуулаг.',
         'Тэнгэрбурхан, Таныг ард түмнүүд магтаг.',
         'Газар ургацаа ургуулан гаргажээ.',
+        'Тэнгэрбурхан, Таныг ард түмнүүд магтаг.',
       ],
     },
     {
@@ -161,11 +164,12 @@ describe('FR-183 — 초대송 시편의 논리 행', () => {
   })
 
   // (c) regroup-only 불변식: 행 경계를 옮겨도 본문 단어는 그대로다. 해시가
-  //     바뀌면 글자가 바뀐 것이므로 PDF 원문과 다시 대조해야 한다.
+  //     바뀌면 글자가 바뀐 것이므로 PDF 원문과 다시 대조해야 한다. 시편 67 은
+  //     2026-10-30 개정판이 끝 반복 두 행을 더해 해시를 다시 고정했다.
   it.each([
     { ref: 'Psalm 95:1-11', sha: '85478ae5aad13bbf' },
     { ref: 'Psalm 100:1-5', sha: '1ab1bc9fcd098f63' },
-    { ref: 'Psalm 67:2-8', sha: 'a9957ddff8c6e7e4' },
+    { ref: 'Psalm 67:2-8', sha: '718ab85683d9d2eb' },
     { ref: 'Psalm 24:1-10', sha: '058cb3e4dcb8c4e0' },
   ])('$ref — 본문 단어 동일성 (sha256 $sha)', ({ ref, sha }) => {
     const body = normalisedBody(psalm(ref))

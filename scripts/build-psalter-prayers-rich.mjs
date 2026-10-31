@@ -85,8 +85,7 @@ const END_OF_BLOCK = new RegExp(
 // (docs/data/source-typo-ledger.md) — PDF 에서 다시 만든 본문에도 같은 교정을
 // 적용해야 수용 게이트(plain 과 normalised byte-equal)를 통과한다.
 const PDF_CORRECTIONS_BY_PAGE = {
-  // p238 시편 62 기도문: `Эзэн,Та` — comma 다음 공백 손실 (STC-028).
-  238: [{ from: 'Эзэн,Та', to: 'Эзэн, Та' }],
+  // 지금은 없음. p238 시편 62 기도문 `Эзэн,Та`(STC-028)는 2026-10-30 개정판이 고쳤다.
 }
 
 function refSlug(ref) {

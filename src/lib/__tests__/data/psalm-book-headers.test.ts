@@ -23,11 +23,8 @@ type BookHeader = { preface: string; attribution: string | null } | null
 const book = headerFixture.entries as Record<string, BookHeader>
 
 // 책과 일부러 다르게 두는 자리(오식 장부) — 같아지면 아래 테스트가 지우라고 알린다.
-const KNOWN_DIFFERENCES: Record<string, string> = {
-  'psalter-texts:Psalm 47:2-10@112':
-    '책은 «баруун баруунтаа», «хаанчлал хаанчлал» 로 낱말을 두 번 찍는다. 앱은 한 번 — ' +
-    'STC-026, 사용자 지시 2026-10-29 (3차 오식 목록 LH-051)',
-}
+// 2026-10-30 개정판이 시편 47(p.112)의 겹친 낱말을 고쳐 지금은 비어 있다.
+const KNOWN_DIFFERENCES: Record<string, string> = {}
 
 /** 소문자·라틴 동형 글자→키릴·문장부호와 공백 제거 — PDF 의 붙은 낱말(«Та нароюун»)은 차이로 보지 않는다 */
 const HOMOGLYPH_FROM = 'ABCEHKMOPTXYaceopxy'
