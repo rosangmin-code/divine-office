@@ -724,7 +724,10 @@
 // 자산 *경로* 는 무변경(`/pdf.worker.min.mjs` 그대로 — 쿼리는 경로가 아니다),
 // PRECACHE 대상(offline.html·icon.svg) 무변경, SW 로직 변경 없음 —
 // navigation 은 `network-only` 유지, caches.put(html) 미도입.
-const CACHE_VERSION = 'divine-office-v84'
+// v85 — 2026-11-02 개정 PDF와 시편 67/72 본문 반영.
+// 고정 경로 정적 자산 내용 변경 시 bump 하는 CLAUDE.md 기준에 따른다.
+// PDF 자체는 SW 캐시 대상이 아니며 navigation은 계속 network-only다.
+const CACHE_VERSION = 'divine-office-v85'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 

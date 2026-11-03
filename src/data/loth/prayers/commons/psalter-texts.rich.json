@@ -36024,26 +36024,6 @@
                 }
               ],
               "indent": 0
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Тэнгэрбурхан, Таныг ард түмнүүд магтаг."
-                }
-              ],
-              "indent": 0,
-              "role": "refrain"
-            },
-            {
-              "spans": [
-                {
-                  "kind": "text",
-                  "text": "Бүх ард түмнүүд Таныг магтаг."
-                }
-              ],
-              "indent": 0,
-              "role": "refrain"
             }
           ],
           "phrases": [
@@ -36170,30 +36150,13 @@
                 18
               ],
               "indent": 0
-            },
-            {
-              "lineRange": [
-                19,
-                19
-              ],
-              "indent": 0,
-              "role": "refrain"
-            },
-            {
-              "lineRange": [
-                20,
-                20
-              ],
-              "indent": 0,
-              "role": "refrain"
             }
           ],
           "paragraphBoundaries": [
             6,
             8,
             11,
-            13,
-            19
+            13
           ]
         }
       ],
@@ -38518,7 +38481,7 @@
               "spans": [
                 {
                   "kind": "text",
-                  "text": "Шеба хийгээд Себагийно хаад"
+                  "text": "Шеба хийгээд Себагийн хаад"
                 }
               ],
               "indent": 0

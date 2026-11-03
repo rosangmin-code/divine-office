@@ -25,7 +25,7 @@ node    docs/research/psalm-header-audit/build-titles.mjs         # dry-run
 
 `build-headers.mjs` 는 끝에서 로더 규칙을 흉내 내 모든 자리(191곳)가 책과 같은 머리말을, 책에 없는 자리는 없음을 고르는지 점검한다. 새 항목 65개는 인쇄면 PNG 로 글자를 대조했다.
 
-## 결과 (2026-10-30 개정판 기준)
+## 결과 (2026-11-02 개정판 기준)
 
 ```
 머리말: 자리 195 — none 51, ok 144
@@ -33,3 +33,5 @@ node    docs/research/psalm-header-audit/build-titles.mjs         # dry-run
 ```
 
 제목 `ok~` 1 은 의도한 차이다: 이사야 40 «Хоньчин» 대문자(STC-009). 시편 113 «алдрыг магтан» 띄어쓰기(STC-021) 15곳은 2026-10-30 개정판이 책에서 고쳐 `ok` 가 됐다. 제목은 `docs/bug-reports/2026-10-27-psalm-title-audit.md`.
+
+2026-11-02 PDF에서 머리말·제목 fixture와 쪽/행 근거를 다시 생성했다. p.361 출처의 `Илчлэл 22: 12`가 `Илчлэл 22:12`로 고쳐졌으며, 머리말·제목의 낱말은 그대로다.

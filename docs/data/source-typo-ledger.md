@@ -96,3 +96,17 @@ On 2026-10-30 the editor sent the next corrected PDF, in reply to the third erra
 - The PDF corrections for p.238 (`build-psalter-prayers-rich.mjs`) and for pp.553–554 and 586 (`build-short-readings-rich.mjs`) were removed, because the book now has those spaces.
 
 **Noticed, not changed.** The psalm prayer after Psalm 67 reads `…хүндэтгэлтэйгээр таниулж, шударга…` on p.240 and `…хүндэтгэлтэйгээр таниулан шударга…` on p.334, in both revisions. The app shares one prayer for both places and prints the p.240 wording.
+
+## 2026-11-02 revised edition
+
+Fr. Pierre's 2 November email, “Four Week Psalter”, supersedes his 30 October decision: after checking other breviaries, he removed the final repetition from all three printings of Psalm 67. The new attached PDF (4,109,456 bytes, 485 physical pages) replaces the root source and `public/psalter.pdf`. The 30 October PDF and extraction are preserved locally as `Four-Week psalter.- 2025 (2026-10-30 판).pdf` and `parsed_data/full_pdf.2026-10-30.txt`; `parsed_data/full_pdf.txt` is re-extracted from the new edition. Existing historical line-number references are not renumbered.
+
+The app now follows that decision in the invitatory and in the shared plain/rich text for pp.239 and 333–334. Only the two added closing lines are removed; the two internal repetitions remain. The invitatory returns to five stanzas. STC-029 is resolved, so the book-text regression test no longer needs a Psalm 67 exception.
+
+The new PDF also corrects Psalm 72:10 on p.255, `Шеба хийгээд Себагийнo хаад` → `Шеба хийгээд Себагийн хаад`. The app's plain and rich copies had normalized the stray Latin `o` to Cyrillic `о` (`Себагийно`); both now read `Себагийн`.
+
+The remaining book corrections on p.361 (`Илчлэл 22:12`), pp.896–897 (hymn 19) and p.901 (hymn 27) are present in the new PDF. The app already used those forms, resolving the remaining STC-027/028 deviations. The book also removes reference spacing in Psalm 147 and Romans 12:9-12 and adjusts continuation-dash spacing. Those are already normalized or excluded from app rendering. The p.785 dash/quotation spacing changes no words and is left in the app's existing spaced form.
+
+The PDF retains its page numbering. On p.30 the Psalm 100 title wraps onto two lines again, moving the first two printed lines of invitatory Psalm 67 onto p.31. Its title/link stays on p.30. The two internal refrain pairs and all other psalm words remain intact. The fixed-path PDF content change is accompanied by a service-worker cache version bump to v85; PDF requests remain outside SW caching and navigation stays network-only.
+
+Validation before deployment: the PDF body audit covers 198 placements with 0 major differences (8 unchanged extraction-space differences); plain/rich word fingerprints agree with the book at every placement without exceptions. Vitest: 2,245 passed, 4 existing TODOs. All 14 data verifiers, the traceability check and the production build pass. Headless browser checks confirm the ending in the invitatory, Week 2 Wednesday Vespers and Week 3 Tuesday Lauds, and the Psalm 72 correction in Week 2 Thursday Vespers; the served PDF is 4,109,456 bytes and the browser reports no console errors.

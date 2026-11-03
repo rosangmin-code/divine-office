@@ -22,12 +22,8 @@ const HOMOGLYPH_TO = 'АВСЕНКМОРТХУасеорху'
 const NUMERAL_LINE = /^\s*(I|II|III|IV)\s*$/
 
 // 책과 일부러 다르게 두는 자리 — 이유가 사라지면(= 다시 같아지면) 테스트가 지우라고 알린다.
-const KNOWN_DIFFERENCES: Record<string, string> = {
-  'psalter-texts:Psalm 67:2-8@239':
-    '책은 시편 67 을 세 번 인쇄한다(p.30 초대송, p.239, p.333). 2026-10-30 개정판에서 신부님은 세 곳 모두 ' +
-    '끝 후렴 반복을 넣었다고 했으나 p.239 에는 빠졌다. 앱은 p.333 과 본문 하나를 같이 쓰므로 반복을 넣은 ' +
-    '형태로 둔다 — STC-029, 사용자 지시 2026-10-31',
-}
+// 2026-11-02 개정판은 시편 67의 세 인쇄본 모두 끝 반복을 빼므로 STC-029 예외가 해소됐다.
+const KNOWN_DIFFERENCES: Record<string, string> = {}
 
 /** audit.py 의 words() 를 띄어쓰기 없이 이은 것과 같다. */
 function normalize(lines: string[]): string {
