@@ -4,7 +4,7 @@
 > and FR/NFR IDs in test titles. **Do not edit by hand.**
 > The curated matrix lives in [`docs/traceability-matrix.md`](./traceability-matrix.md).
 
-Scan: 116 test files contributed 68 unique IDs.
+Scan: 117 test files contributed 68 unique IDs.
 
 | ID | Test file | Test title(s) |
 |---|---|---|
@@ -40,6 +40,7 @@ Scan: 116 test files contributed 68 unique IDs.
 | FR-032 | `e2e/prayer-psalm-prayer-toggle.spec.ts` | (tagged, title unknown) |
 | FR-032 | `e2e/prayer-sections.spec.ts` | psalm-concluding prayer hidden when visibility toggle switched OFF (FR-032) |
 | FR-032 | `e2e/settings.spec.ts` | psalm-prayer switch persists to localStorage and survives reload (FR-032)<br>psalm-prayer switch uses gold when ON (visible) (FR-032) |
+| FR-032 | `src/lib/__tests__/data/psalm-prayer-ownership.test.ts` | (tagged, title unknown) |
 | FR-035 | `src/lib/__tests__/data/split-psalm-part2.test.ts` | 분할 시편의 마침 기도는 마지막 부 뒤에 한 번만 나온다 |
 | FR-035 | `src/lib/hours/resolvers/__tests__/psalm.test.ts` | catalog path: drops text, rich and page — even over a page override<br>Bible-fallback path: drops text, rich and page |
 | FR-037 | `src/components/__tests__/psalm-block-gloria.test.ts` | PsalmBlock — Gloria Patri line |
@@ -65,6 +66,7 @@ Scan: 116 test files contributed 68 unique IDs.
 | FR-153d | `e2e/prayer-responsory.spec.ts` | OT w1 SUN Lauds — PDF 6-line emission<br>OT weekday Lauds — PDF 6-line emission (weekday periodization)<br>Sunday Compline — PDF 6-line emission (ordinarium commons) |
 | FR-153f | `e2e/prayer-psalm-stanzas-rich.spec.ts` | Psalter stanzasRich rendering (FR-153f)<br>renders psalm stanzas via rich AST (data-role markers present)<br>Daniel 3 refrain lines are tagged with role=refrain<br>refrain lines do NOT carry red colour (2026-05-14 black-text policy) |
 | FR-153h | `e2e/prayer-psalm-prayer-rich.spec.ts` | Psalter psalmPrayerRich rendering (FR-153h)<br>psalm-prayer section renders with Mongolian rubric heading<br>first psalm psalmPrayer renders via rich AST (RichContent paragraph branch)<br>psalm-prayer heading carries 전례 빨강 (WI #5: stone-500→liturgical-red) |
+| FR-153h | `src/lib/__tests__/data/psalm-prayer-ownership.test.ts` | (tagged, title unknown) |
 | FR-155 | `e2e/easter-antiphon.spec.ts` | Easter season psalm / canticle antiphons (FR-155) |
 | FR-155 | `src/lib/__tests__/data/psalter-seasonal-antiphons.test.ts` | psalter seasonal_antiphons — post-body variants (task #16)<br>w2-sun-lauds entries have lentPassionSunday (Week 1 compound form promoted) |
 | FR-155 | `src/lib/__tests__/easter-week-fallback.test.ts` | gospelCanticle.antiphon has Layer5 Alleluia augmentation (FR-155 task #12) |

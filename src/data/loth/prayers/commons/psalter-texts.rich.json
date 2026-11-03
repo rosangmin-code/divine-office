@@ -14603,6 +14603,24 @@
         "kind": "common",
         "id": "psalter-text-Psalm 57:2-12"
       }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Эзэн минь, Та биднийг чөтгөрийн занганаас аврахаар өршөөл ба үнэнээ илгээнэ үү. Ингэснээр Таны Хүүгийн анд нөхөд хэмээн танигдаж байгаадаа баяртай бид ард түмний дунд Таныг магтаж, үндэстнүүдийн дунд Таныг тунхаглах болно."
+            }
+          ]
+        }
+      ],
+      "page": 126,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-57-2-12-psalm-prayer"
+      }
     }
   },
   "Jeremiah 31:10-14": {
@@ -14998,24 +15016,6 @@
       "source": {
         "kind": "common",
         "id": "psalter-text-Jeremiah 31:10-14"
-      }
-    },
-    "psalmPrayerRich": {
-      "blocks": [
-        {
-          "kind": "para",
-          "spans": [
-            {
-              "kind": "text",
-              "text": "Эзэн минь, Та биднийг чөтгөрийн занганаас аврахаар өршөөл ба үнэнээ илгээнэ үү. Ингэснээр Таны Хүүгийн анд нөхөд хэмээн танигдаж байгаадаа баяртай бид ард түмний дунд Таныг магтаж, үндэстнүүдийн дунд Таныг тунхаглах болно."
-            }
-          ]
-        }
-      ],
-      "page": 126,
-      "source": {
-        "kind": "common",
-        "id": "psalter-text-jeremiah-31-10-14-psalm-prayer"
       }
     }
   },
@@ -22813,72 +22813,6 @@
         "kind": "common",
         "id": "psalter-text-Exodus 15:1-4a, 8-13, 17-18"
       }
-    },
-    "psalmPrayerRich": {
-      "blocks": [
-        {
-          "kind": "para",
-          "spans": [
-            {
-              "kind": "text",
-              "text": "Тэнгэрбурхан, Эцэг минь, бүх үндэстэн болон"
-            }
-          ]
-        },
-        {
-          "kind": "divider"
-        },
-        {
-          "kind": "para",
-          "spans": [
-            {
-              "kind": "text",
-              "text": "бүх ард түмэн Таныг магтах болтугай. Тантай"
-            }
-          ]
-        },
-        {
-          "kind": "divider"
-        },
-        {
-          "kind": "para",
-          "spans": [
-            {
-              "kind": "text",
-              "text": "үүрд мөнхөд хамт амьдардаг, мөн итгэмжит"
-            }
-          ]
-        },
-        {
-          "kind": "divider"
-        },
-        {
-          "kind": "para",
-          "spans": [
-            {
-              "kind": "text",
-              "text": "бөгөөд үнэнч гэж нэрлэгддэг Есүс хүмүүн бидний"
-            }
-          ]
-        },
-        {
-          "kind": "divider"
-        },
-        {
-          "kind": "para",
-          "spans": [
-            {
-              "kind": "text",
-              "text": "зүрх сэтгэлийг үүрд эзэмших болтугай."
-            }
-          ]
-        }
-      ],
-      "page": 163,
-      "source": {
-        "kind": "common",
-        "id": "psalter-text-exodus-15-1-4a-8-13-17-18-psalm-prayer"
-      }
     }
   },
   "Psalm 117:1-2": {
@@ -22989,6 +22923,24 @@
       "source": {
         "kind": "common",
         "id": "psalter-text-Psalm 117:1-2"
+      }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Тэнгэрбурхан, Эцэг минь, бүх үндэстэн болон бүх ард түмэн Таныг магтах болтугай. Тантай үүрд мөнхөд хамт амьдардаг, мөн итгэмжит бөгөөд үнэнч гэж нэрлэгддэг Есүс хүмүүн бидний зүрх сэтгэлийг үүрд эзэмших болтугай."
+            }
+          ]
+        }
+      ],
+      "page": 163,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-117-1-2-psalm-prayer"
       }
     }
   },
@@ -65180,6 +65132,24 @@
       "source": {
         "kind": "common",
         "id": "psalter-text-Psalm 15:1-5"
+      }
+    },
+    "psalmPrayerRich": {
+      "blocks": [
+        {
+          "kind": "para",
+          "spans": [
+            {
+              "kind": "text",
+              "text": "Эзэн, бидний амьдралыг өөгүй гэм зэмгүй болгож өгнө үү. Бидэнд зөвийг үйлдэж, үнэнийг ярихад тусална уу. Ингэснээр бид Таны асарт оршин сууж, Таны ариун ууланд амьдран суух боломжтой болно."
+            }
+          ]
+        }
+      ],
+      "page": 87,
+      "source": {
+        "kind": "common",
+        "id": "psalter-text-psalm-15-1-5-psalm-prayer"
       }
     }
   },
