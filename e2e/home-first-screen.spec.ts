@@ -144,7 +144,16 @@ test('footer «Өнөөдөр» on today’s month scrolls back to today', async
   await page.goto('/')
   await waitForHomeReady(page)
   await expect(page.locator(TODAY_ROW)).toBeInViewport()
-  await page.evaluate(() => window.scrollTo(0, 0))
+  // Near the start of a month today is visible at the page top, too.
+  // Scroll to the farther end so the button must bring today back into view
+  // throughout the month (CI failed on 2026-11-03 with scrollTo(0, 0)).
+  await page.locator(TODAY_ROW).evaluate((row) => {
+    const rect = row.getBoundingClientRect()
+    const top = rect.top + window.scrollY
+    const bottom = rect.bottom + window.scrollY
+    const height = document.documentElement.scrollHeight
+    window.scrollTo(0, top > height - bottom ? 0 : height)
+  })
   await expect(page.locator(TODAY_ROW)).not.toBeInViewport()
   await page.locator('[data-role="footer-today"]').click()
   await expect(page.locator(TODAY_ROW)).toBeInViewport()
