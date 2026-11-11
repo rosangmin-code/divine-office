@@ -23,7 +23,7 @@ const MERGE_TARGETS = [
   {
     hymnId: '14',
     headBlockIdx: 2,
-    headFirstLine: 'Бядуучуудын Эцэг буугтун!',
+    headFirstLine: 'Ядуучуудын Эцэг буугтун!',
     tailFirstLine: 'Аятайхнаар та гийгүүлэгтүн!',
     expectedHeadLineCount: 11,
     expectedTailLineCount: 16,
@@ -50,13 +50,13 @@ const MERGE_TARGETS = [
     expectedHeadLineCount: 8,
     expectedTailLineCount: 5,
     lineIdx: 8,
-    prevLine: 'Өө өө Бид Таны хайраар амьдарьяа',
+    prevLine: 'Өө өө Бид Таны хайраар амьдаръяа',
     nextLine: 'Бидний итгэлийг аваач Есүс ээ',
   },
   {
     hymnId: '27',
     headBlockIdx: 0,
-    headFirstLine: '1.Бидний нүглийг уучилаач, биднийг өршөөгөөч',
+    headFirstLine: '1.Бидний нүглийг уучлаач, биднийг өршөөгөөч',
     tailFirstLine: 'Гэрэл цацарсан хайраа бидэн рүү тусгаач',
     expectedHeadLineCount: 3,
     expectedTailLineCount: 1,
@@ -273,7 +273,7 @@ const PROTECTED_BOUNDARIES = [
     hymnId: '94',
     headBlockIdx: 4,
     prevLine: 'Та надад үзүүлээч',
-    nextLine: 'Дахилт: Миний төлөө эдлэсэн Таны бүх зовлонг',
+    nextLine: 'Дахилт: Миний төлөө эдэлсэн Таны бүх зовлонг',
   },
   {
     hymnId: '97',
@@ -344,13 +344,16 @@ const HISTORICAL_MERGED_TARGETS = [
 ]
 
 const AREA_HASHES = {
+  // 2026-11-10 edition / 2026-11-11 verified proofreading corrections:
+  // re-lock only reviewed text changes (app/data-invariants.json and integration-review.json);
+  // keys, array lengths, source pages and rich phrase boundaries remain unchanged.
   // 2026-10-21: 2026-10-19 revised edition of the book (Fr. Pierre's corrected PDF) —
   // carried over only the characters the revision changed (mostly «Аяа» → «Аяа,»;
   // word-level audit of every changed string: nothing else moved).
   // 2026-10-27: psalm titles from the book added (Sunday EP I propers psalms / compline psalms) —
   // only `"title"` lines inserted (docs/bug-reports/2026-10-27-psalm-title-audit.md).
   'src/data/loth/ordinarium/compline.json':
-    'ff628cfc586c3e496da86ba0e4ab29bdbc68c097977c23034cbfc632f733630e',
+    '5bb9808f90a8a7c4dbf9295a982549bc9d1a0145f3157761d3ec413cd3f5e2c0',
   // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
   // space-split correction (owctononuudiig tailvshruulzh, advent:633).
   // 2026-10-21: 2026-10-19 revised edition of the book (Fr. Pierre's corrected PDF) —
@@ -362,7 +365,7 @@ const AREA_HASHES = {
   // 2026-10-27: psalm titles from the book added (Sunday EP I propers psalms / compline psalms) —
   // only `"title"` lines inserted (docs/bug-reports/2026-10-27-psalm-title-audit.md).
   'src/data/loth/propers/advent.json':
-    'fb3a10de374537e0df522c0327189cbe1b4ad1e8d6ce3190ef56019d9a329e0f',
+    'ab7d084169b7a511be5721e669586e857c872a2efecd6ceb75341f75b45d3ee2',
   // WI-88 (#87): dec25.SUN.vespers2 proper psalmody wiring (Ps 110:1-5,7 /
   // Ps 130 / Col 1:12-20, full_pdf p.592-596).
   // 2026-09-14 (GOAL #128 §3b B3, requested as STC-005 — fidelity restore,
@@ -389,7 +392,7 @@ const AREA_HASHES = {
   // 2026-10-27: psalm titles from the book added (Sunday EP I propers psalms / compline psalms) —
   // only `"title"` lines inserted (docs/bug-reports/2026-10-27-psalm-title-audit.md).
   'src/data/loth/propers/christmas.json':
-    'f8a0e172c3b28dc2b2fbf6edfde7be89ed03ca2f91ff3762b05f5967df8720d0',
+    'c09a38692d9c2dd99177b55de7403a6a610f25e2ddfa337be548f78064e6bac3',
   // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
   // space-split correction (owctononuudiig tailvshruulzh, easter:540/865).
   // P0-6 A (2026-09-14): ascension lauds/vespers2 conditionalRubrics[0]
@@ -404,7 +407,7 @@ const AREA_HASHES = {
   // 2026-10-27: psalm titles from the book added (Sunday EP I propers psalms / compline psalms) —
   // only `"title"` lines inserted (docs/bug-reports/2026-10-27-psalm-title-audit.md).
   'src/data/loth/propers/easter.json':
-    'fb4c7594ed9f759000425f4aa65f56be4f586dc1f7b9536fd57533b89471fa84',
+    '155fb6ffc083712949ebb36eb89d50d3134373cdb307a3b122f4d4bd5f2ec5a1',
   // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
   // space-split correction (owctononuudiig tailvshruulzh, lent:618).
   // 2026-10-21: 2026-10-19 revised edition of the book (Fr. Pierre's corrected PDF) —
@@ -416,7 +419,7 @@ const AREA_HASHES = {
   // 2026-10-27: psalm titles from the book added (Sunday EP I propers psalms / compline psalms) —
   // only `"title"` lines inserted (docs/bug-reports/2026-10-27-psalm-title-audit.md).
   'src/data/loth/propers/lent.json':
-    'f09fce5566c8e1b9a2828b4b9c73b26addb0d7a55226bcab2d0e4d2a9b9b6d5c',
+    'f6fd3b64e1e624a91bd585e7df5efedb9bbcc21ed391a8a02c5e3aa0972088aa',
   // WI-81 intended default_antiphon trim; re-locked for #191 wi-003 S1
   // space-split correction (owctononuudiig tailvshruulzh, ordinary-time x8).
   // P0-6 A (2026-09-14): trinitySunday / corpusChristi / sacredHeart /
@@ -438,7 +441,7 @@ const AREA_HASHES = {
   // 2026-10-27: psalm titles from the book added (Sunday EP I propers psalms / compline psalms) —
   // only `"title"` lines inserted (docs/bug-reports/2026-10-27-psalm-title-audit.md).
   'src/data/loth/propers/ordinary-time.json':
-    'f6d14cc2a7fbc59e9f112f97f5515e01295eca21bfdf753909515f48e7859292',
+    '57ee20c1daaa8c5088c0513e67f0164deea6b047f57e08a5265353f97b7b6ec4',
   // g-36 (WI-50/51): sanctoral 추출오타 35건 PDF-fidelity 교정 (full_pdf.txt L28000+ 대조)
   // g-41 (WI-60): 08-06 Transfiguration held-divergence restore — vespers antiphon
   // (минь ангижруулдаг…) + vespers/lauds/vespers2 concludingPrayer Эцгүүдийг +
@@ -454,7 +457,7 @@ const AREA_HASHES = {
   // carried over only the characters the revision changed (mostly «Аяа» → «Аяа,»;
   // word-level audit of every changed string: nothing else moved).
   'src/data/loth/sanctoral/feasts.json':
-    'df70d31c61c563c1bebc8f57657ac661b06cceb04e5f0a12db11a53b68b9de95',
+    '3db66100754e2c086ca49866bd8f19942cf070c56a58fe94879359201e29ac9c',
   // WI-76 intended memorials page 863->862.
   // #203 (WI-215): 11-02 All Souls + deceased lauds/vespers concludingPrayer
   // truncation — restored Trinitarian doxology from full_pdf p.852 (L28884-87).
@@ -469,7 +472,7 @@ const AREA_HASHES = {
   // carried over only the characters the revision changed (mostly «Аяа» → «Аяа,»;
   // word-level audit of every changed string: nothing else moved).
   'src/data/loth/sanctoral/memorials.json':
-    '3a6c2660500ab1c676699cf0482c298eec6ac73f1c9d00a434e11769f6480655',
+    'ff623a3616118bafa04a5d27d601cb4950ac1d4b88fe8a23a5f230ba6eedea43',
   'src/data/loth/sanctoral/optional-memorials.json':
     'ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356',
   // #203 (WI-212): 06-24 John Baptist lauds + vespers2 concludingPrayer
@@ -506,7 +509,7 @@ const AREA_HASHES = {
   // reading (p.586, ledger STC-028; the Christmas propers copy already had the
   // space). One space added, nothing else moved.
   'src/data/loth/sanctoral/solemnities.json':
-    'f29ab695a1f415add5d9a4f84b6d8f6897fa6e6e3e5673eb3321cbed0120098e',
+    '40d15dfe65e14a28fccc30cefb44542a4c889e66d1ec60eefb385f0e23b73457',
 }
 
 function readJson(path) {
@@ -607,7 +610,7 @@ describe('GOAL210 protected legitimate page-break-adjacent boundaries', () => {
       '52|Ариун замаар хөтлөн дагуулаач|Итгэмжтэйгээр үнэн зүрхээр': 1,
       '57|Миний бие сүнс магтан дуулж байна|Их Эзэний агуу алдар сүр хүчийг': 1,
       '66|Би Танд хайртай|Мөнхийн мөнхөд бүхнээ зориулж Танд би': 1,
-      '94|Та надад үзүүлээч|Дахилт: Миний төлөө эдлэсэн Таны бүх зовлонг': 1,
+      '94|Та надад үзүүлээч|Дахилт: Миний төлөө эдэлсэн Таны бүх зовлонг': 1,
       '97|Баярын дуу сүр жавхланг Та бэлэглээч|Дахилт: Дээрээс гэрэл цацарч тэнгэр элч дэргэд': 1,
       '105|Та бол бидний Тэнгэрбурхан /х2/|Дахилт:': 1,
       '112|Тосоор тослооч ээ, тосоор тослооч ээ|Гал мэт хайрыг бид өргөж байна,': 1,

@@ -368,7 +368,7 @@ test.describe('PDF page references', () => {
     test('pdfjs document load failure shows the error fallback', async ({ page }) => {
       // Abort the PDF asset so getDocument(PDF_ASSET_PATH) rejects, driving the
       // viewer into its status='error' branch (data-role="pdf-error").
-      await page.route('**/psalter.pdf', (route) => route.abort())
+      await page.route(/\/psalter\.pdf(?:\?.*)?$/, (route) => route.abort())
       await page.goto('/pdf/58')
 
       const errorBox = page.locator('[data-role="pdf-error"]')
@@ -377,7 +377,7 @@ test.describe('PDF page references', () => {
       // Fallback offers the raw asset as a direct download.
       await expect(
         errorBox.getByRole('link', { name: /PDF татах/ }),
-      ).toHaveAttribute('href', '/psalter.pdf')
+      ).toHaveAttribute('href', /^\/psalter\.pdf\?v=\d{4}-\d{2}-\d{2}$/)
       // The canvas never reaches the ready state.
       await expect(page.locator('[data-role="pdf-canvas"]')).not.toBeVisible()
     })

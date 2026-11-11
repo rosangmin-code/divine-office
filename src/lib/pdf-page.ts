@@ -1,4 +1,6 @@
 export const PDF_ASSET_PATH = '/psalter.pdf'
+// Pin the edition so the browser's fixed-path HTTP cache cannot open an old PDF.
+export const PDF_ASSET_VERSION = '2026-11-10'
 
 // The source PDF is laid out 2-up (landscape) — each physical PDF page
 // renders two book pages side by side. These helpers convert between

@@ -661,7 +661,7 @@ describe('GospelCanticleSection — antiphonRich render branch (#208)', () => {
       // 재분절 전: verse[7] = "дурсан санахын тулд юм." (소문자 continuation 이
       // 별도 절로 잘못 분리). 재분절 후: 직전 대문자 절에 공백 join 흡수.
       expect(data.benedictus.verses![11]).toBe(
-        'Өвөг Абрахамд маань өргөсөн тангаргыг дурсан санахын тулд юм.',
+        'Өвөг Абрахамд маань өргөсөн тангаргийг дурсан санахын тулд юм.',
       )
     })
 

@@ -727,7 +727,9 @@
 // v85 — 2026-11-02 개정 PDF와 시편 67/72 본문 반영.
 // 고정 경로 정적 자산 내용 변경 시 bump 하는 CLAUDE.md 기준에 따른다.
 // PDF 자체는 SW 캐시 대상이 아니며 navigation은 계속 network-only다.
-const CACHE_VERSION = 'divine-office-v85'
+// v86 — 2026-11-10 개정 PDF와 검증된 본문 교정 반영.
+// 새 데이터 청크를 사용하고, PDF 뷰어는 판본 쿼리로 HTTP 캐시도 구분한다.
+const CACHE_VERSION = 'divine-office-v86'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = [OFFLINE_URL, '/icon.svg']
 

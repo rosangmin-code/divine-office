@@ -2,8 +2,8 @@
   "_about": "시편·찬가 본문 자리마다 책(public/psalter.pdf)에 인쇄된 본문의 지문. docs/research/psalm-omission-audit/audit.py --emit-fixture 가 만든다 — 책이 바뀌면 다시 만든다. 글자: 소문자, 라틴 동형 글자→키릴, 문장부호 제거, 단어를 띄어쓰기 없이 이음 (PDF 의 붙은 낱말과 행 나눔 차이를 지우려고). 검사: psalm-book-text.test.ts",
   "entries": {
     "canticles:benedictus@34": {
-      "chars": 843,
-      "sha1": "79c12848910fb704b6f5a6eaff44d8c8febc8aeb"
+      "chars": 844,
+      "sha1": "9348e880c73289c47dc34f9fee6144b9147c31fc"
     },
     "canticles:magnificat@40": {
       "chars": 574,
@@ -34,8 +34,8 @@
       "sha1": "d124bfda944b63384a0bc7f85446021a1e4b85ca"
     },
     "psalter-texts:1 Samuel 2:1-10@229": {
-      "chars": 1184,
-      "sha1": "16ba2d742d1802b02b5937c8a69663d0820cbe09"
+      "chars": 1175,
+      "sha1": "1f16737b6c36a7317bbd9f6d7dbb009968b01c45"
     },
     "psalter-texts:Colossians 1:12-20@119": {
       "chars": 839,
@@ -70,32 +70,32 @@
       "sha1": "951fbda5e7529ebad44a5435f4d073d44ae1c2a9"
     },
     "psalter-texts:Daniel 3:57-88, 56@296": {
-      "chars": 1572,
-      "sha1": "07b9a8704f5fd8f48d9a1c66cb2f3936e861a593"
+      "chars": 1571,
+      "sha1": "5ddb7c476fc6a5faf5d5940d55308787e3383b46"
     },
     "psalter-texts:Daniel 3:57-88, 56@60": {
-      "chars": 1572,
-      "sha1": "07b9a8704f5fd8f48d9a1c66cb2f3936e861a593"
+      "chars": 1571,
+      "sha1": "5ddb7c476fc6a5faf5d5940d55308787e3383b46"
     },
     "psalter-texts:Deuteronomy 32:1-12@281": {
       "chars": 1091,
       "sha1": "560175d427208d50f4fb14c4b35ad203bdb7d3fe"
     },
     "psalter-texts:Ephesians 1:3-10@206": {
-      "chars": 800,
-      "sha1": "5d38f40ddfdafccfe78fc1f1497d7bbe2815ee6b"
+      "chars": 791,
+      "sha1": "1669fee990f96281f396d41d0133ca63f3bc2353"
     },
     "psalter-texts:Ephesians 1:3-10@325": {
-      "chars": 800,
-      "sha1": "5d38f40ddfdafccfe78fc1f1497d7bbe2815ee6b"
+      "chars": 791,
+      "sha1": "1669fee990f96281f396d41d0133ca63f3bc2353"
     },
     "psalter-texts:Ephesians 1:3-10@436": {
-      "chars": 800,
-      "sha1": "5d38f40ddfdafccfe78fc1f1497d7bbe2815ee6b"
+      "chars": 791,
+      "sha1": "1669fee990f96281f396d41d0133ca63f3bc2353"
     },
     "psalter-texts:Ephesians 1:3-10@87": {
-      "chars": 800,
-      "sha1": "5d38f40ddfdafccfe78fc1f1497d7bbe2815ee6b"
+      "chars": 791,
+      "sha1": "1669fee990f96281f396d41d0133ca63f3bc2353"
     },
     "psalter-texts:Exodus 15:1-4a, 8-13, 17-18@160": {
       "chars": 1032,
@@ -110,8 +110,8 @@
       "sha1": "278139310123b9a545bdbf7c1ef43327437dee4f"
     },
     "psalter-texts:Isaiah 12:1-6@249": {
-      "chars": 485,
-      "sha1": "901ab92723552203b99ead0b92371dbda2086768"
+      "chars": 484,
+      "sha1": "197fed1e8057fef435877d034cec2f5814b04bb0"
     },
     "psalter-texts:Isaiah 26:1-6@332": {
       "chars": 589,
@@ -135,7 +135,7 @@
     },
     "psalter-texts:Isaiah 42:10-16@426": {
       "chars": 724,
-      "sha1": "7a43813d1b66b62b04cc79553b6a4ee034794a5e"
+      "sha1": "89385f07aea3605c6506468c214410dccbf0f617"
     },
     "psalter-texts:Isaiah 45:15-26@144": {
       "chars": 1127,
@@ -154,8 +154,8 @@
       "sha1": "950e1e9f94a2ff96f5fe6ab5f8c6f6f78a6212fa"
     },
     "psalter-texts:Jeremiah 31:10-14@127": {
-      "chars": 655,
-      "sha1": "dffc1475a993a079921a3889b89d303918a3db33"
+      "chars": 654,
+      "sha1": "958368fb1c1cc3cfd4872bbbfff1e6f5ed13ccb5"
     },
     "psalter-texts:Judith 16:2-3a, 13-15@111": {
       "chars": 549,
@@ -379,11 +379,11 @@
     },
     "psalter-texts:Psalm 136:10-26@434": {
       "chars": 1272,
-      "sha1": "eabaa5fa1e61114badbf6fe343996ab3835b9981"
+      "sha1": "d36f6ad517eed3aff5bab898e778e2bc306ed536"
     },
     "psalter-texts:Psalm 137:1-6@449": {
       "chars": 436,
-      "sha1": "1c9cb8b2758a2168ee0b52528b4d68e2384e5e68"
+      "sha1": "c826789fe1afb23729c75dc99f8d85bb7fcea7a5"
     },
     "psalter-texts:Psalm 138:1-8@450": {
       "chars": 706,

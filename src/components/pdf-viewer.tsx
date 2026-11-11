@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { bookPageToPdfPage, bookPageSide, PDF_ASSET_PATH } from '@/lib/pdf-page'
+import { bookPageToPdfPage, bookPageSide, PDF_ASSET_PATH, PDF_ASSET_VERSION } from '@/lib/pdf-page'
 
 const MIN_BOOK_PAGE = 1
 const MAX_BOOK_PAGE = 969 // 485 2-up pages -> 970 halves; last indexable half is 969
@@ -90,7 +90,7 @@ export function PdfViewer({ initialBookPage }: { initialBookPage: number }) {
         // API's own `version` makes the pair unbreakable by construction.
         pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.mjs?v=${pdfjs.version}`
         // 6.x api-major: `getDocument` no longer accepts a bare URL string.
-        const loadingTask = pdfjs.getDocument({ url: PDF_ASSET_PATH })
+        const loadingTask = pdfjs.getDocument({ url: `${PDF_ASSET_PATH}?v=${PDF_ASSET_VERSION}` })
         loadingTaskRef.current = loadingTask
         const doc = await loadingTask.promise
         if (cancelled) {
@@ -350,7 +350,7 @@ export function PdfViewer({ initialBookPage }: { initialBookPage: number }) {
               {errorMessage}
             </pre>
             <a
-              href={PDF_ASSET_PATH}
+              href={`${PDF_ASSET_PATH}?v=${PDF_ASSET_VERSION}`}
               className="rounded-lg bg-stone-200 px-4 py-2 text-stone-700 hover:bg-stone-300 dark:bg-stone-800 dark:text-stone-200 dark:hover:bg-stone-700"
             >
               PDF татах

@@ -22,8 +22,14 @@ const HOMOGLYPH_TO = 'АВСЕНКМОРТХУасеорху'
 const NUMERAL_LINE = /^\s*(I|II|III|IV)\s*$/
 
 // 책과 일부러 다르게 두는 자리 — 이유가 사라지면(= 다시 같아지면) 테스트가 지우라고 알린다.
-// 2026-11-02 개정판은 시편 67의 세 인쇄본 모두 끝 반복을 빼므로 STC-029 예외가 해소됐다.
-const KNOWN_DIFFERENCES: Record<string, string> = {}
+// 2026-11-10 PDF still has the confirmed missing-letter typo on p.111.
+// Keep the fixture faithful to the PDF and the app's explicit correction ledgered.
+const KNOWN_DIFFERENCES: Record<string, { reason: string; correctedSha1: string }> = {
+  'psalter-texts:Judith 16:2-3a, 13-15@111': {
+    reason: 'STC-030: Хүндэл үзүүлж → Хүндлэл үзүүлж',
+    correctedSha1: 'b195e047b943220b446485309519842f376ca614',
+  },
+}
 
 /** audit.py 의 words() 를 띄어쓰기 없이 이은 것과 같다. */
 function normalize(lines: string[]): string {
@@ -99,7 +105,7 @@ describe('시편·찬가 본문 = 책 (모든 자리)', () => {
       if (!book) continue // 지문 없는 자리는 위 테스트가 알린다
       texts.forEach((lines, i) => {
         const app = normalize(lines)
-        if (sha1(app) !== book.sha1 && !(key in KNOWN_DIFFERENCES)) {
+        if (sha1(app) !== book.sha1 && sha1(app) !== KNOWN_DIFFERENCES[key]?.correctedSha1) {
           wrong.push(`${key} ${i === 0 ? '' : '(rich) '}— 책 ${book.chars}자 / 앱 ${app.length}자`)
         }
       })
@@ -112,6 +118,7 @@ describe('시편·찬가 본문 = 책 (모든 자리)', () => {
     for (const key of Object.keys(KNOWN_DIFFERENCES)) {
       const [lines] = found.get(key) ?? fail(`${key}: 자리가 없음`)
       expect(sha1(normalize(lines)), key).not.toBe(entries[key].sha1)
+      expect(sha1(normalize(lines)), KNOWN_DIFFERENCES[key].reason).toBe(KNOWN_DIFFERENCES[key].correctedSha1)
     }
   })
 })

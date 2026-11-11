@@ -110,3 +110,29 @@ The remaining book corrections on p.361 (`Илчлэл 22:12`), pp.896–897 (hy
 The PDF retains its page numbering. On p.30 the Psalm 100 title wraps onto two lines again, moving the first two printed lines of invitatory Psalm 67 onto p.31. Its title/link stays on p.30. The two internal refrain pairs and all other psalm words remain intact. The fixed-path PDF content change is accompanied by a service-worker cache version bump to v85; PDF requests remain outside SW caching and navigation stays network-only.
 
 Validation before deployment: the PDF body audit covers 198 placements with 0 major differences (8 unchanged extraction-space differences); plain/rich word fingerprints agree with the book at every placement without exceptions. Vitest: 2,245 passed, 4 existing TODOs. All 14 data verifiers, the traceability check and the production build pass. Headless browser checks confirm the ending in the invitatory, Week 2 Wednesday Vespers and Week 3 Tuesday Lauds, and the Psalm 72 correction in Week 2 Thursday Vespers; the served PDF is 4,109,456 bytes and the browser reports no console errors.
+
+## 2026-11-10 revised edition (applied 2026-11-11)
+
+The source and `public/psalter.pdf` now use Fr. Pierre's 10 November attachment: 4,130,112 bytes, 485 physical pages, SHA-256 `1ca610d14211c734adba732a5db4b71cf13ae0c7e091a69764064daab0b73959`. The 2 November source and extraction are preserved locally. Raw PDF extraction and book body/header/title fixtures were refreshed; application data was patched in place rather than regenerated. Existing page references, paragraph/line/span arrays, phrase boundaries and source metadata are preserved.
+
+The 250 previously reported locations were reconciled against runtime data, including shared copies and already-correct forms. The app also follows verified additional punctuation changes and the 5 November `Түг түмдийн` harmonization. The item-by-item record is [pdf-update-2026-11-10.json](pdf-update-2026-11-10.json). Printed contents, section labels and reading instructions that have no runtime text counterpart are explicitly classified there; they are not added as prayer text.
+
+Four changed phrases of Hannah's canticle on pp.230–231 follow the new PDF and agree with the publisher's [AB2019 text, 1 Samuel 2:3–8](https://mongol.bible/ab2019/1-samuel/2/). The earlier proposal to add a question mark on p.231 is superseded by the editor's declarative sentence. Other unchanged wording in that canticle is preserved. On p.322 the spelling `түмнийхээ` is corrected while `ард` stays lowercase; a printed title line break does not introduce a capital in the app.
+
+The following deviations remain deliberate because the new PDF still prints the old forms. The user authorized applying these verified corrections to the app on 11 November. FIX IDs refer to the earlier 250-location review; book pages identify the exact source occurrence.
+
+| id | app location | PDF form | app form | evidence / review IDs |
+| --- | --- | --- | --- | --- |
+| STC-030 | Judith 16:2-3a, 13-15, plain and rich, p.111 | `Хүндэл үзүүлж` | `Хүндлэл үзүүлж` | FIX-023: missing letter in the noun. The PDF-derived body fixture retains the source spelling; its test permits only the exact corrected full-body fingerprint, so other omissions remain detectable. |
+| STC-031 | GILH quotation suffixes, p.15 | `ёслол” -оор`, `ёслол” -ын` | `ёслол”-оор`, `ёслол”-ын` (app uses ASCII quotation marks) | FIX-003/004: existing app spacing is already correct. |
+| STC-032 | Psalm 41 and 124 header prefaces, pp.150, 324 | `Есүс -Үнэнээр`, `-Бүү` | `Есүс - Үнэнээр`, `- Бүү` | FIX-028/064: restore the separator space. |
+| STC-033 | Psalm 77 body, Week 3 responsories and Week 4 Sunday seasonal antiphon, pp.228, 327, 357, 415 | `дунд Хүч`, vocative continuation `Би`/`Намайг`, `баруун Талд` | `дунд хүч`, `би`/`намайг`, `баруун талд` | FIX-039/069/078/089: sentence-internal lowercase, including every matching plain/rich response. The seasonal verifier normalizes only the exact ledgered `баруун Талд заларч байгаа.` phrase. |
+| STC-034 | Christmas octave concluding prayer, plain and rich, p.603 | `хүмүүнийн` | `хүмүүний` | FIX-117: duplicated ending removed. |
+| STC-035 | Lent Week 1 Sunday short reading rich copy, p.621 | `-Энэ`, `-Явцгаа` | `- Энэ`, `- Явцгаа` | FIX-121/122: the plain copy already had the spaces; the rich copy now agrees. |
+| STC-036 | Palm Sunday first-Vespers gospel antiphon, p.652 | `Хаан минь Танд` | `Хаан минь, Танд` | FIX-136: vocative comma, matching the adjoining address. |
+| STC-037 | Hymn 14, plain and rich, p.893 | `Бядуучуудын` | `Ядуучуудын` | FIX-195: erroneous initial glyph in the word for the poor. |
+| STC-038 | Hymn 76, plain and rich, p.933 | `дуулая` | `дуулъя` | FIX-226: missing hard sign in the verb ending. |
+
+FIX-007 (p.18) and FIX-141 (p.657) already render with the app's correctly separated response/dash convention. FIX-149 (p.689) is a printed instruction absent from runtime data. The older decision to retain app commas after `Аяа` (STC-019) remains in force. Hymn 26/27 IDs were already correct and were not swapped.
+
+The PDF viewer pins `?v=2026-11-10` for both loading and the download fallback, avoiding a stale fixed-path HTTP-cache copy. Service-worker cache v86 replaces old data chunks; HTML navigation remains network-only and PDFs remain outside SW caching.

@@ -72,7 +72,7 @@
         {
           "kind": "patristic_preface",
           "attribution": "Хэсихиус",
-          "preface_text": "Шашны хөвгүүд, шинэ ард түмний хүүхдүүд ээ Христ өөрсдийн Хаандаа баярлацгаа!",
+          "preface_text": "Шашны хөвгүүд, шинэ ард түмний хүүхдүүд ээ, Христ өөрсдийн Хаандаа баярлацгаа!",
           "page": 64,
           "source": "extracted",
           "evidence_line_range": [
@@ -236,7 +236,7 @@
         {
           "kind": "patristic_preface",
           "attribution": "Кацен",
-          "preface_text": "Сүр жавхлангаар өргөмжилсөн Христ цаг ямагт Эцэтээ талархал өргөдөг",
+          "preface_text": "Сүр жавхлангаар өргөмжилсөн Христ цаг ямагт Эцэгтээ талархал өргөдөг",
           "page": 132,
           "source": "extracted",
           "evidence_line_range": [
@@ -314,7 +314,7 @@
         {
           "kind": "nt_typological",
           "attribution": "Марк 14:18",
-          "preface_text": "Есүс -Үнэнээр Би та нарт хэлье. Надтай хамт хооллож буй та нарын нэг чинь Надаас урвана гэлээ",
+          "preface_text": "Есүс - Үнэнээр Би та нарт хэлье. Надтай хамт хооллож буй та нарын нэг чинь Надаас урвана гэлээ",
           "page": 150,
           "source": "extracted",
           "evidence_line_range": [
@@ -785,7 +785,7 @@
         {
           "kind": "nt_typological",
           "attribution": "Үйлс 18:9-10",
-          "preface_text": "Эзэн шөнө нь Паулд үзэгдлээр дамжуулан: -Бүү ай... Би чамтай хамт байна",
+          "preface_text": "Эзэн шөнө нь Паулд үзэгдлээр дамжуулан: - Бүү ай... Би чамтай хамт байна",
           "page": 324,
           "source": "extracted",
           "evidence_line_range": [
@@ -931,7 +931,7 @@
         {
           "kind": "patristic_preface",
           "attribution": "Кассиодор",
-          "preface_text": "Бид Тэнгэрбуханы гайхамшгуудыг дурсан санаснаараа Түүнийг магтдаг",
+          "preface_text": "Бид Тэнгэрбурханы гайхамшгуудыг дурсан санаснаараа Түүнийг магтдаг",
           "page": 432,
           "source": "extracted",
           "evidence_line_range": [
@@ -1734,7 +1734,7 @@
         {
           "kind": "nt_typological",
           "attribution": "Марк 1:15",
-          "preface_text": "Тэр цаг биелэлээ оллоо. Тэнгэрбурханы хаанчлал айсуй. Гэмшиж, сайнмэдээнд итгэгтүн гэж байлаа",
+          "preface_text": "Тэр цаг биеллээ оллоо. Тэнгэрбурханы хаанчлал айсуй. Гэмшиж, сайнмэдээнд итгэгтүн гэж байлаа",
           "page": 378,
           "source": "manual",
           "evidence_line_range": [
@@ -1834,7 +1834,7 @@
       "entries": [
         {
           "kind": "nt_typological",
-          "attribution": "харьцуул. Илчлэл 21-24",
+          "attribution": "харьцуул. Илчлэл 21:24",
           "preface_text": "Газар дэлхийн хаад Түүнд алдраа авчирна",
           "page": 450,
           "source": "manual",

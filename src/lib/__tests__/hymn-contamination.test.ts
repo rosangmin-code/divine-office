@@ -62,8 +62,8 @@ describe('NFR-009k hymn contamination guard', () => {
     { n: 3, mustInclude: ['Ааваа миний Ааваа', 'Би Танд хайртай Би талархана'], mustExclude: ['Махбод дотор', 'Бүх Монгол'], page: 886 },
     // #1 garbage -> real "Ааваа Та миний амьдралын Эзэн" (p885).
     { n: 1, mustInclude: ['Ааваа Та миний амьдралын Эзэн'], mustExclude: ['Энэрлийн нөхөр'], page: 885 },
-    // #83 truncation victim -> page-939 tail restored.
-    { n: 83, mustInclude: ['Хөх тэнгэрийн агуу Их Эзэн минь', 'Мэхийн хүндэлэе өвдөг сөгдөн мөргөе'] },
+    // #83 truncation victim -> page-939 tail restored; 2026-11-10 spelling хүндэлье verified.
+    { n: 83, mustInclude: ['Хөх тэнгэрийн агуу Их Эзэн минь', 'Мэхийн хүндэлье өвдөг сөгдөн мөргөе'] },
     // #107 garbage -> real "1. Эзэн Есүс таныгаа" (p951), NOT #1's body.
     { n: 107, mustInclude: ['Эзэн Есүс таныгаа'], mustExclude: ['Ааваа Та миний амьдралын Эзэн'], page: 951 },
     // #114 absorber -> #115 Nativity content removed.

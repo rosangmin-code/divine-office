@@ -51,7 +51,7 @@ test.describe('PDF page surface is theme-independent paper (dark mode) [#80]', (
 
   test('loading (canvas invisible): page surface is paper, NOT black', async ({ page }) => {
     // Stall the PDF fetch so the canvas stays invisible (status === 'loading').
-    await page.route('**/psalter.pdf', async (route) => {
+    await page.route(/\/psalter\.pdf(?:\?.*)?$/, async (route) => {
       await new Promise((r) => setTimeout(r, 5000))
       await route.continue()
     })
@@ -63,7 +63,7 @@ test.describe('PDF page surface is theme-independent paper (dark mode) [#80]', (
   })
 
   test('error (render failed): page surface is paper, NOT black', async ({ page }) => {
-    await page.route('**/psalter.pdf', (route) => route.abort())
+    await page.route(/\/psalter\.pdf(?:\?.*)?$/, (route) => route.abort())
     await page.goto('/pdf/7')
     await expect(page.locator('[data-role="pdf-error"]')).toBeVisible({ timeout: 9000 })
     const st = await canvasState(page)

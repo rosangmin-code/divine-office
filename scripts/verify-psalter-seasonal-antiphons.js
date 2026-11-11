@@ -41,7 +41,11 @@ function run() {
   // it back (user decision 2026-10-24, source-typo-ledger STC-019).
   const toAppForm = (v) =>
     typeof v === 'string'
-      ? v.replace(/Аяа(?=\s)/g, 'Аяа,')
+      ? v
+        .replace(/Аяа(?=\s)/g, 'Аяа,')
+        // FIX-089: the Nov 10 PDF still capitalizes this mid-sentence word
+        // on p.415. Apply only this ledgered phrase, not a global case fold.
+        .replace('баруун Талд заларч байгаа.', 'баруун талд заларч байгаа.')
       : Object.fromEntries(Object.entries(v).map(([k, x]) => [k, toAppForm(x)]))
   const extracted = toAppForm(JSON.parse(fs.readFileSync(EXTRACT_PATH, 'utf8')))
 
