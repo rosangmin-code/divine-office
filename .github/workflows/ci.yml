@@ -17,7 +17,9 @@ jobs:
   quality:
     # ⚠ 이 name 은 Vercel Deployment Checks 에 등록되는 문자열. 바꾸면 대시보드 재등록 필요.
     name: Lint · Typecheck · Unit tests
-    runs-on: ubuntu-latest
+    # Playwright 1.59.1 supports this image; ubuntu-latest moved to 26.04,
+    # which fails browser installation before any tests can run.
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
@@ -93,7 +95,7 @@ jobs:
     # push/PR 때만. 매일 밤 전체를 돌던 e2e-nightly.yml 은 같은 날 삭제(코드가
     # 그대로면 결과도 그대로). 이름은 위 등록 때문에 그대로 둔다.
     name: Playwright · API smoke + core UI
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: quality
     timeout-minutes: 20
     steps:
