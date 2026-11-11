@@ -78,7 +78,7 @@ test.describe('Easter season psalm / canticle antiphons (FR-155)', () => {
     // ps2 (Isaiah 40:10-17) — PDF variant text; default antiphon starts
     // with "Эзэн, хүчирхэг байлдан дагуулагч..." which does NOT appear.
     expect(psalms[1].antiphon).toBe(
-      'Тэр хоньчны ёсоор мутартаа хургануудаа цуглуулан, энгэртээ тэврэнэ. Аллэлуяа!',
+      'Тэр хоньчны ёсоор мутартаа хургануудаа цуглуулан, энгэртээ тэвэрнэ. Аллэлуяа!',
     )
 
     // ps3 (Psalm 99:1-9) — PDF variant; distinct from default "Бидний
