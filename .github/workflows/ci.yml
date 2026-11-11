@@ -20,6 +20,10 @@ jobs:
     # Playwright 1.59.1 supports this image; ubuntu-latest moved to 26.04,
     # which fails browser installation before any tests can run.
     runs-on: ubuntu-24.04
+    container:
+      # Match package-lock.json; browser binaries and OS dependencies are included.
+      image: mcr.microsoft.com/playwright:v1.59.1-noble
+      options: --ipc=host
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
@@ -50,13 +54,8 @@ jobs:
       - name: TypeScript
         run: npx tsc --noEmit
 
-      # src/app/__tests__/global-font-family.test.ts 는 vitest 안에서
-      # chromium.launch() 로 실제 브라우저를 띄워 computed font-family 를
-      # 검증한다 (유닛 스위트 110개 중 유일). 브라우저가 없으면 이 파일만
-      # "Executable doesn't exist" 로 실패하므로 Vitest 앞에 설치가 필요하다.
-      - name: Install Playwright (Chromium only)
-        run: npx playwright install --with-deps chromium
-
+      # global-font-family.test.ts launches the image's preinstalled Chromium.
+      # Matching browser binaries, fonts and OS dependencies need no apt install.
       - name: Vitest
         run: npm test
 
@@ -96,6 +95,10 @@ jobs:
     # 그대로면 결과도 그대로). 이름은 위 등록 때문에 그대로 둔다.
     name: Playwright · API smoke + core UI
     runs-on: ubuntu-24.04
+    container:
+      # Match package-lock.json; browser binaries and OS dependencies are included.
+      image: mcr.microsoft.com/playwright:v1.59.1-noble
+      options: --ipc=host
     needs: quality
     timeout-minutes: 20
     steps:
@@ -108,9 +111,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Install Playwright (Chromium only)
-        run: npx playwright install --with-deps chromium
 
       - name: Download .next
         uses: actions/download-artifact@v7
